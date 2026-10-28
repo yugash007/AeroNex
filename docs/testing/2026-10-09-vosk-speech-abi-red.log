@@ -1,0 +1,50 @@
+WARNING: A restricted method in java.lang.System has been called
+WARNING: java.lang.System::load has been called by net.rubygrapefruit.platform.internal.NativeLibraryLoader in an unnamed module (file:/C:/Users/yugas/.gradle/wrapper/dists/gradle-9.3.1-all/9ot9r568e8zfvvd4mn8rbu1j0/gradle-9.3.1/lib/native-platform-0.22-milestone-29.jar)
+WARNING: Use --enable-native-access=ALL-UNNAMED to avoid a warning for callers in this module
+WARNING: Restricted methods will be blocked in a future release unless native access is enabled
+
+> Task :gradle:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :gradle:compileKotlin UP-TO-DATE
+> Task :gradle:compileJava NO-SOURCE
+> Task :gradle:compileGroovy NO-SOURCE
+> Task :gradle:pluginDescriptors UP-TO-DATE
+> Task :gradle:processResources UP-TO-DATE
+> Task :gradle:classes UP-TO-DATE
+> Task :gradle:jar UP-TO-DATE
+
+> Configure project :app
+WARNING: The option setting 'android.builtInKotlin=false' is deprecated.
+The current default is 'true'.
+It will be removed in version 10.0 of the Android Gradle plugin.
+WARNING: The option setting 'android.newDsl=false' is deprecated.
+The current default is 'true'.
+It will be removed in version 10.0 of the Android Gradle plugin.
+w: Deprecated 'org.jetbrains.kotlin.android' plugin usage
+The 'org.jetbrains.kotlin.android' plugin in project ':app' is no longer required for Kotlin support since AGP 9.0.
+Solution: Remove both `android.builtInKotlin=true` and `android.newDsl=false` from `gradle.properties`, then migrate to built-in Kotlin.
+See https://kotl.in/gradle/agp-built-in-kotlin for more details.
+
+
+> Task :app:checkArm64Packaging FAILED
+Final packaged ABI filters: [arm64-v8a, armeabi-v7a, x86_64]
+Final CMake ABI filters: [arm64-v8a]
+
+
+[Incubating] Problems report is available at: file:///C:/Users/yugas/Downloads/Drone-app/.worktrees/aeronex-skeleton/app/build/reports/problems/problems-report.html
+FAILURE: Build failed with an exception.
+
+* Where:
+Initialization script 'C:\Users\yugas\Downloads\Drone-app\.worktrees\aeronex-skeleton\.superpowers\sdd\2026-10-09-vosk\task-2-abi-check.init.gradle' line: 11
+
+* What went wrong:
+Execution failed for task ':app:checkArm64Packaging'.
+> AeroNex must package and build ARM64 only.
+
+* Try:
+> Run with --stacktrace option to get the stack trace.
+5 actionable tasks: 1 executed, 4 up-to-date
+> Run with --info or --debug option to get more log output.
+> Run with --scan to get full insights from a Build Scan (powered by Develocity).
+> Get more help at https://help.gradle.org.
+
+BUILD FAILED in 4s

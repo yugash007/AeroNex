@@ -1,0 +1,27 @@
+{
+  "apk": "app\\build\\app\\outputs\\flutter-apk\\app-release.apk",
+  "sha256": "c9cf4472e709d438c73d1f0f20645a21e43e7a2a9c8b4d626ac55111b6365f43",
+  "dex_files": [
+    "classes.dex"
+  ],
+  "classes_checked": 11,
+  "missing": [
+    "com/sun/jna/Pointer fields: peer:J",
+    "com/sun/jna/Native methods: dispose()V",
+    "com/sun/jna/Native methods: fromNative(Ljava/lang/Class;Ljava/lang/Object;)Lcom/sun/jna/NativeMapped;",
+    "com/sun/jna/Native methods: fromNative(Ljava/lang/reflect/Method;Ljava/lang/Object;)Lcom/sun/jna/NativeMapped;",
+    "com/sun/jna/Native methods: nativeType(Ljava/lang/Class;)Ljava/lang/Class;",
+    "com/sun/jna/Native methods: toNative(Lcom/sun/jna/ToNativeConverter;Ljava/lang/Object;)Ljava/lang/Object;",
+    "com/sun/jna/Native methods: fromNative(Lcom/sun/jna/FromNativeConverter;Ljava/lang/Object;Ljava/lang/reflect/Method;)Ljava/lang/Object;",
+    "class com/sun/jna/Structure",
+    "class com/sun/jna/Structure$ByValue",
+    "class com/sun/jna/CallbackReference",
+    "class com/sun/jna/CallbackReference$AttachOptions",
+    "class com/sun/jna/NativeMapped",
+    "class com/sun/jna/PointerType",
+    "org/vosk/Model methods: <init>()V",
+    "org/vosk/Model methods: <init>(Ljava/lang/String;)V"
+  ],
+  "passed": false,
+  "scope": "Optimized APK JNI symbol contract; does not execute Android JNI or microphone capture"
+}

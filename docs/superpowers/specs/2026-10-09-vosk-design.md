@@ -1,0 +1,23 @@
+# Vosk speech integration
+
+The user authorized implementing Vosk across the app's languages, with Indian English for English, and repairing recording/model readiness behavior. This extends the existing Android/Flutter offline speech flow. It does not enable flight execution.
+
+## Language behavior
+
+The official Vosk catalog checked on 9 October 2026 supplies `vosk-model-small-en-in-0.4` (37,573,330 bytes), `vosk-model-small-te-0.42` (60,544,249 bytes), and `vosk-model-small-hi-0.22` (44,458,845 bytes), all Apache 2.0. These cover three of the app's six explicit languages. Tamil, Kannada, Malayalam and automatic detection keep Whisper because the official catalog has no matching Vosk model. English is labeled Indian English and uses `en-IN`. Accept legacy `en-US` preferences and API calls, normalizing preferences to `en-IN`. Whistle and Needle accept Indian English as English.
+
+Vosk is the preferred backend for supported languages. Preserve explicit existing backend choices. For a first/default choice, use an already installed compatible speech model before requiring a new download; prefer Vosk if its selected language pack is ready. Explicitly selecting Vosk requires that language's pack. Changing language while Vosk is selected uses its matching pack or changes to Whisper with an explanation. The UI permits choosing Whisper for Telugu: the official Telugu model lists 87.9 WER on Fleurs, so no accuracy guarantee is made.
+
+## Model installation
+
+Use official HTTPS model ZIPs with pinned byte sizes and SHA-256 hashes computed from downloaded files cross-checked against the official catalog MD5. Pin the complete extracted-file size/hash manifest as well. A model is ready only when every required extracted file verifies. Support download and importing the official ZIP. Extract to a private staging directory, reject traversal/absolute paths, duplicate and unexpected file entries, oversized or missing files, and verify before publication. Cancellation or failed replacement must preserve the previous usable installation. An app restart after termination between replacement renames must recover the previous valid model automatically. Cleanup must never follow symbolic links into other directories. Do not retain the ZIP after successful extraction. Serialize publication and inventory checks to avoid false missing states during replacement. Never trust old preference flags as inventory.
+
+## Speech lifecycle
+
+Use Maven `com.alphacephei:vosk-android:0.3.75` with its JNA dependency. Vosk uses the existing 16 kHz mono PCM16 microphone and bounded capture. Construct a model and recognizer on the worker, process captured chunks, accumulate finalized segments in order and show partial text without duplicating it. At Finish, flush the recognizer exactly once and join remaining text. Reject blank/unknown-only results. Close recognizer and model after every session, including failures and cancellation, so changing languages does not retain every model in memory. Model initialization occurs before the UI enters Listening. Keep the existing session-scoped finish, cancellation generation, silence/short recording handling, and transcript review before interpretation.
+
+Use open vocabulary for the authoritative transcript. Actual host evaluation confirmed dynamic grammar support and improvements for "Hey drone fly", but constrained grammar distorted an unrelated weather question. For English only, a second recognizer sharing the same model may therefore produce an optional review suggestion. It must never overwrite the original transcript or be interpreted automatically. Suppress suggestions containing `[unk]`, with blank primary text, without a drone action, or with different numeric or negation token sequences. The user must explicitly choose the suggestion before interpreting the reviewed text. Keep this additional recognizer out of Telugu and Hindi. Hold the model-directory read lock for the full Model/Recognizer lifetime; close both recognizers and the model on every exit.
+
+## Verification and release
+
+Tests must cover archive installation/repair/cancellation/corruption, language routing and preference compatibility, Vosk chunk/final aggregation, recorder cleanup and retry, finish races, and selecting Vosk without unrelated model requirements. Run Flutter tests/analyze, Android host tests and native checks; build version `0.1.5+6` and verify APK signature, ARM64 libraries and 16 KiB alignment. Use actual downloaded models for host smoke tests and record results without claiming phone microphone accuracy. Preserve all existing uncommitted work. Do not commit, push, merge, or enable real flight as part of this request.

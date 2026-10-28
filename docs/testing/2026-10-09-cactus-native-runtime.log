@@ -1,0 +1,7 @@
+Iteration 1: allocated heap 78920480 bytes
+Iteration 2: allocated heap 78890208 bytes
+Iteration 3: allocated heap 78891184 bytes
+Iteration 4: allocated heap 78891056 bytes
+Iteration 5: allocated heap 78891376 bytes
+Iteration 6: allocated heap 78892064 bytes
+Cactus result validation and requested runtime checks passed.

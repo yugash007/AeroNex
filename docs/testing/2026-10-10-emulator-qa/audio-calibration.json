@@ -1,0 +1,7 @@
+{
+  "fixture": "3.wav",
+  "capture": "audio-calibration.wav",
+  "best_normalized_correlation": 0.9839000397732415,
+  "offset_seconds": 2.7430625,
+  "note": "Direct virtual PCM calibration; does not validate AudioRecord under concurrent model load."
+}

@@ -1,0 +1,28 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "AeroNex v1 message envelope",
+  "description": "SRS sections 18-21. Hand-checked mirror of edge/app/protocol.py; no codegen.",
+  "type": "object",
+  "required": ["version", "message_id", "type", "timestamp", "payload"],
+  "additionalProperties": false,
+  "properties": {
+    "version": { "type": "integer", "const": 1, "description": "Protocol version" },
+    "message_id": { "type": "string", "minLength": 1, "maxLength": 128, "description": "Unique message identifier" },
+    "type": {
+      "type": "string",
+      "enum": [
+        "PING",
+        "COMMAND",
+        "STATUS_REQUEST",
+        "CANCEL",
+        "PONG",
+        "ACK",
+        "COMMAND_STATUS",
+        "STATUS",
+        "ERROR"
+      ]
+    },
+    "timestamp": { "type": "integer", "description": "Message creation timestamp, ms epoch" },
+    "payload": { "type": "object", "description": "Message-specific data" }
+  }
+}

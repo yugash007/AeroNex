@@ -1,0 +1,79 @@
+{
+  "adapter": "production Kotlin VoskSpeechRecognizer",
+  "load_failure_then_retry": "passed",
+  "runtime": "Vosk desktop 0.3.45; Android uses 0.3.75",
+  "audio": "Windows default SAPI synthetic voice; no Indian-accent or phone microphone accuracy claim",
+  "results": [
+    {
+      "repeated_finish": "passed",
+      "model": "vosk-model-small-en-in-0.4",
+      "silence": "passed"
+    },
+    {
+      "repeated_finish": "passed",
+      "model": "vosk-model-small-te-0.42",
+      "silence": "passed"
+    },
+    {
+      "repeated_finish": "passed",
+      "model": "vosk-model-small-hi-0.22",
+      "silence": "passed"
+    },
+    {
+      "transcript": "he drowns why",
+      "elapsed_ms": 1562,
+      "expected": "Hey drone fly",
+      "suggestion": "hey drone fly",
+      "partial_updates": 3
+    },
+    {
+      "transcript": "hey drown take off to three meters",
+      "elapsed_ms": 2431,
+      "expected": "Hey drone take off to three meters",
+      "suggestion": "hey drone take off to three meters",
+      "partial_updates": 6
+    },
+    {
+      "transcript": "will do a few meters",
+      "elapsed_ms": 2196,
+      "expected": "Move left two meters",
+      "suggestion": null,
+      "partial_updates": 2
+    },
+    {
+      "transcript": "do not take off",
+      "elapsed_ms": 1185,
+      "expected": "Do not take off",
+      "suggestion": null,
+      "partial_updates": 4
+    },
+    {
+      "transcript": "take off to one hundred meters",
+      "elapsed_ms": 992,
+      "expected": "Take off to one hundred meters",
+      "suggestion": null,
+      "partial_updates": 5
+    },
+    {
+      "transcript": "your own",
+      "elapsed_ms": 854,
+      "expected": "Land the drone",
+      "suggestion": "land the drone",
+      "partial_updates": 1
+    },
+    {
+      "transcript": "the whole position",
+      "elapsed_ms": 803,
+      "expected": "Hold position",
+      "suggestion": null,
+      "partial_updates": 3
+    },
+    {
+      "transcript": "what is the weather in delhi",
+      "elapsed_ms": 1005,
+      "expected": "What is the weather in Delhi",
+      "suggestion": null,
+      "partial_updates": 3
+    }
+  ]
+}

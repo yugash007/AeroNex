@@ -1,0 +1,13 @@
+{
+  "installed_apk_sha256": "0a44607aa90fd1d06bf286136e557f6d4671bde1102102c74df9a1c9328b7832",
+  "matches_final_release": true,
+  "identity": "uid=2000(shell) gid=2000(shell) groups=2000(shell),1004(input),1007(log),1011(adb),1015(sdcard_rw),1028(sdcard_r),1078(ext_data_rw),1079(ext_obb_rw),3001(net_bt_admin),3002(net_bt),3003(inet),3006(net_bw_stats),3009(readproc),3011(uhid),3012(readtracefs) context=u:r:shell:s0",
+  "wifi_on": "0",
+  "mobile_data": "0",
+  "memory": [
+    "MemTotal:        3048516 kB",
+    "MemFree:          183672 kB",
+    "MemAvailable:    1612324 kB",
+    "Buffers:            7656 kB"
+  ]
+}

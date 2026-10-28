@@ -1,0 +1,178 @@
+Resolving dependencies...
+Downloading packages...
+  material_color_utilities 0.13.0 (0.13.1 available)
+  test_api 0.7.12 (0.7.14 available)
+Got dependencies!
+2 packages have newer versions incompatible with dependency constraints.
+Try `flutter pub outdated` for more information.
+
+00:00 +0: loading C:/Users/yugas/Downloads/Drone-app/.worktrees/aeronex-skeleton/app/test/android_speech_test.dart                                                                                      
+00:01 +0: loading C:/Users/yugas/Downloads/Drone-app/.worktrees/aeronex-skeleton/app/test/android_speech_test.dart                                                                                      
+00:02 +0: loading C:/Users/yugas/Downloads/Drone-app/.worktrees/aeronex-skeleton/app/test/android_speech_test.dart                                                                                      
+00:03 +0: loading C:/Users/yugas/Downloads/Drone-app/.worktrees/aeronex-skeleton/app/test/android_speech_test.dart                                                                                      
+00:04 +0: loading C:/Users/yugas/Downloads/Drone-app/.worktrees/aeronex-skeleton/app/test/android_speech_test.dart                                                                                      
+00:05 +0: loading C:/Users/yugas/Downloads/Drone-app/.worktrees/aeronex-skeleton/app/test/android_speech_test.dart                                                                                      
+00:06 +0: loading C:/Users/yugas/Downloads/Drone-app/.worktrees/aeronex-skeleton/app/test/android_speech_test.dart                                                                                      
+00:07 +0: loading C:/Users/yugas/Downloads/Drone-app/.worktrees/aeronex-skeleton/app/test/android_speech_test.dart                                                                                      
+00:08 +0: loading C:/Users/yugas/Downloads/Drone-app/.worktrees/aeronex-skeleton/app/test/android_speech_test.dart                                                                                      
+00:09 +0: loading C:/Users/yugas/Downloads/Drone-app/.worktrees/aeronex-skeleton/app/test/android_speech_test.dart                                                                                      
+00:10 +0: loading C:/Users/yugas/Downloads/Drone-app/.worktrees/aeronex-skeleton/app/test/android_speech_test.dart                                                                                      
+00:11 +0: loading C:/Users/yugas/Downloads/Drone-app/.worktrees/aeronex-skeleton/app/test/android_speech_test.dart                                                                                      
+00:12 +0: loading C:/Users/yugas/Downloads/Drone-app/.worktrees/aeronex-skeleton/app/test/android_speech_test.dart                                                                                      
+00:13 +0: loading C:/Users/yugas/Downloads/Drone-app/.worktrees/aeronex-skeleton/app/test/android_speech_test.dart                                                                                      
+00:13 +0: loading C:/Users/yugas/Downloads/Drone-app/.worktrees/aeronex-skeleton/app/test/command_controller_test.dart                                                                                  
+00:13 +0: C:/Users/yugas/Downloads/Drone-app/.worktrees/aeronex-skeleton/app/test/command_controller_test.dart: preview does not execute and confirmation is consumed once                              
+00:13 +1: C:/Users/yugas/Downloads/Drone-app/.worktrees/aeronex-skeleton/app/test/command_controller_test.dart: preview does not execute and confirmation is consumed once                              
+00:13 +2: C:/Users/yugas/Downloads/Drone-app/.worktrees/aeronex-skeleton/app/test/command_controller_test.dart: preview does not execute and confirmation is consumed once                              
+00:13 +3: C:/Users/yugas/Downloads/Drone-app/.worktrees/aeronex-skeleton/app/test/command_controller_test.dart: preview does not execute and confirmation is consumed once                              
+00:13 +3: C:/Users/yugas/Downloads/Drone-app/.worktrees/aeronex-skeleton/app/test/command_controller_test.dart: expired confirmation cannot execute                                                     
+00:13 +4: C:/Users/yugas/Downloads/Drone-app/.worktrees/aeronex-skeleton/app/test/android_speech_test.dart: requests only on-device recognition and preserves language                                  
+00:13 +5: C:/Users/yugas/Downloads/Drone-app/.worktrees/aeronex-skeleton/app/test/android_speech_test.dart: requests only on-device recognition and preserves language                                  
+00:13 +6: C:/Users/yugas/Downloads/Drone-app/.worktrees/aeronex-skeleton/app/test/android_speech_test.dart: requests only on-device recognition and preserves language                                  
+00:13 +7: C:/Users/yugas/Downloads/Drone-app/.worktrees/aeronex-skeleton/app/test/android_speech_test.dart: requests only on-device recognition and preserves language                                  
+00:13 +8: C:/Users/yugas/Downloads/Drone-app/.worktrees/aeronex-skeleton/app/test/android_speech_test.dart: requests only on-device recognition and preserves language                                  
+00:13 +8: C:/Users/yugas/Downloads/Drone-app/.worktrees/aeronex-skeleton/app/test/android_speech_test.dart: unavailable on-device service does not call a network fallback                              
+00:13 +9: C:/Users/yugas/Downloads/Drone-app/.worktrees/aeronex-skeleton/app/test/flight_command_test.dart: validates one immutable tool call                                                           
+00:13 +10: C:/Users/yugas/Downloads/Drone-app/.worktrees/aeronex-skeleton/app/test/flight_command_test.dart: validates one immutable tool call                                                          
+00:13 +11: C:/Users/yugas/Downloads/Drone-app/.worktrees/aeronex-skeleton/app/test/android_speech_test.dart: downloadable and pending languages are blocked before capture                              
+00:13 +12: C:/Users/yugas/Downloads/Drone-app/.worktrees/aeronex-skeleton/app/test/flight_command_test.dart: rejects malformed calls and unsafe simulator arguments                                     
+00:13 +13: C:/Users/yugas/Downloads/Drone-app/.worktrees/aeronex-skeleton/app/test/flight_command_test.dart: rejects malformed calls and unsafe simulator arguments                                     
+00:13 +14: C:/Users/yugas/Downloads/Drone-app/.worktrees/aeronex-skeleton/app/test/flight_command_test.dart: rejects malformed calls and unsafe simulator arguments                                     
+00:13 +14: C:/Users/yugas/Downloads/Drone-app/.worktrees/aeronex-skeleton/app/test/flight_command_test.dart: allows bounded movements and parameterless status land hold                                
+00:13 +15: C:/Users/yugas/Downloads/Drone-app/.worktrees/aeronex-skeleton/app/test/flight_command_test.dart: allows bounded movements and parameterless status land hold                                
+00:13 +15: loading C:/Users/yugas/Downloads/Drone-app/.worktrees/aeronex-skeleton/app/test/flight_telemetry_test.dart                                                                                   
+00:13 +15: C:/Users/yugas/Downloads/Drone-app/.worktrees/aeronex-skeleton/app/test/flight_telemetry_test.dart: ignores other vehicles and rejects stale flight state                                    
+00:13 +16: C:/Users/yugas/Downloads/Drone-app/.worktrees/aeronex-skeleton/app/test/flight_telemetry_test.dart: ignores other vehicles and rejects stale flight state                                    
+00:13 +16: C:/Users/yugas/Downloads/Drone-app/.worktrees/aeronex-skeleton/app/test/flight_telemetry_test.dart: wrong vehicle heartbeat invalidates a previously selected target                         
+00:13 +17: C:/Users/yugas/Downloads/Drone-app/.worktrees/aeronex-skeleton/app/test/flight_telemetry_test.dart: wrong vehicle heartbeat invalidates a previously selected target                         
+00:13 +17: C:/Users/yugas/Downloads/Drone-app/.worktrees/aeronex-skeleton/app/test/flight_telemetry_test.dart: incomplete packets do not refresh safety-critical telemetry                              
+00:13 +18: C:/Users/yugas/Downloads/Drone-app/.worktrees/aeronex-skeleton/app/test/flight_telemetry_test.dart: incomplete packets do not refresh safety-critical telemetry                              
+00:13 +18: C:/Users/yugas/Downloads/Drone-app/.worktrees/aeronex-skeleton/app/test/flight_telemetry_test.dart: position readiness requires fresh absolute EKF solution                                  
+00:13 +19: C:/Users/yugas/Downloads/Drone-app/.worktrees/aeronex-skeleton/app/test/flight_telemetry_test.dart: position readiness requires fresh absolute EKF solution                                  
+00:13 +19: C:/Users/yugas/Downloads/Drone-app/.worktrees/aeronex-skeleton/app/test/flight_telemetry_test.dart: relative target uses drone heading and down-positive altitude                            
+00:13 +20: C:/Users/yugas/Downloads/Drone-app/.worktrees/aeronex-skeleton/app/test/flight_telemetry_test.dart: relative target uses drone heading and down-positive altitude                            
+00:13 +20: loading C:/Users/yugas/Downloads/Drone-app/.worktrees/aeronex-skeleton/app/test/intent_test.dart                                                                                             
+00:13 +20: C:/Users/yugas/Downloads/Drone-app/.worktrees/aeronex-skeleton/app/test/intent_test.dart: en move forward 10m                                                                                
+00:13 +21: C:/Users/yugas/Downloads/Drone-app/.worktrees/aeronex-skeleton/app/test/intent_test.dart: en move forward 10m                                                                                
+00:13 +21: C:/Users/yugas/Downloads/Drone-app/.worktrees/aeronex-skeleton/app/test/intent_test.dart: te move forward 10m                                                                                
+00:13 +22: C:/Users/yugas/Downloads/Drone-app/.worktrees/aeronex-skeleton/app/test/intent_test.dart: te move forward 10m                                                                                
+00:13 +22: C:/Users/yugas/Downloads/Drone-app/.worktrees/aeronex-skeleton/app/test/intent_test.dart: hi move forward 10m                                                                                
+00:13 +23: C:/Users/yugas/Downloads/Drone-app/.worktrees/aeronex-skeleton/app/test/intent_test.dart: hi move forward 10m                                                                                
+00:13 +23: C:/Users/yugas/Downloads/Drone-app/.worktrees/aeronex-skeleton/app/test/intent_test.dart: takeoff and land                                                                                   
+00:13 +24: C:/Users/yugas/Downloads/Drone-app/.worktrees/aeronex-skeleton/app/test/intent_test.dart: takeoff and land                                                                                   
+00:13 +24: C:/Users/yugas/Downloads/Drone-app/.worktrees/aeronex-skeleton/app/test/intent_test.dart: hover and stop                                                                                     
+00:13 +25: C:/Users/yugas/Downloads/Drone-app/.worktrees/aeronex-skeleton/app/test/intent_test.dart: hover and stop                                                                                     
+00:13 +25: C:/Users/yugas/Downloads/Drone-app/.worktrees/aeronex-skeleton/app/test/intent_test.dart: gibberish raises intent error                                                                      
+00:13 +26: C:/Users/yugas/Downloads/Drone-app/.worktrees/aeronex-skeleton/app/test/intent_test.dart: gibberish raises intent error                                                                      
+00:13 +26: C:/Users/yugas/Downloads/Drone-app/.worktrees/aeronex-skeleton/app/test/intent_test.dart: negative distance rejected                                                                         
+00:13 +27: C:/Users/yugas/Downloads/Drone-app/.worktrees/aeronex-skeleton/app/test/intent_test.dart: negative distance rejected                                                                         
+00:13 +27: C:/Users/yugas/Downloads/Drone-app/.worktrees/aeronex-skeleton/app/test/intent_test.dart: unsupported language tamil stub                                                                    
+00:13 +28: C:/Users/yugas/Downloads/Drone-app/.worktrees/aeronex-skeleton/app/test/intent_test.dart: unsupported language tamil stub                                                                    
+00:13 +28: loading C:/Users/yugas/Downloads/Drone-app/.worktrees/aeronex-skeleton/app/test/local_control_screen_test.dart                                                                               
+00:13 +28: C:/Users/yugas/Downloads/Drone-app/.worktrees/aeronex-skeleton/app/test/local_control_screen_test.dart: Whistle selects English and Telugu restores Whisper                                  
+00:14 +28: C:/Users/yugas/Downloads/Drone-app/.worktrees/aeronex-skeleton/app/test/local_control_screen_test.dart: Whistle selects English and Telugu restores Whisper                                  
+00:14 +29: C:/Users/yugas/Downloads/Drone-app/.worktrees/aeronex-skeleton/app/test/local_control_screen_test.dart: Whistle selects English and Telugu restores Whisper                                  
+00:14 +30: C:/Users/yugas/Downloads/Drone-app/.worktrees/aeronex-skeleton/app/test/local_control_screen_test.dart: Whistle selects English and Telugu restores Whisper                                  
+00:14 +31: C:/Users/yugas/Downloads/Drone-app/.worktrees/aeronex-skeleton/app/test/local_control_screen_test.dart: Whistle selects English and Telugu restores Whisper                                  
+00:14 +32: C:/Users/yugas/Downloads/Drone-app/.worktrees/aeronex-skeleton/app/test/local_control_screen_test.dart: Whistle selects English and Telugu restores Whisper                                  
+00:14 +33: C:/Users/yugas/Downloads/Drone-app/.worktrees/aeronex-skeleton/app/test/local_control_screen_test.dart: Whistle selects English and Telugu restores Whisper                                  
+00:14 +34: C:/Users/yugas/Downloads/Drone-app/.worktrees/aeronex-skeleton/app/test/local_control_screen_test.dart: Whistle selects English and Telugu restores Whisper                                  
+00:14 +35: C:/Users/yugas/Downloads/Drone-app/.worktrees/aeronex-skeleton/app/test/local_control_screen_test.dart: Whistle selects English and Telugu restores Whisper                                  
+00:14 +36: C:/Users/yugas/Downloads/Drone-app/.worktrees/aeronex-skeleton/app/test/local_control_screen_test.dart: Whistle selects English and Telugu restores Whisper                                  
+00:14 +37: C:/Users/yugas/Downloads/Drone-app/.worktrees/aeronex-skeleton/app/test/local_control_screen_test.dart: Whistle selects English and Telugu restores Whisper                                  
+00:14 +38: C:/Users/yugas/Downloads/Drone-app/.worktrees/aeronex-skeleton/app/test/local_control_screen_test.dart: Whistle selects English and Telugu restores Whisper                                  
+00:14 +39: C:/Users/yugas/Downloads/Drone-app/.worktrees/aeronex-skeleton/app/test/local_control_screen_test.dart: Whistle selects English and Telugu restores Whisper                                  
+00:14 +39: C:/Users/yugas/Downloads/Drone-app/.worktrees/aeronex-skeleton/app/test/transport_test.dart: non-PONG envelope does not confirm the link                                                     
+[2026-10-09T20:13:36.210628] WARN ignoring STATUS before heartbeat confirmation
+
+00:14 +40: C:/Users/yugas/Downloads/Drone-app/.worktrees/aeronex-skeleton/app/test/local_control_screen_test.dart: Whistle selects English and Telugu restores Whisper                                  
+00:14 +40: C:/Users/yugas/Downloads/Drone-app/.worktrees/aeronex-skeleton/app/test/transport_test.dart: unanswered proving PING fails the dial and redials                                              
+[2026-10-09T20:13:36.368698] WARN proving PING unanswered; failing dial
+[2026-10-09T20:13:36.369696] INFO reconnecting in 10 ms
+[2026-10-09T20:13:36.434854] WARN proving PING unanswered; failing dial
+[2026-10-09T20:13:36.434854] INFO reconnecting in 10 ms
+[2026-10-09T20:13:36.498671] WARN proving PING unanswered; failing dial
+[2026-10-09T20:13:36.498671] INFO reconnecting in 10 ms
+[2026-10-09T20:13:36.563278] WARN proving PING unanswered; failing dial
+[2026-10-09T20:13:36.564276] INFO reconnecting in 10 ms
+
+00:14 +41: C:/Users/yugas/Downloads/Drone-app/.worktrees/aeronex-skeleton/app/test/local_control_screen_test.dart: Whistle selects English and Telugu restores Whisper                                  
+00:14 +42: C:/Users/yugas/Downloads/Drone-app/.worktrees/aeronex-skeleton/app/test/local_control_screen_test.dart: Whistle selects English and Telugu restores Whisper                                  
+00:15 +42: C:/Users/yugas/Downloads/Drone-app/.worktrees/aeronex-skeleton/app/test/local_control_screen_test.dart: Whistle selects English and Telugu restores Whisper                                  
+00:15 +42: C:/Users/yugas/Downloads/Drone-app/.worktrees/aeronex-skeleton/app/test/transport_test.dart: drop moves to reconnecting and redials                                                          
+[2026-10-09T20:13:36.681687] INFO reconnecting in 10 ms
+
+00:15 +43: C:/Users/yugas/Downloads/Drone-app/.worktrees/aeronex-skeleton/app/test/local_control_screen_test.dart: Whistle selects English and Telugu restores Whisper                                  
+00:15 +44: C:/Users/yugas/Downloads/Drone-app/.worktrees/aeronex-skeleton/app/test/local_control_screen_test.dart: Whistle selects English and Telugu restores Whisper                                  
+00:15 +45: C:/Users/yugas/Downloads/Drone-app/.worktrees/aeronex-skeleton/app/test/local_control_screen_test.dart: Whistle selects English and Telugu restores Whisper                                  
+00:15 +46: C:/Users/yugas/Downloads/Drone-app/.worktrees/aeronex-skeleton/app/test/local_control_screen_test.dart: Whistle selects English and Telugu restores Whisper                                  
+00:15 +47: C:/Users/yugas/Downloads/Drone-app/.worktrees/aeronex-skeleton/app/test/local_control_screen_test.dart: Whistle selects English and Telugu restores Whisper                                  
+00:15 +48: C:/Users/yugas/Downloads/Drone-app/.worktrees/aeronex-skeleton/app/test/local_control_screen_test.dart: Whistle selects English and Telugu restores Whisper                                  
+00:15 +49: C:/Users/yugas/Downloads/Drone-app/.worktrees/aeronex-skeleton/app/test/mavlink_transport_test.dart: wrong-target ACK locks execution without retries                                        
+00:15 +50: C:/Users/yugas/Downloads/Drone-app/.worktrees/aeronex-skeleton/app/test/local_control_screen_test.dart: Whistle and Needle work through review without LFM or Whisper                        
+00:16 +50: C:/Users/yugas/Downloads/Drone-app/.worktrees/aeronex-skeleton/app/test/local_control_screen_test.dart: Whistle and Needle work through review without LFM or Whisper                        
+00:16 +51: C:/Users/yugas/Downloads/Drone-app/.worktrees/aeronex-skeleton/app/test/local_control_screen_test.dart: Whistle and Needle work through review without LFM or Whisper                        
+00:16 +52: C:/Users/yugas/Downloads/Drone-app/.worktrees/aeronex-skeleton/app/test/local_control_screen_test.dart: Whistle and Needle work through review without LFM or Whisper                        
+00:16 +53: C:/Users/yugas/Downloads/Drone-app/.worktrees/aeronex-skeleton/app/test/local_control_screen_test.dart: Whistle and Needle work through review without LFM or Whisper                        
+00:16 +54: C:/Users/yugas/Downloads/Drone-app/.worktrees/aeronex-skeleton/app/test/local_control_screen_test.dart: Whistle and Needle work through review without LFM or Whisper                        
+00:16 +54: C:/Users/yugas/Downloads/Drone-app/.worktrees/aeronex-skeleton/app/test/local_control_screen_test.dart: finish is unavailable while microphone setup is pending                              
+00:16 +55: C:/Users/yugas/Downloads/Drone-app/.worktrees/aeronex-skeleton/app/test/local_control_screen_test.dart: finish is unavailable while microphone setup is pending                              
+00:16 +55: C:/Users/yugas/Downloads/Drone-app/.worktrees/aeronex-skeleton/app/test/local_control_screen_test.dart: speech waits for editable transcript review before interpretation                    
+00:16 +56: C:/Users/yugas/Downloads/Drone-app/.worktrees/aeronex-skeleton/app/test/local_control_screen_test.dart: speech waits for editable transcript review before interpretation                    
+00:16 +56: C:/Users/yugas/Downloads/Drone-app/.worktrees/aeronex-skeleton/app/test/local_control_screen_test.dart: stored Telugu selection survives reopening the screen                                
+00:16 +57: C:/Users/yugas/Downloads/Drone-app/.worktrees/aeronex-skeleton/app/test/local_control_screen_test.dart: stored Telugu selection survives reopening the screen                                
+00:16 +57: C:/Users/yugas/Downloads/Drone-app/.worktrees/aeronex-skeleton/app/test/local_control_screen_test.dart: Arabic output in Telugu mode is kept for review but cannot become a command          
+00:17 +57: C:/Users/yugas/Downloads/Drone-app/.worktrees/aeronex-skeleton/app/test/local_control_screen_test.dart: Arabic output in Telugu mode is kept for review but cannot become a command          
+00:17 +58: C:/Users/yugas/Downloads/Drone-app/.worktrees/aeronex-skeleton/app/test/local_control_screen_test.dart: Arabic output in Telugu mode is kept for review but cannot become a command          
+00:17 +58: C:/Users/yugas/Downloads/Drone-app/.worktrees/aeronex-skeleton/app/test/local_control_screen_test.dart: reported mishearing needs an explicit correction and a flight height                 
+00:17 +59: C:/Users/yugas/Downloads/Drone-app/.worktrees/aeronex-skeleton/app/test/local_control_screen_test.dart: reported mishearing needs an explicit correction and a flight height                 
+00:17 +59: C:/Users/yugas/Downloads/Drone-app/.worktrees/aeronex-skeleton/app/test/local_control_screen_test.dart: negation is never removed to manufacture a flight command                            
+00:17 +60: C:/Users/yugas/Downloads/Drone-app/.worktrees/aeronex-skeleton/app/test/local_control_screen_test.dart: negation is never removed to manufacture a flight command                            
+00:17 +60: C:/Users/yugas/Downloads/Drone-app/.worktrees/aeronex-skeleton/app/test/local_control_screen_test.dart: finish disappears after one tap and transcribing waits for review                    
+00:18 +60: C:/Users/yugas/Downloads/Drone-app/.worktrees/aeronex-skeleton/app/test/local_control_screen_test.dart: finish disappears after one tap and transcribing waits for review                    
+00:18 +61: C:/Users/yugas/Downloads/Drone-app/.worktrees/aeronex-skeleton/app/test/local_control_screen_test.dart: finish disappears after one tap and transcribing waits for review                    
+00:18 +61: C:/Users/yugas/Downloads/Drone-app/.worktrees/aeronex-skeleton/app/test/local_control_screen_test.dart: a microphone failure restores Speak so recording can retry                           
+00:18 +62: C:/Users/yugas/Downloads/Drone-app/.worktrees/aeronex-skeleton/app/test/local_control_screen_test.dart: a microphone failure restores Speak so recording can retry                           
+00:18 +62: C:/Users/yugas/Downloads/Drone-app/.worktrees/aeronex-skeleton/app/test/local_control_screen_test.dart: Android recovery persists Whisper instead of restoring the failing backend           
+00:18 +63: C:/Users/yugas/Downloads/Drone-app/.worktrees/aeronex-skeleton/app/test/local_control_screen_test.dart: Android recovery persists Whisper instead of restoring the failing backend           
+00:18 +63: C:/Users/yugas/Downloads/Drone-app/.worktrees/aeronex-skeleton/app/test/local_control_screen_test.dart: voice uses local model but cannot send without confirmation                          
+00:18 +64: C:/Users/yugas/Downloads/Drone-app/.worktrees/aeronex-skeleton/app/test/local_control_screen_test.dart: voice uses local model but cannot send without confirmation                          
+00:18 +64: C:/Users/yugas/Downloads/Drone-app/.worktrees/aeronex-skeleton/app/test/local_control_screen_test.dart: installed models do not ask for setup or a RAM minimum                               
+00:19 +64: C:/Users/yugas/Downloads/Drone-app/.worktrees/aeronex-skeleton/app/test/local_control_screen_test.dart: installed models do not ask for setup or a RAM minimum                               
+00:19 +65: C:/Users/yugas/Downloads/Drone-app/.worktrees/aeronex-skeleton/app/test/local_control_screen_test.dart: installed models do not ask for setup or a RAM minimum                               
+00:19 +65: C:/Users/yugas/Downloads/Drone-app/.worktrees/aeronex-skeleton/app/test/local_control_screen_test.dart: installed models have a ready management panel without setup                         
+00:19 +66: C:/Users/yugas/Downloads/Drone-app/.worktrees/aeronex-skeleton/app/test/local_control_screen_test.dart: installed models have a ready management panel without setup                         
+00:19 +66: C:/Users/yugas/Downloads/Drone-app/.worktrees/aeronex-skeleton/app/test/local_control_screen_test.dart: choosing an optional model installs it before changing selection                     
+00:19 +67: C:/Users/yugas/Downloads/Drone-app/.worktrees/aeronex-skeleton/app/test/local_control_screen_test.dart: choosing an optional model installs it before changing selection                     
+00:19 +67: C:/Users/yugas/Downloads/Drone-app/.worktrees/aeronex-skeleton/app/test/local_control_screen_test.dart: cancelling optional setup keeps the installed model selected                         
+00:20 +67: C:/Users/yugas/Downloads/Drone-app/.worktrees/aeronex-skeleton/app/test/local_control_screen_test.dart: cancelling optional setup keeps the installed model selected                         
+00:20 +68: C:/Users/yugas/Downloads/Drone-app/.worktrees/aeronex-skeleton/app/test/local_control_screen_test.dart: cancelling optional setup keeps the installed model selected                         
+00:20 +68: C:/Users/yugas/Downloads/Drone-app/.worktrees/aeronex-skeleton/app/test/local_control_screen_test.dart: startup verification waits for files before deciding on setup                        
+00:20 +69: C:/Users/yugas/Downloads/Drone-app/.worktrees/aeronex-skeleton/app/test/local_control_screen_test.dart: startup verification waits for files before deciding on setup                        
+00:20 +69: C:/Users/yugas/Downloads/Drone-app/.worktrees/aeronex-skeleton/app/test/local_control_screen_test.dart: cancelling during model verification never starts recording                          
+00:20 +70: C:/Users/yugas/Downloads/Drone-app/.worktrees/aeronex-skeleton/app/test/local_control_screen_test.dart: cancelling during model verification never starts recording                          
+00:20 +70: C:/Users/yugas/Downloads/Drone-app/.worktrees/aeronex-skeleton/app/test/local_control_screen_test.dart: cancelled verification cannot open missing-model setup                               
+00:20 +71: C:/Users/yugas/Downloads/Drone-app/.worktrees/aeronex-skeleton/app/test/local_control_screen_test.dart: cancelled verification cannot open missing-model setup                               
+00:20 +71: C:/Users/yugas/Downloads/Drone-app/.worktrees/aeronex-skeleton/app/test/local_control_screen_test.dart: ready models panel fits a small phone with larger text                               
+00:20 +72: C:/Users/yugas/Downloads/Drone-app/.worktrees/aeronex-skeleton/app/test/local_control_screen_test.dart: ready models panel fits a small phone with larger text                               
+00:20 +72: C:/Users/yugas/Downloads/Drone-app/.worktrees/aeronex-skeleton/app/test/local_control_screen_test.dart: editing input invalidates a model proposal                                           
+00:21 +72: C:/Users/yugas/Downloads/Drone-app/.worktrees/aeronex-skeleton/app/test/local_control_screen_test.dart: editing input invalidates a model proposal                                           
+00:21 +73: C:/Users/yugas/Downloads/Drone-app/.worktrees/aeronex-skeleton/app/test/local_control_screen_test.dart: editing input invalidates a model proposal                                           
+00:21 +73: C:/Users/yugas/Downloads/Drone-app/.worktrees/aeronex-skeleton/app/test/local_control_screen_test.dart: model execution stays locked even in simulator mode                                  
+00:21 +74: C:/Users/yugas/Downloads/Drone-app/.worktrees/aeronex-skeleton/app/test/local_control_screen_test.dart: model execution stays locked even in simulator mode                                  
+00:21 +74: C:/Users/yugas/Downloads/Drone-app/.worktrees/aeronex-skeleton/app/test/local_control_screen_test.dart: manual fixtures stay visibly separate from AI                                        
+00:21 +75: C:/Users/yugas/Downloads/Drone-app/.worktrees/aeronex-skeleton/app/test/local_control_screen_test.dart: manual fixtures stay visibly separate from AI                                        
+00:21 +75: C:/Users/yugas/Downloads/Drone-app/.worktrees/aeronex-skeleton/app/test/local_control_screen_test.dart: missing models opens setup before recording or inference                             
+00:21 +76: C:/Users/yugas/Downloads/Drone-app/.worktrees/aeronex-skeleton/app/test/local_control_screen_test.dart: missing models opens setup before recording or inference                             
+00:21 +76: C:/Users/yugas/Downloads/Drone-app/.worktrees/aeronex-skeleton/app/test/local_control_screen_test.dart: typing clears an earlier microphone error and uses only LFM                          
+00:21 +77: C:/Users/yugas/Downloads/Drone-app/.worktrees/aeronex-skeleton/app/test/local_control_screen_test.dart: typing clears an earlier microphone error and uses only LFM                          
+00:21 +77: C:/Users/yugas/Downloads/Drone-app/.worktrees/aeronex-skeleton/app/test/local_control_screen_test.dart: Android error 13 offers language download and Whisper recovery                       
+00:22 +77: C:/Users/yugas/Downloads/Drone-app/.worktrees/aeronex-skeleton/app/test/local_control_screen_test.dart: Android error 13 offers language download and Whisper recovery                       
+00:22 +78: C:/Users/yugas/Downloads/Drone-app/.worktrees/aeronex-skeleton/app/test/local_control_screen_test.dart: Android error 13 offers language download and Whisper recovery                       
+00:22 +78: C:/Users/yugas/Downloads/Drone-app/.worktrees/aeronex-skeleton/app/test/local_control_screen_test.dart: model setup downloads only on request and updates readiness                          
+00:22 +79: C:/Users/yugas/Downloads/Drone-app/.worktrees/aeronex-skeleton/app/test/local_control_screen_test.dart: model setup downloads only on request and updates readiness                          
+00:22 +79: C:/Users/yugas/Downloads/Drone-app/.worktrees/aeronex-skeleton/app/test/local_control_screen_test.dart: restores the native model selection instead of resetting defaults                    
+00:22 +80: C:/Users/yugas/Downloads/Drone-app/.worktrees/aeronex-skeleton/app/test/local_control_screen_test.dart: restores the native model selection instead of resetting defaults                    
+00:22 +80: C:/Users/yugas/Downloads/Drone-app/.worktrees/aeronex-skeleton/app/test/local_control_screen_test.dart: model setup fits a small phone with larger text                                      
+00:22 +81: C:/Users/yugas/Downloads/Drone-app/.worktrees/aeronex-skeleton/app/test/local_control_screen_test.dart: model setup fits a small phone with larger text                                      
+00:22 +81: All tests passed!                                                                                                                                                                           

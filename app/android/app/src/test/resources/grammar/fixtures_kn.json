@@ -1,0 +1,1530 @@
+{
+ "language": "kn",
+ "loans": [
+  {
+   "arguments": {
+    "altitude_m": 3
+   },
+   "intent": "takeoff",
+   "text": "ಮೂರು ಮೀಟರ್ಸ್ ಟೇಕ್ ಆಫ್",
+   "tool": "takeoff"
+  },
+  {
+   "arguments": {
+    "direction": "forward",
+    "distance_m": 2
+   },
+   "intent": "move",
+   "text": "ಎರಡು ಮೀಟರ್ಸ್ ಫಾರ್ವರ್ಡ್ ಮೂವ್",
+   "tool": "move_relative"
+  },
+  {
+   "arguments": {
+    "direction": "backward",
+    "distance_m": 2
+   },
+   "intent": "move",
+   "text": "ಎರಡು ಮೀಟರ್ಸ್ ಬ್ಯಾಕ್ ಮೂವ್",
+   "tool": "move_relative"
+  },
+  {
+   "arguments": {
+    "direction": "left",
+    "distance_m": 2
+   },
+   "intent": "move",
+   "text": "ಎರಡು ಮೀಟರ್ಸ್ ಲೆಫ್ಟ್ ಮೂವ್",
+   "tool": "move_relative"
+  },
+  {
+   "arguments": {
+    "direction": "right",
+    "distance_m": 2
+   },
+   "intent": "move",
+   "text": "ಎರಡು ಮೀಟರ್ಸ್ ರೈಟ್ ಮೂವ್",
+   "tool": "move_relative"
+  },
+  {
+   "arguments": {
+    "direction": "up",
+    "distance_m": 2
+   },
+   "intent": "move",
+   "text": "ಎರಡು ಮೀಟರ್ಸ್ ಅಪ್ ಮೂವ್",
+   "tool": "move_relative"
+  },
+  {
+   "arguments": {
+    "direction": "down",
+    "distance_m": 2
+   },
+   "intent": "move",
+   "text": "ಎರಡು ಮೀಟರ್ಸ್ ಡೌನ್ ಮೂವ್",
+   "tool": "move_relative"
+  },
+  {
+   "arguments": {
+    "direction": "forward",
+    "distance_m": 2
+   },
+   "intent": "move",
+   "text": "ಫಾರ್ವರ್ಡ್ ಎರಡು ಮೀಟರ್ಸ್ ಮೂವ್",
+   "tool": "move_relative"
+  },
+  {
+   "arguments": {
+    "direction": "backward",
+    "distance_m": 2
+   },
+   "intent": "move",
+   "text": "ಬ್ಯಾಕ್ ಎರಡು ಮೀಟರ್ಸ್ ಮೂವ್",
+   "tool": "move_relative"
+  },
+  {
+   "arguments": {
+    "direction": "left",
+    "distance_m": 2
+   },
+   "intent": "move",
+   "text": "ಲೆಫ್ಟ್ ಎರಡು ಮೀಟರ್ಸ್ ಮೂವ್",
+   "tool": "move_relative"
+  },
+  {
+   "arguments": {
+    "direction": "right",
+    "distance_m": 2
+   },
+   "intent": "move",
+   "text": "ರೈಟ್ ಎರಡು ಮೀಟರ್ಸ್ ಮೂವ್",
+   "tool": "move_relative"
+  },
+  {
+   "arguments": {
+    "direction": "up",
+    "distance_m": 2
+   },
+   "intent": "move",
+   "text": "ಅಪ್ ಎರಡು ಮೀಟರ್ಸ್ ಮೂವ್",
+   "tool": "move_relative"
+  },
+  {
+   "arguments": {
+    "direction": "down",
+    "distance_m": 2
+   },
+   "intent": "move",
+   "text": "ಡೌನ್ ಎರಡು ಮೀಟರ್ಸ್ ಮೂವ್",
+   "tool": "move_relative"
+  },
+  {
+   "arguments": {},
+   "intent": "hold",
+   "text": "ಹೋಲ್ಡ್",
+   "tool": "hold"
+  },
+  {
+   "arguments": {},
+   "intent": "status",
+   "text": "ಸ್ಟೇಟಸ್",
+   "tool": "get_status"
+  }
+ ],
+ "negated": [
+  {
+   "text": "ಮೂರು ಮೀಟರ್ ಟೇಕಾಫ್ ಬೇಡ"
+  },
+  {
+   "text": "ಮೂರು ಮೀಟರ್ ಟೇಕಾಫ್ ಇಲ್ಲ"
+  },
+  {
+   "text": "ಮೂರು ಮೀಟರ್ ಬೇಡ ಟೇಕಾಫ್"
+  },
+  {
+   "text": "ಎರಡು ಮೀಟರ್ ಮುಂದೆ ಹೋಗು ಬೇಡ"
+  },
+  {
+   "text": "ಎರಡು ಮೀಟರ್ ಮುಂದೆ ಹೋಗು ಇಲ್ಲ"
+  },
+  {
+   "text": "ಎರಡು ಮೀಟರ್ ಮುಂದೆ ಬೇಡ ಹೋಗು"
+  },
+  {
+   "text": "ಇಳಿ ಬೇಡ"
+  },
+  {
+   "text": "ಇಳಿ ಇಲ್ಲ"
+  },
+  {
+   "text": "ಬೇಡ ಇಳಿ"
+  },
+  {
+   "text": "ಹೋವರ್ ಬೇಡ"
+  },
+  {
+   "text": "ಹೋವರ್ ಇಲ್ಲ"
+  },
+  {
+   "text": "ಬೇಡ ಹೋವರ್"
+  }
+ ],
+ "numbers": [
+  {
+   "kind": "RULE",
+   "phrase": "ಒಂದು",
+   "value": 1
+  },
+  {
+   "kind": "RULE",
+   "phrase": "ಎರಡು",
+   "value": 2
+  },
+  {
+   "kind": "RULE",
+   "phrase": "ಮೂರು",
+   "value": 3
+  },
+  {
+   "kind": "RULE",
+   "phrase": "ನಾಲ್ಕು",
+   "value": 4
+  },
+  {
+   "kind": "RULE",
+   "phrase": "ಐದು",
+   "value": 5
+  },
+  {
+   "kind": "RULE",
+   "phrase": "ಆರು",
+   "value": 6
+  },
+  {
+   "kind": "RULE",
+   "phrase": "ಏಳು",
+   "value": 7
+  },
+  {
+   "kind": "RULE",
+   "phrase": "ಎಂಟು",
+   "value": 8
+  },
+  {
+   "kind": "RULE",
+   "phrase": "ಒಂಬತ್ತು",
+   "value": 9
+  },
+  {
+   "kind": "RULE",
+   "phrase": "ಹತ್ತು",
+   "value": 10
+  },
+  {
+   "kind": "RULE",
+   "phrase": "ಹನ್ನೊಂದು",
+   "value": 11
+  },
+  {
+   "kind": "RULE",
+   "phrase": "ಹನ್ನೆರಡು",
+   "value": 12
+  },
+  {
+   "kind": "RULE",
+   "phrase": "ಹದಿಮೂರು",
+   "value": 13
+  },
+  {
+   "kind": "RULE",
+   "phrase": "ಹದಿನಾಲ್ಕು",
+   "value": 14
+  },
+  {
+   "kind": "RULE",
+   "phrase": "ಹದಿನೈದು",
+   "value": 15
+  },
+  {
+   "kind": "RULE",
+   "phrase": "ಹದಿನಾರು",
+   "value": 16
+  },
+  {
+   "kind": "RULE",
+   "phrase": "ಹದಿನೇಳು",
+   "value": 17
+  },
+  {
+   "kind": "RULE",
+   "phrase": "ಹದಿನೆಂಟು",
+   "value": 18
+  },
+  {
+   "kind": "RULE",
+   "phrase": "ಹತ್ತೊಂಬತ್ತು",
+   "value": 19
+  },
+  {
+   "kind": "RULE",
+   "phrase": "ಇಪ್ಪತ್ತು",
+   "value": 20
+  },
+  {
+   "kind": "RULE",
+   "phrase": "ಇಪ್ಪತ್ತೊಂದು",
+   "value": 21
+  },
+  {
+   "kind": "RULE",
+   "phrase": "ಮೂವತ್ತು",
+   "value": 30
+  },
+  {
+   "kind": "RULE",
+   "phrase": "ನಲವತ್ತು",
+   "value": 40
+  },
+  {
+   "kind": "RULE",
+   "phrase": "ಐವತ್ತು",
+   "value": 50
+  },
+  {
+   "kind": "RULE",
+   "phrase": "ಅರವತ್ತು",
+   "value": 60
+  },
+  {
+   "kind": "RULE",
+   "phrase": "ಎಪ್ಪತ್ತು",
+   "value": 70
+  },
+  {
+   "kind": "RULE",
+   "phrase": "ಎಂಭತ್ತು",
+   "value": 80
+  },
+  {
+   "kind": "RULE",
+   "phrase": "ತೊಂಬತ್ತು",
+   "value": 90
+  },
+  {
+   "kind": "RULE",
+   "phrase": "ನೂರು",
+   "value": 100
+  },
+  {
+   "kind": "RULE",
+   "phrase": "ಇಪ್ಪತ್ತು ಒಂದು",
+   "value": 21
+  },
+  {
+   "kind": "RULE",
+   "phrase": "ಇಪ್ಪತ್ತು ಎರಡು",
+   "value": 22
+  },
+  {
+   "kind": "RULE",
+   "phrase": "ಇಪ್ಪತ್ತು ಮೂರು",
+   "value": 23
+  },
+  {
+   "kind": "RULE",
+   "phrase": "ಇಪ್ಪತ್ತು ನಾಲ್ಕು",
+   "value": 24
+  },
+  {
+   "kind": "RULE",
+   "phrase": "ಇಪ್ಪತ್ತು ಐದು",
+   "value": 25
+  },
+  {
+   "kind": "RULE",
+   "phrase": "ಇಪ್ಪತ್ತು ಆರು",
+   "value": 26
+  },
+  {
+   "kind": "RULE",
+   "phrase": "ಇಪ್ಪತ್ತು ಏಳು",
+   "value": 27
+  },
+  {
+   "kind": "RULE",
+   "phrase": "ಇಪ್ಪತ್ತು ಎಂಟು",
+   "value": 28
+  },
+  {
+   "kind": "RULE",
+   "phrase": "ಇಪ್ಪತ್ತು ಒಂಬತ್ತು",
+   "value": 29
+  },
+  {
+   "kind": "RULE",
+   "phrase": "ಮೂವತ್ತು ಒಂದು",
+   "value": 31
+  },
+  {
+   "kind": "RULE",
+   "phrase": "ಮೂವತ್ತು ಎರಡು",
+   "value": 32
+  },
+  {
+   "kind": "RULE",
+   "phrase": "ಮೂವತ್ತು ಮೂರು",
+   "value": 33
+  },
+  {
+   "kind": "RULE",
+   "phrase": "ಮೂವತ್ತು ನಾಲ್ಕು",
+   "value": 34
+  },
+  {
+   "kind": "RULE",
+   "phrase": "ಮೂವತ್ತು ಐದು",
+   "value": 35
+  },
+  {
+   "kind": "RULE",
+   "phrase": "ಮೂವತ್ತು ಆರು",
+   "value": 36
+  },
+  {
+   "kind": "RULE",
+   "phrase": "ಮೂವತ್ತು ಏಳು",
+   "value": 37
+  },
+  {
+   "kind": "RULE",
+   "phrase": "ಮೂವತ್ತು ಎಂಟು",
+   "value": 38
+  },
+  {
+   "kind": "RULE",
+   "phrase": "ಮೂವತ್ತು ಒಂಬತ್ತು",
+   "value": 39
+  },
+  {
+   "kind": "RULE",
+   "phrase": "ನಲವತ್ತು ಒಂದು",
+   "value": 41
+  },
+  {
+   "kind": "RULE",
+   "phrase": "ನಲವತ್ತು ಎರಡು",
+   "value": 42
+  },
+  {
+   "kind": "RULE",
+   "phrase": "ನಲವತ್ತು ಮೂರು",
+   "value": 43
+  },
+  {
+   "kind": "RULE",
+   "phrase": "ನಲವತ್ತು ನಾಲ್ಕು",
+   "value": 44
+  },
+  {
+   "kind": "RULE",
+   "phrase": "ನಲವತ್ತು ಐದು",
+   "value": 45
+  },
+  {
+   "kind": "RULE",
+   "phrase": "ನಲವತ್ತು ಆರು",
+   "value": 46
+  },
+  {
+   "kind": "RULE",
+   "phrase": "ನಲವತ್ತು ಏಳು",
+   "value": 47
+  },
+  {
+   "kind": "RULE",
+   "phrase": "ನಲವತ್ತು ಎಂಟು",
+   "value": 48
+  },
+  {
+   "kind": "RULE",
+   "phrase": "ನಲವತ್ತು ಒಂಬತ್ತು",
+   "value": 49
+  },
+  {
+   "kind": "RULE",
+   "phrase": "ಐವತ್ತು ಒಂದು",
+   "value": 51
+  },
+  {
+   "kind": "RULE",
+   "phrase": "ಐವತ್ತು ಎರಡು",
+   "value": 52
+  },
+  {
+   "kind": "RULE",
+   "phrase": "ಐವತ್ತು ಮೂರು",
+   "value": 53
+  },
+  {
+   "kind": "RULE",
+   "phrase": "ಐವತ್ತು ನಾಲ್ಕು",
+   "value": 54
+  },
+  {
+   "kind": "RULE",
+   "phrase": "ಐವತ್ತು ಐದು",
+   "value": 55
+  },
+  {
+   "kind": "RULE",
+   "phrase": "ಐವತ್ತು ಆರು",
+   "value": 56
+  },
+  {
+   "kind": "RULE",
+   "phrase": "ಐವತ್ತು ಏಳು",
+   "value": 57
+  },
+  {
+   "kind": "RULE",
+   "phrase": "ಐವತ್ತು ಎಂಟು",
+   "value": 58
+  },
+  {
+   "kind": "RULE",
+   "phrase": "ಐವತ್ತು ಒಂಬತ್ತು",
+   "value": 59
+  },
+  {
+   "kind": "RULE",
+   "phrase": "ಅರವತ್ತು ಒಂದು",
+   "value": 61
+  },
+  {
+   "kind": "RULE",
+   "phrase": "ಅರವತ್ತು ಎರಡು",
+   "value": 62
+  },
+  {
+   "kind": "RULE",
+   "phrase": "ಅರವತ್ತು ಮೂರು",
+   "value": 63
+  },
+  {
+   "kind": "RULE",
+   "phrase": "ಅರವತ್ತು ನಾಲ್ಕು",
+   "value": 64
+  },
+  {
+   "kind": "RULE",
+   "phrase": "ಅರವತ್ತು ಐದು",
+   "value": 65
+  },
+  {
+   "kind": "RULE",
+   "phrase": "ಅರವತ್ತು ಆರು",
+   "value": 66
+  },
+  {
+   "kind": "RULE",
+   "phrase": "ಅರವತ್ತು ಏಳು",
+   "value": 67
+  },
+  {
+   "kind": "RULE",
+   "phrase": "ಅರವತ್ತು ಎಂಟು",
+   "value": 68
+  },
+  {
+   "kind": "RULE",
+   "phrase": "ಅರವತ್ತು ಒಂಬತ್ತು",
+   "value": 69
+  },
+  {
+   "kind": "RULE",
+   "phrase": "ಎಪ್ಪತ್ತು ಒಂದು",
+   "value": 71
+  },
+  {
+   "kind": "RULE",
+   "phrase": "ಎಪ್ಪತ್ತು ಎರಡು",
+   "value": 72
+  },
+  {
+   "kind": "RULE",
+   "phrase": "ಎಪ್ಪತ್ತು ಮೂರು",
+   "value": 73
+  },
+  {
+   "kind": "RULE",
+   "phrase": "ಎಪ್ಪತ್ತು ನಾಲ್ಕು",
+   "value": 74
+  },
+  {
+   "kind": "RULE",
+   "phrase": "ಎಪ್ಪತ್ತು ಐದು",
+   "value": 75
+  },
+  {
+   "kind": "RULE",
+   "phrase": "ಎಪ್ಪತ್ತು ಆರು",
+   "value": 76
+  },
+  {
+   "kind": "RULE",
+   "phrase": "ಎಪ್ಪತ್ತು ಏಳು",
+   "value": 77
+  },
+  {
+   "kind": "RULE",
+   "phrase": "ಎಪ್ಪತ್ತು ಎಂಟು",
+   "value": 78
+  },
+  {
+   "kind": "RULE",
+   "phrase": "ಎಪ್ಪತ್ತು ಒಂಬತ್ತು",
+   "value": 79
+  },
+  {
+   "kind": "RULE",
+   "phrase": "ಎಂಭತ್ತು ಒಂದು",
+   "value": 81
+  },
+  {
+   "kind": "RULE",
+   "phrase": "ಎಂಭತ್ತು ಎರಡು",
+   "value": 82
+  },
+  {
+   "kind": "RULE",
+   "phrase": "ಎಂಭತ್ತು ಮೂರು",
+   "value": 83
+  },
+  {
+   "kind": "RULE",
+   "phrase": "ಎಂಭತ್ತು ನಾಲ್ಕು",
+   "value": 84
+  },
+  {
+   "kind": "RULE",
+   "phrase": "ಎಂಭತ್ತು ಐದು",
+   "value": 85
+  },
+  {
+   "kind": "RULE",
+   "phrase": "ಎಂಭತ್ತು ಆರು",
+   "value": 86
+  },
+  {
+   "kind": "RULE",
+   "phrase": "ಎಂಭತ್ತು ಏಳು",
+   "value": 87
+  },
+  {
+   "kind": "RULE",
+   "phrase": "ಎಂಭತ್ತು ಎಂಟು",
+   "value": 88
+  },
+  {
+   "kind": "RULE",
+   "phrase": "ಎಂಭತ್ತು ಒಂಬತ್ತು",
+   "value": 89
+  },
+  {
+   "kind": "RULE",
+   "phrase": "ತೊಂಬತ್ತು ಒಂದು",
+   "value": 91
+  },
+  {
+   "kind": "RULE",
+   "phrase": "ತೊಂಬತ್ತು ಎರಡು",
+   "value": 92
+  },
+  {
+   "kind": "RULE",
+   "phrase": "ತೊಂಬತ್ತು ಮೂರು",
+   "value": 93
+  },
+  {
+   "kind": "RULE",
+   "phrase": "ತೊಂಬತ್ತು ನಾಲ್ಕು",
+   "value": 94
+  },
+  {
+   "kind": "RULE",
+   "phrase": "ತೊಂಬತ್ತು ಐದು",
+   "value": 95
+  },
+  {
+   "kind": "RULE",
+   "phrase": "ತೊಂಬತ್ತು ಆರು",
+   "value": 96
+  },
+  {
+   "kind": "RULE",
+   "phrase": "ತೊಂಬತ್ತು ಏಳು",
+   "value": 97
+  },
+  {
+   "kind": "RULE",
+   "phrase": "ತೊಂಬತ್ತು ಎಂಟು",
+   "value": 98
+  },
+  {
+   "kind": "RULE",
+   "phrase": "ತೊಂಬತ್ತು ಒಂಬತ್ತು",
+   "value": 99
+  },
+  {
+   "kind": "EXTRA",
+   "phrase": "ಸೊನ್ನೆ",
+   "value": 0
+  },
+  {
+   "kind": "FRACTION",
+   "phrase": "ಅರ್ಧ",
+   "value": 0.5
+  },
+  {
+   "kind": "FRACTION",
+   "phrase": "ಒಂದೂವರೆ",
+   "value": 1.5
+  },
+  {
+   "kind": "FRACTION",
+   "phrase": "ಎರಡೂವರೆ",
+   "value": 2.5
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "ಜೀರೋ",
+   "value": 0
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "ಒನ್",
+   "value": 1
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "ಟೂ",
+   "value": 2
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "ತ್ರೀ",
+   "value": 3
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "ಫೋರ್",
+   "value": 4
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "ಫೈವ್",
+   "value": 5
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "ಸಿಕ್ಸ್",
+   "value": 6
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "ಸೆವೆನ್",
+   "value": 7
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "ಎಯ್ಟ್",
+   "value": 8
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "ನೈನ್",
+   "value": 9
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "ಟೆನ್",
+   "value": 10
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "ಇಲೆವೆನ್",
+   "value": 11
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "ಟ್ವೆಲ್ವ್",
+   "value": 12
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "ಥರ್ಟೀನ್",
+   "value": 13
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "ಫೋರ್ಟೀನ್",
+   "value": 14
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "ಫಿಫ್ಟೀನ್",
+   "value": 15
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "ಸಿಕ್ಸ್ಟೀನ್",
+   "value": 16
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "ಸೆವೆಂಟೀನ್",
+   "value": 17
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "ಎಯ್ಟೀನ್",
+   "value": 18
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "ನೈಂಟೀನ್",
+   "value": 19
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "ಟ್ವೆಂಟಿ",
+   "value": 20
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "ಥರ್ಟಿ",
+   "value": 30
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "ಫೋರ್ಟಿ",
+   "value": 40
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "ಫಿಫ್ಟಿ",
+   "value": 50
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "ಸಿಕ್ಸ್ಟಿ",
+   "value": 60
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "ಸೆವೆಂಟಿ",
+   "value": 70
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "ಎಯ್ಟಿ",
+   "value": 80
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "ನೈಂಟಿ",
+   "value": 90
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "ಹಂಡ್ರೆಡ್",
+   "value": 100
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "ಟ್ವೆಂಟಿ ಒನ್",
+   "value": 21
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "ಟ್ವೆಂಟಿ ಟೂ",
+   "value": 22
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "ಟ್ವೆಂಟಿ ತ್ರೀ",
+   "value": 23
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "ಟ್ವೆಂಟಿ ಫೋರ್",
+   "value": 24
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "ಟ್ವೆಂಟಿ ಫೈವ್",
+   "value": 25
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "ಟ್ವೆಂಟಿ ಸಿಕ್ಸ್",
+   "value": 26
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "ಟ್ವೆಂಟಿ ಸೆವೆನ್",
+   "value": 27
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "ಟ್ವೆಂಟಿ ಎಯ್ಟ್",
+   "value": 28
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "ಟ್ವೆಂಟಿ ನೈನ್",
+   "value": 29
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "ಥರ್ಟಿ ಒನ್",
+   "value": 31
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "ಥರ್ಟಿ ಟೂ",
+   "value": 32
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "ಥರ್ಟಿ ತ್ರೀ",
+   "value": 33
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "ಥರ್ಟಿ ಫೋರ್",
+   "value": 34
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "ಥರ್ಟಿ ಫೈವ್",
+   "value": 35
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "ಥರ್ಟಿ ಸಿಕ್ಸ್",
+   "value": 36
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "ಥರ್ಟಿ ಸೆವೆನ್",
+   "value": 37
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "ಥರ್ಟಿ ಎಯ್ಟ್",
+   "value": 38
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "ಥರ್ಟಿ ನೈನ್",
+   "value": 39
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "ಫೋರ್ಟಿ ಒನ್",
+   "value": 41
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "ಫೋರ್ಟಿ ಟೂ",
+   "value": 42
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "ಫೋರ್ಟಿ ತ್ರೀ",
+   "value": 43
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "ಫೋರ್ಟಿ ಫೋರ್",
+   "value": 44
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "ಫೋರ್ಟಿ ಫೈವ್",
+   "value": 45
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "ಫೋರ್ಟಿ ಸಿಕ್ಸ್",
+   "value": 46
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "ಫೋರ್ಟಿ ಸೆವೆನ್",
+   "value": 47
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "ಫೋರ್ಟಿ ಎಯ್ಟ್",
+   "value": 48
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "ಫೋರ್ಟಿ ನೈನ್",
+   "value": 49
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "ಫಿಫ್ಟಿ ಒನ್",
+   "value": 51
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "ಫಿಫ್ಟಿ ಟೂ",
+   "value": 52
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "ಫಿಫ್ಟಿ ತ್ರೀ",
+   "value": 53
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "ಫಿಫ್ಟಿ ಫೋರ್",
+   "value": 54
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "ಫಿಫ್ಟಿ ಫೈವ್",
+   "value": 55
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "ಫಿಫ್ಟಿ ಸಿಕ್ಸ್",
+   "value": 56
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "ಫಿಫ್ಟಿ ಸೆವೆನ್",
+   "value": 57
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "ಫಿಫ್ಟಿ ಎಯ್ಟ್",
+   "value": 58
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "ಫಿಫ್ಟಿ ನೈನ್",
+   "value": 59
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "ಸಿಕ್ಸ್ಟಿ ಒನ್",
+   "value": 61
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "ಸಿಕ್ಸ್ಟಿ ಟೂ",
+   "value": 62
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "ಸಿಕ್ಸ್ಟಿ ತ್ರೀ",
+   "value": 63
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "ಸಿಕ್ಸ್ಟಿ ಫೋರ್",
+   "value": 64
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "ಸಿಕ್ಸ್ಟಿ ಫೈವ್",
+   "value": 65
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "ಸಿಕ್ಸ್ಟಿ ಸಿಕ್ಸ್",
+   "value": 66
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "ಸಿಕ್ಸ್ಟಿ ಸೆವೆನ್",
+   "value": 67
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "ಸಿಕ್ಸ್ಟಿ ಎಯ್ಟ್",
+   "value": 68
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "ಸಿಕ್ಸ್ಟಿ ನೈನ್",
+   "value": 69
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "ಸೆವೆಂಟಿ ಒನ್",
+   "value": 71
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "ಸೆವೆಂಟಿ ಟೂ",
+   "value": 72
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "ಸೆವೆಂಟಿ ತ್ರೀ",
+   "value": 73
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "ಸೆವೆಂಟಿ ಫೋರ್",
+   "value": 74
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "ಸೆವೆಂಟಿ ಫೈವ್",
+   "value": 75
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "ಸೆವೆಂಟಿ ಸಿಕ್ಸ್",
+   "value": 76
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "ಸೆವೆಂಟಿ ಸೆವೆನ್",
+   "value": 77
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "ಸೆವೆಂಟಿ ಎಯ್ಟ್",
+   "value": 78
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "ಸೆವೆಂಟಿ ನೈನ್",
+   "value": 79
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "ಎಯ್ಟಿ ಒನ್",
+   "value": 81
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "ಎಯ್ಟಿ ಟೂ",
+   "value": 82
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "ಎಯ್ಟಿ ತ್ರೀ",
+   "value": 83
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "ಎಯ್ಟಿ ಫೋರ್",
+   "value": 84
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "ಎಯ್ಟಿ ಫೈವ್",
+   "value": 85
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "ಎಯ್ಟಿ ಸಿಕ್ಸ್",
+   "value": 86
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "ಎಯ್ಟಿ ಸೆವೆನ್",
+   "value": 87
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "ಎಯ್ಟಿ ಎಯ್ಟ್",
+   "value": 88
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "ಎಯ್ಟಿ ನೈನ್",
+   "value": 89
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "ನೈಂಟಿ ಒನ್",
+   "value": 91
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "ನೈಂಟಿ ಟೂ",
+   "value": 92
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "ನೈಂಟಿ ತ್ರೀ",
+   "value": 93
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "ನೈಂಟಿ ಫೋರ್",
+   "value": 94
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "ನೈಂಟಿ ಫೈವ್",
+   "value": 95
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "ನೈಂಟಿ ಸಿಕ್ಸ್",
+   "value": 96
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "ನೈಂಟಿ ಸೆವೆನ್",
+   "value": 97
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "ನೈಂಟಿ ಎಯ್ಟ್",
+   "value": 98
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "ನೈಂಟಿ ನೈನ್",
+   "value": 99
+  },
+  {
+   "kind": "FRACTION",
+   "phrase": "ಹಾಫ್",
+   "value": 0.5
+  }
+ ],
+ "plans": [
+  {
+   "steps": [
+    {
+     "arguments": {
+      "direction": "forward",
+      "distance_m": 2
+     },
+     "tool": "move_relative"
+    },
+    {
+     "arguments": {},
+     "tool": "land"
+    }
+   ],
+   "text": "ಎರಡು ಮೀಟರ್ ಮುಂದೆ ಹೋಗು ನಂತರ ಇಳಿ"
+  },
+  {
+   "steps": [
+    {
+     "arguments": {
+      "direction": "forward",
+      "distance_m": 2
+     },
+     "tool": "move_relative"
+    },
+    {
+     "arguments": {},
+     "tool": "land"
+    }
+   ],
+   "text": "ಎರಡು ಮೀಟರ್ ಮುಂದೆ ಹೋಗು ಮತ್ತು ಇಳಿ"
+  }
+ ],
+ "positive": [
+  {
+   "arguments": {
+    "altitude_m": 3
+   },
+   "intent": "takeoff",
+   "text": "ಮೂರು ಮೀಟರ್ ಟೇಕಾಫ್",
+   "tool": "takeoff"
+  },
+  {
+   "arguments": {
+    "altitude_m": 3
+   },
+   "intent": "takeoff",
+   "text": "ಮೂರು ಮೀಟರ್ ಮೇಲಕ್ಕೆ ಏರು",
+   "tool": "takeoff"
+  },
+  {
+   "arguments": {
+    "direction": "forward",
+    "distance_m": 2
+   },
+   "intent": "move",
+   "text": "ಎರಡು ಮೀಟರ್ ಮುಂದೆ ಹೋಗು",
+   "tool": "move_relative"
+  },
+  {
+   "arguments": {
+    "direction": "forward",
+    "distance_m": 2
+   },
+   "intent": "move",
+   "text": "ಎರಡು ಮೀಟರ್ ಮುಂದಕ್ಕೆ ಹೋಗು",
+   "tool": "move_relative"
+  },
+  {
+   "arguments": {
+    "direction": "backward",
+    "distance_m": 2
+   },
+   "intent": "move",
+   "text": "ಎರಡು ಮೀಟರ್ ಹಿಂದೆ ಹೋಗು",
+   "tool": "move_relative"
+  },
+  {
+   "arguments": {
+    "direction": "backward",
+    "distance_m": 2
+   },
+   "intent": "move",
+   "text": "ಎರಡು ಮೀಟರ್ ಹಿಂದಕ್ಕೆ ಹೋಗು",
+   "tool": "move_relative"
+  },
+  {
+   "arguments": {
+    "direction": "left",
+    "distance_m": 2
+   },
+   "intent": "move",
+   "text": "ಎರಡು ಮೀಟರ್ ಎಡಕ್ಕೆ ಹೋಗು",
+   "tool": "move_relative"
+  },
+  {
+   "arguments": {
+    "direction": "left",
+    "distance_m": 2
+   },
+   "intent": "move",
+   "text": "ಎರಡು ಮೀಟರ್ ಎಡ ಹೋಗು",
+   "tool": "move_relative"
+  },
+  {
+   "arguments": {
+    "direction": "right",
+    "distance_m": 2
+   },
+   "intent": "move",
+   "text": "ಎರಡು ಮೀಟರ್ ಬಲಕ್ಕೆ ಹೋಗು",
+   "tool": "move_relative"
+  },
+  {
+   "arguments": {
+    "direction": "right",
+    "distance_m": 2
+   },
+   "intent": "move",
+   "text": "ಎರಡು ಮೀಟರ್ ಬಲ ಹೋಗು",
+   "tool": "move_relative"
+  },
+  {
+   "arguments": {
+    "direction": "up",
+    "distance_m": 2
+   },
+   "intent": "move",
+   "text": "ಎರಡು ಮೀಟರ್ ಮೇಲೆ ಹೋಗು",
+   "tool": "move_relative"
+  },
+  {
+   "arguments": {
+    "direction": "up",
+    "distance_m": 2
+   },
+   "intent": "move",
+   "text": "ಎರಡು ಮೀಟರ್ ಮೇಲಕ್ಕೆ ಹೋಗು",
+   "tool": "move_relative"
+  },
+  {
+   "arguments": {
+    "direction": "down",
+    "distance_m": 2
+   },
+   "intent": "move",
+   "text": "ಎರಡು ಮೀಟರ್ ಕೆಳಗೆ ಹೋಗು",
+   "tool": "move_relative"
+  },
+  {
+   "arguments": {
+    "direction": "down",
+    "distance_m": 2
+   },
+   "intent": "move",
+   "text": "ಎರಡು ಮೀಟರ್ ಕೆಳಕ್ಕೆ ಹೋಗು",
+   "tool": "move_relative"
+  },
+  {
+   "arguments": {
+    "direction": "forward",
+    "distance_m": 2
+   },
+   "intent": "move",
+   "text": "ಮುಂದೆ ಎರಡು ಮೀಟರ್ ಹೋಗು",
+   "tool": "move_relative"
+  },
+  {
+   "arguments": {
+    "direction": "forward",
+    "distance_m": 2
+   },
+   "intent": "move",
+   "text": "ಮುಂದಕ್ಕೆ ಎರಡು ಮೀಟರ್ ಹೋಗು",
+   "tool": "move_relative"
+  },
+  {
+   "arguments": {
+    "direction": "backward",
+    "distance_m": 2
+   },
+   "intent": "move",
+   "text": "ಹಿಂದೆ ಎರಡು ಮೀಟರ್ ಹೋಗು",
+   "tool": "move_relative"
+  },
+  {
+   "arguments": {
+    "direction": "backward",
+    "distance_m": 2
+   },
+   "intent": "move",
+   "text": "ಹಿಂದಕ್ಕೆ ಎರಡು ಮೀಟರ್ ಹೋಗು",
+   "tool": "move_relative"
+  },
+  {
+   "arguments": {
+    "direction": "left",
+    "distance_m": 2
+   },
+   "intent": "move",
+   "text": "ಎಡಕ್ಕೆ ಎರಡು ಮೀಟರ್ ಹೋಗು",
+   "tool": "move_relative"
+  },
+  {
+   "arguments": {
+    "direction": "left",
+    "distance_m": 2
+   },
+   "intent": "move",
+   "text": "ಎಡ ಎರಡು ಮೀಟರ್ ಹೋಗು",
+   "tool": "move_relative"
+  },
+  {
+   "arguments": {
+    "direction": "right",
+    "distance_m": 2
+   },
+   "intent": "move",
+   "text": "ಬಲಕ್ಕೆ ಎರಡು ಮೀಟರ್ ಹೋಗು",
+   "tool": "move_relative"
+  },
+  {
+   "arguments": {
+    "direction": "right",
+    "distance_m": 2
+   },
+   "intent": "move",
+   "text": "ಬಲ ಎರಡು ಮೀಟರ್ ಹೋಗು",
+   "tool": "move_relative"
+  },
+  {
+   "arguments": {
+    "direction": "up",
+    "distance_m": 2
+   },
+   "intent": "move",
+   "text": "ಮೇಲೆ ಎರಡು ಮೀಟರ್ ಹೋಗು",
+   "tool": "move_relative"
+  },
+  {
+   "arguments": {
+    "direction": "up",
+    "distance_m": 2
+   },
+   "intent": "move",
+   "text": "ಮೇಲಕ್ಕೆ ಎರಡು ಮೀಟರ್ ಹೋಗು",
+   "tool": "move_relative"
+  },
+  {
+   "arguments": {
+    "direction": "down",
+    "distance_m": 2
+   },
+   "intent": "move",
+   "text": "ಕೆಳಗೆ ಎರಡು ಮೀಟರ್ ಹೋಗು",
+   "tool": "move_relative"
+  },
+  {
+   "arguments": {
+    "direction": "down",
+    "distance_m": 2
+   },
+   "intent": "move",
+   "text": "ಕೆಳಕ್ಕೆ ಎರಡು ಮೀಟರ್ ಹೋಗು",
+   "tool": "move_relative"
+  },
+  {
+   "arguments": {},
+   "intent": "hold",
+   "text": "ಹೋವರ್",
+   "tool": "hold"
+  },
+  {
+   "arguments": {},
+   "intent": "stop",
+   "text": "ನಿಲ್ಲು",
+   "tool": "hold"
+  },
+  {
+   "arguments": {},
+   "intent": "stop",
+   "text": "ನಿಲ್ಲಿಸು",
+   "tool": "hold"
+  },
+  {
+   "arguments": {},
+   "intent": "stop",
+   "text": "ಸ್ಟಾಪ್",
+   "tool": "hold"
+  },
+  {
+   "arguments": {},
+   "intent": "land",
+   "text": "ಇಳಿ",
+   "tool": "land"
+  },
+  {
+   "arguments": {},
+   "intent": "land",
+   "text": "ಲ್ಯಾಂಡ್",
+   "tool": "land"
+  }
+ ],
+ "unk": [
+  {
+   "expect": "hold",
+   "text": "[unk] ಹೋವರ್"
+  },
+  {
+   "expect": "hold",
+   "text": "ನಿಲ್ಲು [unk]"
+  },
+  {
+   "expect": "reject",
+   "text": "[unk] ಎರಡು ಮೀಟರ್ ಮುಂದೆ ಹೋಗು"
+  },
+  {
+   "expect": "reject",
+   "text": "ಎರಡು [unk] ಮೀಟರ್ ಮುಂದೆ ಹೋಗು"
+  }
+ ]
+}

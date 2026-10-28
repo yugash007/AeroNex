@@ -1,0 +1,7265 @@
+{
+ "schema": "aeronex-phase0-engine-eval/1",
+ "generated": "2026-10-12T10:18:32+00:00",
+ "caveat": "Host evaluation only: AMD Ryzen 7 6800H (WSL2 x86-64) and eSpeak NG / Windows SAPI synthetic speech. Neither the CPU nor the audio represents a low-end phone or a real speaker; accuracy figures say nothing about real users, timing and memory figures are relative only. Phone numbers (R0-R5) remain pending.",
+ "clips": {
+  "generator": "eSpeak NG text-to-speech: 1.52.0  Data at: C:\\Program Files\\eSpeak NG\\/espeak-ng-data\nvoices: {'en': ('en-us', 'en+f3'), 'hi': ('hi', 'hi+f3'), 'te': ('te', 'te+f3'), 'ta': ('ta', 'ta+f3'), 'kn': ('kn', 'kn+f3'), 'ml': ('ml', 'ml+f3')}\npad 0.2s, peak 0.7, 16000 Hz mono PCM16",
+  "count": 84
+ },
+ "assets": {
+  "manifest": "../tooling/models/sherpa/manifest.json (paths relative to .worktrees/tooling)",
+  "downloads": [
+   {
+    "path": "sherpa-onnx/sherpa-onnx-1.13.8.aar",
+    "url": "https://github.com/k2-fsa/sherpa-onnx/releases/download/v1.13.8/sherpa-onnx-1.13.8.aar",
+    "bytes": 50129134,
+    "sha256": "633c24321e06b1fe79feafa03ea16cbc0f8a286641e2da3559bac91bdb13bd96",
+    "licence": "Apache-2.0 (sherpa-onnx); bundles ONNX Runtime (MIT)",
+    "source": "GitHub release v1.13.8, digest published by GitHub"
+   },
+   {
+    "path": "models/sherpa/indicconformer/tokens.txt",
+    "url": "https://huggingface.co/parismitaglobalsolutions/indicconformer-sherpa-onnx/resolve/9721eb71eea141fae0982cfcdb9dd2e3d4953c4a/tokens.txt",
+    "bytes": 67605,
+    "sha256": "ee60967630213f31951817ac8b402b92ec18cce80718a24a49b388e56672dfb2",
+    "licence": "MIT (AI4Bharat IndicConformer weights, ai4bharat/indicconformer_stt_<lang>_hybrid_ctc_rnnt_large); the parismitaglobalsolutions/indicconformer-sherpa-onnx card declares Apache-2.0 for the repackaging",
+    "source": "parismitaglobalsolutions/indicconformer-sherpa-onnx@9721eb71eea141fae0982cfcdb9dd2e3d4953c4a (no published hash: pinned by revision, hash recorded at first download)"
+   },
+   {
+    "path": "models/sherpa/indicconformer/ta/model.int8.onnx",
+    "url": "https://huggingface.co/parismitaglobalsolutions/indicconformer-sherpa-onnx/resolve/9721eb71eea141fae0982cfcdb9dd2e3d4953c4a/ta/model.int8.onnx",
+    "bytes": 197595513,
+    "sha256": "abb7b59d706b8d27ba3fb5e5e3db7671c9e1a09bf7bc6122de507c60030e65fb",
+    "licence": "MIT (AI4Bharat IndicConformer weights, ai4bharat/indicconformer_stt_<lang>_hybrid_ctc_rnnt_large); the parismitaglobalsolutions/indicconformer-sherpa-onnx card declares Apache-2.0 for the repackaging",
+    "source": "parismitaglobalsolutions/indicconformer-sherpa-onnx@9721eb71eea141fae0982cfcdb9dd2e3d4953c4a, Hugging Face LFS sha256"
+   },
+   {
+    "path": "models/sherpa/indicconformer/kn/model.int8.onnx",
+    "url": "https://huggingface.co/parismitaglobalsolutions/indicconformer-sherpa-onnx/resolve/9721eb71eea141fae0982cfcdb9dd2e3d4953c4a/kn/model.int8.onnx",
+    "bytes": 197595728,
+    "sha256": "b226ce7e4ea35b0dd66991964bd00e011b6b14b0fcdf4f7d1cccd777781c94dc",
+    "licence": "MIT (AI4Bharat IndicConformer weights, ai4bharat/indicconformer_stt_<lang>_hybrid_ctc_rnnt_large); the parismitaglobalsolutions/indicconformer-sherpa-onnx card declares Apache-2.0 for the repackaging",
+    "source": "parismitaglobalsolutions/indicconformer-sherpa-onnx@9721eb71eea141fae0982cfcdb9dd2e3d4953c4a, Hugging Face LFS sha256"
+   },
+   {
+    "path": "models/sherpa/indicconformer/ml/model.int8.onnx",
+    "url": "https://huggingface.co/parismitaglobalsolutions/indicconformer-sherpa-onnx/resolve/9721eb71eea141fae0982cfcdb9dd2e3d4953c4a/ml/model.int8.onnx",
+    "bytes": 197595555,
+    "sha256": "dcbdfa9f773db910508b40b703cb76c5974e8d4c6f123ea81265b40853c3f0c2",
+    "licence": "MIT (AI4Bharat IndicConformer weights, ai4bharat/indicconformer_stt_<lang>_hybrid_ctc_rnnt_large); the parismitaglobalsolutions/indicconformer-sherpa-onnx card declares Apache-2.0 for the repackaging",
+    "source": "parismitaglobalsolutions/indicconformer-sherpa-onnx@9721eb71eea141fae0982cfcdb9dd2e3d4953c4a, Hugging Face LFS sha256"
+   },
+   {
+    "path": "models/sherpa/indicconformer/te/model.int8.onnx",
+    "url": "https://huggingface.co/parismitaglobalsolutions/indicconformer-sherpa-onnx/resolve/9721eb71eea141fae0982cfcdb9dd2e3d4953c4a/te/model.int8.onnx",
+    "bytes": 197595693,
+    "sha256": "710f176e33080f1be84b4f38bb5f33be3f522dcf4f191bf4d5cc89f7a85924f3",
+    "licence": "MIT (AI4Bharat IndicConformer weights, ai4bharat/indicconformer_stt_<lang>_hybrid_ctc_rnnt_large); the parismitaglobalsolutions/indicconformer-sherpa-onnx card declares Apache-2.0 for the repackaging",
+    "source": "parismitaglobalsolutions/indicconformer-sherpa-onnx@9721eb71eea141fae0982cfcdb9dd2e3d4953c4a, Hugging Face LFS sha256"
+   },
+   {
+    "path": "models/sherpa/kws/sherpa-onnx-kws-zipformer-zh-en-3M-2025-12-20.tar.bz2",
+    "url": "https://github.com/k2-fsa/sherpa-onnx/releases/download/kws-models/sherpa-onnx-kws-zipformer-zh-en-3M-2025-12-20.tar.bz2",
+    "bytes": 32885699,
+    "sha256": "68447f4fbc67e70eee3a93961f36e81e98f47aef73ce7e7ca00885c6cd3616a6",
+    "licence": "UNCONFIRMED: no licence file in the archive and training data unstated; sherpa-onnx itself is Apache-2.0. Confirm with k2-fsa before shipping",
+    "source": "sherpa-onnx kws-models release, checksum.txt"
+   },
+   {
+    "path": "models/sherpa/kws/sherpa-onnx-kws-zipformer-gigaspeech-3.3M-2024-01-01.tar.bz2",
+    "url": "https://github.com/k2-fsa/sherpa-onnx/releases/download/kws-models/sherpa-onnx-kws-zipformer-gigaspeech-3.3M-2024-01-01.tar.bz2",
+    "bytes": 17626723,
+    "sha256": "f170013b4716e41b62b9bfd809687c207cef798ef9bc6534d524e17af9b6561a",
+    "licence": "Apache-2.0 (model card README.md inside the archive; trained on GigaSpeech XL with icefall)",
+    "source": "sherpa-onnx kws-models release, checksum.txt"
+   }
+  ],
+  "packs": [
+   {
+    "id": "indicconformer-ta-ctc-int8",
+    "language": "ta",
+    "engine": "sherpa-onnx-nemo-ctc",
+    "streaming": false,
+    "tier": null,
+    "min_ram_mb": null,
+    "grammar_version": null,
+    "note": "tier/min_ram_mb pending phone measurements (Phase 0)",
+    "files": [
+     "models/sherpa/indicconformer/ta/model.int8.onnx",
+     "models/sherpa/indicconformer/tokens.txt"
+    ]
+   },
+   {
+    "id": "indicconformer-kn-ctc-int8",
+    "language": "kn",
+    "engine": "sherpa-onnx-nemo-ctc",
+    "streaming": false,
+    "tier": null,
+    "min_ram_mb": null,
+    "grammar_version": null,
+    "note": "tier/min_ram_mb pending phone measurements (Phase 0)",
+    "files": [
+     "models/sherpa/indicconformer/kn/model.int8.onnx",
+     "models/sherpa/indicconformer/tokens.txt"
+    ]
+   },
+   {
+    "id": "indicconformer-ml-ctc-int8",
+    "language": "ml",
+    "engine": "sherpa-onnx-nemo-ctc",
+    "streaming": false,
+    "tier": null,
+    "min_ram_mb": null,
+    "grammar_version": null,
+    "note": "tier/min_ram_mb pending phone measurements (Phase 0)",
+    "files": [
+     "models/sherpa/indicconformer/ml/model.int8.onnx",
+     "models/sherpa/indicconformer/tokens.txt"
+    ]
+   },
+   {
+    "id": "indicconformer-te-ctc-int8",
+    "language": "te",
+    "engine": "sherpa-onnx-nemo-ctc",
+    "streaming": false,
+    "tier": null,
+    "min_ram_mb": null,
+    "grammar_version": null,
+    "note": "tier/min_ram_mb pending phone measurements (Phase 0)",
+    "files": [
+     "models/sherpa/indicconformer/te/model.int8.onnx",
+     "models/sherpa/indicconformer/tokens.txt"
+    ]
+   },
+   {
+    "id": "kws-zh-en-3M-chunk-8",
+    "language": "en",
+    "engine": "sherpa-onnx-kws",
+    "streaming": true,
+    "tier": null,
+    "min_ram_mb": null,
+    "grammar_version": null,
+    "files": [
+     "models/sherpa/kws/sherpa-onnx-kws-zipformer-zh-en-3M-2025-12-20/encoder-epoch-13-avg-2-chunk-8-left-64.int8.onnx",
+     "models/sherpa/kws/sherpa-onnx-kws-zipformer-zh-en-3M-2025-12-20/decoder-epoch-13-avg-2-chunk-8-left-64.onnx",
+     "models/sherpa/kws/sherpa-onnx-kws-zipformer-zh-en-3M-2025-12-20/joiner-epoch-13-avg-2-chunk-8-left-64.int8.onnx",
+     "models/sherpa/kws/sherpa-onnx-kws-zipformer-zh-en-3M-2025-12-20/tokens.txt",
+     "models/sherpa/kws/sherpa-onnx-kws-zipformer-zh-en-3M-2025-12-20/en.phone"
+    ]
+   },
+   {
+    "id": "kws-gigaspeech-3.3M-chunk-16",
+    "language": "en",
+    "engine": "sherpa-onnx-kws",
+    "streaming": true,
+    "tier": null,
+    "min_ram_mb": null,
+    "grammar_version": null,
+    "files": [
+     "models/sherpa/kws/sherpa-onnx-kws-zipformer-gigaspeech-3.3M-2024-01-01/encoder-epoch-12-avg-2-chunk-16-left-64.int8.onnx",
+     "models/sherpa/kws/sherpa-onnx-kws-zipformer-gigaspeech-3.3M-2024-01-01/decoder-epoch-12-avg-2-chunk-16-left-64.onnx",
+     "models/sherpa/kws/sherpa-onnx-kws-zipformer-gigaspeech-3.3M-2024-01-01/joiner-epoch-12-avg-2-chunk-16-left-64.int8.onnx",
+     "models/sherpa/kws/sherpa-onnx-kws-zipformer-gigaspeech-3.3M-2024-01-01/tokens.txt",
+     "models/sherpa/kws/sherpa-onnx-kws-zipformer-gigaspeech-3.3M-2024-01-01/bpe.model"
+    ]
+   }
+  ]
+ },
+ "aar": {
+  "aar": "sherpa-onnx-1.13.8.aar",
+  "bytes": 50129134,
+  "sha256": "633c24321e06b1fe79feafa03ea16cbc0f8a286641e2da3559bac91bdb13bd96",
+  "abis": {
+   "arm64-v8a": [
+    {
+     "lib": "libonnxruntime.so",
+     "bytes": 22249560,
+     "load_align": [
+      "0x4000",
+      "0x4000",
+      "0x4000",
+      "0x4000"
+     ],
+     "aligned_16k": true
+    },
+    {
+     "lib": "libsherpa-onnx-c-api.so",
+     "bytes": 4465168,
+     "load_align": [
+      "0x4000",
+      "0x4000",
+      "0x4000"
+     ],
+     "aligned_16k": true
+    },
+    {
+     "lib": "libsherpa-onnx-cxx-api.so",
+     "bytes": 440688,
+     "load_align": [
+      "0x4000",
+      "0x4000",
+      "0x4000"
+     ],
+     "aligned_16k": true
+    },
+    {
+     "lib": "libsherpa-onnx-jni.so",
+     "bytes": 4771760,
+     "load_align": [
+      "0x4000",
+      "0x4000",
+      "0x4000"
+     ],
+     "aligned_16k": true
+    }
+   ],
+   "armeabi-v7a": [
+    {
+     "lib": "libonnxruntime.so",
+     "bytes": 15359592,
+     "load_align": [
+      "0x4000",
+      "0x4000",
+      "0x4000",
+      "0x4000"
+     ],
+     "aligned_16k": true
+    },
+    {
+     "lib": "libsherpa-onnx-c-api.so",
+     "bytes": 3202700,
+     "load_align": [
+      "0x4000",
+      "0x4000",
+      "0x4000"
+     ],
+     "aligned_16k": true
+    },
+    {
+     "lib": "libsherpa-onnx-cxx-api.so",
+     "bytes": 282008,
+     "load_align": [
+      "0x4000",
+      "0x4000",
+      "0x4000"
+     ],
+     "aligned_16k": true
+    },
+    {
+     "lib": "libsherpa-onnx-jni.so",
+     "bytes": 3428780,
+     "load_align": [
+      "0x4000",
+      "0x4000",
+      "0x4000"
+     ],
+     "aligned_16k": true
+    }
+   ],
+   "x86": [
+    {
+     "lib": "libonnxruntime.so",
+     "bytes": 26491148,
+     "load_align": [
+      "0x4000",
+      "0x4000",
+      "0x4000",
+      "0x4000"
+     ],
+     "aligned_16k": true
+    },
+    {
+     "lib": "libsherpa-onnx-c-api.so",
+     "bytes": 5051192,
+     "load_align": [
+      "0x4000",
+      "0x4000",
+      "0x4000"
+     ],
+     "aligned_16k": true
+    },
+    {
+     "lib": "libsherpa-onnx-cxx-api.so",
+     "bytes": 392768,
+     "load_align": [
+      "0x4000",
+      "0x4000",
+      "0x4000"
+     ],
+     "aligned_16k": true
+    },
+    {
+     "lib": "libsherpa-onnx-jni.so",
+     "bytes": 5358928,
+     "load_align": [
+      "0x4000",
+      "0x4000",
+      "0x4000"
+     ],
+     "aligned_16k": true
+    }
+   ],
+   "x86_64": [
+    {
+     "lib": "libonnxruntime.so",
+     "bytes": 25581120,
+     "load_align": [
+      "0x4000",
+      "0x4000",
+      "0x4000",
+      "0x4000"
+     ],
+     "aligned_16k": true
+    },
+    {
+     "lib": "libsherpa-onnx-c-api.so",
+     "bytes": 4927096,
+     "load_align": [
+      "0x4000",
+      "0x4000",
+      "0x4000"
+     ],
+     "aligned_16k": true
+    },
+    {
+     "lib": "libsherpa-onnx-cxx-api.so",
+     "bytes": 436952,
+     "load_align": [
+      "0x4000",
+      "0x4000",
+      "0x4000"
+     ],
+     "aligned_16k": true
+    },
+    {
+     "lib": "libsherpa-onnx-jni.so",
+     "bytes": 5201192,
+     "load_align": [
+      "0x4000",
+      "0x4000",
+      "0x4000"
+     ],
+     "aligned_16k": true
+    }
+   ]
+  },
+  "classes": [
+   "com.k2fsa.sherpa.onnx.AudioEvent",
+   "com.k2fsa.sherpa.onnx.AudioTagging",
+   "com.k2fsa.sherpa.onnx.AudioTaggingConfig",
+   "com.k2fsa.sherpa.onnx.AudioTaggingKt",
+   "com.k2fsa.sherpa.onnx.AudioTaggingModelConfig",
+   "com.k2fsa.sherpa.onnx.DenoisedAudio",
+   "com.k2fsa.sherpa.onnx.EndpointConfig",
+   "com.k2fsa.sherpa.onnx.EndpointRule",
+   "com.k2fsa.sherpa.onnx.FastClusteringConfig",
+   "com.k2fsa.sherpa.onnx.FeatureConfig",
+   "com.k2fsa.sherpa.onnx.FeatureConfigKt",
+   "com.k2fsa.sherpa.onnx.GeneratedAudio",
+   "com.k2fsa.sherpa.onnx.GenerationConfig",
+   "com.k2fsa.sherpa.onnx.HomophoneReplacerConfig",
+   "com.k2fsa.sherpa.onnx.KeywordSpotter",
+   "com.k2fsa.sherpa.onnx.KeywordSpotterConfig",
+   "com.k2fsa.sherpa.onnx.KeywordSpotterKt",
+   "com.k2fsa.sherpa.onnx.KeywordSpotterResult",
+   "com.k2fsa.sherpa.onnx.OfflineCanaryModelConfig",
+   "com.k2fsa.sherpa.onnx.OfflineCohereTranscribeModelConfig",
+   "com.k2fsa.sherpa.onnx.OfflineDolphinModelConfig",
+   "com.k2fsa.sherpa.onnx.OfflineFireRedAsrCtcModelConfig",
+   "com.k2fsa.sherpa.onnx.OfflineFireRedAsrModelConfig",
+   "com.k2fsa.sherpa.onnx.OfflineFunAsrNanoModelConfig",
+   "com.k2fsa.sherpa.onnx.OfflineMedAsrCtcModelConfig",
+   "com.k2fsa.sherpa.onnx.OfflineModelConfig",
+   "com.k2fsa.sherpa.onnx.OfflineMoonshineModelConfig",
+   "com.k2fsa.sherpa.onnx.OfflineNemoEncDecCtcModelConfig",
+   "com.k2fsa.sherpa.onnx.OfflineOmnilingualAsrCtcModelConfig",
+   "com.k2fsa.sherpa.onnx.OfflineParaformerModelConfig",
+   "com.k2fsa.sherpa.onnx.OfflinePunctuation",
+   "com.k2fsa.sherpa.onnx.OfflinePunctuationConfig",
+   "com.k2fsa.sherpa.onnx.OfflinePunctuationModelConfig",
+   "com.k2fsa.sherpa.onnx.OfflineQwen3AsrModelConfig",
+   "com.k2fsa.sherpa.onnx.OfflineRecognizer",
+   "com.k2fsa.sherpa.onnx.OfflineRecognizerConfig",
+   "com.k2fsa.sherpa.onnx.OfflineRecognizerKt",
+   "com.k2fsa.sherpa.onnx.OfflineRecognizerResult",
+   "com.k2fsa.sherpa.onnx.OfflineSenseVoiceModelConfig",
+   "com.k2fsa.sherpa.onnx.OfflineSpeakerDiarization",
+   "com.k2fsa.sherpa.onnx.OfflineSpeakerDiarizationConfig",
+   "com.k2fsa.sherpa.onnx.OfflineSpeakerDiarizationSegment",
+   "com.k2fsa.sherpa.onnx.OfflineSpeakerSegmentationModelConfig",
+   "com.k2fsa.sherpa.onnx.OfflineSpeakerSegmentationPyannoteModelConfig",
+   "com.k2fsa.sherpa.onnx.OfflineSpeechDenoiser",
+   "com.k2fsa.sherpa.onnx.OfflineSpeechDenoiserConfig",
+   "com.k2fsa.sherpa.onnx.OfflineSpeechDenoiserDpdfNetModelConfig",
+   "com.k2fsa.sherpa.onnx.OfflineSpeechDenoiserGtcrnModelConfig",
+   "com.k2fsa.sherpa.onnx.OfflineSpeechDenoiserModelConfig",
+   "com.k2fsa.sherpa.onnx.OfflineStream",
+   "com.k2fsa.sherpa.onnx.OfflineTransducerModelConfig",
+   "com.k2fsa.sherpa.onnx.OfflineTts",
+   "com.k2fsa.sherpa.onnx.OfflineTtsConfig",
+   "com.k2fsa.sherpa.onnx.OfflineTtsKittenModelConfig",
+   "com.k2fsa.sherpa.onnx.OfflineTtsKokoroModelConfig",
+   "com.k2fsa.sherpa.onnx.OfflineTtsMatchaModelConfig",
+   "com.k2fsa.sherpa.onnx.OfflineTtsModelConfig",
+   "com.k2fsa.sherpa.onnx.OfflineTtsPocketModelConfig",
+   "com.k2fsa.sherpa.onnx.OfflineTtsSupertonicModelConfig",
+   "com.k2fsa.sherpa.onnx.OfflineTtsVitsModelConfig",
+   "com.k2fsa.sherpa.onnx.OfflineTtsZipVoiceModelConfig",
+   "com.k2fsa.sherpa.onnx.OfflineWenetCtcModelConfig",
+   "com.k2fsa.sherpa.onnx.OfflineWhisperModelConfig",
+   "com.k2fsa.sherpa.onnx.OfflineZipformerAudioTaggingModelConfig",
+   "com.k2fsa.sherpa.onnx.OfflineZipformerCtcModelConfig",
+   "com.k2fsa.sherpa.onnx.OnlineCtcFstDecoderConfig",
+   "com.k2fsa.sherpa.onnx.OnlineLMConfig",
+   "com.k2fsa.sherpa.onnx.OnlineModelConfig",
+   "com.k2fsa.sherpa.onnx.OnlineNeMoCtcModelConfig",
+   "com.k2fsa.sherpa.onnx.OnlineParaformerModelConfig",
+   "com.k2fsa.sherpa.onnx.OnlinePunctuation",
+   "com.k2fsa.sherpa.onnx.OnlinePunctuationConfig",
+   "com.k2fsa.sherpa.onnx.OnlinePunctuationModelConfig",
+   "com.k2fsa.sherpa.onnx.OnlineRecognizer",
+   "com.k2fsa.sherpa.onnx.OnlineRecognizerConfig",
+   "com.k2fsa.sherpa.onnx.OnlineRecognizerKt",
+   "com.k2fsa.sherpa.onnx.OnlineRecognizerResult",
+   "com.k2fsa.sherpa.onnx.OnlineSpeechDenoiser",
+   "com.k2fsa.sherpa.onnx.OnlineSpeechDenoiserConfig",
+   "com.k2fsa.sherpa.onnx.OnlineStream",
+   "com.k2fsa.sherpa.onnx.OnlineToneCtcModelConfig",
+   "com.k2fsa.sherpa.onnx.OnlineTransducerModelConfig",
+   "com.k2fsa.sherpa.onnx.OnlineZipformer2CtcModelConfig",
+   "com.k2fsa.sherpa.onnx.QnnConfig",
+   "com.k2fsa.sherpa.onnx.SileroVadModelConfig",
+   "com.k2fsa.sherpa.onnx.SpeakerEmbeddingExtractor",
+   "com.k2fsa.sherpa.onnx.SpeakerEmbeddingExtractorConfig",
+   "com.k2fsa.sherpa.onnx.SpeakerEmbeddingManager",
+   "com.k2fsa.sherpa.onnx.SpeakerKt",
+   "com.k2fsa.sherpa.onnx.SpeakerRecognition",
+   "com.k2fsa.sherpa.onnx.SpeechSegment",
+   "com.k2fsa.sherpa.onnx.SpokenLanguageIdentification",
+   "com.k2fsa.sherpa.onnx.SpokenLanguageIdentificationConfig",
+   "com.k2fsa.sherpa.onnx.SpokenLanguageIdentificationKt",
+   "com.k2fsa.sherpa.onnx.SpokenLanguageIdentificationWhisperConfig",
+   "com.k2fsa.sherpa.onnx.TenVadModelConfig",
+   "com.k2fsa.sherpa.onnx.TtsKt",
+   "com.k2fsa.sherpa.onnx.Vad",
+   "com.k2fsa.sherpa.onnx.VadKt",
+   "com.k2fsa.sherpa.onnx.VadModelConfig",
+   "com.k2fsa.sherpa.onnx.VersionInfo",
+   "com.k2fsa.sherpa.onnx.WaveData",
+   "com.k2fsa.sherpa.onnx.WaveReader"
+  ],
+  "javap": {
+   "OfflineRecognizer": [
+    "Compiled from \"OfflineRecognizer.kt\"",
+    "public final class com.k2fsa.sherpa.onnx.OfflineRecognizer {",
+    "  public static final com.k2fsa.sherpa.onnx.OfflineRecognizer$Companion Companion;",
+    "  public com.k2fsa.sherpa.onnx.OfflineRecognizer(android.content.res.AssetManager, com.k2fsa.sherpa.onnx.OfflineRecognizerConfig);",
+    "  public com.k2fsa.sherpa.onnx.OfflineRecognizer(android.content.res.AssetManager, com.k2fsa.sherpa.onnx.OfflineRecognizerConfig, int, kotlin.jvm.internal.DefaultConstructorMarker);",
+    "  public final com.k2fsa.sherpa.onnx.OfflineRecognizerConfig getConfig();",
+    "  public final void release();",
+    "  public final com.k2fsa.sherpa.onnx.OfflineStream createStream();",
+    "  public final com.k2fsa.sherpa.onnx.OfflineStream createStream(java.lang.String);",
+    "  public final com.k2fsa.sherpa.onnx.OfflineRecognizerResult getResult(com.k2fsa.sherpa.onnx.OfflineStream);",
+    "  public final void decode(com.k2fsa.sherpa.onnx.OfflineStream);",
+    "  public final void setConfig(com.k2fsa.sherpa.onnx.OfflineRecognizerConfig);",
+    "  public static final native void prependAdspLibraryPath(java.lang.String);",
+    "}"
+   ],
+   "OfflineRecognizerConfig": [
+    "Compiled from \"OfflineRecognizer.kt\"",
+    "public final class com.k2fsa.sherpa.onnx.OfflineRecognizerConfig {",
+    "  public com.k2fsa.sherpa.onnx.OfflineRecognizerConfig(com.k2fsa.sherpa.onnx.FeatureConfig, com.k2fsa.sherpa.onnx.OfflineModelConfig, com.k2fsa.sherpa.onnx.HomophoneReplacerConfig, java.lang.String, int, java.lang.String, float, java.lang.String, java.lang.String, float);",
+    "  public com.k2fsa.sherpa.onnx.OfflineRecognizerConfig(com.k2fsa.sherpa.onnx.FeatureConfig, com.k2fsa.sherpa.onnx.OfflineModelConfig, com.k2fsa.sherpa.onnx.HomophoneReplacerConfig, java.lang.String, int, java.lang.String, float, java.lang.String, java.lang.String, float, int, kotlin.jvm.internal.DefaultConstructorMarker);",
+    "  public final com.k2fsa.sherpa.onnx.FeatureConfig getFeatConfig();",
+    "  public final void setFeatConfig(com.k2fsa.sherpa.onnx.FeatureConfig);",
+    "  public final com.k2fsa.sherpa.onnx.OfflineModelConfig getModelConfig();",
+    "  public final void setModelConfig(com.k2fsa.sherpa.onnx.OfflineModelConfig);",
+    "  public final com.k2fsa.sherpa.onnx.HomophoneReplacerConfig getHr();",
+    "  public final void setHr(com.k2fsa.sherpa.onnx.HomophoneReplacerConfig);",
+    "  public final java.lang.String getDecodingMethod();",
+    "  public final void setDecodingMethod(java.lang.String);",
+    "  public final int getMaxActivePaths();",
+    "  public final void setMaxActivePaths(int);",
+    "  public final java.lang.String getHotwordsFile();",
+    "  public final void setHotwordsFile(java.lang.String);",
+    "  public final float getHotwordsScore();",
+    "  public final void setHotwordsScore(float);",
+    "  public final java.lang.String getRuleFsts();",
+    "  public final void setRuleFsts(java.lang.String);",
+    "  public final java.lang.String getRuleFars();",
+    "  public final void setRuleFars(java.lang.String);",
+    "  public final float getBlankPenalty();",
+    "  public final void setBlankPenalty(float);",
+    "  public final com.k2fsa.sherpa.onnx.FeatureConfig component1();",
+    "  public final com.k2fsa.sherpa.onnx.OfflineModelConfig component2();",
+    "  public final com.k2fsa.sherpa.onnx.HomophoneReplacerConfig component3();",
+    "  public final java.lang.String component4();",
+    "  public final int component5();",
+    "  public final java.lang.String component6();",
+    "  public final float component7();",
+    "  public final java.lang.String component8();",
+    "  public final java.lang.String component9();",
+    "  public final float component10();",
+    "  public final com.k2fsa.sherpa.onnx.OfflineRecognizerConfig copy(com.k2fsa.sherpa.onnx.FeatureConfig, com.k2fsa.sherpa.onnx.OfflineModelConfig, com.k2fsa.sherpa.onnx.HomophoneReplacerConfig, java.lang.String, int, java.lang.String, float, java.lang.String, java.lang.String, float);",
+    "  public static com.k2fsa.sherpa.onnx.OfflineRecognizerConfig copy$default(com.k2fsa.sherpa.onnx.OfflineRecognizerConfig, com.k2fsa.sherpa.onnx.FeatureConfig, com.k2fsa.sherpa.onnx.OfflineModelConfig, com.k2fsa.sherpa.onnx.HomophoneReplacerConfig, java.lang.String, int, java.lang.String, float, java.lang.String, java.lang.String, float, int, java.lang.Object);",
+    "  public java.lang.String toString();",
+    "  public int hashCode();",
+    "  public boolean equals(java.lang.Object);",
+    "  public com.k2fsa.sherpa.onnx.OfflineRecognizerConfig();",
+    "}"
+   ],
+   "OfflineModelConfig": [
+    "Compiled from \"OfflineRecognizer.kt\"",
+    "public final class com.k2fsa.sherpa.onnx.OfflineModelConfig {",
+    "  public com.k2fsa.sherpa.onnx.OfflineModelConfig(com.k2fsa.sherpa.onnx.OfflineTransducerModelConfig, com.k2fsa.sherpa.onnx.OfflineParaformerModelConfig, com.k2fsa.sherpa.onnx.OfflineWhisperModelConfig, com.k2fsa.sherpa.onnx.OfflineFireRedAsrModelConfig, com.k2fsa.sherpa.onnx.OfflineMoonshineModelConfig, com.k2fsa.sherpa.onnx.OfflineNemoEncDecCtcModelConfig, com.k2fsa.sherpa.onnx.OfflineSenseVoiceModelConfig, com.k2fsa.sherpa.onnx.OfflineDolphinModelConfig, com.k2fsa.sherpa.onnx.OfflineZipformerCtcModelConfig, com.k2fsa.sherpa.onnx.OfflineWenetCtcModelConfig, com.k2fsa.sherpa.onnx.OfflineOmnilingualAsrCtcModelConfig, com.k2fsa.sherpa.onnx.OfflineMedAsrCtcModelConfig, com.k2fsa.sherpa.onnx.OfflineFunAsrNanoModelConfig, com.k2fsa.sherpa.onnx.OfflineQwen3AsrModelConfig, com.k2fsa.sherpa.onnx.OfflineFireRedAsrCtcModelConfig, com.k2fsa.sherpa.onnx.OfflineCanaryModelConfig, com.k2fsa.sherpa.onnx.OfflineCohereTranscribeModelConfig, java.lang.String, int, boolean, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String);",
+    "  public com.k2fsa.sherpa.onnx.OfflineModelConfig(com.k2fsa.sherpa.onnx.OfflineTransducerModelConfig, com.k2fsa.sherpa.onnx.OfflineParaformerModelConfig, com.k2fsa.sherpa.onnx.OfflineWhisperModelConfig, com.k2fsa.sherpa.onnx.OfflineFireRedAsrModelConfig, com.k2fsa.sherpa.onnx.OfflineMoonshineModelConfig, com.k2fsa.sherpa.onnx.OfflineNemoEncDecCtcModelConfig, com.k2fsa.sherpa.onnx.OfflineSenseVoiceModelConfig, com.k2fsa.sherpa.onnx.OfflineDolphinModelConfig, com.k2fsa.sherpa.onnx.OfflineZipformerCtcModelConfig, com.k2fsa.sherpa.onnx.OfflineWenetCtcModelConfig, com.k2fsa.sherpa.onnx.OfflineOmnilingualAsrCtcModelConfig, com.k2fsa.sherpa.onnx.OfflineMedAsrCtcModelConfig, com.k2fsa.sherpa.onnx.OfflineFunAsrNanoModelConfig, com.k2fsa.sherpa.onnx.OfflineQwen3AsrModelConfig, com.k2fsa.sherpa.onnx.OfflineFireRedAsrCtcModelConfig, com.k2fsa.sherpa.onnx.OfflineCanaryModelConfig, com.k2fsa.sherpa.onnx.OfflineCohereTranscribeModelConfig, java.lang.String, int, boolean, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, int, kotlin.jvm.internal.DefaultConstructorMarker);",
+    "  public final com.k2fsa.sherpa.onnx.OfflineTransducerModelConfig getTransducer();",
+    "  public final void setTransducer(com.k2fsa.sherpa.onnx.OfflineTransducerModelConfig);",
+    "  public final com.k2fsa.sherpa.onnx.OfflineParaformerModelConfig getParaformer();",
+    "  public final void setParaformer(com.k2fsa.sherpa.onnx.OfflineParaformerModelConfig);",
+    "  public final com.k2fsa.sherpa.onnx.OfflineWhisperModelConfig getWhisper();",
+    "  public final void setWhisper(com.k2fsa.sherpa.onnx.OfflineWhisperModelConfig);",
+    "  public final com.k2fsa.sherpa.onnx.OfflineFireRedAsrModelConfig getFireRedAsr();",
+    "  public final void setFireRedAsr(com.k2fsa.sherpa.onnx.OfflineFireRedAsrModelConfig);",
+    "  public final com.k2fsa.sherpa.onnx.OfflineMoonshineModelConfig getMoonshine();",
+    "  public final void setMoonshine(com.k2fsa.sherpa.onnx.OfflineMoonshineModelConfig);",
+    "  public final com.k2fsa.sherpa.onnx.OfflineNemoEncDecCtcModelConfig getNemo();",
+    "  public final void setNemo(com.k2fsa.sherpa.onnx.OfflineNemoEncDecCtcModelConfig);",
+    "  public final com.k2fsa.sherpa.onnx.OfflineSenseVoiceModelConfig getSenseVoice();",
+    "  public final void setSenseVoice(com.k2fsa.sherpa.onnx.OfflineSenseVoiceModelConfig);",
+    "  public final com.k2fsa.sherpa.onnx.OfflineDolphinModelConfig getDolphin();",
+    "  public final void setDolphin(com.k2fsa.sherpa.onnx.OfflineDolphinModelConfig);",
+    "  public final com.k2fsa.sherpa.onnx.OfflineZipformerCtcModelConfig getZipformerCtc();",
+    "  public final void setZipformerCtc(com.k2fsa.sherpa.onnx.OfflineZipformerCtcModelConfig);",
+    "  public final com.k2fsa.sherpa.onnx.OfflineWenetCtcModelConfig getWenetCtc();",
+    "  public final void setWenetCtc(com.k2fsa.sherpa.onnx.OfflineWenetCtcModelConfig);",
+    "  public final com.k2fsa.sherpa.onnx.OfflineOmnilingualAsrCtcModelConfig getOmnilingual();",
+    "  public final void setOmnilingual(com.k2fsa.sherpa.onnx.OfflineOmnilingualAsrCtcModelConfig);",
+    "  public final com.k2fsa.sherpa.onnx.OfflineMedAsrCtcModelConfig getMedasr();",
+    "  public final void setMedasr(com.k2fsa.sherpa.onnx.OfflineMedAsrCtcModelConfig);",
+    "  public final com.k2fsa.sherpa.onnx.OfflineFunAsrNanoModelConfig getFunasrNano();",
+    "  public final void setFunasrNano(com.k2fsa.sherpa.onnx.OfflineFunAsrNanoModelConfig);",
+    "  public final com.k2fsa.sherpa.onnx.OfflineQwen3AsrModelConfig getQwen3Asr();",
+    "  public final void setQwen3Asr(com.k2fsa.sherpa.onnx.OfflineQwen3AsrModelConfig);",
+    "  public final com.k2fsa.sherpa.onnx.OfflineFireRedAsrCtcModelConfig getFireRedAsrCtc();",
+    "  public final void setFireRedAsrCtc(com.k2fsa.sherpa.onnx.OfflineFireRedAsrCtcModelConfig);",
+    "  public final com.k2fsa.sherpa.onnx.OfflineCanaryModelConfig getCanary();",
+    "  public final void setCanary(com.k2fsa.sherpa.onnx.OfflineCanaryModelConfig);",
+    "  public final com.k2fsa.sherpa.onnx.OfflineCohereTranscribeModelConfig getCohereTranscribe();",
+    "  public final void setCohereTranscribe(com.k2fsa.sherpa.onnx.OfflineCohereTranscribeModelConfig);",
+    "  public final java.lang.String getTeleSpeech();",
+    "  public final void setTeleSpeech(java.lang.String);",
+    "  public final int getNumThreads();",
+    "  public final void setNumThreads(int);",
+    "  public final boolean getDebug();",
+    "  public final void setDebug(boolean);",
+    "  public final java.lang.String getProvider();",
+    "  public final void setProvider(java.lang.String);",
+    "  public final java.lang.String getModelType();",
+    "  public final void setModelType(java.lang.String);",
+    "  public final java.lang.String getTokens();",
+    "  public final void setTokens(java.lang.String);",
+    "  public final java.lang.String getModelingUnit();",
+    "  public final void setModelingUnit(java.lang.String);",
+    "  public final java.lang.String getBpeVocab();",
+    "  public final void setBpeVocab(java.lang.String);",
+    "  public final com.k2fsa.sherpa.onnx.OfflineTransducerModelConfig component1();",
+    "  public final com.k2fsa.sherpa.onnx.OfflineParaformerModelConfig component2();",
+    "  public final com.k2fsa.sherpa.onnx.OfflineWhisperModelConfig component3();",
+    "  public final com.k2fsa.sherpa.onnx.OfflineFireRedAsrModelConfig component4();",
+    "  public final com.k2fsa.sherpa.onnx.OfflineMoonshineModelConfig component5();",
+    "  public final com.k2fsa.sherpa.onnx.OfflineNemoEncDecCtcModelConfig component6();",
+    "  public final com.k2fsa.sherpa.onnx.OfflineSenseVoiceModelConfig component7();",
+    "  public final com.k2fsa.sherpa.onnx.OfflineDolphinModelConfig component8();",
+    "  public final com.k2fsa.sherpa.onnx.OfflineZipformerCtcModelConfig component9();",
+    "  public final com.k2fsa.sherpa.onnx.OfflineWenetCtcModelConfig component10();",
+    "  public final com.k2fsa.sherpa.onnx.OfflineOmnilingualAsrCtcModelConfig component11();",
+    "  public final com.k2fsa.sherpa.onnx.OfflineMedAsrCtcModelConfig component12();",
+    "  public final com.k2fsa.sherpa.onnx.OfflineFunAsrNanoModelConfig component13();",
+    "  public final com.k2fsa.sherpa.onnx.OfflineQwen3AsrModelConfig component14();",
+    "  public final com.k2fsa.sherpa.onnx.OfflineFireRedAsrCtcModelConfig component15();",
+    "  public final com.k2fsa.sherpa.onnx.OfflineCanaryModelConfig component16();",
+    "  public final com.k2fsa.sherpa.onnx.OfflineCohereTranscribeModelConfig component17();",
+    "  public final java.lang.String component18();",
+    "  public final int component19();",
+    "  public final boolean component20();",
+    "  public final java.lang.String component21();",
+    "  public final java.lang.String component22();",
+    "  public final java.lang.String component23();",
+    "  public final java.lang.String component24();",
+    "  public final java.lang.String component25();",
+    "  public final com.k2fsa.sherpa.onnx.OfflineModelConfig copy(com.k2fsa.sherpa.onnx.OfflineTransducerModelConfig, com.k2fsa.sherpa.onnx.OfflineParaformerModelConfig, com.k2fsa.sherpa.onnx.OfflineWhisperModelConfig, com.k2fsa.sherpa.onnx.OfflineFireRedAsrModelConfig, com.k2fsa.sherpa.onnx.OfflineMoonshineModelConfig, com.k2fsa.sherpa.onnx.OfflineNemoEncDecCtcModelConfig, com.k2fsa.sherpa.onnx.OfflineSenseVoiceModelConfig, com.k2fsa.sherpa.onnx.OfflineDolphinModelConfig, com.k2fsa.sherpa.onnx.OfflineZipformerCtcModelConfig, com.k2fsa.sherpa.onnx.OfflineWenetCtcModelConfig, com.k2fsa.sherpa.onnx.OfflineOmnilingualAsrCtcModelConfig, com.k2fsa.sherpa.onnx.OfflineMedAsrCtcModelConfig, com.k2fsa.sherpa.onnx.OfflineFunAsrNanoModelConfig, com.k2fsa.sherpa.onnx.OfflineQwen3AsrModelConfig, com.k2fsa.sherpa.onnx.OfflineFireRedAsrCtcModelConfig, com.k2fsa.sherpa.onnx.OfflineCanaryModelConfig, com.k2fsa.sherpa.onnx.OfflineCohereTranscribeModelConfig, java.lang.String, int, boolean, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String);",
+    "  public static com.k2fsa.sherpa.onnx.OfflineModelConfig copy$default(com.k2fsa.sherpa.onnx.OfflineModelConfig, com.k2fsa.sherpa.onnx.OfflineTransducerModelConfig, com.k2fsa.sherpa.onnx.OfflineParaformerModelConfig, com.k2fsa.sherpa.onnx.OfflineWhisperModelConfig, com.k2fsa.sherpa.onnx.OfflineFireRedAsrModelConfig, com.k2fsa.sherpa.onnx.OfflineMoonshineModelConfig, com.k2fsa.sherpa.onnx.OfflineNemoEncDecCtcModelConfig, com.k2fsa.sherpa.onnx.OfflineSenseVoiceModelConfig, com.k2fsa.sherpa.onnx.OfflineDolphinModelConfig, com.k2fsa.sherpa.onnx.OfflineZipformerCtcModelConfig, com.k2fsa.sherpa.onnx.OfflineWenetCtcModelConfig, com.k2fsa.sherpa.onnx.OfflineOmnilingualAsrCtcModelConfig, com.k2fsa.sherpa.onnx.OfflineMedAsrCtcModelConfig, com.k2fsa.sherpa.onnx.OfflineFunAsrNanoModelConfig, com.k2fsa.sherpa.onnx.OfflineQwen3AsrModelConfig, com.k2fsa.sherpa.onnx.OfflineFireRedAsrCtcModelConfig, com.k2fsa.sherpa.onnx.OfflineCanaryModelConfig, com.k2fsa.sherpa.onnx.OfflineCohereTranscribeModelConfig, java.lang.String, int, boolean, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, int, java.lang.Object);",
+    "  public java.lang.String toString();",
+    "  public int hashCode();",
+    "  public boolean equals(java.lang.Object);",
+    "  public com.k2fsa.sherpa.onnx.OfflineModelConfig();",
+    "}"
+   ],
+   "OfflineNemoEncDecCtcModelConfig": [
+    "Compiled from \"OfflineRecognizer.kt\"",
+    "public final class com.k2fsa.sherpa.onnx.OfflineNemoEncDecCtcModelConfig {",
+    "  public com.k2fsa.sherpa.onnx.OfflineNemoEncDecCtcModelConfig(java.lang.String);",
+    "  public com.k2fsa.sherpa.onnx.OfflineNemoEncDecCtcModelConfig(java.lang.String, int, kotlin.jvm.internal.DefaultConstructorMarker);",
+    "  public final java.lang.String getModel();",
+    "  public final void setModel(java.lang.String);",
+    "  public final java.lang.String component1();",
+    "  public final com.k2fsa.sherpa.onnx.OfflineNemoEncDecCtcModelConfig copy(java.lang.String);",
+    "  public static com.k2fsa.sherpa.onnx.OfflineNemoEncDecCtcModelConfig copy$default(com.k2fsa.sherpa.onnx.OfflineNemoEncDecCtcModelConfig, java.lang.String, int, java.lang.Object);",
+    "  public java.lang.String toString();",
+    "  public int hashCode();",
+    "  public boolean equals(java.lang.Object);",
+    "  public com.k2fsa.sherpa.onnx.OfflineNemoEncDecCtcModelConfig();",
+    "}"
+   ],
+   "OfflineStream": [
+    "Compiled from \"OfflineStream.kt\"",
+    "public final class com.k2fsa.sherpa.onnx.OfflineStream {",
+    "  public static final com.k2fsa.sherpa.onnx.OfflineStream$Companion Companion;",
+    "  public com.k2fsa.sherpa.onnx.OfflineStream(long);",
+    "  public final long getPtr();",
+    "  public final void setPtr(long);",
+    "  public final void acceptWaveform(float[], int);",
+    "  public final void setOption(java.lang.String, java.lang.String);",
+    "  public final java.lang.String getOption(java.lang.String);",
+    "  public final void release();",
+    "  public final void use(kotlin.jvm.functions.Function1<? super com.k2fsa.sherpa.onnx.OfflineStream, kotlin.Unit>);",
+    "}"
+   ],
+   "OfflineRecognizerResult": [
+    "Compiled from \"OfflineRecognizer.kt\"",
+    "public final class com.k2fsa.sherpa.onnx.OfflineRecognizerResult {",
+    "  public com.k2fsa.sherpa.onnx.OfflineRecognizerResult(java.lang.String, java.lang.String[], float[], java.lang.String, java.lang.String, java.lang.String, float[]);",
+    "  public final java.lang.String getText();",
+    "  public final java.lang.String[] getTokens();",
+    "  public final float[] getTimestamps();",
+    "  public final java.lang.String getLang();",
+    "  public final java.lang.String getEmotion();",
+    "  public final java.lang.String getEvent();",
+    "  public final float[] getDurations();",
+    "  public final java.lang.String component1();",
+    "  public final java.lang.String[] component2();",
+    "  public final float[] component3();",
+    "  public final java.lang.String component4();",
+    "  public final java.lang.String component5();",
+    "  public final java.lang.String component6();",
+    "  public final float[] component7();",
+    "  public final com.k2fsa.sherpa.onnx.OfflineRecognizerResult copy(java.lang.String, java.lang.String[], float[], java.lang.String, java.lang.String, java.lang.String, float[]);",
+    "  public static com.k2fsa.sherpa.onnx.OfflineRecognizerResult copy$default(com.k2fsa.sherpa.onnx.OfflineRecognizerResult, java.lang.String, java.lang.String[], float[], java.lang.String, java.lang.String, java.lang.String, float[], int, java.lang.Object);",
+    "  public java.lang.String toString();",
+    "  public int hashCode();",
+    "  public boolean equals(java.lang.Object);",
+    "}"
+   ],
+   "FeatureConfig": [
+    "Compiled from \"FeatureConfig.kt\"",
+    "public final class com.k2fsa.sherpa.onnx.FeatureConfig {",
+    "  public com.k2fsa.sherpa.onnx.FeatureConfig(int, int, float);",
+    "  public com.k2fsa.sherpa.onnx.FeatureConfig(int, int, float, int, kotlin.jvm.internal.DefaultConstructorMarker);",
+    "  public final int getSampleRate();",
+    "  public final void setSampleRate(int);",
+    "  public final int getFeatureDim();",
+    "  public final void setFeatureDim(int);",
+    "  public final float getDither();",
+    "  public final void setDither(float);",
+    "  public final int component1();",
+    "  public final int component2();",
+    "  public final float component3();",
+    "  public final com.k2fsa.sherpa.onnx.FeatureConfig copy(int, int, float);",
+    "  public static com.k2fsa.sherpa.onnx.FeatureConfig copy$default(com.k2fsa.sherpa.onnx.FeatureConfig, int, int, float, int, java.lang.Object);",
+    "  public java.lang.String toString();",
+    "  public int hashCode();",
+    "  public boolean equals(java.lang.Object);",
+    "  public com.k2fsa.sherpa.onnx.FeatureConfig();",
+    "}"
+   ],
+   "KeywordSpotter": [
+    "Compiled from \"KeywordSpotter.kt\"",
+    "public final class com.k2fsa.sherpa.onnx.KeywordSpotter {",
+    "  public static final com.k2fsa.sherpa.onnx.KeywordSpotter$Companion Companion;",
+    "  public com.k2fsa.sherpa.onnx.KeywordSpotter(android.content.res.AssetManager, com.k2fsa.sherpa.onnx.KeywordSpotterConfig);",
+    "  public com.k2fsa.sherpa.onnx.KeywordSpotter(android.content.res.AssetManager, com.k2fsa.sherpa.onnx.KeywordSpotterConfig, int, kotlin.jvm.internal.DefaultConstructorMarker);",
+    "  public final com.k2fsa.sherpa.onnx.KeywordSpotterConfig getConfig();",
+    "  public final void release();",
+    "  public final com.k2fsa.sherpa.onnx.OnlineStream createStream(java.lang.String);",
+    "  public static com.k2fsa.sherpa.onnx.OnlineStream createStream$default(com.k2fsa.sherpa.onnx.KeywordSpotter, java.lang.String, int, java.lang.Object);",
+    "  public final void decode(com.k2fsa.sherpa.onnx.OnlineStream);",
+    "  public final void reset(com.k2fsa.sherpa.onnx.OnlineStream);",
+    "  public final boolean isReady(com.k2fsa.sherpa.onnx.OnlineStream);",
+    "  public final com.k2fsa.sherpa.onnx.KeywordSpotterResult getResult(com.k2fsa.sherpa.onnx.OnlineStream);",
+    "}"
+   ],
+   "KeywordSpotterConfig": [
+    "Compiled from \"KeywordSpotter.kt\"",
+    "public final class com.k2fsa.sherpa.onnx.KeywordSpotterConfig {",
+    "  public com.k2fsa.sherpa.onnx.KeywordSpotterConfig(com.k2fsa.sherpa.onnx.FeatureConfig, com.k2fsa.sherpa.onnx.OnlineModelConfig, int, java.lang.String, float, float, int);",
+    "  public com.k2fsa.sherpa.onnx.KeywordSpotterConfig(com.k2fsa.sherpa.onnx.FeatureConfig, com.k2fsa.sherpa.onnx.OnlineModelConfig, int, java.lang.String, float, float, int, int, kotlin.jvm.internal.DefaultConstructorMarker);",
+    "  public final com.k2fsa.sherpa.onnx.FeatureConfig getFeatConfig();",
+    "  public final void setFeatConfig(com.k2fsa.sherpa.onnx.FeatureConfig);",
+    "  public final com.k2fsa.sherpa.onnx.OnlineModelConfig getModelConfig();",
+    "  public final void setModelConfig(com.k2fsa.sherpa.onnx.OnlineModelConfig);",
+    "  public final int getMaxActivePaths();",
+    "  public final void setMaxActivePaths(int);",
+    "  public final java.lang.String getKeywordsFile();",
+    "  public final void setKeywordsFile(java.lang.String);",
+    "  public final float getKeywordsScore();",
+    "  public final void setKeywordsScore(float);",
+    "  public final float getKeywordsThreshold();",
+    "  public final void setKeywordsThreshold(float);",
+    "  public final int getNumTrailingBlanks();",
+    "  public final void setNumTrailingBlanks(int);",
+    "  public final com.k2fsa.sherpa.onnx.FeatureConfig component1();",
+    "  public final com.k2fsa.sherpa.onnx.OnlineModelConfig component2();",
+    "  public final int component3();",
+    "  public final java.lang.String component4();",
+    "  public final float component5();",
+    "  public final float component6();",
+    "  public final int component7();",
+    "  public final com.k2fsa.sherpa.onnx.KeywordSpotterConfig copy(com.k2fsa.sherpa.onnx.FeatureConfig, com.k2fsa.sherpa.onnx.OnlineModelConfig, int, java.lang.String, float, float, int);",
+    "  public static com.k2fsa.sherpa.onnx.KeywordSpotterConfig copy$default(com.k2fsa.sherpa.onnx.KeywordSpotterConfig, com.k2fsa.sherpa.onnx.FeatureConfig, com.k2fsa.sherpa.onnx.OnlineModelConfig, int, java.lang.String, float, float, int, int, java.lang.Object);",
+    "  public java.lang.String toString();",
+    "  public int hashCode();",
+    "  public boolean equals(java.lang.Object);",
+    "  public com.k2fsa.sherpa.onnx.KeywordSpotterConfig();",
+    "}"
+   ],
+   "KeywordSpotterResult": [
+    "Compiled from \"KeywordSpotter.kt\"",
+    "public final class com.k2fsa.sherpa.onnx.KeywordSpotterResult {",
+    "  public com.k2fsa.sherpa.onnx.KeywordSpotterResult(java.lang.String, java.lang.String[], float[]);",
+    "  public final java.lang.String getKeyword();",
+    "  public final java.lang.String[] getTokens();",
+    "  public final float[] getTimestamps();",
+    "  public java.lang.String toString();",
+    "  public final java.lang.String component1();",
+    "  public final java.lang.String[] component2();",
+    "  public final float[] component3();",
+    "  public final com.k2fsa.sherpa.onnx.KeywordSpotterResult copy(java.lang.String, java.lang.String[], float[]);",
+    "  public static com.k2fsa.sherpa.onnx.KeywordSpotterResult copy$default(com.k2fsa.sherpa.onnx.KeywordSpotterResult, java.lang.String, java.lang.String[], float[], int, java.lang.Object);",
+    "  public int hashCode();",
+    "  public boolean equals(java.lang.Object);",
+    "}"
+   ],
+   "OnlineModelConfig": [
+    "Compiled from \"OnlineRecognizer.kt\"",
+    "public final class com.k2fsa.sherpa.onnx.OnlineModelConfig {",
+    "  public com.k2fsa.sherpa.onnx.OnlineModelConfig(com.k2fsa.sherpa.onnx.OnlineTransducerModelConfig, com.k2fsa.sherpa.onnx.OnlineParaformerModelConfig, com.k2fsa.sherpa.onnx.OnlineZipformer2CtcModelConfig, com.k2fsa.sherpa.onnx.OnlineNeMoCtcModelConfig, com.k2fsa.sherpa.onnx.OnlineToneCtcModelConfig, java.lang.String, int, boolean, java.lang.String, java.lang.String, java.lang.String, java.lang.String);",
+    "  public com.k2fsa.sherpa.onnx.OnlineModelConfig(com.k2fsa.sherpa.onnx.OnlineTransducerModelConfig, com.k2fsa.sherpa.onnx.OnlineParaformerModelConfig, com.k2fsa.sherpa.onnx.OnlineZipformer2CtcModelConfig, com.k2fsa.sherpa.onnx.OnlineNeMoCtcModelConfig, com.k2fsa.sherpa.onnx.OnlineToneCtcModelConfig, java.lang.String, int, boolean, java.lang.String, java.lang.String, java.lang.String, java.lang.String, int, kotlin.jvm.internal.DefaultConstructorMarker);",
+    "  public final com.k2fsa.sherpa.onnx.OnlineTransducerModelConfig getTransducer();",
+    "  public final void setTransducer(com.k2fsa.sherpa.onnx.OnlineTransducerModelConfig);",
+    "  public final com.k2fsa.sherpa.onnx.OnlineParaformerModelConfig getParaformer();",
+    "  public final void setParaformer(com.k2fsa.sherpa.onnx.OnlineParaformerModelConfig);",
+    "  public final com.k2fsa.sherpa.onnx.OnlineZipformer2CtcModelConfig getZipformer2Ctc();",
+    "  public final void setZipformer2Ctc(com.k2fsa.sherpa.onnx.OnlineZipformer2CtcModelConfig);",
+    "  public final com.k2fsa.sherpa.onnx.OnlineNeMoCtcModelConfig getNeMoCtc();",
+    "  public final void setNeMoCtc(com.k2fsa.sherpa.onnx.OnlineNeMoCtcModelConfig);",
+    "  public final com.k2fsa.sherpa.onnx.OnlineToneCtcModelConfig getToneCtc();",
+    "  public final void setToneCtc(com.k2fsa.sherpa.onnx.OnlineToneCtcModelConfig);",
+    "  public final java.lang.String getTokens();",
+    "  public final void setTokens(java.lang.String);",
+    "  public final int getNumThreads();",
+    "  public final void setNumThreads(int);",
+    "  public final boolean getDebug();",
+    "  public final void setDebug(boolean);",
+    "  public final java.lang.String getProvider();",
+    "  public final void setProvider(java.lang.String);",
+    "  public final java.lang.String getModelType();",
+    "  public final void setModelType(java.lang.String);",
+    "  public final java.lang.String getModelingUnit();",
+    "  public final void setModelingUnit(java.lang.String);",
+    "  public final java.lang.String getBpeVocab();",
+    "  public final void setBpeVocab(java.lang.String);",
+    "  public final com.k2fsa.sherpa.onnx.OnlineTransducerModelConfig component1();",
+    "  public final com.k2fsa.sherpa.onnx.OnlineParaformerModelConfig component2();",
+    "  public final com.k2fsa.sherpa.onnx.OnlineZipformer2CtcModelConfig component3();",
+    "  public final com.k2fsa.sherpa.onnx.OnlineNeMoCtcModelConfig component4();",
+    "  public final com.k2fsa.sherpa.onnx.OnlineToneCtcModelConfig component5();",
+    "  public final java.lang.String component6();",
+    "  public final int component7();",
+    "  public final boolean component8();",
+    "  public final java.lang.String component9();",
+    "  public final java.lang.String component10();",
+    "  public final java.lang.String component11();",
+    "  public final java.lang.String component12();",
+    "  public final com.k2fsa.sherpa.onnx.OnlineModelConfig copy(com.k2fsa.sherpa.onnx.OnlineTransducerModelConfig, com.k2fsa.sherpa.onnx.OnlineParaformerModelConfig, com.k2fsa.sherpa.onnx.OnlineZipformer2CtcModelConfig, com.k2fsa.sherpa.onnx.OnlineNeMoCtcModelConfig, com.k2fsa.sherpa.onnx.OnlineToneCtcModelConfig, java.lang.String, int, boolean, java.lang.String, java.lang.String, java.lang.String, java.lang.String);",
+    "  public static com.k2fsa.sherpa.onnx.OnlineModelConfig copy$default(com.k2fsa.sherpa.onnx.OnlineModelConfig, com.k2fsa.sherpa.onnx.OnlineTransducerModelConfig, com.k2fsa.sherpa.onnx.OnlineParaformerModelConfig, com.k2fsa.sherpa.onnx.OnlineZipformer2CtcModelConfig, com.k2fsa.sherpa.onnx.OnlineNeMoCtcModelConfig, com.k2fsa.sherpa.onnx.OnlineToneCtcModelConfig, java.lang.String, int, boolean, java.lang.String, java.lang.String, java.lang.String, java.lang.String, int, java.lang.Object);",
+    "  public java.lang.String toString();",
+    "  public int hashCode();",
+    "  public boolean equals(java.lang.Object);",
+    "  public com.k2fsa.sherpa.onnx.OnlineModelConfig();",
+    "}"
+   ],
+   "OnlineTransducerModelConfig": [
+    "Compiled from \"OnlineRecognizer.kt\"",
+    "public final class com.k2fsa.sherpa.onnx.OnlineTransducerModelConfig {",
+    "  public com.k2fsa.sherpa.onnx.OnlineTransducerModelConfig(java.lang.String, java.lang.String, java.lang.String, com.k2fsa.sherpa.onnx.QnnConfig);",
+    "  public com.k2fsa.sherpa.onnx.OnlineTransducerModelConfig(java.lang.String, java.lang.String, java.lang.String, com.k2fsa.sherpa.onnx.QnnConfig, int, kotlin.jvm.internal.DefaultConstructorMarker);",
+    "  public final java.lang.String getEncoder();",
+    "  public final void setEncoder(java.lang.String);",
+    "  public final java.lang.String getDecoder();",
+    "  public final void setDecoder(java.lang.String);",
+    "  public final java.lang.String getJoiner();",
+    "  public final void setJoiner(java.lang.String);",
+    "  public final com.k2fsa.sherpa.onnx.QnnConfig getQnnConfig();",
+    "  public final void setQnnConfig(com.k2fsa.sherpa.onnx.QnnConfig);",
+    "  public final java.lang.String component1();",
+    "  public final java.lang.String component2();",
+    "  public final java.lang.String component3();",
+    "  public final com.k2fsa.sherpa.onnx.QnnConfig component4();",
+    "  public final com.k2fsa.sherpa.onnx.OnlineTransducerModelConfig copy(java.lang.String, java.lang.String, java.lang.String, com.k2fsa.sherpa.onnx.QnnConfig);",
+    "  public static com.k2fsa.sherpa.onnx.OnlineTransducerModelConfig copy$default(com.k2fsa.sherpa.onnx.OnlineTransducerModelConfig, java.lang.String, java.lang.String, java.lang.String, com.k2fsa.sherpa.onnx.QnnConfig, int, java.lang.Object);",
+    "  public java.lang.String toString();",
+    "  public int hashCode();",
+    "  public boolean equals(java.lang.Object);",
+    "  public com.k2fsa.sherpa.onnx.OnlineTransducerModelConfig();",
+    "}"
+   ],
+   "OnlineStream": [
+    "Compiled from \"OnlineStream.kt\"",
+    "public final class com.k2fsa.sherpa.onnx.OnlineStream {",
+    "  public static final com.k2fsa.sherpa.onnx.OnlineStream$Companion Companion;",
+    "  public com.k2fsa.sherpa.onnx.OnlineStream(long);",
+    "  public com.k2fsa.sherpa.onnx.OnlineStream(long, int, kotlin.jvm.internal.DefaultConstructorMarker);",
+    "  public final long getPtr();",
+    "  public final void setPtr(long);",
+    "  public final void acceptWaveform(float[], int);",
+    "  public final void inputFinished();",
+    "  public final void setOption(java.lang.String, java.lang.String);",
+    "  public final java.lang.String getOption(java.lang.String);",
+    "  public final void release();",
+    "  public final void use(kotlin.jvm.functions.Function1<? super com.k2fsa.sherpa.onnx.OnlineStream, kotlin.Unit>);",
+    "  public com.k2fsa.sherpa.onnx.OnlineStream();",
+    "}"
+   ]
+  },
+  "metadata": "aarFormatVersion=1.0\naarMetadataVersion=1.0\nminCompileSdk=1\nminCompileSdkExtension=0\nminAndroidGradlePluginVersion=1.0.0\ncoreLibraryDesugaringEnabled=false\n",
+  "manifest": "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<manifest xmlns:android=\"http://schemas.android.com/apk/res/android\"\n    package=\"com.k2fsa.sherpa.onnx\" >\n\n    <uses-sdk android:minSdkVersion=\"21\" />\n\n</manifest>"
+ },
+ "sherpa": {
+  "host": {
+   "platform": "Linux-6.18.33.2-microsoft-standard-WSL2-x86_64-with-glibc2.39",
+   "python": "3.12.3",
+   "machine": "x86_64",
+   "sherpa_onnx": "1.13.8",
+   "cpu": "AMD Ryzen 7 6800H with Radeon Graphics"
+  },
+  "ctc": [
+   {
+    "engine": "sherpa-onnx-nemo-ctc",
+    "lang": "ta",
+    "model": "/mnt/c/Users/yugas/Downloads/Drone-app/.worktrees/tooling/models/sherpa/indicconformer/ta/model.int8.onnx",
+    "threads": 1,
+    "model_bytes": 197595513,
+    "load_s": 1.554,
+    "memory_mib": {
+     "before_load": {
+      "rss": 40.93359375,
+      "peak_rss": 40.93359375,
+      "rss_anon": 18.14453125,
+      "rss_file": 22.7890625
+     },
+     "after_load": {
+      "rss": 310.33203125,
+      "peak_rss": 310.33203125,
+      "rss_anon": 276.6328125,
+      "rss_file": 33.69921875
+     },
+     "end": {
+      "rss": 331.26171875,
+      "peak_rss": 331.26171875,
+      "rss_anon": 296.375,
+      "rss_file": 34.88671875
+     }
+    },
+    "rtf": {
+     "n": 13,
+     "mean": 0.07054615384615386,
+     "p50": 0.07,
+     "p95": 0.07364,
+     "max": 0.074
+    },
+    "first_clip_first_decode_s": 0.1676,
+    "exact": "0/12",
+    "wer": 1.036,
+    "cer": 0.65
+   },
+   {
+    "engine": "sherpa-onnx-nemo-ctc",
+    "lang": "ta",
+    "model": "/mnt/c/Users/yugas/Downloads/Drone-app/.worktrees/tooling/models/sherpa/indicconformer/ta/model.int8.onnx",
+    "threads": 2,
+    "model_bytes": 197595513,
+    "load_s": 1.124,
+    "memory_mib": {
+     "before_load": {
+      "rss": 40.80859375,
+      "peak_rss": 40.80859375,
+      "rss_anon": 18.1484375,
+      "rss_file": 22.66015625
+     },
+     "after_load": {
+      "rss": 307.25,
+      "peak_rss": 307.25,
+      "rss_anon": 273.69921875,
+      "rss_file": 33.55078125
+     },
+     "end": {
+      "rss": 328.4140625,
+      "peak_rss": 328.4140625,
+      "rss_anon": 293.55078125,
+      "rss_file": 34.86328125
+     }
+    },
+    "rtf": {
+     "n": 13,
+     "mean": 0.043984615384615386,
+     "p50": 0.0434,
+     "p95": 0.04875999999999999,
+     "max": 0.0526
+    },
+    "first_clip_first_decode_s": 0.0925,
+    "exact": "0/12",
+    "wer": 1.036,
+    "cer": 0.65,
+    "clips": [
+     {
+      "file": "ta/takeoff_3_v0.wav",
+      "id": "takeoff_3",
+      "voice": "ta",
+      "ref": "மூன்று மீட்டர் டேக்ஆஃப்",
+      "hyp": "மூன்று மீட் த்த்தயக்கா",
+      "audio_s": 2.203,
+      "first_decode_s": 0.0925,
+      "decode_s": 0.1014,
+      "rtf": 0.046,
+      "exact": false,
+      "word_errors": 2,
+      "ref_words": 3,
+      "char_errors": 9,
+      "ref_chars": 21
+     },
+     {
+      "file": "ta/forward_3_v0.wav",
+      "id": "forward_3",
+      "voice": "ta",
+      "ref": "மூன்று மீட்டர் முன்னால் செல்",
+      "hyp": "மமி தர்முள் செயல்",
+      "audio_s": 2.379,
+      "first_decode_s": 0.1039,
+      "decode_s": 0.1039,
+      "rtf": 0.0437,
+      "exact": false,
+      "word_errors": 4,
+      "ref_words": 4,
+      "char_errors": 15,
+      "ref_chars": 25
+     },
+     {
+      "file": "ta/left_2_v0.wav",
+      "id": "left_2",
+      "voice": "ta",
+      "ref": "இரண்டு மீட்டர் இடது செல்",
+      "hyp": "இவன்ன்றுீ நற நது செய்வது",
+      "audio_s": 2.146,
+      "first_decode_s": 0.1034,
+      "decode_s": 0.0992,
+      "rtf": 0.0462,
+      "exact": false,
+      "word_errors": 4,
+      "ref_words": 4,
+      "char_errors": 17,
+      "ref_chars": 21
+     },
+     {
+      "file": "ta/land_v0.wav",
+      "id": "land",
+      "voice": "ta",
+      "ref": "தரையிறங்கு",
+      "hyp": "தலாயி அங்கு",
+      "audio_s": 1.501,
+      "first_decode_s": 0.0747,
+      "decode_s": 0.0665,
+      "rtf": 0.0443,
+      "exact": false,
+      "word_errors": 2,
+      "ref_words": 1,
+      "char_errors": 3,
+      "ref_chars": 10
+     },
+     {
+      "file": "ta/stop_v0.wav",
+      "id": "stop",
+      "voice": "ta",
+      "ref": "நிறுத்து",
+      "hyp": "நீ விஸ்டு",
+      "audio_s": 1.25,
+      "first_decode_s": 0.0535,
+      "decode_s": 0.0535,
+      "rtf": 0.0428,
+      "exact": false,
+      "word_errors": 2,
+      "ref_words": 1,
+      "char_errors": 5,
+      "ref_chars": 8
+     },
+     {
+      "file": "ta/hold_v0.wav",
+      "id": "hold",
+      "voice": "ta",
+      "ref": "ஹோவர்",
+      "hyp": "ஹோம",
+      "audio_s": 1.26,
+      "first_decode_s": 0.0503,
+      "decode_s": 0.054,
+      "rtf": 0.0428,
+      "exact": false,
+      "word_errors": 1,
+      "ref_words": 1,
+      "char_errors": 3,
+      "ref_chars": 5
+     },
+     {
+      "file": "ta/neg_takeoff_v0.wav",
+      "id": "neg_takeoff",
+      "voice": "ta",
+      "ref": "டேக்ஆஃப் வேண்டாம்",
+      "hyp": "பேக் ஆஃப் வே நாம்",
+      "audio_s": 1.95,
+      "first_decode_s": 0.0857,
+      "decode_s": 0.0857,
+      "rtf": 0.044,
+      "exact": false,
+      "word_errors": 4,
+      "ref_words": 2,
+      "char_errors": 4,
+      "ref_chars": 16
+     },
+     {
+      "file": "ta/takeoff_3_v1.wav",
+      "id": "takeoff_3",
+      "voice": "ta+f3",
+      "ref": "மூன்று மீட்டர் டேக்ஆஃப்",
+      "hyp": "மூன்று மீட்டா கேக்கா",
+      "audio_s": 2.468,
+      "first_decode_s": 0.1121,
+      "decode_s": 0.1071,
+      "rtf": 0.0434,
+      "exact": false,
+      "word_errors": 2,
+      "ref_words": 3,
+      "char_errors": 7,
+      "ref_chars": 21
+     },
+     {
+      "file": "ta/forward_3_v1.wav",
+      "id": "forward_3",
+      "voice": "ta+f3",
+      "ref": "மூன்று மீட்டர் முன்னால் செல்",
+      "hyp": "மூங்க மீ",
+      "audio_s": 2.679,
+      "first_decode_s": 0.1121,
+      "decode_s": 0.1125,
+      "rtf": 0.042,
+      "exact": false,
+      "word_errors": 4,
+      "ref_words": 4,
+      "char_errors": 20,
+      "ref_chars": 25
+     },
+     {
+      "file": "ta/left_2_v1.wav",
+      "id": "left_2",
+      "voice": "ta+f3",
+      "ref": "இரண்டு மீட்டர் இடது செல்",
+      "hyp": "வ",
+      "audio_s": 2.419,
+      "first_decode_s": 0.1074,
+      "decode_s": 0.0961,
+      "rtf": 0.0397,
+      "exact": false,
+      "word_errors": 4,
+      "ref_words": 4,
+      "char_errors": 21,
+      "ref_chars": 21
+     },
+     {
+      "file": "ta/land_v1.wav",
+      "id": "land",
+      "voice": "ta+f3",
+      "ref": "தரையிறங்கு",
+      "hyp": "தலாயிரன்றுிரு",
+      "audio_s": 1.686,
+      "first_decode_s": 0.0727,
+      "decode_s": 0.0727,
+      "rtf": 0.0431,
+      "exact": false,
+      "word_errors": 1,
+      "ref_words": 1,
+      "char_errors": 8,
+      "ref_chars": 10
+     },
+     {
+      "file": "ta/stop_v1.wav",
+      "id": "stop",
+      "voice": "ta+f3",
+      "ref": "நிறுத்து",
+      "hyp": "ிறது",
+      "audio_s": 1.387,
+      "first_decode_s": 0.0625,
+      "decode_s": 0.0622,
+      "rtf": 0.0448,
+      "exact": false,
+      "word_errors": 1,
+      "ref_words": 1,
+      "char_errors": 4,
+      "ref_chars": 8
+     },
+     {
+      "file": "ta/hold_v1.wav",
+      "id": "hold",
+      "voice": "ta+f3",
+      "ref": "ஹோவர்",
+      "hyp": "ஓ மேட",
+      "audio_s": 1.422,
+      "first_decode_s": 0.0849,
+      "decode_s": 0.0748,
+      "rtf": 0.0526,
+      "exact": false,
+      "word_errors": 2,
+      "ref_words": 1,
+      "char_errors": 5,
+      "ref_chars": 5
+     },
+     {
+      "file": "ta/neg_takeoff_v1.wav",
+      "id": "neg_takeoff",
+      "voice": "ta+f3",
+      "ref": "டேக்ஆஃப் வேண்டாம்",
+      "hyp": "பேக் ஆஃப் வேண்டாம்",
+      "audio_s": 2.2,
+      "first_decode_s": 0.0976,
+      "decode_s": 0.0934,
+      "rtf": 0.0424,
+      "exact": false,
+      "word_errors": 2,
+      "ref_words": 2,
+      "char_errors": 1,
+      "ref_chars": 16
+     }
+    ]
+   },
+   {
+    "engine": "sherpa-onnx-nemo-ctc",
+    "lang": "kn",
+    "model": "/mnt/c/Users/yugas/Downloads/Drone-app/.worktrees/tooling/models/sherpa/indicconformer/kn/model.int8.onnx",
+    "threads": 1,
+    "model_bytes": 197595728,
+    "load_s": 1.437,
+    "memory_mib": {
+     "before_load": {
+      "rss": 40.80859375,
+      "peak_rss": 40.80859375,
+      "rss_anon": 18.15234375,
+      "rss_file": 22.65625
+     },
+     "after_load": {
+      "rss": 309.2109375,
+      "peak_rss": 309.2109375,
+      "rss_anon": 275.6640625,
+      "rss_file": 33.546875
+     },
+     "end": {
+      "rss": 330.40625,
+      "peak_rss": 330.40625,
+      "rss_anon": 295.609375,
+      "rss_file": 34.796875
+     }
+    },
+    "rtf": {
+     "n": 13,
+     "mean": 0.06971538461538462,
+     "p50": 0.0694,
+     "p95": 0.07284,
+     "max": 0.0732
+    },
+    "first_clip_first_decode_s": 0.1512,
+    "exact": "0/12",
+    "wer": 0.929,
+    "cer": 0.549
+   },
+   {
+    "engine": "sherpa-onnx-nemo-ctc",
+    "lang": "kn",
+    "model": "/mnt/c/Users/yugas/Downloads/Drone-app/.worktrees/tooling/models/sherpa/indicconformer/kn/model.int8.onnx",
+    "threads": 2,
+    "model_bytes": 197595728,
+    "load_s": 1.092,
+    "memory_mib": {
+     "before_load": {
+      "rss": 40.81640625,
+      "peak_rss": 40.81640625,
+      "rss_anon": 18.140625,
+      "rss_file": 22.67578125
+     },
+     "after_load": {
+      "rss": 308.26171875,
+      "peak_rss": 308.26171875,
+      "rss_anon": 274.6953125,
+      "rss_file": 33.56640625
+     },
+     "end": {
+      "rss": 329.55859375,
+      "peak_rss": 329.55859375,
+      "rss_anon": 294.7421875,
+      "rss_file": 34.81640625
+     }
+    },
+    "rtf": {
+     "n": 13,
+     "mean": 0.04317692307692307,
+     "p50": 0.0423,
+     "p95": 0.046579999999999996,
+     "max": 0.0482
+    },
+    "first_clip_first_decode_s": 0.1218,
+    "exact": "0/12",
+    "wer": 0.929,
+    "cer": 0.549,
+    "clips": [
+     {
+      "file": "kn/takeoff_3_v0.wav",
+      "id": "takeoff_3",
+      "voice": "kn",
+      "ref": "ಮೂರು ಮೀಟರ್ ಟೇಕಾಫ್",
+      "hyp": "ಮೂರು ಮೀಟರ್ ಪೇೇಕ",
+      "audio_s": 2.155,
+      "first_decode_s": 0.1218,
+      "decode_s": 0.0948,
+      "rtf": 0.044,
+      "exact": false,
+      "word_errors": 1,
+      "ref_words": 3,
+      "char_errors": 5,
+      "ref_chars": 15
+     },
+     {
+      "file": "kn/forward_3_v0.wav",
+      "id": "forward_3",
+      "voice": "kn",
+      "ref": "ಮೂರು ಮೀಟರ್ ಮುಂದೆ ಹೋಗು",
+      "hyp": "ಮೂಳ ಮೀಟ ಮುಂದೆ ಹೌದು",
+      "audio_s": 2.311,
+      "first_decode_s": 0.0954,
+      "decode_s": 0.0978,
+      "rtf": 0.0423,
+      "exact": false,
+      "word_errors": 3,
+      "ref_words": 4,
+      "char_errors": 6,
+      "ref_chars": 18
+     },
+     {
+      "file": "kn/left_2_v0.wav",
+      "id": "left_2",
+      "voice": "kn",
+      "ref": "ಎರಡು ಮೀಟರ್ ಎಡಕ್ಕೆ ಹೋಗು",
+      "hyp": "ಮಿ ನ ನಕ್ಕೆ ಹದು",
+      "audio_s": 2.433,
+      "first_decode_s": 0.1106,
+      "decode_s": 0.1106,
+      "rtf": 0.0455,
+      "exact": false,
+      "word_errors": 4,
+      "ref_words": 4,
+      "char_errors": 12,
+      "ref_chars": 19
+     },
+     {
+      "file": "kn/land_v0.wav",
+      "id": "land",
+      "voice": "kn",
+      "ref": "ಲ್ಯಾಂಡ್",
+      "hyp": "ಅಯನ್",
+      "audio_s": 1.209,
+      "first_decode_s": 0.0577,
+      "decode_s": 0.0539,
+      "rtf": 0.0446,
+      "exact": false,
+      "word_errors": 1,
+      "ref_words": 1,
+      "char_errors": 5,
+      "ref_chars": 7
+     },
+     {
+      "file": "kn/stop_v0.wav",
+      "id": "stop",
+      "voice": "kn",
+      "ref": "ನಿಲ್ಲಿಸು",
+      "hyp": "ನೀಲ್ಲಿಸು",
+      "audio_s": 1.349,
+      "first_decode_s": 0.0564,
+      "decode_s": 0.0564,
+      "rtf": 0.0418,
+      "exact": false,
+      "word_errors": 1,
+      "ref_words": 1,
+      "char_errors": 1,
+      "ref_chars": 8
+     },
+     {
+      "file": "kn/hold_v0.wav",
+      "id": "hold",
+      "voice": "kn",
+      "ref": "ಹೋವರ್",
+      "hyp": "ಹಓ ಮಾರ",
+      "audio_s": 1.306,
+      "first_decode_s": 0.068,
+      "decode_s": 0.0629,
+      "rtf": 0.0482,
+      "exact": false,
+      "word_errors": 2,
+      "ref_words": 1,
+      "char_errors": 4,
+      "ref_chars": 5
+     },
+     {
+      "file": "kn/neg_takeoff_v0.wav",
+      "id": "neg_takeoff",
+      "voice": "kn",
+      "ref": "ಟೇಕಾಫ್ ಬೇಡ",
+      "hyp": "ೇಕಾಗಲೇನಾ",
+      "audio_s": 1.862,
+      "first_decode_s": 0.0763,
+      "decode_s": 0.0848,
+      "rtf": 0.0455,
+      "exact": false,
+      "word_errors": 2,
+      "ref_words": 2,
+      "char_errors": 6,
+      "ref_chars": 9
+     },
+     {
+      "file": "kn/takeoff_3_v1.wav",
+      "id": "takeoff_3",
+      "voice": "kn+f3",
+      "ref": "ಮೂರು ಮೀಟರ್ ಟೇಕಾಫ್",
+      "hyp": "ಮೂಳು ಮೀಟರ್ ಕಗ",
+      "audio_s": 2.428,
+      "first_decode_s": 0.0957,
+      "decode_s": 0.0982,
+      "rtf": 0.0405,
+      "exact": false,
+      "word_errors": 2,
+      "ref_words": 3,
+      "char_errors": 6,
+      "ref_chars": 15
+     },
+     {
+      "file": "kn/forward_3_v1.wav",
+      "id": "forward_3",
+      "voice": "kn+f3",
+      "ref": "ಮೂರು ಮೀಟರ್ ಮುಂದೆ ಹೋಗು",
+      "hyp": "ಳ ಮೀಟರ್ ಮು ಹದು",
+      "audio_s": 2.608,
+      "first_decode_s": 0.1201,
+      "decode_s": 0.1061,
+      "rtf": 0.0407,
+      "exact": false,
+      "word_errors": 3,
+      "ref_words": 4,
+      "char_errors": 9,
+      "ref_chars": 18
+     },
+     {
+      "file": "kn/left_2_v1.wav",
+      "id": "left_2",
+      "voice": "kn+f3",
+      "ref": "ಎರಡು ಮೀಟರ್ ಎಡಕ್ಕೆ ಹೋಗು",
+      "hyp": "",
+      "audio_s": 2.732,
+      "first_decode_s": 0.1358,
+      "decode_s": 0.1237,
+      "rtf": 0.0453,
+      "exact": false,
+      "word_errors": 4,
+      "ref_words": 4,
+      "char_errors": 19,
+      "ref_chars": 19
+     },
+     {
+      "file": "kn/land_v1.wav",
+      "id": "land",
+      "voice": "kn+f3",
+      "ref": "ಲ್ಯಾಂಡ್",
+      "hyp": "ಸ್ಯನ್",
+      "audio_s": 1.352,
+      "first_decode_s": 0.0645,
+      "decode_s": 0.059,
+      "rtf": 0.0436,
+      "exact": false,
+      "word_errors": 1,
+      "ref_words": 1,
+      "char_errors": 4,
+      "ref_chars": 7
+     },
+     {
+      "file": "kn/stop_v1.wav",
+      "id": "stop",
+      "voice": "kn+f3",
+      "ref": "ನಿಲ್ಲಿಸು",
+      "hyp": "ಎಲ್ಲಿಯ ಮಸೋ",
+      "audio_s": 1.511,
+      "first_decode_s": 0.0624,
+      "decode_s": 0.0624,
+      "rtf": 0.0413,
+      "exact": false,
+      "word_errors": 2,
+      "ref_words": 1,
+      "char_errors": 5,
+      "ref_chars": 8
+     },
+     {
+      "file": "kn/hold_v1.wav",
+      "id": "hold",
+      "voice": "kn+f3",
+      "ref": "ಹೋವರ್",
+      "hyp": "ಹೋ ನ",
+      "audio_s": 1.474,
+      "first_decode_s": 0.061,
+      "decode_s": 0.061,
+      "rtf": 0.0414,
+      "exact": false,
+      "word_errors": 2,
+      "ref_words": 1,
+      "char_errors": 3,
+      "ref_chars": 5
+     },
+     {
+      "file": "kn/neg_takeoff_v1.wav",
+      "id": "neg_takeoff",
+      "voice": "kn+f3",
+      "ref": "ಟೇಕಾಫ್ ಬೇಡ",
+      "hyp": "ಕೇಕ್ ಆಪ್ ಬೇನಾ",
+      "audio_s": 2.107,
+      "first_decode_s": 0.0855,
+      "decode_s": 0.0855,
+      "rtf": 0.0406,
+      "exact": false,
+      "word_errors": 3,
+      "ref_words": 2,
+      "char_errors": 6,
+      "ref_chars": 9
+     }
+    ]
+   },
+   {
+    "engine": "sherpa-onnx-nemo-ctc",
+    "lang": "ml",
+    "model": "/mnt/c/Users/yugas/Downloads/Drone-app/.worktrees/tooling/models/sherpa/indicconformer/ml/model.int8.onnx",
+    "threads": 1,
+    "model_bytes": 197595555,
+    "load_s": 1.337,
+    "memory_mib": {
+     "before_load": {
+      "rss": 40.8203125,
+      "peak_rss": 40.8203125,
+      "rss_anon": 18.1484375,
+      "rss_file": 22.671875
+     },
+     "after_load": {
+      "rss": 303.1875,
+      "peak_rss": 303.1875,
+      "rss_anon": 269.625,
+      "rss_file": 33.5625
+     },
+     "end": {
+      "rss": 326.01171875,
+      "peak_rss": 326.01171875,
+      "rss_anon": 291.26171875,
+      "rss_file": 34.75
+     }
+    },
+    "rtf": {
+     "n": 13,
+     "mean": 0.07300769230769232,
+     "p50": 0.0721,
+     "p95": 0.07846,
+     "max": 0.0787
+    },
+    "first_clip_first_decode_s": 0.1611,
+    "exact": "0/12",
+    "wer": 0.893,
+    "cer": 0.716
+   },
+   {
+    "engine": "sherpa-onnx-nemo-ctc",
+    "lang": "ml",
+    "model": "/mnt/c/Users/yugas/Downloads/Drone-app/.worktrees/tooling/models/sherpa/indicconformer/ml/model.int8.onnx",
+    "threads": 2,
+    "model_bytes": 197595555,
+    "load_s": 1.197,
+    "memory_mib": {
+     "before_load": {
+      "rss": 40.8984375,
+      "peak_rss": 40.8984375,
+      "rss_anon": 18.140625,
+      "rss_file": 22.7578125
+     },
+     "after_load": {
+      "rss": 307.33203125,
+      "peak_rss": 307.33203125,
+      "rss_anon": 273.68359375,
+      "rss_file": 33.6484375
+     },
+     "end": {
+      "rss": 330.33203125,
+      "peak_rss": 330.33203125,
+      "rss_anon": 295.43359375,
+      "rss_file": 34.8984375
+     }
+    },
+    "rtf": {
+     "n": 13,
+     "mean": 0.03981538461538462,
+     "p50": 0.0392,
+     "p95": 0.04414,
+     "max": 0.0448
+    },
+    "first_clip_first_decode_s": 0.0912,
+    "exact": "0/12",
+    "wer": 0.893,
+    "cer": 0.716,
+    "clips": [
+     {
+      "file": "ml/takeoff_3_v0.wav",
+      "id": "takeoff_3",
+      "voice": "ml",
+      "ref": "മൂന്ന് മീറ്റർ ടേക്ക്ഓഫ്",
+      "hyp": "മൂന്ന്",
+      "audio_s": 2.225,
+      "first_decode_s": 0.0912,
+      "decode_s": 0.0912,
+      "rtf": 0.041,
+      "exact": false,
+      "word_errors": 2,
+      "ref_words": 3,
+      "char_errors": 15,
+      "ref_chars": 21
+     },
+     {
+      "file": "ml/forward_3_v0.wav",
+      "id": "forward_3",
+      "voice": "ml",
+      "ref": "മൂന്ന് മീറ്റർ മുന്നോട്ട് പോകൂ",
+      "hyp": "മൂന്ന് മീട്ട മുന്നോട്ട് പോകു",
+      "audio_s": 2.65,
+      "first_decode_s": 0.1049,
+      "decode_s": 0.1034,
+      "rtf": 0.039,
+      "exact": false,
+      "word_errors": 2,
+      "ref_words": 4,
+      "char_errors": 4,
+      "ref_chars": 26
+     },
+     {
+      "file": "ml/left_2_v0.wav",
+      "id": "left_2",
+      "voice": "ml",
+      "ref": "രണ്ട് മീറ്റർ ഇടത്തേക്ക് പോകൂ",
+      "hyp": "മന്ല",
+      "audio_s": 2.522,
+      "first_decode_s": 0.0988,
+      "decode_s": 0.096,
+      "rtf": 0.0381,
+      "exact": false,
+      "word_errors": 4,
+      "ref_words": 4,
+      "char_errors": 23,
+      "ref_chars": 25
+     },
+     {
+      "file": "ml/land_v0.wav",
+      "id": "land",
+      "voice": "ml",
+      "ref": "ലാൻഡ്",
+      "hyp": "നാത്",
+      "audio_s": 1.222,
+      "first_decode_s": 0.0471,
+      "decode_s": 0.0475,
+      "rtf": 0.0388,
+      "exact": false,
+      "word_errors": 1,
+      "ref_words": 1,
+      "char_errors": 3,
+      "ref_chars": 5
+     },
+     {
+      "file": "ml/stop_v0.wav",
+      "id": "stop",
+      "voice": "ml",
+      "ref": "നിർത്തൂ",
+      "hyp": "തിപ്പൂ",
+      "audio_s": 1.268,
+      "first_decode_s": 0.0496,
+      "decode_s": 0.0495,
+      "rtf": 0.039,
+      "exact": false,
+      "word_errors": 1,
+      "ref_words": 1,
+      "char_errors": 4,
+      "ref_chars": 7
+     },
+     {
+      "file": "ml/hold_v0.wav",
+      "id": "hold",
+      "voice": "ml",
+      "ref": "ഹോവർ",
+      "hyp": "ോന്ന",
+      "audio_s": 1.265,
+      "first_decode_s": 0.0496,
+      "decode_s": 0.0496,
+      "rtf": 0.0392,
+      "exact": false,
+      "word_errors": 1,
+      "ref_words": 1,
+      "char_errors": 4,
+      "ref_chars": 4
+     },
+     {
+      "file": "ml/neg_takeoff_v0.wav",
+      "id": "neg_takeoff",
+      "voice": "ml",
+      "ref": "ടേക്ക്ഓഫ് വേണ്ട",
+      "hyp": "പേ കോപ്പി വേണ്ട",
+      "audio_s": 1.903,
+      "first_decode_s": 0.0687,
+      "decode_s": 0.0687,
+      "rtf": 0.0361,
+      "exact": false,
+      "word_errors": 2,
+      "ref_words": 2,
+      "char_errors": 6,
+      "ref_chars": 14
+     },
+     {
+      "file": "ml/takeoff_3_v1.wav",
+      "id": "takeoff_3",
+      "voice": "ml+f3",
+      "ref": "മൂന്ന് മീറ്റർ ടേക്ക്ഓഫ്",
+      "hyp": "മ മീ ഓ",
+      "audio_s": 2.467,
+      "first_decode_s": 0.0964,
+      "decode_s": 0.0976,
+      "rtf": 0.0395,
+      "exact": false,
+      "word_errors": 3,
+      "ref_words": 3,
+      "char_errors": 17,
+      "ref_chars": 21
+     },
+     {
+      "file": "ml/forward_3_v1.wav",
+      "id": "forward_3",
+      "voice": "ml+f3",
+      "ref": "മൂന്ന് മീറ്റർ മുന്നോട്ട് പോകൂ",
+      "hyp": "മൂന്ന് മീ",
+      "audio_s": 2.973,
+      "first_decode_s": 0.1128,
+      "decode_s": 0.1137,
+      "rtf": 0.0382,
+      "exact": false,
+      "word_errors": 3,
+      "ref_words": 4,
+      "char_errors": 18,
+      "ref_chars": 26
+     },
+     {
+      "file": "ml/left_2_v1.wav",
+      "id": "left_2",
+      "voice": "ml+f3",
+      "ref": "രണ്ട് മീറ്റർ ഇടത്തേക്ക് പോകൂ",
+      "hyp": "",
+      "audio_s": 2.836,
+      "first_decode_s": 0.1174,
+      "decode_s": 0.1115,
+      "rtf": 0.0393,
+      "exact": false,
+      "word_errors": 4,
+      "ref_words": 4,
+      "char_errors": 25,
+      "ref_chars": 25
+     },
+     {
+      "file": "ml/land_v1.wav",
+      "id": "land",
+      "voice": "ml+f3",
+      "ref": "ലാൻഡ്",
+      "hyp": "ആ അഞ്ചപ",
+      "audio_s": 1.347,
+      "first_decode_s": 0.0588,
+      "decode_s": 0.0588,
+      "rtf": 0.0437,
+      "exact": false,
+      "word_errors": 2,
+      "ref_words": 1,
+      "char_errors": 6,
+      "ref_chars": 5
+     },
+     {
+      "file": "ml/stop_v1.wav",
+      "id": "stop",
+      "voice": "ml+f3",
+      "ref": "നിർത്തൂ",
+      "hyp": "നിപ്പോ",
+      "audio_s": 1.437,
+      "first_decode_s": 0.0591,
+      "decode_s": 0.0644,
+      "rtf": 0.0448,
+      "exact": false,
+      "word_errors": 1,
+      "ref_words": 1,
+      "char_errors": 4,
+      "ref_chars": 7
+     },
+     {
+      "file": "ml/hold_v1.wav",
+      "id": "hold",
+      "voice": "ml+f3",
+      "ref": "ഹോവർ",
+      "hyp": "വ",
+      "audio_s": 1.418,
+      "first_decode_s": 0.0581,
+      "decode_s": 0.0581,
+      "rtf": 0.041,
+      "exact": false,
+      "word_errors": 1,
+      "ref_words": 1,
+      "char_errors": 3,
+      "ref_chars": 4
+     },
+     {
+      "file": "ml/neg_takeoff_v1.wav",
+      "id": "neg_takeoff",
+      "voice": "ml+f3",
+      "ref": "ടേക്ക്ഓഫ് വേണ്ട",
+      "hyp": "പേ",
+      "audio_s": 2.133,
+      "first_decode_s": 0.0893,
+      "decode_s": 0.0873,
+      "rtf": 0.0409,
+      "exact": false,
+      "word_errors": 2,
+      "ref_words": 2,
+      "char_errors": 13,
+      "ref_chars": 14
+     }
+    ]
+   },
+   {
+    "engine": "sherpa-onnx-nemo-ctc",
+    "lang": "te",
+    "model": "/mnt/c/Users/yugas/Downloads/Drone-app/.worktrees/tooling/models/sherpa/indicconformer/te/model.int8.onnx",
+    "threads": 1,
+    "model_bytes": 197595693,
+    "load_s": 1.417,
+    "memory_mib": {
+     "before_load": {
+      "rss": 40.8046875,
+      "peak_rss": 40.8046875,
+      "rss_anon": 18.140625,
+      "rss_file": 22.6640625
+     },
+     "after_load": {
+      "rss": 301.16796875,
+      "peak_rss": 301.16796875,
+      "rss_anon": 267.61328125,
+      "rss_file": 33.5546875
+     },
+     "end": {
+      "rss": 323.66015625,
+      "peak_rss": 323.66015625,
+      "rss_anon": 288.98046875,
+      "rss_file": 34.6796875
+     }
+    },
+    "rtf": {
+     "n": 13,
+     "mean": 0.0715,
+     "p50": 0.0718,
+     "p95": 0.0741,
+     "max": 0.0747
+    },
+    "first_clip_first_decode_s": 0.1676,
+    "exact": "0/12",
+    "wer": 1.107,
+    "cer": 0.538
+   },
+   {
+    "engine": "sherpa-onnx-nemo-ctc",
+    "lang": "te",
+    "model": "/mnt/c/Users/yugas/Downloads/Drone-app/.worktrees/tooling/models/sherpa/indicconformer/te/model.int8.onnx",
+    "threads": 2,
+    "model_bytes": 197595693,
+    "load_s": 1.092,
+    "memory_mib": {
+     "before_load": {
+      "rss": 40.8046875,
+      "peak_rss": 40.8046875,
+      "rss_anon": 18.1328125,
+      "rss_file": 22.671875
+     },
+     "after_load": {
+      "rss": 302.2109375,
+      "peak_rss": 302.2109375,
+      "rss_anon": 268.6484375,
+      "rss_file": 33.5625
+     },
+     "end": {
+      "rss": 324.875,
+      "peak_rss": 324.875,
+      "rss_anon": 290.125,
+      "rss_file": 34.75
+     }
+    },
+    "rtf": {
+     "n": 13,
+     "mean": 0.042576923076923075,
+     "p50": 0.0425,
+     "p95": 0.04699999999999999,
+     "max": 0.0491
+    },
+    "first_clip_first_decode_s": 0.1172,
+    "exact": "0/12",
+    "wer": 1.107,
+    "cer": 0.538,
+    "clips": [
+     {
+      "file": "te/takeoff_3_v0.wav",
+      "id": "takeoff_3",
+      "voice": "te",
+      "ref": "మూడు మీటర్లు టేకాఫ్",
+      "hyp": "మూజు మీటర్లుటే కారు",
+      "audio_s": 2.349,
+      "first_decode_s": 0.1172,
+      "decode_s": 0.1019,
+      "rtf": 0.0434,
+      "exact": false,
+      "word_errors": 3,
+      "ref_words": 3,
+      "char_errors": 3,
+      "ref_chars": 17
+     },
+     {
+      "file": "te/forward_3_v0.wav",
+      "id": "forward_3",
+      "voice": "te",
+      "ref": "మూడు మీటర్లు ముందుకు వెళ్ళు",
+      "hyp": "మూజు మీ తలు ముందు రుమ్మెెల్ళ",
+      "audio_s": 2.567,
+      "first_decode_s": 0.113,
+      "decode_s": 0.1043,
+      "rtf": 0.0406,
+      "exact": false,
+      "word_errors": 5,
+      "ref_words": 4,
+      "char_errors": 11,
+      "ref_chars": 24
+     },
+     {
+      "file": "te/left_2_v0.wav",
+      "id": "left_2",
+      "voice": "te",
+      "ref": "రెండు మీటర్లు ఎడమకు వెళ్ళు",
+      "hyp": "రెడు మీ నాలుగనా నకుూ మేల్లు",
+      "audio_s": 2.606,
+      "first_decode_s": 0.101,
+      "decode_s": 0.105,
+      "rtf": 0.0403,
+      "exact": false,
+      "word_errors": 5,
+      "ref_words": 4,
+      "char_errors": 13,
+      "ref_chars": 23
+     },
+     {
+      "file": "te/land_v0.wav",
+      "id": "land",
+      "voice": "te",
+      "ref": "ల్యాండ్",
+      "hyp": "యాన్",
+      "audio_s": 1.221,
+      "first_decode_s": 0.0544,
+      "decode_s": 0.0524,
+      "rtf": 0.0429,
+      "exact": false,
+      "word_errors": 1,
+      "ref_words": 1,
+      "char_errors": 4,
+      "ref_chars": 7
+     },
+     {
+      "file": "te/stop_v0.wav",
+      "id": "stop",
+      "voice": "te",
+      "ref": "ఆపు",
+      "hyp": "ఆ",
+      "audio_s": 1.139,
+      "first_decode_s": 0.0501,
+      "decode_s": 0.0497,
+      "rtf": 0.0436,
+      "exact": false,
+      "word_errors": 1,
+      "ref_words": 1,
+      "char_errors": 2,
+      "ref_chars": 3
+     },
+     {
+      "file": "te/hold_v0.wav",
+      "id": "hold",
+      "voice": "te",
+      "ref": "హోవర్",
+      "hyp": "హఓ మరి",
+      "audio_s": 1.362,
+      "first_decode_s": 0.0586,
+      "decode_s": 0.0614,
+      "rtf": 0.0451,
+      "exact": false,
+      "word_errors": 2,
+      "ref_words": 1,
+      "char_errors": 3,
+      "ref_chars": 5
+     },
+     {
+      "file": "te/neg_takeoff_v0.wav",
+      "id": "neg_takeoff",
+      "voice": "te",
+      "ref": "టేకాఫ్ చేయకు",
+      "hyp": "పగా చేయదు",
+      "audio_s": 1.979,
+      "first_decode_s": 0.0876,
+      "decode_s": 0.0903,
+      "rtf": 0.0456,
+      "exact": false,
+      "word_errors": 2,
+      "ref_words": 2,
+      "char_errors": 6,
+      "ref_chars": 11
+     },
+     {
+      "file": "te/takeoff_3_v1.wav",
+      "id": "takeoff_3",
+      "voice": "te+f3",
+      "ref": "మూడు మీటర్లు టేకాఫ్",
+      "hyp": "మూ మీటే",
+      "audio_s": 2.637,
+      "first_decode_s": 0.1219,
+      "decode_s": 0.112,
+      "rtf": 0.0425,
+      "exact": false,
+      "word_errors": 3,
+      "ref_words": 3,
+      "char_errors": 11,
+      "ref_chars": 17
+     },
+     {
+      "file": "te/forward_3_v1.wav",
+      "id": "forward_3",
+      "voice": "te+f3",
+      "ref": "మూడు మీటర్లు ముందుకు వెళ్ళు",
+      "hyp": "మూడు మీ నాలు మూడు రుమెల్లు",
+      "audio_s": 2.891,
+      "first_decode_s": 0.1193,
+      "decode_s": 0.1202,
+      "rtf": 0.0416,
+      "exact": false,
+      "word_errors": 4,
+      "ref_words": 4,
+      "char_errors": 10,
+      "ref_chars": 24
+     },
+     {
+      "file": "te/left_2_v1.wav",
+      "id": "left_2",
+      "voice": "te+f3",
+      "ref": "రెండు మీటర్లు ఎడమకు వెళ్ళు",
+      "hyp": "ల్ మీ ననా రూమెల్లు",
+      "audio_s": 2.93,
+      "first_decode_s": 0.1332,
+      "decode_s": 0.1332,
+      "rtf": 0.0455,
+      "exact": false,
+      "word_errors": 4,
+      "ref_words": 4,
+      "char_errors": 17,
+      "ref_chars": 23
+     },
+     {
+      "file": "te/land_v1.wav",
+      "id": "land",
+      "voice": "te+f3",
+      "ref": "ల్యాండ్",
+      "hyp": "య",
+      "audio_s": 1.357,
+      "first_decode_s": 0.0729,
+      "decode_s": 0.0666,
+      "rtf": 0.0491,
+      "exact": false,
+      "word_errors": 1,
+      "ref_words": 1,
+      "char_errors": 6,
+      "ref_chars": 7
+     },
+     {
+      "file": "te/stop_v1.wav",
+      "id": "stop",
+      "voice": "te+f3",
+      "ref": "ఆపు",
+      "hyp": "ఆప్పు",
+      "audio_s": 1.284,
+      "first_decode_s": 0.0496,
+      "decode_s": 0.0517,
+      "rtf": 0.0403,
+      "exact": false,
+      "word_errors": 1,
+      "ref_words": 1,
+      "char_errors": 2,
+      "ref_chars": 3
+     },
+     {
+      "file": "te/hold_v1.wav",
+      "id": "hold",
+      "voice": "te+f3",
+      "ref": "హోవర్",
+      "hyp": "కోవా",
+      "audio_s": 1.53,
+      "first_decode_s": 0.0584,
+      "decode_s": 0.0594,
+      "rtf": 0.0388,
+      "exact": false,
+      "word_errors": 1,
+      "ref_words": 1,
+      "char_errors": 3,
+      "ref_chars": 5
+     },
+     {
+      "file": "te/neg_takeoff_v1.wav",
+      "id": "neg_takeoff",
+      "voice": "te+f3",
+      "ref": "టేకాఫ్ చేయకు",
+      "hyp": "పగా చేయలు",
+      "audio_s": 2.241,
+      "first_decode_s": 0.0834,
+      "decode_s": 0.0842,
+      "rtf": 0.0376,
+      "exact": false,
+      "word_errors": 2,
+      "ref_words": 2,
+      "char_errors": 6,
+      "ref_chars": 11
+     }
+    ]
+   }
+  ],
+  "kws": [
+   {
+    "engine": "sherpa-onnx-kws",
+    "model": "zh-en-3M-chunk-8",
+    "threads": 1,
+    "keywords": [
+     "S T AA1 P @stop",
+     "HH OW1 L D @hold"
+    ],
+    "keywords_threshold": 0.15,
+    "keywords_score": 1.0,
+    "load_s": 0.655,
+    "memory_mib": {
+     "before_load": {
+      "rss": 43.38671875,
+      "peak_rss": 81.515625,
+      "rss_anon": 20.703125,
+      "rss_file": 22.68359375
+     },
+     "after_load": {
+      "rss": 81.66796875,
+      "peak_rss": 81.66796875,
+      "rss_anon": 47.84375,
+      "rss_file": 33.82421875
+     },
+     "end": {
+      "rss": 84.6171875,
+      "peak_rss": 84.6171875,
+      "rss_anon": 49.60546875,
+      "rss_file": 35.01171875
+     }
+    },
+    "selftest": {
+     "keywords": [
+      "L AY1 T AH1 P @light_up",
+      "L AH1 V L IY0 CH AY1 L D @lovely_child"
+     ],
+     "results": [
+      {
+       "file": "test_wavs/en_0.wav",
+       "hits": [
+        {
+         "keyword": "light_up",
+         "at_s": 3.7
+        }
+       ]
+      },
+      {
+       "file": "test_wavs/en_1.wav",
+       "hits": [
+        {
+         "keyword": "lovely_child",
+         "at_s": 6.3
+        }
+       ]
+      }
+     ]
+    },
+    "rtf": 0.0237,
+    "recall": "3/4",
+    "false_accepts": "11/80",
+    "clips": [
+     {
+      "file": "en/stop_v0.wav",
+      "lang": "en",
+      "id": "stop",
+      "text": "stop",
+      "target": "stop",
+      "hits": [
+       {
+        "keyword": "stop",
+        "at_s": 1.0
+       }
+      ],
+      "latency_after_speech_end_s": -0.01
+     },
+     {
+      "file": "en/hold_v0.wav",
+      "lang": "en",
+      "id": "hold",
+      "text": "hold",
+      "target": "hold",
+      "hits": [
+       {
+        "keyword": "hold",
+        "at_s": 1.2
+       }
+      ],
+      "latency_after_speech_end_s": 0.14
+     },
+     {
+      "file": "en/stop_v1.wav",
+      "lang": "en",
+      "id": "stop",
+      "text": "stop",
+      "target": "stop",
+      "hits": [
+       {
+        "keyword": "stop",
+        "at_s": 1.0
+       }
+      ],
+      "latency_after_speech_end_s": -0.07
+     },
+     {
+      "file": "en/hold_v1.wav",
+      "lang": "en",
+      "id": "hold",
+      "text": "hold",
+      "target": "hold",
+      "hits": [],
+      "latency_after_speech_end_s": null
+     },
+     {
+      "file": "hi/hold_v1.wav",
+      "lang": "hi",
+      "id": "hold",
+      "text": "होवर",
+      "target": null,
+      "hits": [
+       {
+        "keyword": "hold",
+        "at_s": 1.0
+       }
+      ],
+      "latency_after_speech_end_s": -0.17
+     },
+     {
+      "file": "ta/hold_v0.wav",
+      "lang": "ta",
+      "id": "hold",
+      "text": "ஹோவர்",
+      "target": null,
+      "hits": [
+       {
+        "keyword": "hold",
+        "at_s": 1.0
+       }
+      ],
+      "latency_after_speech_end_s": -0.06
+     },
+     {
+      "file": "ta/hold_v1.wav",
+      "lang": "ta",
+      "id": "hold",
+      "text": "ஹோவர்",
+      "target": null,
+      "hits": [
+       {
+        "keyword": "hold",
+        "at_s": 1.0
+       }
+      ],
+      "latency_after_speech_end_s": -0.22
+     },
+     {
+      "file": "kn/forward_3_v0.wav",
+      "lang": "kn",
+      "id": "forward_3",
+      "text": "ಮೂರು ಮೀಟರ್ ಮುಂದೆ ಹೋಗು",
+      "target": null,
+      "hits": [
+       {
+        "keyword": "hold",
+        "at_s": 2.1
+       }
+      ],
+      "latency_after_speech_end_s": -0.01
+     },
+     {
+      "file": "kn/hold_v0.wav",
+      "lang": "kn",
+      "id": "hold",
+      "text": "ಹೋವರ್",
+      "target": null,
+      "hits": [
+       {
+        "keyword": "hold",
+        "at_s": 1.0
+       }
+      ],
+      "latency_after_speech_end_s": -0.11
+     },
+     {
+      "file": "kn/left_2_v1.wav",
+      "lang": "kn",
+      "id": "left_2",
+      "text": "ಎರಡು ಮೀಟರ್ ಎಡಕ್ಕೆ ಹೋಗು",
+      "target": null,
+      "hits": [
+       {
+        "keyword": "hold",
+        "at_s": 2.4
+       }
+      ],
+      "latency_after_speech_end_s": -0.13
+     },
+     {
+      "file": "kn/hold_v1.wav",
+      "lang": "kn",
+      "id": "hold",
+      "text": "ಹೋವರ್",
+      "target": null,
+      "hits": [
+       {
+        "keyword": "hold",
+        "at_s": 1.2
+       }
+      ],
+      "latency_after_speech_end_s": -0.07
+     },
+     {
+      "file": "ml/forward_3_v0.wav",
+      "lang": "ml",
+      "id": "forward_3",
+      "text": "മൂന്ന് മീറ്റർ മുന്നോട്ട് പോകൂ",
+      "target": null,
+      "hits": [
+       {
+        "keyword": "hold",
+        "at_s": 2.3
+       }
+      ],
+      "latency_after_speech_end_s": -0.15
+     },
+     {
+      "file": "ml/hold_v0.wav",
+      "lang": "ml",
+      "id": "hold",
+      "text": "ഹോവർ",
+      "target": null,
+      "hits": [
+       {
+        "keyword": "hold",
+        "at_s": 1.0
+       }
+      ],
+      "latency_after_speech_end_s": -0.06
+     },
+     {
+      "file": "ml/forward_3_v1.wav",
+      "lang": "ml",
+      "id": "forward_3",
+      "text": "മൂന്ന് മീറ്റർ മുന്നോട്ട് പോകൂ",
+      "target": null,
+      "hits": [
+       {
+        "keyword": "hold",
+        "at_s": 2.6
+       }
+      ],
+      "latency_after_speech_end_s": -0.17
+     },
+     {
+      "file": "ml/hold_v1.wav",
+      "lang": "ml",
+      "id": "hold",
+      "text": "ഹോവർ",
+      "target": null,
+      "hits": [
+       {
+        "keyword": "hold",
+        "at_s": 1.2
+       }
+      ],
+      "latency_after_speech_end_s": -0.02
+     }
+    ]
+   },
+   {
+    "engine": "sherpa-onnx-kws",
+    "model": "zh-en-3M-chunk-8",
+    "threads": 1,
+    "keywords": [
+     "S T AA1 P @stop",
+     "HH OW1 L D @hold"
+    ],
+    "keywords_threshold": 0.25,
+    "keywords_score": 1.0,
+    "load_s": 0.663,
+    "memory_mib": {
+     "before_load": {
+      "rss": 43.43359375,
+      "peak_rss": 81.484375,
+      "rss_anon": 20.69921875,
+      "rss_file": 22.734375
+     },
+     "after_load": {
+      "rss": 81.50390625,
+      "peak_rss": 81.50390625,
+      "rss_anon": 47.62890625,
+      "rss_file": 33.875
+     },
+     "end": {
+      "rss": 84.46484375,
+      "peak_rss": 84.46484375,
+      "rss_anon": 49.40234375,
+      "rss_file": 35.0625
+     }
+    },
+    "selftest": {
+     "keywords": [
+      "L AY1 T AH1 P @light_up",
+      "L AH1 V L IY0 CH AY1 L D @lovely_child"
+     ],
+     "results": [
+      {
+       "file": "test_wavs/en_0.wav",
+       "hits": [
+        {
+         "keyword": "light_up",
+         "at_s": 3.7
+        }
+       ]
+      },
+      {
+       "file": "test_wavs/en_1.wav",
+       "hits": [
+        {
+         "keyword": "lovely_child",
+         "at_s": 6.3
+        }
+       ]
+      }
+     ]
+    },
+    "rtf": 0.0232,
+    "recall": "2/4",
+    "false_accepts": "7/80",
+    "clips": [
+     {
+      "file": "en/stop_v0.wav",
+      "lang": "en",
+      "id": "stop",
+      "text": "stop",
+      "target": "stop",
+      "hits": [],
+      "latency_after_speech_end_s": null
+     },
+     {
+      "file": "en/hold_v0.wav",
+      "lang": "en",
+      "id": "hold",
+      "text": "hold",
+      "target": "hold",
+      "hits": [
+       {
+        "keyword": "hold",
+        "at_s": 1.2
+       }
+      ],
+      "latency_after_speech_end_s": 0.14
+     },
+     {
+      "file": "en/stop_v1.wav",
+      "lang": "en",
+      "id": "stop",
+      "text": "stop",
+      "target": "stop",
+      "hits": [
+       {
+        "keyword": "stop",
+        "at_s": 1.0
+       }
+      ],
+      "latency_after_speech_end_s": -0.07
+     },
+     {
+      "file": "en/hold_v1.wav",
+      "lang": "en",
+      "id": "hold",
+      "text": "hold",
+      "target": "hold",
+      "hits": [],
+      "latency_after_speech_end_s": null
+     },
+     {
+      "file": "ta/hold_v0.wav",
+      "lang": "ta",
+      "id": "hold",
+      "text": "ஹோவர்",
+      "target": null,
+      "hits": [
+       {
+        "keyword": "hold",
+        "at_s": 1.0
+       }
+      ],
+      "latency_after_speech_end_s": -0.06
+     },
+     {
+      "file": "ta/hold_v1.wav",
+      "lang": "ta",
+      "id": "hold",
+      "text": "ஹோவர்",
+      "target": null,
+      "hits": [
+       {
+        "keyword": "hold",
+        "at_s": 1.0
+       }
+      ],
+      "latency_after_speech_end_s": -0.22
+     },
+     {
+      "file": "kn/forward_3_v0.wav",
+      "lang": "kn",
+      "id": "forward_3",
+      "text": "ಮೂರು ಮೀಟರ್ ಮುಂದೆ ಹೋಗು",
+      "target": null,
+      "hits": [
+       {
+        "keyword": "hold",
+        "at_s": 2.1
+       }
+      ],
+      "latency_after_speech_end_s": -0.01
+     },
+     {
+      "file": "kn/hold_v0.wav",
+      "lang": "kn",
+      "id": "hold",
+      "text": "ಹೋವರ್",
+      "target": null,
+      "hits": [
+       {
+        "keyword": "hold",
+        "at_s": 1.0
+       }
+      ],
+      "latency_after_speech_end_s": -0.11
+     },
+     {
+      "file": "ml/forward_3_v0.wav",
+      "lang": "ml",
+      "id": "forward_3",
+      "text": "മൂന്ന് മീറ്റർ മുന്നോട്ട് പോകൂ",
+      "target": null,
+      "hits": [
+       {
+        "keyword": "hold",
+        "at_s": 2.3
+       }
+      ],
+      "latency_after_speech_end_s": -0.15
+     },
+     {
+      "file": "ml/hold_v0.wav",
+      "lang": "ml",
+      "id": "hold",
+      "text": "ഹോവർ",
+      "target": null,
+      "hits": [
+       {
+        "keyword": "hold",
+        "at_s": 1.0
+       }
+      ],
+      "latency_after_speech_end_s": -0.06
+     },
+     {
+      "file": "ml/forward_3_v1.wav",
+      "lang": "ml",
+      "id": "forward_3",
+      "text": "മൂന്ന് മീറ്റർ മുന്നോട്ട് പോകൂ",
+      "target": null,
+      "hits": [
+       {
+        "keyword": "hold",
+        "at_s": 2.6
+       }
+      ],
+      "latency_after_speech_end_s": -0.17
+     }
+    ]
+   },
+   {
+    "engine": "sherpa-onnx-kws",
+    "model": "zh-en-3M-chunk-8",
+    "threads": 1,
+    "keywords": [
+     "S T AA1 P @stop",
+     "HH OW1 L D @hold"
+    ],
+    "keywords_threshold": 0.35,
+    "keywords_score": 1.0,
+    "load_s": 0.729,
+    "memory_mib": {
+     "before_load": {
+      "rss": 43.4375,
+      "peak_rss": 81.47265625,
+      "rss_anon": 20.69921875,
+      "rss_file": 22.73828125
+     },
+     "after_load": {
+      "rss": 81.74609375,
+      "peak_rss": 81.74609375,
+      "rss_anon": 47.8671875,
+      "rss_file": 33.87890625
+     },
+     "end": {
+      "rss": 84.69921875,
+      "peak_rss": 84.69921875,
+      "rss_anon": 49.6328125,
+      "rss_file": 35.06640625
+     }
+    },
+    "selftest": {
+     "keywords": [
+      "L AY1 T AH1 P @light_up",
+      "L AH1 V L IY0 CH AY1 L D @lovely_child"
+     ],
+     "results": [
+      {
+       "file": "test_wavs/en_0.wav",
+       "hits": [
+        {
+         "keyword": "light_up",
+         "at_s": 3.7
+        }
+       ]
+      },
+      {
+       "file": "test_wavs/en_1.wav",
+       "hits": [
+        {
+         "keyword": "lovely_child",
+         "at_s": 6.3
+        }
+       ]
+      }
+     ]
+    },
+    "rtf": 0.0235,
+    "recall": "2/4",
+    "false_accepts": "3/80",
+    "clips": [
+     {
+      "file": "en/stop_v0.wav",
+      "lang": "en",
+      "id": "stop",
+      "text": "stop",
+      "target": "stop",
+      "hits": [],
+      "latency_after_speech_end_s": null
+     },
+     {
+      "file": "en/hold_v0.wav",
+      "lang": "en",
+      "id": "hold",
+      "text": "hold",
+      "target": "hold",
+      "hits": [
+       {
+        "keyword": "hold",
+        "at_s": 1.2
+       }
+      ],
+      "latency_after_speech_end_s": 0.14
+     },
+     {
+      "file": "en/stop_v1.wav",
+      "lang": "en",
+      "id": "stop",
+      "text": "stop",
+      "target": "stop",
+      "hits": [
+       {
+        "keyword": "stop",
+        "at_s": 1.0
+       }
+      ],
+      "latency_after_speech_end_s": -0.07
+     },
+     {
+      "file": "en/hold_v1.wav",
+      "lang": "en",
+      "id": "hold",
+      "text": "hold",
+      "target": "hold",
+      "hits": [],
+      "latency_after_speech_end_s": null
+     },
+     {
+      "file": "ta/hold_v0.wav",
+      "lang": "ta",
+      "id": "hold",
+      "text": "ஹோவர்",
+      "target": null,
+      "hits": [
+       {
+        "keyword": "hold",
+        "at_s": 1.0
+       }
+      ],
+      "latency_after_speech_end_s": -0.06
+     },
+     {
+      "file": "kn/forward_3_v0.wav",
+      "lang": "kn",
+      "id": "forward_3",
+      "text": "ಮೂರು ಮೀಟರ್ ಮುಂದೆ ಹೋಗು",
+      "target": null,
+      "hits": [
+       {
+        "keyword": "hold",
+        "at_s": 2.1
+       }
+      ],
+      "latency_after_speech_end_s": -0.01
+     },
+     {
+      "file": "kn/hold_v0.wav",
+      "lang": "kn",
+      "id": "hold",
+      "text": "ಹೋವರ್",
+      "target": null,
+      "hits": [
+       {
+        "keyword": "hold",
+        "at_s": 1.0
+       }
+      ],
+      "latency_after_speech_end_s": -0.11
+     }
+    ]
+   },
+   {
+    "engine": "sherpa-onnx-kws",
+    "model": "gigaspeech-3.3M-chunk-16",
+    "threads": 1,
+    "keywords": [
+     "▁ST O P @stop",
+     "▁HO L D @hold"
+    ],
+    "keywords_threshold": 0.15,
+    "keywords_score": 1.0,
+    "load_s": 0.741,
+    "memory_mib": {
+     "before_load": {
+      "rss": 42.89453125,
+      "peak_rss": 43.0234375,
+      "rss_anon": 19.15625,
+      "rss_file": 23.73828125
+     },
+     "after_load": {
+      "rss": 81.72265625,
+      "peak_rss": 81.72265625,
+      "rss_anon": 46.78125,
+      "rss_file": 34.94140625
+     },
+     "end": {
+      "rss": 88.16015625,
+      "peak_rss": 88.16015625,
+      "rss_anon": 52.09375,
+      "rss_file": 36.06640625
+     }
+    },
+    "selftest": {
+     "keywords": [
+      "▁ L IGHT ▁UP @light_up",
+      "▁LOVE LY ▁CHI L D @lovely_child"
+     ],
+     "results": [
+      {
+       "file": "test_wavs/0.wav",
+       "hits": [
+        {
+         "keyword": "light_up",
+         "at_s": 3.7
+        }
+       ]
+      },
+      {
+       "file": "test_wavs/1.wav",
+       "hits": [
+        {
+         "keyword": "lovely_child",
+         "at_s": 6.6
+        }
+       ]
+      }
+     ]
+    },
+    "rtf": 0.0166,
+    "recall": "4/4",
+    "false_accepts": "2/80",
+    "clips": [
+     {
+      "file": "en/stop_v0.wav",
+      "lang": "en",
+      "id": "stop",
+      "text": "stop",
+      "target": "stop",
+      "hits": [
+       {
+        "keyword": "stop",
+        "at_s": 1.2
+       }
+      ],
+      "latency_after_speech_end_s": 0.19
+     },
+     {
+      "file": "en/hold_v0.wav",
+      "lang": "en",
+      "id": "hold",
+      "text": "hold",
+      "target": "hold",
+      "hits": [
+       {
+        "keyword": "hold",
+        "at_s": 1.2
+       }
+      ],
+      "latency_after_speech_end_s": 0.14
+     },
+     {
+      "file": "en/stop_v1.wav",
+      "lang": "en",
+      "id": "stop",
+      "text": "stop",
+      "target": "stop",
+      "hits": [
+       {
+        "keyword": "stop",
+        "at_s": 1.2
+       }
+      ],
+      "latency_after_speech_end_s": 0.13
+     },
+     {
+      "file": "en/hold_v1.wav",
+      "lang": "en",
+      "id": "hold",
+      "text": "hold",
+      "target": "hold",
+      "hits": [
+       {
+        "keyword": "hold",
+        "at_s": 1.2
+       }
+      ],
+      "latency_after_speech_end_s": 0.05
+     },
+     {
+      "file": "ml/hold_v0.wav",
+      "lang": "ml",
+      "id": "hold",
+      "text": "ഹോവർ",
+      "target": null,
+      "hits": [
+       {
+        "keyword": "hold",
+        "at_s": 1.2
+       }
+      ],
+      "latency_after_speech_end_s": 0.14
+     },
+     {
+      "file": "ml/hold_v1.wav",
+      "lang": "ml",
+      "id": "hold",
+      "text": "ഹോവർ",
+      "target": null,
+      "hits": [
+       {
+        "keyword": "hold",
+        "at_s": 1.2
+       }
+      ],
+      "latency_after_speech_end_s": -0.02
+     }
+    ]
+   },
+   {
+    "engine": "sherpa-onnx-kws",
+    "model": "gigaspeech-3.3M-chunk-16",
+    "threads": 1,
+    "keywords": [
+     "▁ST O P @stop",
+     "▁HO L D @hold"
+    ],
+    "keywords_threshold": 0.25,
+    "keywords_score": 1.0,
+    "load_s": 0.785,
+    "memory_mib": {
+     "before_load": {
+      "rss": 42.8046875,
+      "peak_rss": 43.046875,
+      "rss_anon": 19.1953125,
+      "rss_file": 23.609375
+     },
+     "after_load": {
+      "rss": 81.7421875,
+      "peak_rss": 81.7421875,
+      "rss_anon": 46.9296875,
+      "rss_file": 34.8125
+     },
+     "end": {
+      "rss": 88.421875,
+      "peak_rss": 88.421875,
+      "rss_anon": 52.421875,
+      "rss_file": 36.0
+     }
+    },
+    "selftest": {
+     "keywords": [
+      "▁ L IGHT ▁UP @light_up",
+      "▁LOVE LY ▁CHI L D @lovely_child"
+     ],
+     "results": [
+      {
+       "file": "test_wavs/0.wav",
+       "hits": [
+        {
+         "keyword": "light_up",
+         "at_s": 3.7
+        }
+       ]
+      },
+      {
+       "file": "test_wavs/1.wav",
+       "hits": [
+        {
+         "keyword": "lovely_child",
+         "at_s": 6.6
+        }
+       ]
+      }
+     ]
+    },
+    "rtf": 0.0163,
+    "recall": "4/4",
+    "false_accepts": "1/80",
+    "clips": [
+     {
+      "file": "en/stop_v0.wav",
+      "lang": "en",
+      "id": "stop",
+      "text": "stop",
+      "target": "stop",
+      "hits": [
+       {
+        "keyword": "stop",
+        "at_s": 1.2
+       }
+      ],
+      "latency_after_speech_end_s": 0.19
+     },
+     {
+      "file": "en/hold_v0.wav",
+      "lang": "en",
+      "id": "hold",
+      "text": "hold",
+      "target": "hold",
+      "hits": [
+       {
+        "keyword": "hold",
+        "at_s": 1.2
+       }
+      ],
+      "latency_after_speech_end_s": 0.14
+     },
+     {
+      "file": "en/stop_v1.wav",
+      "lang": "en",
+      "id": "stop",
+      "text": "stop",
+      "target": "stop",
+      "hits": [
+       {
+        "keyword": "stop",
+        "at_s": 1.2
+       }
+      ],
+      "latency_after_speech_end_s": 0.13
+     },
+     {
+      "file": "en/hold_v1.wav",
+      "lang": "en",
+      "id": "hold",
+      "text": "hold",
+      "target": "hold",
+      "hits": [
+       {
+        "keyword": "hold",
+        "at_s": 1.2
+       }
+      ],
+      "latency_after_speech_end_s": 0.05
+     },
+     {
+      "file": "ml/hold_v1.wav",
+      "lang": "ml",
+      "id": "hold",
+      "text": "ഹോവർ",
+      "target": null,
+      "hits": [
+       {
+        "keyword": "hold",
+        "at_s": 1.2
+       }
+      ],
+      "latency_after_speech_end_s": -0.02
+     }
+    ]
+   },
+   {
+    "engine": "sherpa-onnx-kws",
+    "model": "gigaspeech-3.3M-chunk-16",
+    "threads": 1,
+    "keywords": [
+     "▁ST O P @stop",
+     "▁HO L D @hold"
+    ],
+    "keywords_threshold": 0.35,
+    "keywords_score": 1.0,
+    "load_s": 0.675,
+    "memory_mib": {
+     "before_load": {
+      "rss": 42.78125,
+      "peak_rss": 42.91015625,
+      "rss_anon": 19.15625,
+      "rss_file": 23.625
+     },
+     "after_load": {
+      "rss": 81.61328125,
+      "peak_rss": 81.61328125,
+      "rss_anon": 46.78515625,
+      "rss_file": 34.828125
+     },
+     "end": {
+      "rss": 88.11328125,
+      "peak_rss": 88.11328125,
+      "rss_anon": 52.09765625,
+      "rss_file": 36.015625
+     }
+    },
+    "selftest": {
+     "keywords": [
+      "▁ L IGHT ▁UP @light_up",
+      "▁LOVE LY ▁CHI L D @lovely_child"
+     ],
+     "results": [
+      {
+       "file": "test_wavs/0.wav",
+       "hits": [
+        {
+         "keyword": "light_up",
+         "at_s": 3.7
+        }
+       ]
+      },
+      {
+       "file": "test_wavs/1.wav",
+       "hits": [
+        {
+         "keyword": "lovely_child",
+         "at_s": 6.6
+        }
+       ]
+      }
+     ]
+    },
+    "rtf": 0.0152,
+    "recall": "4/4",
+    "false_accepts": "1/80",
+    "clips": [
+     {
+      "file": "en/stop_v0.wav",
+      "lang": "en",
+      "id": "stop",
+      "text": "stop",
+      "target": "stop",
+      "hits": [
+       {
+        "keyword": "stop",
+        "at_s": 1.2
+       }
+      ],
+      "latency_after_speech_end_s": 0.19
+     },
+     {
+      "file": "en/hold_v0.wav",
+      "lang": "en",
+      "id": "hold",
+      "text": "hold",
+      "target": "hold",
+      "hits": [
+       {
+        "keyword": "hold",
+        "at_s": 1.2
+       }
+      ],
+      "latency_after_speech_end_s": 0.14
+     },
+     {
+      "file": "en/stop_v1.wav",
+      "lang": "en",
+      "id": "stop",
+      "text": "stop",
+      "target": "stop",
+      "hits": [
+       {
+        "keyword": "stop",
+        "at_s": 1.2
+       }
+      ],
+      "latency_after_speech_end_s": 0.13
+     },
+     {
+      "file": "en/hold_v1.wav",
+      "lang": "en",
+      "id": "hold",
+      "text": "hold",
+      "target": "hold",
+      "hits": [
+       {
+        "keyword": "hold",
+        "at_s": 1.2
+       }
+      ],
+      "latency_after_speech_end_s": 0.05
+     },
+     {
+      "file": "ml/hold_v1.wav",
+      "lang": "ml",
+      "id": "hold",
+      "text": "ഹോവർ",
+      "target": null,
+      "hits": [
+       {
+        "keyword": "hold",
+        "at_s": 1.2
+       }
+      ],
+      "latency_after_speech_end_s": -0.02
+     }
+    ]
+   }
+  ],
+  "note": "kws clip rows keep only clips with a hit or a target keyword"
+ },
+ "ort_session_options": {
+  "model": "/mnt/c/Users/yugas/Downloads/Drone-app/.worktrees/tooling/models/sherpa/indicconformer/te/model.int8.onnx",
+  "frames": 300,
+  "variants": {
+   "default": {
+    "ort": "1.31.0",
+    "threads": 2,
+    "load_s": 1.084,
+    "first_run_s": 0.1205,
+    "run_s": {
+     "n": 5,
+     "mean": 0.13288780919999965,
+     "p50": 0.11903900100000442,
+     "p95": 0.1664904997999912,
+     "max": 0.17200424699998962
+    },
+    "rtf_3s": 0.0397,
+    "memory_mib": {
+     "before_load": {
+      "rss": 50.57421875,
+      "peak_rss": 50.57421875,
+      "rss_anon": 23.359375,
+      "rss_file": 27.21484375
+     },
+     "after_load": {
+      "rss": 344.66796875,
+      "peak_rss": 344.66796875,
+      "rss_anon": 309.828125,
+      "rss_file": 34.83984375
+     },
+     "end": {
+      "rss": 370.28515625,
+      "peak_rss": 370.28515625,
+      "rss_anon": 331.53515625,
+      "rss_file": 38.75
+     }
+    }
+   },
+   "disable_prepacking": {
+    "ort": "1.31.0",
+    "threads": 2,
+    "load_s": 1.159,
+    "first_run_s": 0.1186,
+    "run_s": {
+     "n": 5,
+     "mean": 0.13431756260000044,
+     "p50": 0.13720404400000064,
+     "p95": 0.1425757094000005,
+     "max": 0.14350819700000272
+    },
+    "rtf_3s": 0.0457,
+    "memory_mib": {
+     "before_load": {
+      "rss": 50.5546875,
+      "peak_rss": 50.5546875,
+      "rss_anon": 23.34765625,
+      "rss_file": 27.20703125
+     },
+     "after_load": {
+      "rss": 290.140625,
+      "peak_rss": 298.48828125,
+      "rss_anon": 255.55859375,
+      "rss_file": 34.58203125
+     },
+     "end": {
+      "rss": 301.171875,
+      "peak_rss": 301.171875,
+      "rss_anon": 262.515625,
+      "rss_file": 38.65625
+     }
+    }
+   },
+   "external_data": {
+    "ort": "1.31.0",
+    "threads": 2,
+    "load_s": 0.367,
+    "first_run_s": 0.118,
+    "run_s": {
+     "n": 5,
+     "mean": 0.12045011120000026,
+     "p50": 0.11584186700000032,
+     "p95": 0.13544648020000238,
+     "max": 0.13939825100000292
+    },
+    "rtf_3s": 0.0386,
+    "memory_mib": {
+     "before_load": {
+      "rss": 50.58984375,
+      "peak_rss": 50.58984375,
+      "rss_anon": 23.34765625,
+      "rss_file": 27.2421875
+     },
+     "after_load": {
+      "rss": 180.23046875,
+      "peak_rss": 180.95703125,
+      "rss_anon": 145.41796875,
+      "rss_file": 34.8125
+     },
+     "end": {
+      "rss": 282.046875,
+      "peak_rss": 282.046875,
+      "rss_anon": 175.48046875,
+      "rss_file": 106.56640625
+     }
+    }
+   },
+   "external_data+disable_prepacking": {
+    "ort": "1.31.0",
+    "threads": 2,
+    "load_s": 0.217,
+    "first_run_s": 0.1185,
+    "run_s": {
+     "n": 5,
+     "mean": 0.12902058020000595,
+     "p50": 0.1276465570000056,
+     "p95": 0.13882124200000306,
+     "max": 0.13934955700000273
+    },
+    "rtf_3s": 0.0425,
+    "memory_mib": {
+     "before_load": {
+      "rss": 50.62109375,
+      "peak_rss": 50.62109375,
+      "rss_anon": 23.3515625,
+      "rss_file": 27.26953125
+     },
+     "after_load": {
+      "rss": 85.43359375,
+      "peak_rss": 111.6171875,
+      "rss_anon": 50.7890625,
+      "rss_file": 34.64453125
+     },
+     "end": {
+      "rss": 281.91015625,
+      "peak_rss": 281.91015625,
+      "rss_anon": 80.453125,
+      "rss_file": 201.45703125
+     }
+    }
+   }
+  }
+ },
+ "vosk": {
+  "host": {
+   "platform": "Linux-6.18.33.2-microsoft-standard-WSL2-x86_64-with-glibc2.39",
+   "python": "3.12.3",
+   "cpu": "x86_64",
+   "vosk": "0.3.45"
+  },
+  "models": [
+   {
+    "engine": "vosk",
+    "lang": "en",
+    "model": "vosk-model-small-en-in-0.4",
+    "load_s": 0.886,
+    "memory_mib": {
+     "before_load": {
+      "rss": 54.87890625,
+      "peak_rss": 55.26171875,
+      "rss_anon": 32.26171875,
+      "rss_file": 22.6171875
+     },
+     "after_load": {
+      "rss": 141.01953125,
+      "peak_rss": 141.01953125,
+      "rss_anon": 115.15234375,
+      "rss_file": 25.8671875
+     },
+     "end": {
+      "rss": 174.296875,
+      "peak_rss": 175.25,
+      "rss_anon": 147.6796875,
+      "rss_file": 26.6171875
+     }
+    },
+    "grammar_phrases": 647,
+    "grammar_words_missing_from_model": [],
+    "summary": {
+     "open": {
+      "exact_in_grammar": "27/42",
+      "false_accepts_out_of_grammar": "0/4",
+      "rtf": {
+       "n": 46,
+       "mean": 0.12443478260869564,
+       "p50": 0.12385,
+       "p95": 0.177925,
+       "max": 0.1867
+      },
+      "final_ms": {
+       "n": 46,
+       "mean": 23.902826086956516,
+       "p50": 19.945,
+       "p95": 46.6,
+       "max": 59.75
+      },
+      "init_ms": {
+       "n": 46,
+       "mean": 48.13326086956521,
+       "p50": 47.255,
+       "p95": 52.55500000000001,
+       "max": 55.98
+      }
+     },
+     "grammar": {
+      "exact_in_grammar": "36/42",
+      "false_accepts_out_of_grammar": "1/4",
+      "rtf": {
+       "n": 46,
+       "mean": 0.014480434782608697,
+       "p50": 0.0143,
+       "p95": 0.016849999999999997,
+       "max": 0.0182
+      },
+      "final_ms": {
+       "n": 46,
+       "mean": 8.957826086956521,
+       "p50": 8.355,
+       "p95": 12.0425,
+       "max": 14.45
+      },
+      "init_ms": {
+       "n": 46,
+       "mean": 1.1617391304347826,
+       "p50": 1.14,
+       "p95": 1.4224999999999999,
+       "max": 1.79
+      }
+     },
+     "grammar+fillers": {
+      "exact_in_grammar": "36/42",
+      "false_accepts_out_of_grammar": "0/4",
+      "rtf": {
+       "n": 46,
+       "mean": 0.017928260869565223,
+       "p50": 0.0178,
+       "p95": 0.020675,
+       "max": 0.0256
+      },
+      "final_ms": {
+       "n": 46,
+       "mean": 9.409347826086957,
+       "p50": 8.555,
+       "p95": 12.86,
+       "max": 14.82
+      },
+      "init_ms": {
+       "n": 46,
+       "mean": 1.5852173913043475,
+       "p50": 1.49,
+       "p95": 2.1425,
+       "max": 2.71
+      }
+     },
+     "nbest_grammar": {
+      "clips_with_more_than_one_alternative": "9/46"
+     }
+    },
+    "clips": [
+     {
+      "file": "takeoff_3_v0.wav",
+      "source": "espeak",
+      "voice": "en-us",
+      "id": "takeoff_3",
+      "ref": "take off to three meters",
+      "in_grammar": true,
+      "modes": {
+       "open": {
+        "init_ms": 49.38,
+        "rtf": 0.1867,
+        "final_ms": 21.55,
+        "text": "take off after three meter",
+        "exact": false,
+        "command_accepted": false
+       },
+       "grammar": {
+        "init_ms": 1.14,
+        "rtf": 0.0167,
+        "final_ms": 12.39,
+        "text": "take off to three meter",
+        "exact": false,
+        "command_accepted": true
+       },
+       "grammar+fillers": {
+        "init_ms": 1.48,
+        "rtf": 0.0179,
+        "final_ms": 11.31,
+        "text": "take off to three meter",
+        "exact": false,
+        "command_accepted": true
+       }
+      },
+      "nbest": {
+       "init_ms": 1.0,
+       "rtf": 0.0145,
+       "final_ms": 11.37,
+       "alternatives": [
+        [
+         {
+          "text": "take off to three meter",
+          "confidence": 148.6
+         },
+         {
+          "text": "take off to three meters",
+          "confidence": 147.08
+         }
+        ]
+       ],
+       "n_alternatives": 2
+      }
+     },
+     {
+      "file": "forward_3_v0.wav",
+      "source": "espeak",
+      "voice": "en-us",
+      "id": "forward_3",
+      "ref": "move forward three meters",
+      "in_grammar": true,
+      "modes": {
+       "open": {
+        "init_ms": 48.62,
+        "rtf": 0.1516,
+        "final_ms": 19.6,
+        "text": "look forward free bigger",
+        "exact": false,
+        "command_accepted": false
+       },
+       "grammar": {
+        "init_ms": 1.11,
+        "rtf": 0.0135,
+        "final_ms": 10.11,
+        "text": "forward three meter",
+        "exact": false,
+        "command_accepted": true
+       },
+       "grammar+fillers": {
+        "init_ms": 1.45,
+        "rtf": 0.0167,
+        "final_ms": 11.11,
+        "text": "forward three meter",
+        "exact": false,
+        "command_accepted": true
+       }
+      },
+      "nbest": {
+       "init_ms": 1.05,
+       "rtf": 0.0139,
+       "final_ms": 10.36,
+       "alternatives": [
+        [
+         {
+          "text": "forward three meter",
+          "confidence": 147.05
+         },
+         {
+          "text": "move forward three meter",
+          "confidence": 146.59
+         },
+         {
+          "text": "forward three meters",
+          "confidence": 146.11
+         }
+        ]
+       ],
+       "n_alternatives": 3
+      }
+     },
+     {
+      "file": "left_2_v0.wav",
+      "source": "espeak",
+      "voice": "en-us",
+      "id": "left_2",
+      "ref": "go left two meters",
+      "in_grammar": true,
+      "modes": {
+       "open": {
+        "init_ms": 47.53,
+        "rtf": 0.1312,
+        "final_ms": 19.91,
+        "text": "dog left to be done",
+        "exact": false,
+        "command_accepted": false
+       },
+       "grammar": {
+        "init_ms": 1.14,
+        "rtf": 0.014,
+        "final_ms": 11.06,
+        "text": "left two meter",
+        "exact": false,
+        "command_accepted": true
+       },
+       "grammar+fillers": {
+        "init_ms": 1.49,
+        "rtf": 0.0165,
+        "final_ms": 11.87,
+        "text": "left two meter",
+        "exact": false,
+        "command_accepted": true
+       }
+      },
+      "nbest": {
+       "init_ms": 1.02,
+       "rtf": 0.0143,
+       "final_ms": 11.67,
+       "alternatives": [
+        [
+         {
+          "text": "left two meter",
+          "confidence": 125.3
+         },
+         {
+          "text": "down left two meter",
+          "confidence": 124.52
+         },
+         {
+          "text": "go left two meter",
+          "confidence": 124.37
+         }
+        ]
+       ],
+       "n_alternatives": 3
+      }
+     },
+     {
+      "file": "land_v0.wav",
+      "source": "espeak",
+      "voice": "en-us",
+      "id": "land",
+      "ref": "land",
+      "in_grammar": true,
+      "modes": {
+       "open": {
+        "init_ms": 46.82,
+        "rtf": 0.076,
+        "final_ms": 40.77,
+        "text": "land",
+        "exact": true,
+        "command_accepted": true
+       },
+       "grammar": {
+        "init_ms": 1.04,
+        "rtf": 0.0135,
+        "final_ms": 7.41,
+        "text": "land",
+        "exact": true,
+        "command_accepted": true
+       },
+       "grammar+fillers": {
+        "init_ms": 1.48,
+        "rtf": 0.0161,
+        "final_ms": 8.37,
+        "text": "land",
+        "exact": true,
+        "command_accepted": true
+       }
+      },
+      "nbest": {
+       "init_ms": 1.02,
+       "rtf": 0.0124,
+       "final_ms": 7.8,
+       "alternatives": [
+        [
+         {
+          "text": "land",
+          "confidence": 79.86
+         }
+        ]
+       ],
+       "n_alternatives": 1
+      }
+     },
+     {
+      "file": "stop_v0.wav",
+      "source": "espeak",
+      "voice": "en-us",
+      "id": "stop",
+      "ref": "stop",
+      "in_grammar": true,
+      "modes": {
+       "open": {
+        "init_ms": 46.96,
+        "rtf": 0.0743,
+        "final_ms": 31.11,
+        "text": "staff",
+        "exact": false,
+        "command_accepted": false
+       },
+       "grammar": {
+        "init_ms": 1.05,
+        "rtf": 0.0124,
+        "final_ms": 7.2,
+        "text": "stop",
+        "exact": true,
+        "command_accepted": true
+       },
+       "grammar+fillers": {
+        "init_ms": 1.5,
+        "rtf": 0.0153,
+        "final_ms": 7.68,
+        "text": "stop",
+        "exact": true,
+        "command_accepted": true
+       }
+      },
+      "nbest": {
+       "init_ms": 0.99,
+       "rtf": 0.0122,
+       "final_ms": 7.14,
+       "alternatives": [
+        [
+         {
+          "text": "stop",
+          "confidence": 86.14
+         }
+        ]
+       ],
+       "n_alternatives": 1
+      }
+     },
+     {
+      "file": "hold_v0.wav",
+      "source": "espeak",
+      "voice": "en-us",
+      "id": "hold",
+      "ref": "hold",
+      "in_grammar": true,
+      "modes": {
+       "open": {
+        "init_ms": 47.05,
+        "rtf": 0.0563,
+        "final_ms": 54.07,
+        "text": "oh",
+        "exact": false,
+        "command_accepted": false
+       },
+       "grammar": {
+        "init_ms": 1.1,
+        "rtf": 0.012,
+        "final_ms": 10.52,
+        "text": "",
+        "exact": false,
+        "command_accepted": false
+       },
+       "grammar+fillers": {
+        "init_ms": 1.46,
+        "rtf": 0.0151,
+        "final_ms": 10.78,
+        "text": "",
+        "exact": false,
+        "command_accepted": false
+       }
+      },
+      "nbest": {
+       "init_ms": 1.02,
+       "rtf": 0.0122,
+       "final_ms": 10.12,
+       "alternatives": [
+        [
+         {
+          "text": "",
+          "confidence": 85.53
+         }
+        ]
+       ],
+       "n_alternatives": 1
+      }
+     },
+     {
+      "file": "neg_takeoff_v0.wav",
+      "source": "espeak",
+      "voice": "en-us",
+      "id": "neg_takeoff",
+      "ref": "do not take off",
+      "in_grammar": true,
+      "modes": {
+       "open": {
+        "init_ms": 52.59,
+        "rtf": 0.1855,
+        "final_ms": 34.68,
+        "text": "do not take off",
+        "exact": true,
+        "command_accepted": true
+       },
+       "grammar": {
+        "init_ms": 1.11,
+        "rtf": 0.0135,
+        "final_ms": 10.51,
+        "text": "do not take off",
+        "exact": true,
+        "command_accepted": true
+       },
+       "grammar+fillers": {
+        "init_ms": 1.47,
+        "rtf": 0.018,
+        "final_ms": 13.02,
+        "text": "do not take off",
+        "exact": true,
+        "command_accepted": true
+       }
+      },
+      "nbest": {
+       "init_ms": 1.57,
+       "rtf": 0.0166,
+       "final_ms": 10.39,
+       "alternatives": [
+        [
+         {
+          "text": "do not take off",
+          "confidence": 115.2
+         }
+        ]
+       ],
+       "n_alternatives": 1
+      }
+     },
+     {
+      "file": "takeoff_3_v1.wav",
+      "source": "espeak",
+      "voice": "en+f3",
+      "id": "takeoff_3",
+      "ref": "take off to three meters",
+      "in_grammar": true,
+      "modes": {
+       "open": {
+        "init_ms": 46.3,
+        "rtf": 0.1783,
+        "final_ms": 59.75,
+        "text": "after three meters",
+        "exact": false,
+        "command_accepted": false
+       },
+       "grammar": {
+        "init_ms": 1.14,
+        "rtf": 0.0147,
+        "final_ms": 7.05,
+        "text": "take off to three meters",
+        "exact": true,
+        "command_accepted": true
+       },
+       "grammar+fillers": {
+        "init_ms": 1.5,
+        "rtf": 0.0178,
+        "final_ms": 7.56,
+        "text": "take off to three meters",
+        "exact": true,
+        "command_accepted": true
+       }
+      },
+      "nbest": {
+       "init_ms": 1.01,
+       "rtf": 0.0142,
+       "final_ms": 7.18,
+       "alternatives": [
+        [
+         {
+          "text": "take off to three meters",
+          "confidence": 163.35
+         },
+         {
+          "text": "off to three meters",
+          "confidence": 162.17
+         },
+         {
+          "text": "take off three meters",
+          "confidence": 161.72
+         }
+        ]
+       ],
+       "n_alternatives": 3
+      }
+     },
+     {
+      "file": "forward_3_v1.wav",
+      "source": "espeak",
+      "voice": "en+f3",
+      "id": "forward_3",
+      "ref": "move forward three meters",
+      "in_grammar": true,
+      "modes": {
+       "open": {
+        "init_ms": 45.83,
+        "rtf": 0.1591,
+        "final_ms": 13.64,
+        "text": "who phone with free meters",
+        "exact": false,
+        "command_accepted": false
+       },
+       "grammar": {
+        "init_ms": 1.02,
+        "rtf": 0.0143,
+        "final_ms": 6.07,
+        "text": "move forward three meter",
+        "exact": false,
+        "command_accepted": true
+       },
+       "grammar+fillers": {
+        "init_ms": 1.52,
+        "rtf": 0.017,
+        "final_ms": 7.24,
+        "text": "move forward three meter",
+        "exact": false,
+        "command_accepted": true
+       }
+      },
+      "nbest": {
+       "init_ms": 0.96,
+       "rtf": 0.0142,
+       "final_ms": 7.08,
+       "alternatives": [
+        [
+         {
+          "text": "move forward three meter",
+          "confidence": 179.36
+         },
+         {
+          "text": "forward three meter",
+          "confidence": 178.68
+         },
+         {
+          "text": "move forward three meters",
+          "confidence": 177.61
+         }
+        ]
+       ],
+       "n_alternatives": 3
+      }
+     },
+     {
+      "file": "left_2_v1.wav",
+      "source": "espeak",
+      "voice": "en+f3",
+      "id": "left_2",
+      "ref": "go left two meters",
+      "in_grammar": true,
+      "modes": {
+       "open": {
+        "init_ms": 45.52,
+        "rtf": 0.1416,
+        "final_ms": 40.89,
+        "text": "left two meters",
+        "exact": false,
+        "command_accepted": true
+       },
+       "grammar": {
+        "init_ms": 1.03,
+        "rtf": 0.0139,
+        "final_ms": 9.46,
+        "text": "go left two meters",
+        "exact": true,
+        "command_accepted": true
+       },
+       "grammar+fillers": {
+        "init_ms": 1.44,
+        "rtf": 0.0191,
+        "final_ms": 14.82,
+        "text": "go left two meters",
+        "exact": true,
+        "command_accepted": true
+       }
+      },
+      "nbest": {
+       "init_ms": 1.91,
+       "rtf": 0.0194,
+       "final_ms": 14.41,
+       "alternatives": [
+        [
+         {
+          "text": "go left two meters",
+          "confidence": 156.42
+         },
+         {
+          "text": "left two meters",
+          "confidence": 156.06
+         }
+        ]
+       ],
+       "n_alternatives": 2
+      }
+     },
+     {
+      "file": "land_v1.wav",
+      "source": "espeak",
+      "voice": "en+f3",
+      "id": "land",
+      "ref": "land",
+      "in_grammar": true,
+      "modes": {
+       "open": {
+        "init_ms": 46.67,
+        "rtf": 0.1008,
+        "final_ms": 13.61,
+        "text": "lol",
+        "exact": false,
+        "command_accepted": false
+       },
+       "grammar": {
+        "init_ms": 1.09,
+        "rtf": 0.0121,
+        "final_ms": 10.51,
+        "text": "land",
+        "exact": true,
+        "command_accepted": true
+       },
+       "grammar+fillers": {
+        "init_ms": 1.42,
+        "rtf": 0.0158,
+        "final_ms": 11.9,
+        "text": "land",
+        "exact": true,
+        "command_accepted": true
+       }
+      },
+      "nbest": {
+       "init_ms": 1.07,
+       "rtf": 0.0126,
+       "final_ms": 10.58,
+       "alternatives": [
+        [
+         {
+          "text": "land",
+          "confidence": 87.26
+         }
+        ]
+       ],
+       "n_alternatives": 1
+      }
+     },
+     {
+      "file": "stop_v1.wav",
+      "source": "espeak",
+      "voice": "en+f3",
+      "id": "stop",
+      "ref": "stop",
+      "in_grammar": true,
+      "modes": {
+       "open": {
+        "init_ms": 50.15,
+        "rtf": 0.1029,
+        "final_ms": 26.1,
+        "text": "stop",
+        "exact": true,
+        "command_accepted": true
+       },
+       "grammar": {
+        "init_ms": 1.11,
+        "rtf": 0.0124,
+        "final_ms": 9.54,
+        "text": "stop",
+        "exact": true,
+        "command_accepted": true
+       },
+       "grammar+fillers": {
+        "init_ms": 1.47,
+        "rtf": 0.0158,
+        "final_ms": 10.7,
+        "text": "stop",
+        "exact": true,
+        "command_accepted": true
+       }
+      },
+      "nbest": {
+       "init_ms": 1.04,
+       "rtf": 0.0114,
+       "final_ms": 9.45,
+       "alternatives": [
+        [
+         {
+          "text": "stop",
+          "confidence": 104.94
+         }
+        ]
+       ],
+       "n_alternatives": 1
+      }
+     },
+     {
+      "file": "hold_v1.wav",
+      "source": "espeak",
+      "voice": "en+f3",
+      "id": "hold",
+      "ref": "hold",
+      "in_grammar": true,
+      "modes": {
+       "open": {
+        "init_ms": 46.34,
+        "rtf": 0.1358,
+        "final_ms": 12.48,
+        "text": "hi ruth",
+        "exact": false,
+        "command_accepted": false
+       },
+       "grammar": {
+        "init_ms": 1.03,
+        "rtf": 0.0136,
+        "final_ms": 6.57,
+        "text": "",
+        "exact": false,
+        "command_accepted": false
+       },
+       "grammar+fillers": {
+        "init_ms": 1.45,
+        "rtf": 0.0172,
+        "final_ms": 6.5,
+        "text": "",
+        "exact": false,
+        "command_accepted": false
+       }
+      },
+      "nbest": {
+       "init_ms": 1.0,
+       "rtf": 0.0135,
+       "final_ms": 5.94,
+       "alternatives": [
+        [
+         {
+          "text": "",
+          "confidence": 85.49
+         }
+        ]
+       ],
+       "n_alternatives": 1
+      }
+     },
+     {
+      "file": "neg_takeoff_v1.wav",
+      "source": "espeak",
+      "voice": "en+f3",
+      "id": "neg_takeoff",
+      "ref": "do not take off",
+      "in_grammar": true,
+      "modes": {
+       "open": {
+        "init_ms": 45.9,
+        "rtf": 0.1514,
+        "final_ms": 46.89,
+        "text": "do not take off",
+        "exact": true,
+        "command_accepted": true
+       },
+       "grammar": {
+        "init_ms": 1.1,
+        "rtf": 0.0144,
+        "final_ms": 7.72,
+        "text": "do not take off",
+        "exact": true,
+        "command_accepted": true
+       },
+       "grammar+fillers": {
+        "init_ms": 1.49,
+        "rtf": 0.0172,
+        "final_ms": 8.19,
+        "text": "do not take off",
+        "exact": true,
+        "command_accepted": true
+       }
+      },
+      "nbest": {
+       "init_ms": 1.05,
+       "rtf": 0.0143,
+       "final_ms": 8.26,
+       "alternatives": [
+        [
+         {
+          "text": "do not take off",
+          "confidence": 136.87
+         }
+        ]
+       ],
+       "n_alternatives": 1
+      }
+     },
+     {
+      "file": "00_Microsoft_Ravi.wav",
+      "source": "sapi",
+      "voice": "Microsoft_Ravi",
+      "id": null,
+      "ref": "take off to three meters",
+      "in_grammar": true,
+      "modes": {
+       "open": {
+        "init_ms": 47.34,
+        "rtf": 0.1249,
+        "final_ms": 16.13,
+        "text": "take off to three meters",
+        "exact": true,
+        "command_accepted": true
+       },
+       "grammar": {
+        "init_ms": 1.02,
+        "rtf": 0.014,
+        "final_ms": 6.57,
+        "text": "take off to three meters",
+        "exact": true,
+        "command_accepted": true
+       },
+       "grammar+fillers": {
+        "init_ms": 1.39,
+        "rtf": 0.0168,
+        "final_ms": 7.26,
+        "text": "take off to three meters",
+        "exact": true,
+        "command_accepted": true
+       }
+      },
+      "nbest": {
+       "init_ms": 0.96,
+       "rtf": 0.0141,
+       "final_ms": 7.03,
+       "alternatives": [
+        [
+         {
+          "text": "take off to three meters",
+          "confidence": 171.58
+         }
+        ]
+       ],
+       "n_alternatives": 1
+      }
+     },
+     {
+      "file": "01_Microsoft_Ravi.wav",
+      "source": "sapi",
+      "voice": "Microsoft_Ravi",
+      "id": null,
+      "ref": "move forward five meters",
+      "in_grammar": true,
+      "modes": {
+       "open": {
+        "init_ms": 45.96,
+        "rtf": 0.1232,
+        "final_ms": 14.33,
+        "text": "move forward five meters",
+        "exact": true,
+        "command_accepted": true
+       },
+       "grammar": {
+        "init_ms": 1.16,
+        "rtf": 0.0169,
+        "final_ms": 7.27,
+        "text": "move forward five meters",
+        "exact": true,
+        "command_accepted": true
+       },
+       "grammar+fillers": {
+        "init_ms": 1.87,
+        "rtf": 0.0178,
+        "final_ms": 6.69,
+        "text": "move forward five meters",
+        "exact": true,
+        "command_accepted": true
+       }
+      },
+      "nbest": {
+       "init_ms": 1.0,
+       "rtf": 0.0145,
+       "final_ms": 6.08,
+       "alternatives": [
+        [
+         {
+          "text": "move forward five meters",
+          "confidence": 171.29
+         }
+        ]
+       ],
+       "n_alternatives": 1
+      }
+     },
+     {
+      "file": "02_Microsoft_Ravi.wav",
+      "source": "sapi",
+      "voice": "Microsoft_Ravi",
+      "id": null,
+      "ref": "go left two meters",
+      "in_grammar": true,
+      "modes": {
+       "open": {
+        "init_ms": 46.75,
+        "rtf": 0.0975,
+        "final_ms": 36.66,
+        "text": "go left two meters",
+        "exact": true,
+        "command_accepted": true
+       },
+       "grammar": {
+        "init_ms": 1.0,
+        "rtf": 0.0125,
+        "final_ms": 10.21,
+        "text": "go left two meters",
+        "exact": true,
+        "command_accepted": true
+       },
+       "grammar+fillers": {
+        "init_ms": 1.45,
+        "rtf": 0.0161,
+        "final_ms": 10.43,
+        "text": "go left two meters",
+        "exact": true,
+        "command_accepted": true
+       }
+      },
+      "nbest": {
+       "init_ms": 1.03,
+       "rtf": 0.0126,
+       "final_ms": 9.93,
+       "alternatives": [
+        [
+         {
+          "text": "go left two meters",
+          "confidence": 161.21
+         }
+        ]
+       ],
+       "n_alternatives": 1
+      }
+     },
+     {
+      "file": "03_Microsoft_Ravi.wav",
+      "source": "sapi",
+      "voice": "Microsoft_Ravi",
+      "id": null,
+      "ref": "move right four meters",
+      "in_grammar": true,
+      "modes": {
+       "open": {
+        "init_ms": 47.17,
+        "rtf": 0.1085,
+        "final_ms": 9.71,
+        "text": "right for meters",
+        "exact": false,
+        "command_accepted": false
+       },
+       "grammar": {
+        "init_ms": 1.08,
+        "rtf": 0.014,
+        "final_ms": 7.12,
+        "text": "move right four meters",
+        "exact": true,
+        "command_accepted": true
+       },
+       "grammar+fillers": {
+        "init_ms": 1.44,
+        "rtf": 0.0185,
+        "final_ms": 7.28,
+        "text": "move right four meters",
+        "exact": true,
+        "command_accepted": true
+       }
+      },
+      "nbest": {
+       "init_ms": 1.05,
+       "rtf": 0.0148,
+       "final_ms": 7.43,
+       "alternatives": [
+        [
+         {
+          "text": "move right four meters",
+          "confidence": 162.21
+         }
+        ]
+       ],
+       "n_alternatives": 1
+      }
+     },
+     {
+      "file": "04_Microsoft_Ravi.wav",
+      "source": "sapi",
+      "voice": "Microsoft_Ravi",
+      "id": null,
+      "ref": "go up two meters",
+      "in_grammar": true,
+      "modes": {
+       "open": {
+        "init_ms": 46.62,
+        "rtf": 0.114,
+        "final_ms": 11.66,
+        "text": "go up two meters",
+        "exact": true,
+        "command_accepted": true
+       },
+       "grammar": {
+        "init_ms": 1.12,
+        "rtf": 0.0141,
+        "final_ms": 7.92,
+        "text": "go up two meters",
+        "exact": true,
+        "command_accepted": true
+       },
+       "grammar+fillers": {
+        "init_ms": 1.46,
+        "rtf": 0.0182,
+        "final_ms": 8.12,
+        "text": "go up two meters",
+        "exact": true,
+        "command_accepted": true
+       }
+      },
+      "nbest": {
+       "init_ms": 1.06,
+       "rtf": 0.0142,
+       "final_ms": 8.68,
+       "alternatives": [
+        [
+         {
+          "text": "go up two meters",
+          "confidence": 145.51
+         }
+        ]
+       ],
+       "n_alternatives": 1
+      }
+     },
+     {
+      "file": "05_Microsoft_Ravi.wav",
+      "source": "sapi",
+      "voice": "Microsoft_Ravi",
+      "id": null,
+      "ref": "come down one meter",
+      "in_grammar": true,
+      "modes": {
+       "open": {
+        "init_ms": 46.68,
+        "rtf": 0.1133,
+        "final_ms": 15.32,
+        "text": "come down one meter",
+        "exact": true,
+        "command_accepted": true
+       },
+       "grammar": {
+        "init_ms": 1.17,
+        "rtf": 0.0145,
+        "final_ms": 7.6,
+        "text": "come down one meter",
+        "exact": true,
+        "command_accepted": true
+       },
+       "grammar+fillers": {
+        "init_ms": 1.42,
+        "rtf": 0.0171,
+        "final_ms": 8.18,
+        "text": "come down one meter",
+        "exact": true,
+        "command_accepted": true
+       }
+      },
+      "nbest": {
+       "init_ms": 1.03,
+       "rtf": 0.0141,
+       "final_ms": 7.72,
+       "alternatives": [
+        [
+         {
+          "text": "come down one meter",
+          "confidence": 157.69
+         }
+        ]
+       ],
+       "n_alternatives": 1
+      }
+     },
+     {
+      "file": "06_Microsoft_Ravi.wav",
+      "source": "sapi",
+      "voice": "Microsoft_Ravi",
+      "id": null,
+      "ref": "stop",
+      "in_grammar": true,
+      "modes": {
+       "open": {
+        "init_ms": 46.05,
+        "rtf": 0.0993,
+        "final_ms": 24.2,
+        "text": "stop",
+        "exact": true,
+        "command_accepted": true
+       },
+       "grammar": {
+        "init_ms": 1.05,
+        "rtf": 0.0129,
+        "final_ms": 7.19,
+        "text": "stop",
+        "exact": true,
+        "command_accepted": true
+       },
+       "grammar+fillers": {
+        "init_ms": 1.4,
+        "rtf": 0.016,
+        "final_ms": 7.39,
+        "text": "stop",
+        "exact": true,
+        "command_accepted": true
+       }
+      },
+      "nbest": {
+       "init_ms": 0.99,
+       "rtf": 0.0129,
+       "final_ms": 7.29,
+       "alternatives": [
+        [
+         {
+          "text": "stop",
+          "confidence": 91.63
+         }
+        ]
+       ],
+       "n_alternatives": 1
+      }
+     },
+     {
+      "file": "07_Microsoft_Ravi.wav",
+      "source": "sapi",
+      "voice": "Microsoft_Ravi",
+      "id": null,
+      "ref": "hold",
+      "in_grammar": true,
+      "modes": {
+       "open": {
+        "init_ms": 46.55,
+        "rtf": 0.0906,
+        "final_ms": 45.73,
+        "text": "hold",
+        "exact": true,
+        "command_accepted": true
+       },
+       "grammar": {
+        "init_ms": 1.07,
+        "rtf": 0.0123,
+        "final_ms": 10.1,
+        "text": "hold",
+        "exact": true,
+        "command_accepted": true
+       },
+       "grammar+fillers": {
+        "init_ms": 1.47,
+        "rtf": 0.0163,
+        "final_ms": 10.59,
+        "text": "hold",
+        "exact": true,
+        "command_accepted": true
+       }
+      },
+      "nbest": {
+       "init_ms": 1.05,
+       "rtf": 0.0124,
+       "final_ms": 10.25,
+       "alternatives": [
+        [
+         {
+          "text": "hold",
+          "confidence": 105.75
+         }
+        ]
+       ],
+       "n_alternatives": 1
+      }
+     },
+     {
+      "file": "08_Microsoft_Ravi.wav",
+      "source": "sapi",
+      "voice": "Microsoft_Ravi",
+      "id": null,
+      "ref": "land",
+      "in_grammar": true,
+      "modes": {
+       "open": {
+        "init_ms": 46.24,
+        "rtf": 0.092,
+        "final_ms": 23.92,
+        "text": "land",
+        "exact": true,
+        "command_accepted": true
+       },
+       "grammar": {
+        "init_ms": 1.61,
+        "rtf": 0.0128,
+        "final_ms": 7.14,
+        "text": "land",
+        "exact": true,
+        "command_accepted": true
+       },
+       "grammar+fillers": {
+        "init_ms": 1.39,
+        "rtf": 0.0147,
+        "final_ms": 8.74,
+        "text": "land",
+        "exact": true,
+        "command_accepted": true
+       }
+      },
+      "nbest": {
+       "init_ms": 1.04,
+       "rtf": 0.0126,
+       "final_ms": 7.21,
+       "alternatives": [
+        [
+         {
+          "text": "land",
+          "confidence": 89.9
+         }
+        ]
+       ],
+       "n_alternatives": 1
+      }
+     },
+     {
+      "file": "09_Microsoft_Ravi.wav",
+      "source": "sapi",
+      "voice": "Microsoft_Ravi",
+      "id": null,
+      "ref": "return home",
+      "in_grammar": true,
+      "modes": {
+       "open": {
+        "init_ms": 46.56,
+        "rtf": 0.1406,
+        "final_ms": 18.22,
+        "text": "return home",
+        "exact": true,
+        "command_accepted": true
+       },
+       "grammar": {
+        "init_ms": 1.07,
+        "rtf": 0.0144,
+        "final_ms": 6.57,
+        "text": "return home",
+        "exact": true,
+        "command_accepted": true
+       },
+       "grammar+fillers": {
+        "init_ms": 1.48,
+        "rtf": 0.0184,
+        "final_ms": 6.74,
+        "text": "return home",
+        "exact": true,
+        "command_accepted": true
+       }
+      },
+      "nbest": {
+       "init_ms": 1.34,
+       "rtf": 0.0147,
+       "final_ms": 7.18,
+       "alternatives": [
+        [
+         {
+          "text": "return home",
+          "confidence": 118.73
+         },
+         {
+          "text": "[unk] return home",
+          "confidence": 117.86
+         }
+        ]
+       ],
+       "n_alternatives": 2
+      }
+     },
+     {
+      "file": "10_Microsoft_Ravi.wav",
+      "source": "sapi",
+      "voice": "Microsoft_Ravi",
+      "id": null,
+      "ref": "status",
+      "in_grammar": true,
+      "modes": {
+       "open": {
+        "init_ms": 48.56,
+        "rtf": 0.1325,
+        "final_ms": 15.59,
+        "text": "status",
+        "exact": true,
+        "command_accepted": true
+       },
+       "grammar": {
+        "init_ms": 1.11,
+        "rtf": 0.0154,
+        "final_ms": 8.79,
+        "text": "status",
+        "exact": true,
+        "command_accepted": true
+       },
+       "grammar+fillers": {
+        "init_ms": 1.94,
+        "rtf": 0.0187,
+        "final_ms": 7.82,
+        "text": "status",
+        "exact": true,
+        "command_accepted": true
+       }
+      },
+      "nbest": {
+       "init_ms": 1.35,
+       "rtf": 0.0147,
+       "final_ms": 7.52,
+       "alternatives": [
+        [
+         {
+          "text": "status",
+          "confidence": 109.13
+         }
+        ]
+       ],
+       "n_alternatives": 1
+      }
+     },
+     {
+      "file": "11_Microsoft_Ravi.wav",
+      "source": "sapi",
+      "voice": "Microsoft_Ravi",
+      "id": null,
+      "ref": "move back six meters",
+      "in_grammar": true,
+      "modes": {
+       "open": {
+        "init_ms": 46.57,
+        "rtf": 0.1185,
+        "final_ms": 19.98,
+        "text": "move back six meters",
+        "exact": true,
+        "command_accepted": true
+       },
+       "grammar": {
+        "init_ms": 1.17,
+        "rtf": 0.0151,
+        "final_ms": 7.93,
+        "text": "move back six meters",
+        "exact": true,
+        "command_accepted": true
+       },
+       "grammar+fillers": {
+        "init_ms": 1.63,
+        "rtf": 0.0195,
+        "final_ms": 7.66,
+        "text": "move back six meters",
+        "exact": true,
+        "command_accepted": true
+       }
+      },
+      "nbest": {
+       "init_ms": 1.04,
+       "rtf": 0.0151,
+       "final_ms": 8.64,
+       "alternatives": [
+        [
+         {
+          "text": "move back six meters",
+          "confidence": 177.57
+         }
+        ]
+       ],
+       "n_alternatives": 1
+      }
+     },
+     {
+      "file": "12_Microsoft_Ravi.wav",
+      "source": "sapi",
+      "voice": "Microsoft_Ravi",
+      "id": null,
+      "ref": "what is the weather today",
+      "in_grammar": false,
+      "modes": {
+       "open": {
+        "init_ms": 48.02,
+        "rtf": 0.1564,
+        "final_ms": 15.17,
+        "text": "what is the weather today",
+        "exact": true,
+        "command_accepted": false
+       },
+       "grammar": {
+        "init_ms": 1.14,
+        "rtf": 0.015,
+        "final_ms": 10.03,
+        "text": "",
+        "exact": false,
+        "command_accepted": false
+       },
+       "grammar+fillers": {
+        "init_ms": 1.57,
+        "rtf": 0.0188,
+        "final_ms": 10.56,
+        "text": "weather today",
+        "exact": false,
+        "command_accepted": false
+       }
+      },
+      "nbest": {
+       "init_ms": 1.88,
+       "rtf": 0.0178,
+       "final_ms": 9.8,
+       "alternatives": [
+        [
+         {
+          "text": "",
+          "confidence": 121.1
+         }
+        ]
+       ],
+       "n_alternatives": 1
+      }
+     },
+     {
+      "file": "13_Microsoft_Ravi.wav",
+      "source": "sapi",
+      "voice": "Microsoft_Ravi",
+      "id": null,
+      "ref": "take a photo of the field",
+      "in_grammar": false,
+      "modes": {
+       "open": {
+        "init_ms": 49.47,
+        "rtf": 0.1309,
+        "final_ms": 11.66,
+        "text": "take a photo of the field",
+        "exact": true,
+        "command_accepted": false
+       },
+       "grammar": {
+        "init_ms": 1.23,
+        "rtf": 0.0167,
+        "final_ms": 7.12,
+        "text": "take off",
+        "exact": false,
+        "command_accepted": true
+       },
+       "grammar+fillers": {
+        "init_ms": 1.56,
+        "rtf": 0.0202,
+        "final_ms": 7.28,
+        "text": "take photo off field",
+        "exact": false,
+        "command_accepted": false
+       }
+      },
+      "nbest": {
+       "init_ms": 1.05,
+       "rtf": 0.0166,
+       "final_ms": 7.43,
+       "alternatives": [
+        [
+         {
+          "text": "take off",
+          "confidence": 142.63
+         }
+        ]
+       ],
+       "n_alternatives": 1
+      }
+     },
+     {
+      "file": "14_Microsoft_Ravi.wav",
+      "source": "sapi",
+      "voice": "Microsoft_Ravi",
+      "id": null,
+      "ref": "forward seven meters",
+      "in_grammar": true,
+      "modes": {
+       "open": {
+        "init_ms": 48.33,
+        "rtf": 0.1318,
+        "final_ms": 16.65,
+        "text": "forward seven meters",
+        "exact": true,
+        "command_accepted": true
+       },
+       "grammar": {
+        "init_ms": 1.12,
+        "rtf": 0.0157,
+        "final_ms": 7.05,
+        "text": "forward seven meters",
+        "exact": true,
+        "command_accepted": true
+       },
+       "grammar+fillers": {
+        "init_ms": 1.5,
+        "rtf": 0.0184,
+        "final_ms": 7.78,
+        "text": "forward seven meters",
+        "exact": true,
+        "command_accepted": true
+       }
+      },
+      "nbest": {
+       "init_ms": 1.01,
+       "rtf": 0.0157,
+       "final_ms": 6.82,
+       "alternatives": [
+        [
+         {
+          "text": "forward seven meters",
+          "confidence": 169.14
+         }
+        ]
+       ],
+       "n_alternatives": 1
+      }
+     },
+     {
+      "file": "15_Microsoft_Ravi.wav",
+      "source": "sapi",
+      "voice": "Microsoft_Ravi",
+      "id": null,
+      "ref": "drone stop",
+      "in_grammar": true,
+      "modes": {
+       "open": {
+        "init_ms": 46.28,
+        "rtf": 0.1,
+        "final_ms": 16.14,
+        "text": "drones talk",
+        "exact": false,
+        "command_accepted": false
+       },
+       "grammar": {
+        "init_ms": 1.14,
+        "rtf": 0.0134,
+        "final_ms": 12.09,
+        "text": "drone stop",
+        "exact": true,
+        "command_accepted": true
+       },
+       "grammar+fillers": {
+        "init_ms": 2.21,
+        "rtf": 0.0173,
+        "final_ms": 10.97,
+        "text": "drone stop",
+        "exact": true,
+        "command_accepted": true
+       }
+      },
+      "nbest": {
+       "init_ms": 1.09,
+       "rtf": 0.0136,
+       "final_ms": 10.94,
+       "alternatives": [
+        [
+         {
+          "text": "drone stop",
+          "confidence": 125.16
+         }
+        ]
+       ],
+       "n_alternatives": 1
+      }
+     },
+     {
+      "file": "16_Microsoft_Heera.wav",
+      "source": "sapi",
+      "voice": "Microsoft_Heera",
+      "id": null,
+      "ref": "take off to three meters",
+      "in_grammar": true,
+      "modes": {
+       "open": {
+        "init_ms": 47.63,
+        "rtf": 0.1125,
+        "final_ms": 15.61,
+        "text": "take off to three meters",
+        "exact": true,
+        "command_accepted": true
+       },
+       "grammar": {
+        "init_ms": 1.1,
+        "rtf": 0.0143,
+        "final_ms": 9.46,
+        "text": "take off to three meters",
+        "exact": true,
+        "command_accepted": true
+       },
+       "grammar+fillers": {
+        "init_ms": 1.46,
+        "rtf": 0.0177,
+        "final_ms": 9.78,
+        "text": "take off to three meters",
+        "exact": true,
+        "command_accepted": true
+       }
+      },
+      "nbest": {
+       "init_ms": 1.01,
+       "rtf": 0.0147,
+       "final_ms": 9.74,
+       "alternatives": [
+        [
+         {
+          "text": "take off to three meters",
+          "confidence": 194.86
+         }
+        ]
+       ],
+       "n_alternatives": 1
+      }
+     },
+     {
+      "file": "17_Microsoft_Heera.wav",
+      "source": "sapi",
+      "voice": "Microsoft_Heera",
+      "id": null,
+      "ref": "move forward five meters",
+      "in_grammar": true,
+      "modes": {
+       "open": {
+        "init_ms": 46.79,
+        "rtf": 0.1214,
+        "final_ms": 7.78,
+        "text": "move forward five meters",
+        "exact": true,
+        "command_accepted": true
+       },
+       "grammar": {
+        "init_ms": 1.14,
+        "rtf": 0.0151,
+        "final_ms": 7.19,
+        "text": "move forward five meters",
+        "exact": true,
+        "command_accepted": true
+       },
+       "grammar+fillers": {
+        "init_ms": 1.49,
+        "rtf": 0.0177,
+        "final_ms": 6.81,
+        "text": "move forward five meters",
+        "exact": true,
+        "command_accepted": true
+       }
+      },
+      "nbest": {
+       "init_ms": 0.98,
+       "rtf": 0.0151,
+       "final_ms": 6.83,
+       "alternatives": [
+        [
+         {
+          "text": "move forward five meters",
+          "confidence": 202.95
+         }
+        ]
+       ],
+       "n_alternatives": 1
+      }
+     },
+     {
+      "file": "18_Microsoft_Heera.wav",
+      "source": "sapi",
+      "voice": "Microsoft_Heera",
+      "id": null,
+      "ref": "go left two meters",
+      "in_grammar": true,
+      "modes": {
+       "open": {
+        "init_ms": 47.13,
+        "rtf": 0.1299,
+        "final_ms": 11.8,
+        "text": "go lift to meters",
+        "exact": false,
+        "command_accepted": false
+       },
+       "grammar": {
+        "init_ms": 1.4,
+        "rtf": 0.0182,
+        "final_ms": 7.7,
+        "text": "go left two meters",
+        "exact": true,
+        "command_accepted": true
+       },
+       "grammar+fillers": {
+        "init_ms": 1.64,
+        "rtf": 0.0223,
+        "final_ms": 8.78,
+        "text": "go left two meters",
+        "exact": true,
+        "command_accepted": true
+       }
+      },
+      "nbest": {
+       "init_ms": 1.32,
+       "rtf": 0.021,
+       "final_ms": 9.52,
+       "alternatives": [
+        [
+         {
+          "text": "go left two meters",
+          "confidence": 181.33
+         }
+        ]
+       ],
+       "n_alternatives": 1
+      }
+     },
+     {
+      "file": "19_Microsoft_Heera.wav",
+      "source": "sapi",
+      "voice": "Microsoft_Heera",
+      "id": null,
+      "ref": "move right four meters",
+      "in_grammar": true,
+      "modes": {
+       "open": {
+        "init_ms": 55.98,
+        "rtf": 0.1768,
+        "final_ms": 24.37,
+        "text": "move right form it is",
+        "exact": false,
+        "command_accepted": false
+       },
+       "grammar": {
+        "init_ms": 1.43,
+        "rtf": 0.0172,
+        "final_ms": 14.45,
+        "text": "move right four meters",
+        "exact": true,
+        "command_accepted": true
+       },
+       "grammar+fillers": {
+        "init_ms": 2.5,
+        "rtf": 0.0256,
+        "final_ms": 13.91,
+        "text": "move right four meters",
+        "exact": true,
+        "command_accepted": true
+       }
+      },
+      "nbest": {
+       "init_ms": 1.61,
+       "rtf": 0.0187,
+       "final_ms": 13.09,
+       "alternatives": [
+        [
+         {
+          "text": "move right four meters",
+          "confidence": 194.43
+         }
+        ]
+       ],
+       "n_alternatives": 1
+      }
+     },
+     {
+      "file": "20_Microsoft_Heera.wav",
+      "source": "sapi",
+      "voice": "Microsoft_Heera",
+      "id": null,
+      "ref": "go up two meters",
+      "in_grammar": true,
+      "modes": {
+       "open": {
+        "init_ms": 54.37,
+        "rtf": 0.1442,
+        "final_ms": 12.8,
+        "text": "go up to it is",
+        "exact": false,
+        "command_accepted": false
+       },
+       "grammar": {
+        "init_ms": 1.25,
+        "rtf": 0.0161,
+        "final_ms": 8.41,
+        "text": "go up two meters",
+        "exact": true,
+        "command_accepted": true
+       },
+       "grammar+fillers": {
+        "init_ms": 1.53,
+        "rtf": 0.0194,
+        "final_ms": 9.87,
+        "text": "go up two meters",
+        "exact": true,
+        "command_accepted": true
+       }
+      },
+      "nbest": {
+       "init_ms": 1.08,
+       "rtf": 0.0159,
+       "final_ms": 7.83,
+       "alternatives": [
+        [
+         {
+          "text": "go up two meters",
+          "confidence": 165.32
+         }
+        ]
+       ],
+       "n_alternatives": 1
+      }
+     },
+     {
+      "file": "21_Microsoft_Heera.wav",
+      "source": "sapi",
+      "voice": "Microsoft_Heera",
+      "id": null,
+      "ref": "come down one meter",
+      "in_grammar": true,
+      "modes": {
+       "open": {
+        "init_ms": 52.45,
+        "rtf": 0.1369,
+        "final_ms": 40.61,
+        "text": "come down one meter",
+        "exact": true,
+        "command_accepted": true
+       },
+       "grammar": {
+        "init_ms": 1.21,
+        "rtf": 0.0167,
+        "final_ms": 10.12,
+        "text": "come down one meter",
+        "exact": true,
+        "command_accepted": true
+       },
+       "grammar+fillers": {
+        "init_ms": 2.71,
+        "rtf": 0.0206,
+        "final_ms": 8.37,
+        "text": "come down one meter",
+        "exact": true,
+        "command_accepted": true
+       }
+      },
+      "nbest": {
+       "init_ms": 1.63,
+       "rtf": 0.016,
+       "final_ms": 8.07,
+       "alternatives": [
+        [
+         {
+          "text": "come down one meter",
+          "confidence": 171.1
+         }
+        ]
+       ],
+       "n_alternatives": 1
+      }
+     },
+     {
+      "file": "22_Microsoft_Heera.wav",
+      "source": "sapi",
+      "voice": "Microsoft_Heera",
+      "id": null,
+      "ref": "stop",
+      "in_grammar": true,
+      "modes": {
+       "open": {
+        "init_ms": 49.68,
+        "rtf": 0.1224,
+        "final_ms": 24.33,
+        "text": "stop",
+        "exact": true,
+        "command_accepted": true
+       },
+       "grammar": {
+        "init_ms": 1.22,
+        "rtf": 0.016,
+        "final_ms": 7.95,
+        "text": "stop",
+        "exact": true,
+        "command_accepted": true
+       },
+       "grammar+fillers": {
+        "init_ms": 1.69,
+        "rtf": 0.0207,
+        "final_ms": 7.98,
+        "text": "stop",
+        "exact": true,
+        "command_accepted": true
+       }
+      },
+      "nbest": {
+       "init_ms": 1.54,
+       "rtf": 0.0168,
+       "final_ms": 7.71,
+       "alternatives": [
+        [
+         {
+          "text": "stop",
+          "confidence": 113.5
+         }
+        ]
+       ],
+       "n_alternatives": 1
+      }
+     },
+     {
+      "file": "23_Microsoft_Heera.wav",
+      "source": "sapi",
+      "voice": "Microsoft_Heera",
+      "id": null,
+      "ref": "hold",
+      "in_grammar": true,
+      "modes": {
+       "open": {
+        "init_ms": 50.15,
+        "rtf": 0.1193,
+        "final_ms": 24.54,
+        "text": "hold",
+        "exact": true,
+        "command_accepted": true
+       },
+       "grammar": {
+        "init_ms": 1.25,
+        "rtf": 0.0135,
+        "final_ms": 11.36,
+        "text": "hold",
+        "exact": true,
+        "command_accepted": true
+       },
+       "grammar+fillers": {
+        "init_ms": 1.53,
+        "rtf": 0.0174,
+        "final_ms": 12.38,
+        "text": "hold",
+        "exact": true,
+        "command_accepted": true
+       }
+      },
+      "nbest": {
+       "init_ms": 1.11,
+       "rtf": 0.0138,
+       "final_ms": 11.76,
+       "alternatives": [
+        [
+         {
+          "text": "hold",
+          "confidence": 104.43
+         }
+        ]
+       ],
+       "n_alternatives": 1
+      }
+     },
+     {
+      "file": "24_Microsoft_Heera.wav",
+      "source": "sapi",
+      "voice": "Microsoft_Heera",
+      "id": null,
+      "ref": "land",
+      "in_grammar": true,
+      "modes": {
+       "open": {
+        "init_ms": 49.23,
+        "rtf": 0.1348,
+        "final_ms": 40.63,
+        "text": "land",
+        "exact": true,
+        "command_accepted": true
+       },
+       "grammar": {
+        "init_ms": 1.79,
+        "rtf": 0.0143,
+        "final_ms": 10.92,
+        "text": "land",
+        "exact": true,
+        "command_accepted": true
+       },
+       "grammar+fillers": {
+        "init_ms": 1.59,
+        "rtf": 0.0154,
+        "final_ms": 11.1,
+        "text": "land",
+        "exact": true,
+        "command_accepted": true
+       }
+      },
+      "nbest": {
+       "init_ms": 1.05,
+       "rtf": 0.0123,
+       "final_ms": 10.49,
+       "alternatives": [
+        [
+         {
+          "text": "land",
+          "confidence": 105.39
+         }
+        ]
+       ],
+       "n_alternatives": 1
+      }
+     },
+     {
+      "file": "25_Microsoft_Heera.wav",
+      "source": "sapi",
+      "voice": "Microsoft_Heera",
+      "id": null,
+      "ref": "return home",
+      "in_grammar": true,
+      "modes": {
+       "open": {
+        "init_ms": 46.6,
+        "rtf": 0.1421,
+        "final_ms": 11.23,
+        "text": "return home",
+        "exact": true,
+        "command_accepted": true
+       },
+       "grammar": {
+        "init_ms": 1.19,
+        "rtf": 0.0145,
+        "final_ms": 7.69,
+        "text": "return home",
+        "exact": true,
+        "command_accepted": true
+       },
+       "grammar+fillers": {
+        "init_ms": 1.64,
+        "rtf": 0.0185,
+        "final_ms": 7.86,
+        "text": "return home",
+        "exact": true,
+        "command_accepted": true
+       }
+      },
+      "nbest": {
+       "init_ms": 1.02,
+       "rtf": 0.0145,
+       "final_ms": 7.58,
+       "alternatives": [
+        [
+         {
+          "text": "return home",
+          "confidence": 116.48
+         }
+        ]
+       ],
+       "n_alternatives": 1
+      }
+     },
+     {
+      "file": "26_Microsoft_Heera.wav",
+      "source": "sapi",
+      "voice": "Microsoft_Heera",
+      "id": null,
+      "ref": "status",
+      "in_grammar": true,
+      "modes": {
+       "open": {
+        "init_ms": 48.61,
+        "rtf": 0.109,
+        "final_ms": 26.03,
+        "text": "status",
+        "exact": true,
+        "command_accepted": true
+       },
+       "grammar": {
+        "init_ms": 1.17,
+        "rtf": 0.0139,
+        "final_ms": 10.73,
+        "text": "status",
+        "exact": true,
+        "command_accepted": true
+       },
+       "grammar+fillers": {
+        "init_ms": 1.71,
+        "rtf": 0.0178,
+        "final_ms": 12.06,
+        "text": "status",
+        "exact": true,
+        "command_accepted": true
+       }
+      },
+      "nbest": {
+       "init_ms": 1.06,
+       "rtf": 0.0139,
+       "final_ms": 10.79,
+       "alternatives": [
+        [
+         {
+          "text": "status",
+          "confidence": 119.46
+         }
+        ]
+       ],
+       "n_alternatives": 1
+      }
+     },
+     {
+      "file": "27_Microsoft_Heera.wav",
+      "source": "sapi",
+      "voice": "Microsoft_Heera",
+      "id": null,
+      "ref": "move back six meters",
+      "in_grammar": true,
+      "modes": {
+       "open": {
+        "init_ms": 48.98,
+        "rtf": 0.0981,
+        "final_ms": 23.34,
+        "text": "move back six meters",
+        "exact": true,
+        "command_accepted": true
+       },
+       "grammar": {
+        "init_ms": 1.14,
+        "rtf": 0.0148,
+        "final_ms": 10.28,
+        "text": "move back six meters",
+        "exact": true,
+        "command_accepted": true
+       },
+       "grammar+fillers": {
+        "init_ms": 1.45,
+        "rtf": 0.0177,
+        "final_ms": 10.23,
+        "text": "move back six meters",
+        "exact": true,
+        "command_accepted": true
+       }
+      },
+      "nbest": {
+       "init_ms": 1.04,
+       "rtf": 0.0155,
+       "final_ms": 10.65,
+       "alternatives": [
+        [
+         {
+          "text": "move back six meters",
+          "confidence": 199.5
+         }
+        ]
+       ],
+       "n_alternatives": 1
+      }
+     },
+     {
+      "file": "28_Microsoft_Heera.wav",
+      "source": "sapi",
+      "voice": "Microsoft_Heera",
+      "id": null,
+      "ref": "what is the weather today",
+      "in_grammar": false,
+      "modes": {
+       "open": {
+        "init_ms": 49.65,
+        "rtf": 0.1245,
+        "final_ms": 17.74,
+        "text": "what is the weather today",
+        "exact": true,
+        "command_accepted": false
+       },
+       "grammar": {
+        "init_ms": 1.15,
+        "rtf": 0.0145,
+        "final_ms": 11.9,
+        "text": "two",
+        "exact": false,
+        "command_accepted": false
+       },
+       "grammar+fillers": {
+        "init_ms": 1.61,
+        "rtf": 0.0189,
+        "final_ms": 11.6,
+        "text": "weather today",
+        "exact": false,
+        "command_accepted": false
+       }
+      },
+      "nbest": {
+       "init_ms": 1.07,
+       "rtf": 0.0156,
+       "final_ms": 12.05,
+       "alternatives": [
+        [
+         {
+          "text": "two",
+          "confidence": 136.46
+         },
+         {
+          "text": "to",
+          "confidence": 135.9
+         },
+         {
+          "text": "",
+          "confidence": 135.89
+         }
+        ]
+       ],
+       "n_alternatives": 3
+      }
+     },
+     {
+      "file": "29_Microsoft_Heera.wav",
+      "source": "sapi",
+      "voice": "Microsoft_Heera",
+      "id": null,
+      "ref": "take a photo of the field",
+      "in_grammar": false,
+      "modes": {
+       "open": {
+        "init_ms": 48.73,
+        "rtf": 0.1056,
+        "final_ms": 26.02,
+        "text": "take a photo of the field",
+        "exact": true,
+        "command_accepted": false
+       },
+       "grammar": {
+        "init_ms": 1.12,
+        "rtf": 0.0158,
+        "final_ms": 7.5,
+        "text": "take off four to off fly",
+        "exact": false,
+        "command_accepted": false
+       },
+       "grammar+fillers": {
+        "init_ms": 1.46,
+        "rtf": 0.0187,
+        "final_ms": 7.75,
+        "text": "take off to off field",
+        "exact": false,
+        "command_accepted": false
+       }
+      },
+      "nbest": {
+       "init_ms": 0.99,
+       "rtf": 0.0159,
+       "final_ms": 8.22,
+       "alternatives": [
+        [
+         {
+          "text": "take off four two off fly",
+          "confidence": 162.11
+         },
+         {
+          "text": "take off four two off fly land",
+          "confidence": 162.06
+         },
+         {
+          "text": "take off four two off five",
+          "confidence": 161.73
+         }
+        ]
+       ],
+       "n_alternatives": 3
+      }
+     },
+     {
+      "file": "30_Microsoft_Heera.wav",
+      "source": "sapi",
+      "voice": "Microsoft_Heera",
+      "id": null,
+      "ref": "forward seven meters",
+      "in_grammar": true,
+      "modes": {
+       "open": {
+        "init_ms": 48.12,
+        "rtf": 0.1305,
+        "final_ms": 28.86,
+        "text": "forward seven meters",
+        "exact": true,
+        "command_accepted": true
+       },
+       "grammar": {
+        "init_ms": 1.22,
+        "rtf": 0.0164,
+        "final_ms": 8.3,
+        "text": "forward seven meters",
+        "exact": true,
+        "command_accepted": true
+       },
+       "grammar+fillers": {
+        "init_ms": 1.6,
+        "rtf": 0.0201,
+        "final_ms": 8.07,
+        "text": "forward seven meters",
+        "exact": true,
+        "command_accepted": true
+       }
+      },
+      "nbest": {
+       "init_ms": 1.15,
+       "rtf": 0.0162,
+       "final_ms": 7.81,
+       "alternatives": [
+        [
+         {
+          "text": "forward seven meters",
+          "confidence": 179.18
+         }
+        ]
+       ],
+       "n_alternatives": 1
+      }
+     },
+     {
+      "file": "31_Microsoft_Heera.wav",
+      "source": "sapi",
+      "voice": "Microsoft_Heera",
+      "id": null,
+      "ref": "drone stop",
+      "in_grammar": true,
+      "modes": {
+       "open": {
+        "init_ms": 51.22,
+        "rtf": 0.1105,
+        "final_ms": 17.72,
+        "text": "drone stop",
+        "exact": true,
+        "command_accepted": true
+       },
+       "grammar": {
+        "init_ms": 1.19,
+        "rtf": 0.0141,
+        "final_ms": 11.28,
+        "text": "drone stop",
+        "exact": true,
+        "command_accepted": true
+       },
+       "grammar+fillers": {
+        "init_ms": 1.51,
+        "rtf": 0.0179,
+        "final_ms": 11.74,
+        "text": "drone stop",
+        "exact": true,
+        "command_accepted": true
+       }
+      },
+      "nbest": {
+       "init_ms": 1.09,
+       "rtf": 0.0143,
+       "final_ms": 11.1,
+       "alternatives": [
+        [
+         {
+          "text": "drone stop",
+          "confidence": 142.44
+         }
+        ]
+       ],
+       "n_alternatives": 1
+      }
+     }
+    ]
+   },
+   {
+    "engine": "vosk",
+    "lang": "hi",
+    "model": "vosk-model-small-hi-0.22",
+    "load_s": 1.481,
+    "memory_mib": {
+     "before_load": {
+      "rss": 71.8671875,
+      "peak_rss": 76.609375,
+      "rss_anon": 49.25,
+      "rss_file": 22.6171875
+     },
+     "after_load": {
+      "rss": 215.44140625,
+      "peak_rss": 215.44140625,
+      "rss_anon": 189.69921875,
+      "rss_file": 25.7421875
+     },
+     "end": {
+      "rss": 279.703125,
+      "peak_rss": 279.703125,
+      "rss_anon": 253.0859375,
+      "rss_file": 26.6171875
+     }
+    },
+    "grammar_phrases": 152,
+    "grammar_words_missing_from_model": [],
+    "summary": {
+     "open": {
+      "exact_in_grammar": "2/14",
+      "false_accepts_out_of_grammar": "0/0",
+      "rtf": {
+       "n": 14,
+       "mean": 0.3791571428571428,
+       "p50": 0.37965000000000004,
+       "p95": 0.51455,
+       "max": 0.5165
+      },
+      "final_ms": {
+       "n": 14,
+       "mean": 32.22857142857142,
+       "p50": 31.325,
+       "p95": 62.559499999999986,
+       "max": 83.99
+      },
+      "init_ms": {
+       "n": 14,
+       "mean": 40.38142857142857,
+       "p50": 39.85,
+       "p95": 43.5355,
+       "max": 43.88
+      }
+     },
+     "grammar": {
+      "exact_in_grammar": "10/14",
+      "false_accepts_out_of_grammar": "0/0",
+      "rtf": {
+       "n": 14,
+       "mean": 0.01702142857142857,
+       "p50": 0.0166,
+       "p95": 0.019485,
+       "max": 0.0202
+      },
+      "final_ms": {
+       "n": 14,
+       "mean": 6.033571428571428,
+       "p50": 5.779999999999999,
+       "p95": 8.3005,
+       "max": 8.71
+      },
+      "init_ms": {
+       "n": 14,
+       "mean": 0.6649999999999999,
+       "p50": 0.645,
+       "p95": 0.78,
+       "max": 0.78
+      }
+     },
+     "nbest_grammar": {
+      "clips_with_more_than_one_alternative": "11/14"
+     }
+    },
+    "clips": [
+     {
+      "file": "takeoff_3_v0.wav",
+      "source": "espeak",
+      "voice": "hi",
+      "id": "takeoff_3",
+      "ref": "टेकऑफ तीन मीटर",
+      "in_grammar": true,
+      "modes": {
+       "open": {
+        "init_ms": 43.88,
+        "rtf": 0.4933,
+        "final_ms": 27.31,
+        "text": "तीन मीटर",
+        "exact": false,
+        "command_accepted": false
+       },
+       "grammar": {
+        "init_ms": 0.78,
+        "rtf": 0.0188,
+        "final_ms": 7.0,
+        "text": "टेकऑफ तीन मीटर",
+        "exact": true,
+        "command_accepted": true
+       }
+      },
+      "nbest": {
+       "init_ms": 0.66,
+       "rtf": 0.0189,
+       "final_ms": 6.31,
+       "alternatives": [
+        [
+         {
+          "text": "टेकऑफ तीन मीटर",
+          "confidence": 110.25
+         }
+        ]
+       ],
+       "n_alternatives": 1
+      }
+     },
+     {
+      "file": "forward_3_v0.wav",
+      "source": "espeak",
+      "voice": "hi",
+      "id": "forward_3",
+      "ref": "तीन मीटर आगे जाओ",
+      "in_grammar": true,
+      "modes": {
+       "open": {
+        "init_ms": 42.23,
+        "rtf": 0.3555,
+        "final_ms": 9.29,
+        "text": "तीन मीटर आगे जाओ",
+        "exact": true,
+        "command_accepted": true
+       },
+       "grammar": {
+        "init_ms": 0.7,
+        "rtf": 0.0202,
+        "final_ms": 4.85,
+        "text": "तीन मीटर आगे जाओ",
+        "exact": true,
+        "command_accepted": true
+       }
+      },
+      "nbest": {
+       "init_ms": 0.61,
+       "rtf": 0.0197,
+       "final_ms": 4.41,
+       "alternatives": [
+        [
+         {
+          "text": "तीन मीटर आगे जाओ",
+          "confidence": 140.59
+         }
+        ]
+       ],
+       "n_alternatives": 1
+      }
+     },
+     {
+      "file": "left_2_v0.wav",
+      "source": "espeak",
+      "voice": "hi",
+      "id": "left_2",
+      "ref": "दो मीटर बाएं जाओ",
+      "in_grammar": true,
+      "modes": {
+       "open": {
+        "init_ms": 40.42,
+        "rtf": 0.5165,
+        "final_ms": 50.74,
+        "text": "दो भी जाओ",
+        "exact": false,
+        "command_accepted": false
+       },
+       "grammar": {
+        "init_ms": 0.7,
+        "rtf": 0.0162,
+        "final_ms": 8.71,
+        "text": "दो मीटर बाएं जाओ",
+        "exact": true,
+        "command_accepted": true
+       }
+      },
+      "nbest": {
+       "init_ms": 0.62,
+       "rtf": 0.0181,
+       "final_ms": 8.22,
+       "alternatives": [
+        [
+         {
+          "text": "दो मीटर बाएं जाओ",
+          "confidence": 121.01
+         },
+         {
+          "text": "मीटर बाएं जाओ",
+          "confidence": 119.59
+         },
+         {
+          "text": "दो मीटर आगे जाओ",
+          "confidence": 118.25
+         }
+        ]
+       ],
+       "n_alternatives": 3
+      }
+     },
+     {
+      "file": "land_v0.wav",
+      "source": "espeak",
+      "voice": "hi",
+      "id": "land",
+      "ref": "लैंड",
+      "in_grammar": true,
+      "modes": {
+       "open": {
+        "init_ms": 39.3,
+        "rtf": 0.2915,
+        "final_ms": 12.78,
+        "text": "",
+        "exact": false,
+        "command_accepted": false
+       },
+       "grammar": {
+        "init_ms": 0.63,
+        "rtf": 0.0164,
+        "final_ms": 4.07,
+        "text": "लैंड",
+        "exact": true,
+        "command_accepted": true
+       }
+      },
+      "nbest": {
+       "init_ms": 0.54,
+       "rtf": 0.0166,
+       "final_ms": 4.56,
+       "alternatives": [
+        [
+         {
+          "text": "लैंड",
+          "confidence": 54.98
+         },
+         {
+          "text": "",
+          "confidence": 54.47
+         }
+        ]
+       ],
+       "n_alternatives": 2
+      }
+     },
+     {
+      "file": "stop_v0.wav",
+      "source": "espeak",
+      "voice": "hi",
+      "id": "stop",
+      "ref": "रुको",
+      "in_grammar": true,
+      "modes": {
+       "open": {
+        "init_ms": 41.71,
+        "rtf": 0.3491,
+        "final_ms": 16.97,
+        "text": "प्लूटो",
+        "exact": false,
+        "command_accepted": false
+       },
+       "grammar": {
+        "init_ms": 0.62,
+        "rtf": 0.0165,
+        "final_ms": 4.67,
+        "text": "",
+        "exact": false,
+        "command_accepted": false
+       }
+      },
+      "nbest": {
+       "init_ms": 0.51,
+       "rtf": 0.0164,
+       "final_ms": 4.81,
+       "alternatives": [
+        [
+         {
+          "text": "",
+          "confidence": 54.76
+         },
+         {
+          "text": "उतरो",
+          "confidence": 54.01
+         },
+         {
+          "text": "चलो",
+          "confidence": 53.69
+         }
+        ]
+       ],
+       "n_alternatives": 3
+      }
+     },
+     {
+      "file": "hold_v0.wav",
+      "source": "espeak",
+      "voice": "hi",
+      "id": "hold",
+      "ref": "होवर",
+      "in_grammar": true,
+      "modes": {
+       "open": {
+        "init_ms": 40.43,
+        "rtf": 0.3962,
+        "final_ms": 32.32,
+        "text": "होमर",
+        "exact": false,
+        "command_accepted": false
+       },
+       "grammar": {
+        "init_ms": 0.7,
+        "rtf": 0.016,
+        "final_ms": 7.32,
+        "text": "होवर",
+        "exact": true,
+        "command_accepted": true
+       }
+      },
+      "nbest": {
+       "init_ms": 0.54,
+       "rtf": 0.0155,
+       "final_ms": 7.77,
+       "alternatives": [
+        [
+         {
+          "text": "होवर",
+          "confidence": 61.0
+         },
+         {
+          "text": "",
+          "confidence": 59.44
+         },
+         {
+          "text": "मत",
+          "confidence": 57.92
+         }
+        ]
+       ],
+       "n_alternatives": 3
+      }
+     },
+     {
+      "file": "neg_takeoff_v0.wav",
+      "source": "espeak",
+      "voice": "hi",
+      "id": "neg_takeoff",
+      "ref": "टेकऑफ मत करो",
+      "in_grammar": true,
+      "modes": {
+       "open": {
+        "init_ms": 39.11,
+        "rtf": 0.5135,
+        "final_ms": 83.99,
+        "text": "ऑफ था",
+        "exact": false,
+        "command_accepted": false
+       },
+       "grammar": {
+        "init_ms": 0.66,
+        "rtf": 0.0184,
+        "final_ms": 5.35,
+        "text": "टेकऑफ मत करो",
+        "exact": true,
+        "command_accepted": true
+       }
+      },
+      "nbest": {
+       "init_ms": 0.6,
+       "rtf": 0.0187,
+       "final_ms": 5.57,
+       "alternatives": [
+        [
+         {
+          "text": "टेकऑफ मत करो",
+          "confidence": 98.98
+         },
+         {
+          "text": "टेकऑफ करो",
+          "confidence": 97.79
+         }
+        ]
+       ],
+       "n_alternatives": 2
+      }
+     },
+     {
+      "file": "takeoff_3_v1.wav",
+      "source": "espeak",
+      "voice": "hi+f3",
+      "id": "takeoff_3",
+      "ref": "टेकऑफ तीन मीटर",
+      "in_grammar": true,
+      "modes": {
+       "open": {
+        "init_ms": 39.86,
+        "rtf": 0.3933,
+        "final_ms": 51.02,
+        "text": "आपकी मीटर",
+        "exact": false,
+        "command_accepted": false
+       },
+       "grammar": {
+        "init_ms": 0.63,
+        "rtf": 0.0168,
+        "final_ms": 8.08,
+        "text": "टेकऑफ तीन मीटर",
+        "exact": true,
+        "command_accepted": true
+       }
+      },
+      "nbest": {
+       "init_ms": 0.51,
+       "rtf": 0.0161,
+       "final_ms": 7.55,
+       "alternatives": [
+        [
+         {
+          "text": "टेकऑफ तीन मीटर",
+          "confidence": 113.2
+         },
+         {
+          "text": "तीन मीटर",
+          "confidence": 109.95
+         }
+        ]
+       ],
+       "n_alternatives": 2
+      }
+     },
+     {
+      "file": "forward_3_v1.wav",
+      "source": "espeak",
+      "voice": "hi+f3",
+      "id": "forward_3",
+      "ref": "तीन मीटर आगे जाओ",
+      "in_grammar": true,
+      "modes": {
+       "open": {
+        "init_ms": 38.54,
+        "rtf": 0.259,
+        "final_ms": 8.8,
+        "text": "तीन मीटर आगे जाओ",
+        "exact": true,
+        "command_accepted": true
+       },
+       "grammar": {
+        "init_ms": 0.67,
+        "rtf": 0.0167,
+        "final_ms": 4.44,
+        "text": "तीन मीटर आगे जाओ",
+        "exact": true,
+        "command_accepted": true
+       }
+      },
+      "nbest": {
+       "init_ms": 0.59,
+       "rtf": 0.0175,
+       "final_ms": 4.75,
+       "alternatives": [
+        [
+         {
+          "text": "तीन मीटर आगे जाओ",
+          "confidence": 141.64
+         }
+        ]
+       ],
+       "n_alternatives": 1
+      }
+     },
+     {
+      "file": "left_2_v1.wav",
+      "source": "espeak",
+      "voice": "hi+f3",
+      "id": "left_2",
+      "ref": "दो मीटर बाएं जाओ",
+      "in_grammar": true,
+      "modes": {
+       "open": {
+        "init_ms": 39.19,
+        "rtf": 0.4165,
+        "final_ms": 36.0,
+        "text": "टॉमी आये जाओ",
+        "exact": false,
+        "command_accepted": false
+       },
+       "grammar": {
+        "init_ms": 0.78,
+        "rtf": 0.0191,
+        "final_ms": 6.21,
+        "text": "मीटर बाएं जाओ",
+        "exact": false,
+        "command_accepted": false
+       }
+      },
+      "nbest": {
+       "init_ms": 0.84,
+       "rtf": 0.0196,
+       "final_ms": 5.07,
+       "alternatives": [
+        [
+         {
+          "text": "दो मीटर बाएं जाओ",
+          "confidence": 123.53
+         },
+         {
+          "text": "मीटर बाएं जाओ",
+          "confidence": 123.39
+         },
+         {
+          "text": "नौ मीटर बाएं जाओ",
+          "confidence": 121.4
+         }
+        ]
+       ],
+       "n_alternatives": 3
+      }
+     },
+     {
+      "file": "land_v1.wav",
+      "source": "espeak",
+      "voice": "hi+f3",
+      "id": "land",
+      "ref": "लैंड",
+      "in_grammar": true,
+      "modes": {
+       "open": {
+        "init_ms": 39.84,
+        "rtf": 0.3789,
+        "final_ms": 32.44,
+        "text": "",
+        "exact": false,
+        "command_accepted": false
+       },
+       "grammar": {
+        "init_ms": 0.62,
+        "rtf": 0.0154,
+        "final_ms": 7.12,
+        "text": "लैंड",
+        "exact": true,
+        "command_accepted": true
+       }
+      },
+      "nbest": {
+       "init_ms": 0.55,
+       "rtf": 0.0156,
+       "final_ms": 8.02,
+       "alternatives": [
+        [
+         {
+          "text": "लैंड",
+          "confidence": 62.8
+         },
+         {
+          "text": "",
+          "confidence": 60.76
+         }
+        ]
+       ],
+       "n_alternatives": 2
+      }
+     },
+     {
+      "file": "stop_v1.wav",
+      "source": "espeak",
+      "voice": "hi+f3",
+      "id": "stop",
+      "ref": "रुको",
+      "in_grammar": true,
+      "modes": {
+       "open": {
+        "init_ms": 39.22,
+        "rtf": 0.2902,
+        "final_ms": 30.33,
+        "text": "तो",
+        "exact": false,
+        "command_accepted": false
+       },
+       "grammar": {
+        "init_ms": 0.6,
+        "rtf": 0.0145,
+        "final_ms": 7.89,
+        "text": "",
+        "exact": false,
+        "command_accepted": false
+       }
+      },
+      "nbest": {
+       "init_ms": 0.55,
+       "rtf": 0.0143,
+       "final_ms": 8.07,
+       "alternatives": [
+        [
+         {
+          "text": "",
+          "confidence": 61.36
+         },
+         {
+          "text": "उतरो",
+          "confidence": 59.79
+         },
+         {
+          "text": "चलो",
+          "confidence": 59.63
+         }
+        ]
+       ],
+       "n_alternatives": 3
+      }
+     },
+     {
+      "file": "hold_v1.wav",
+      "source": "espeak",
+      "voice": "hi+f3",
+      "id": "hold",
+      "ref": "होवर",
+      "in_grammar": true,
+      "modes": {
+       "open": {
+        "init_ms": 43.35,
+        "rtf": 0.2743,
+        "final_ms": 21.3,
+        "text": "होगा",
+        "exact": false,
+        "command_accepted": false
+       },
+       "grammar": {
+        "init_ms": 0.6,
+        "rtf": 0.0159,
+        "final_ms": 4.08,
+        "text": "",
+        "exact": false,
+        "command_accepted": false
+       }
+      },
+      "nbest": {
+       "init_ms": 0.58,
+       "rtf": 0.0163,
+       "final_ms": 4.15,
+       "alternatives": [
+        [
+         {
+          "text": "",
+          "confidence": 61.53
+         },
+         {
+          "text": "होवर",
+          "confidence": 61.15
+         },
+         {
+          "text": "चलो",
+          "confidence": 57.79
+         }
+        ]
+       ],
+       "n_alternatives": 3
+      }
+     },
+     {
+      "file": "neg_takeoff_v1.wav",
+      "source": "espeak",
+      "voice": "hi+f3",
+      "id": "neg_takeoff",
+      "ref": "टेकऑफ मत करो",
+      "in_grammar": true,
+      "modes": {
+       "open": {
+        "init_ms": 38.26,
+        "rtf": 0.3804,
+        "final_ms": 37.91,
+        "text": "अपना के आरोप",
+        "exact": false,
+        "command_accepted": false
+       },
+       "grammar": {
+        "init_ms": 0.62,
+        "rtf": 0.0174,
+        "final_ms": 4.68,
+        "text": "टेकऑफ मत करो",
+        "exact": true,
+        "command_accepted": true
+       }
+      },
+      "nbest": {
+       "init_ms": 0.54,
+       "rtf": 0.0171,
+       "final_ms": 4.29,
+       "alternatives": [
+        [
+         {
+          "text": "टेकऑफ मत करो",
+          "confidence": 104.91
+         },
+         {
+          "text": "टेकऑफ करो",
+          "confidence": 103.45
+         }
+        ]
+       ],
+       "n_alternatives": 2
+      }
+     }
+    ]
+   },
+   {
+    "engine": "vosk",
+    "lang": "te",
+    "model": "vosk-model-small-te-0.42",
+    "load_s": 1.929,
+    "memory_mib": {
+     "before_load": {
+      "rss": 79.2578125,
+      "peak_rss": 90.515625,
+      "rss_anon": 56.51953125,
+      "rss_file": 22.73828125
+     },
+     "after_load": {
+      "rss": 293.15234375,
+      "peak_rss": 293.15234375,
+      "rss_anon": 267.2890625,
+      "rss_file": 25.86328125
+     },
+     "end": {
+      "rss": 318.1640625,
+      "peak_rss": 318.1640625,
+      "rss_anon": 291.42578125,
+      "rss_file": 26.73828125
+     }
+    },
+    "grammar_phrases": 274,
+    "grammar_words_missing_from_model": [],
+    "summary": {
+     "open": {
+      "exact_in_grammar": "0/14",
+      "false_accepts_out_of_grammar": "0/0",
+      "rtf": {
+       "n": 14,
+       "mean": 0.0786,
+       "p50": 0.0807,
+       "p95": 0.10095,
+       "max": 0.1042
+      },
+      "final_ms": {
+       "n": 14,
+       "mean": 8.229285714285714,
+       "p50": 7.105,
+       "p95": 14.967499999999998,
+       "max": 21.89
+      },
+      "init_ms": {
+       "n": 14,
+       "mean": 100.295,
+       "p50": 99.75999999999999,
+       "p95": 105.1835,
+       "max": 110.0
+      }
+     },
+     "grammar": {
+      "exact_in_grammar": "1/14",
+      "false_accepts_out_of_grammar": "0/0",
+      "rtf": {
+       "n": 14,
+       "mean": 0.0154,
+       "p50": 0.0153,
+       "p95": 0.016775,
+       "max": 0.0171
+      },
+      "final_ms": {
+       "n": 14,
+       "mean": 5.428571428571428,
+       "p50": 5.135,
+       "p95": 7.8445,
+       "max": 7.89
+      },
+      "init_ms": {
+       "n": 14,
+       "mean": 0.8507142857142858,
+       "p50": 0.8300000000000001,
+       "p95": 0.9874999999999999,
+       "max": 1.02
+      }
+     },
+     "nbest_grammar": {
+      "clips_with_more_than_one_alternative": "1/14"
+     }
+    },
+    "clips": [
+     {
+      "file": "takeoff_3_v0.wav",
+      "source": "espeak",
+      "voice": "te",
+      "id": "takeoff_3",
+      "ref": "మూడు మీటర్లు టేకాఫ్",
+      "in_grammar": true,
+      "modes": {
+       "open": {
+        "init_ms": 110.0,
+        "rtf": 0.0821,
+        "final_ms": 5.9,
+        "text": "యుకె",
+        "exact": false,
+        "command_accepted": false
+       },
+       "grammar": {
+        "init_ms": 0.97,
+        "rtf": 0.0164,
+        "final_ms": 3.84,
+        "text": "",
+        "exact": false,
+        "command_accepted": false
+       }
+      },
+      "nbest": {
+       "init_ms": 1.1,
+       "rtf": 0.022,
+       "final_ms": 5.63,
+       "alternatives": [
+        [
+         {
+          "text": "",
+          "confidence": 92.75
+         }
+        ]
+       ],
+       "n_alternatives": 1
+      }
+     },
+     {
+      "file": "forward_3_v0.wav",
+      "source": "espeak",
+      "voice": "te",
+      "id": "forward_3",
+      "ref": "మూడు మీటర్లు ముందుకు వెళ్ళు",
+      "in_grammar": true,
+      "modes": {
+       "open": {
+        "init_ms": 102.33,
+        "rtf": 0.0992,
+        "final_ms": 7.34,
+        "text": "మేము",
+        "exact": false,
+        "command_accepted": false
+       },
+       "grammar": {
+        "init_ms": 1.02,
+        "rtf": 0.0171,
+        "final_ms": 5.36,
+        "text": "",
+        "exact": false,
+        "command_accepted": false
+       }
+      },
+      "nbest": {
+       "init_ms": 0.85,
+       "rtf": 0.0171,
+       "final_ms": 4.19,
+       "alternatives": [
+        [
+         {
+          "text": "",
+          "confidence": 95.15
+         }
+        ]
+       ],
+       "n_alternatives": 1
+      }
+     },
+     {
+      "file": "left_2_v0.wav",
+      "source": "espeak",
+      "voice": "te",
+      "id": "left_2",
+      "ref": "రెండు మీటర్లు ఎడమకు వెళ్ళు",
+      "in_grammar": true,
+      "modes": {
+       "open": {
+        "init_ms": 102.59,
+        "rtf": 0.1042,
+        "final_ms": 10.21,
+        "text": "మెయిల్",
+        "exact": false,
+        "command_accepted": false
+       },
+       "grammar": {
+        "init_ms": 0.88,
+        "rtf": 0.0161,
+        "final_ms": 4.11,
+        "text": "",
+        "exact": false,
+        "command_accepted": false
+       }
+      },
+      "nbest": {
+       "init_ms": 0.79,
+       "rtf": 0.0148,
+       "final_ms": 3.5,
+       "alternatives": [
+        [
+         {
+          "text": "",
+          "confidence": 98.89
+         }
+        ]
+       ],
+       "n_alternatives": 1
+      }
+     },
+     {
+      "file": "land_v0.wav",
+      "source": "espeak",
+      "voice": "te",
+      "id": "land",
+      "ref": "ల్యాండ్",
+      "in_grammar": true,
+      "modes": {
+       "open": {
+        "init_ms": 100.61,
+        "rtf": 0.0989,
+        "final_ms": 4.44,
+        "text": "",
+        "exact": false,
+        "command_accepted": false
+       },
+       "grammar": {
+        "init_ms": 0.85,
+        "rtf": 0.0142,
+        "final_ms": 4.04,
+        "text": "",
+        "exact": false,
+        "command_accepted": false
+       }
+      },
+      "nbest": {
+       "init_ms": 0.8,
+       "rtf": 0.0141,
+       "final_ms": 3.67,
+       "alternatives": [
+        [
+         {
+          "text": "",
+          "confidence": 49.81
+         }
+        ]
+       ],
+       "n_alternatives": 1
+      }
+     },
+     {
+      "file": "stop_v0.wav",
+      "source": "espeak",
+      "voice": "te",
+      "id": "stop",
+      "ref": "ఆపు",
+      "in_grammar": true,
+      "modes": {
+       "open": {
+        "init_ms": 99.89,
+        "rtf": 0.0814,
+        "final_ms": 6.63,
+        "text": "",
+        "exact": false,
+        "command_accepted": false
+       },
+       "grammar": {
+        "init_ms": 0.79,
+        "rtf": 0.0149,
+        "final_ms": 4.91,
+        "text": "",
+        "exact": false,
+        "command_accepted": false
+       }
+      },
+      "nbest": {
+       "init_ms": 1.26,
+       "rtf": 0.0149,
+       "final_ms": 3.71,
+       "alternatives": [
+        [
+         {
+          "text": "",
+          "confidence": 47.77
+         }
+        ]
+       ],
+       "n_alternatives": 1
+      }
+     },
+     {
+      "file": "hold_v0.wav",
+      "source": "espeak",
+      "voice": "te",
+      "id": "hold",
+      "ref": "హోవర్",
+      "in_grammar": true,
+      "modes": {
+       "open": {
+        "init_ms": 97.76,
+        "rtf": 0.0886,
+        "final_ms": 4.07,
+        "text": "",
+        "exact": false,
+        "command_accepted": false
+       },
+       "grammar": {
+        "init_ms": 0.78,
+        "rtf": 0.0139,
+        "final_ms": 3.24,
+        "text": "",
+        "exact": false,
+        "command_accepted": false
+       }
+      },
+      "nbest": {
+       "init_ms": 0.8,
+       "rtf": 0.0143,
+       "final_ms": 3.58,
+       "alternatives": [
+        [
+         {
+          "text": "",
+          "confidence": 55.39
+         }
+        ]
+       ],
+       "n_alternatives": 1
+      }
+     },
+     {
+      "file": "neg_takeoff_v0.wav",
+      "source": "espeak",
+      "voice": "te",
+      "id": "neg_takeoff",
+      "ref": "టేకాఫ్ చేయకు",
+      "in_grammar": true,
+      "modes": {
+       "open": {
+        "init_ms": 96.15,
+        "rtf": 0.0632,
+        "final_ms": 8.89,
+        "text": "కె కె",
+        "exact": false,
+        "command_accepted": false
+       },
+       "grammar": {
+        "init_ms": 0.81,
+        "rtf": 0.0156,
+        "final_ms": 7.89,
+        "text": "",
+        "exact": false,
+        "command_accepted": false
+       }
+      },
+      "nbest": {
+       "init_ms": 0.83,
+       "rtf": 0.0149,
+       "final_ms": 7.51,
+       "alternatives": [
+        [
+         {
+          "text": "",
+          "confidence": 80.12
+         }
+        ]
+       ],
+       "n_alternatives": 1
+      }
+     },
+     {
+      "file": "takeoff_3_v1.wav",
+      "source": "espeak",
+      "voice": "te+f3",
+      "id": "takeoff_3",
+      "ref": "మూడు మీటర్లు టేకాఫ్",
+      "in_grammar": true,
+      "modes": {
+       "open": {
+        "init_ms": 99.29,
+        "rtf": 0.0601,
+        "final_ms": 21.89,
+        "text": "యూకే",
+        "exact": false,
+        "command_accepted": false
+       },
+       "grammar": {
+        "init_ms": 0.76,
+        "rtf": 0.0158,
+        "final_ms": 4.47,
+        "text": "",
+        "exact": false,
+        "command_accepted": false
+       }
+      },
+      "nbest": {
+       "init_ms": 0.84,
+       "rtf": 0.0172,
+       "final_ms": 4.52,
+       "alternatives": [
+        [
+         {
+          "text": "",
+          "confidence": 97.87
+         }
+        ]
+       ],
+       "n_alternatives": 1
+      }
+     },
+     {
+      "file": "forward_3_v1.wav",
+      "source": "espeak",
+      "voice": "te+f3",
+      "id": "forward_3",
+      "ref": "మూడు మీటర్లు ముందుకు వెళ్ళు",
+      "in_grammar": true,
+      "modes": {
+       "open": {
+        "init_ms": 98.46,
+        "rtf": 0.0633,
+        "final_ms": 5.82,
+        "text": "మేం",
+        "exact": false,
+        "command_accepted": false
+       },
+       "grammar": {
+        "init_ms": 0.9,
+        "rtf": 0.0166,
+        "final_ms": 6.02,
+        "text": "",
+        "exact": false,
+        "command_accepted": false
+       }
+      },
+      "nbest": {
+       "init_ms": 0.8,
+       "rtf": 0.0174,
+       "final_ms": 6.19,
+       "alternatives": [
+        [
+         {
+          "text": "",
+          "confidence": 104.38
+         }
+        ]
+       ],
+       "n_alternatives": 1
+      }
+     },
+     {
+      "file": "left_2_v1.wav",
+      "source": "espeak",
+      "voice": "te+f3",
+      "id": "left_2",
+      "ref": "రెండు మీటర్లు ఎడమకు వెళ్ళు",
+      "in_grammar": true,
+      "modes": {
+       "open": {
+        "init_ms": 98.84,
+        "rtf": 0.062,
+        "final_ms": 11.24,
+        "text": "మేము",
+        "exact": false,
+        "command_accepted": false
+       },
+       "grammar": {
+        "init_ms": 0.8,
+        "rtf": 0.0149,
+        "final_ms": 6.58,
+        "text": "",
+        "exact": false,
+        "command_accepted": false
+       }
+      },
+      "nbest": {
+       "init_ms": 1.09,
+       "rtf": 0.0152,
+       "final_ms": 7.23,
+       "alternatives": [
+        [
+         {
+          "text": "",
+          "confidence": 101.83
+         }
+        ]
+       ],
+       "n_alternatives": 1
+      }
+     },
+     {
+      "file": "land_v1.wav",
+      "source": "espeak",
+      "voice": "te+f3",
+      "id": "land",
+      "ref": "ల్యాండ్",
+      "in_grammar": true,
+      "modes": {
+       "open": {
+        "init_ms": 100.01,
+        "rtf": 0.0896,
+        "final_ms": 5.36,
+        "text": "",
+        "exact": false,
+        "command_accepted": false
+       },
+       "grammar": {
+        "init_ms": 0.9,
+        "rtf": 0.0166,
+        "final_ms": 4.04,
+        "text": "",
+        "exact": false,
+        "command_accepted": false
+       }
+      },
+      "nbest": {
+       "init_ms": 0.79,
+       "rtf": 0.0156,
+       "final_ms": 3.83,
+       "alternatives": [
+        [
+         {
+          "text": "",
+          "confidence": 54.34
+         }
+        ]
+       ],
+       "n_alternatives": 1
+      }
+     },
+     {
+      "file": "stop_v1.wav",
+      "source": "espeak",
+      "voice": "te+f3",
+      "id": "stop",
+      "ref": "ఆపు",
+      "in_grammar": true,
+      "modes": {
+       "open": {
+        "init_ms": 99.85,
+        "rtf": 0.08,
+        "final_ms": 8.07,
+        "text": "ఆ ఆపు",
+        "exact": false,
+        "command_accepted": false
+       },
+       "grammar": {
+        "init_ms": 0.8,
+        "rtf": 0.0139,
+        "final_ms": 7.35,
+        "text": "ఆపు",
+        "exact": true,
+        "command_accepted": true
+       }
+      },
+      "nbest": {
+       "init_ms": 0.76,
+       "rtf": 0.0141,
+       "final_ms": 7.38,
+       "alternatives": [
+        [
+         {
+          "text": "ఆపు",
+          "confidence": 53.16
+         }
+        ]
+       ],
+       "n_alternatives": 1
+      }
+     },
+     {
+      "file": "hold_v1.wav",
+      "source": "espeak",
+      "voice": "te+f3",
+      "id": "hold",
+      "ref": "హోవర్",
+      "in_grammar": true,
+      "modes": {
+       "open": {
+        "init_ms": 99.67,
+        "rtf": 0.074,
+        "final_ms": 8.48,
+        "text": "",
+        "exact": false,
+        "command_accepted": false
+       },
+       "grammar": {
+        "init_ms": 0.87,
+        "rtf": 0.015,
+        "final_ms": 7.82,
+        "text": "",
+        "exact": false,
+        "command_accepted": false
+       }
+      },
+      "nbest": {
+       "init_ms": 0.82,
+       "rtf": 0.0147,
+       "final_ms": 7.0,
+       "alternatives": [
+        [
+         {
+          "text": "",
+          "confidence": 58.6
+         }
+        ]
+       ],
+       "n_alternatives": 1
+      }
+     },
+     {
+      "file": "neg_takeoff_v1.wav",
+      "source": "espeak",
+      "voice": "te+f3",
+      "id": "neg_takeoff",
+      "ref": "టేకాఫ్ చేయకు",
+      "in_grammar": true,
+      "modes": {
+       "open": {
+        "init_ms": 98.68,
+        "rtf": 0.0538,
+        "final_ms": 6.87,
+        "text": "",
+        "exact": false,
+        "command_accepted": false
+       },
+       "grammar": {
+        "init_ms": 0.78,
+        "rtf": 0.0146,
+        "final_ms": 6.33,
+        "text": "",
+        "exact": false,
+        "command_accepted": false
+       }
+      },
+      "nbest": {
+       "init_ms": 0.75,
+       "rtf": 0.0146,
+       "final_ms": 7.27,
+       "alternatives": [
+        [
+         {
+          "text": "",
+          "confidence": 82.7
+         },
+         {
+          "text": "టేకాఫ్",
+          "confidence": 82.42
+         }
+        ]
+       ],
+       "n_alternatives": 2
+      }
+     }
+    ]
+   }
+  ]
+ },
+ "vosk_windows": {
+  "host": {
+   "platform": "Windows-11-10.0.26300-SP0",
+   "python": "3.12.10",
+   "cpu": "AMD64 Family 25 Model 68 Stepping 1, AuthenticAMD",
+   "vosk": "0.3.45"
+  },
+  "summary": {
+   "en": {
+    "open": {
+     "exact_in_grammar": "27/42",
+     "false_accepts_out_of_grammar": "0/4",
+     "rtf": {
+      "n": 46,
+      "mean": 0.18341521739130437,
+      "p50": 0.18005,
+      "p95": 0.24684999999999999,
+      "max": 0.3224
+     },
+     "final_ms": {
+      "n": 46,
+      "mean": 31.68673913043478,
+      "p50": 24.725,
+      "p95": 65.325,
+      "max": 77.06
+     },
+     "init_ms": {
+      "n": 46,
+      "mean": 172.34934782608698,
+      "p50": 169.465,
+      "p95": 183.12,
+      "max": 208.24
+     }
+    },
+    "grammar": {
+     "exact_in_grammar": "36/42",
+     "false_accepts_out_of_grammar": "1/4",
+     "rtf": {
+      "n": 46,
+      "mean": 0.016247826086956522,
+      "p50": 0.01575,
+      "p95": 0.0195,
+      "max": 0.0417
+     },
+     "final_ms": {
+      "n": 46,
+      "mean": 8.990434782608697,
+      "p50": 8.315,
+      "p95": 11.2625,
+      "max": 28.38
+     },
+     "init_ms": {
+      "n": 46,
+      "mean": 1.4021739130434785,
+      "p50": 1.35,
+      "p95": 1.57,
+      "max": 2.45
+     }
+    },
+    "grammar+fillers": {
+     "exact_in_grammar": "36/42",
+     "false_accepts_out_of_grammar": "0/4",
+     "rtf": {
+      "n": 46,
+      "mean": 0.020584782608695652,
+      "p50": 0.01965,
+      "p95": 0.0258,
+      "max": 0.0343
+     },
+     "final_ms": {
+      "n": 46,
+      "mean": 9.456739130434784,
+      "p50": 9.735,
+      "p95": 12.5,
+      "max": 14.92
+     },
+     "init_ms": {
+      "n": 46,
+      "mean": 1.831304347826087,
+      "p50": 1.74,
+      "p95": 2.205,
+      "max": 4.3
+     }
+    },
+    "nbest_grammar": {
+     "clips_with_more_than_one_alternative": "10/46"
+    }
+   },
+   "hi": {
+    "open": {
+     "exact_in_grammar": "2/14",
+     "false_accepts_out_of_grammar": "0/0",
+     "rtf": {
+      "n": 14,
+      "mean": 0.4171642857142857,
+      "p50": 0.40945,
+      "p95": 0.53575,
+      "max": 0.5364
+     },
+     "final_ms": {
+      "n": 14,
+      "mean": 23.45,
+      "p50": 21.685000000000002,
+      "p95": 41.70399999999999,
+      "max": 51.48
+     },
+     "init_ms": {
+      "n": 14,
+      "mean": 130.615,
+      "p50": 131.255,
+      "p95": 133.079,
+      "max": 133.17
+     }
+    },
+    "grammar": {
+     "exact_in_grammar": "11/14",
+     "false_accepts_out_of_grammar": "0/0",
+     "rtf": {
+      "n": 14,
+      "mean": 0.01915,
+      "p50": 0.019049999999999997,
+      "p95": 0.021394999999999997,
+      "max": 0.0225
+     },
+     "final_ms": {
+      "n": 14,
+      "mean": 5.286428571428572,
+      "p50": 4.365,
+      "p95": 7.3225,
+      "max": 7.68
+     },
+     "init_ms": {
+      "n": 14,
+      "mean": 1.217142857142857,
+      "p50": 1.18,
+      "p95": 1.3979999999999997,
+      "max": 1.71
+     }
+    },
+    "nbest_grammar": {
+     "clips_with_more_than_one_alternative": "11/14"
+    }
+   },
+   "te": {
+    "open": {
+     "exact_in_grammar": "0/14",
+     "false_accepts_out_of_grammar": "0/0",
+     "rtf": {
+      "n": 14,
+      "mean": 0.11234999999999998,
+      "p50": 0.11265,
+      "p95": 0.1349,
+      "max": 0.1349
+     },
+     "final_ms": {
+      "n": 14,
+      "mean": 8.327857142857143,
+      "p50": 6.5649999999999995,
+      "p95": 18.094499999999993,
+      "max": 29.97
+     },
+     "init_ms": {
+      "n": 14,
+      "mean": 358.7342857142857,
+      "p50": 359.83500000000004,
+      "p95": 377.58250000000004,
+      "max": 379.76
+     }
+    },
+    "grammar": {
+     "exact_in_grammar": "1/14",
+     "false_accepts_out_of_grammar": "0/0",
+     "rtf": {
+      "n": 14,
+      "mean": 0.018357142857142857,
+      "p50": 0.01805,
+      "p95": 0.020715,
+      "max": 0.0213
+     },
+     "final_ms": {
+      "n": 14,
+      "mean": 5.325714285714285,
+      "p50": 4.88,
+      "p95": 7.6985,
+      "max": 7.77
+     },
+     "init_ms": {
+      "n": 14,
+      "mean": 1.4735714285714285,
+      "p50": 1.47,
+      "p95": 1.561,
+      "max": 1.6
+     }
+    },
+    "nbest_grammar": {
+     "clips_with_more_than_one_alternative": "1/14"
+    }
+   }
+  },
+  "transcripts_differing_from_linux": [
+   {
+    "lang": "en",
+    "mode": "open",
+    "ref": "take off to three meters",
+    "voice": "en-us",
+    "linux": "take off after three meter",
+    "windows": "take off after three meters"
+   },
+   {
+    "lang": "en",
+    "mode": "open",
+    "ref": "move right four meters",
+    "voice": "Microsoft_Ravi",
+    "linux": "right for meters",
+    "windows": "right for midas"
+   },
+   {
+    "lang": "en",
+    "mode": "open",
+    "ref": "drone stop",
+    "voice": "Microsoft_Ravi",
+    "linux": "drones talk",
+    "windows": "drones stop"
+   },
+   {
+    "lang": "en",
+    "mode": "open",
+    "ref": "go left two meters",
+    "voice": "Microsoft_Heera",
+    "linux": "go lift to meters",
+    "windows": "go lift two meters"
+   },
+   {
+    "lang": "hi",
+    "mode": "open",
+    "ref": "टेकऑफ मत करो",
+    "voice": "hi",
+    "linux": "ऑफ था",
+    "windows": "टेक था"
+   },
+   {
+    "lang": "hi",
+    "mode": "grammar",
+    "ref": "दो मीटर बाएं जाओ",
+    "voice": "hi+f3",
+    "linux": "मीटर बाएं जाओ",
+    "windows": "दो मीटर बाएं जाओ"
+   },
+   {
+    "lang": "hi",
+    "mode": "open",
+    "ref": "टेकऑफ मत करो",
+    "voice": "hi+f3",
+    "linux": "अपना के आरोप",
+    "windows": "अपना आरोप"
+   },
+   {
+    "lang": "te",
+    "mode": "grammar",
+    "ref": "టేకాఫ్ చేయకు",
+    "voice": "te+f3",
+    "linux": "",
+    "windows": "టేకాఫ్"
+   }
+  ]
+ }
+}

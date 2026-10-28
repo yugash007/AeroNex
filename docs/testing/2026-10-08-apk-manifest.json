@@ -1,0 +1,48 @@
+[
+  {
+    "apk": "app-debug.apk",
+    "bytes": 115899891,
+    "sha256": "36fcd4c492d306bf30a29cf530a59b2304fdc2ee87aac0d27c84b6604df6b1bc",
+    "native_libraries": [
+      {
+        "path": "lib/arm64-v8a/libVkLayer_khronos_validation.so",
+        "minimum_load_alignment": 65536
+      },
+      {
+        "path": "lib/arm64-v8a/libc++_shared.so",
+        "minimum_load_alignment": 16384
+      },
+      {
+        "path": "lib/arm64-v8a/libflutter.so",
+        "minimum_load_alignment": 65536
+      },
+      {
+        "path": "lib/arm64-v8a/libaeronex_native.so",
+        "minimum_load_alignment": 16384
+      }
+    ]
+  },
+  {
+    "apk": "app-release.apk",
+    "bytes": 26285139,
+    "sha256": "f5b89ee2b08b6aad309ffdfe0de2b3abda4eecd05eb3fadf779de0bcef642823",
+    "native_libraries": [
+      {
+        "path": "lib/arm64-v8a/libapp.so",
+        "minimum_load_alignment": 65536
+      },
+      {
+        "path": "lib/arm64-v8a/libc++_shared.so",
+        "minimum_load_alignment": 16384
+      },
+      {
+        "path": "lib/arm64-v8a/libflutter.so",
+        "minimum_load_alignment": 65536
+      },
+      {
+        "path": "lib/arm64-v8a/libaeronex_native.so",
+        "minimum_load_alignment": 16384
+      }
+    ]
+  }
+]

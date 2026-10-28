@@ -1,0 +1,16 @@
+.worktrees/
+.superpowers/sdd/
+__pycache__/
+.pytest_cache/
+.dart_tool/
+.flutter-plugins-dependencies
+build/
+
+
+# Local audit scratch and raw 0.1.x emulator evidence (logcats, UI dumps, screenshots); the reports stay.
+.superpowers/
+docs/testing/2026-10-10-emulator-qa/*
+!docs/testing/2026-10-10-emulator-qa/*.md
+!docs/testing/2026-10-10-emulator-qa/*.json
+.kotlin/
+*.iml

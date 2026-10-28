@@ -1,0 +1,352 @@
+{
+  "checked_at_utc": "2026-10-09T14:50:40.798907+00:00",
+  "catalog_url": "https://alphacephei.com/vosk/models/model-list.json",
+  "license_url": "https://alphacephei.com/vosk/models",
+  "models": {
+    "vosk-en-in": {
+      "name": "vosk-model-small-en-in-0.4",
+      "url": "https://alphacephei.com/vosk/models/vosk-model-small-en-in-0.4.zip",
+      "catalog_entry": {
+        "lang": "en-in",
+        "lang_text": "Indian English",
+        "md5": "62fd085f33c8c5fc01a235030e2a1fe3",
+        "name": "vosk-model-small-en-in-0.4",
+        "obsolete": "false",
+        "size": 37573330,
+        "size_text": "35.8MiB",
+        "type": "small",
+        "url": "https://alphacephei.com/vosk/models/vosk-model-small-en-in-0.4.zip",
+        "version": "0.4"
+      },
+      "catalog_md5_matches": true,
+      "archive_size": 37573330,
+      "archive_sha256": "20663dcac4d5cb783a579c54d98339344a688e4ec6e1b4a4b059fd1235454cc7",
+      "extracted_size": 56700192,
+      "license": "Apache 2.0",
+      "official_catalog_row": [
+        "vosk-model-small-en-in-0.4",
+        "36M",
+        "49.05 (NPTEL Pure)",
+        "Lightweight Indian English model for mobile applications",
+        "Apache 2.0"
+      ],
+      "license_files": {
+        "README": "Indian English model for mobile Vosk applications\n\n"
+      },
+      "graph_files": [
+        "graph/Gr.fst",
+        "graph/HCLr.fst"
+      ],
+      "archive_files": {
+        "README": {
+          "size": 51,
+          "sha256": "91074f233ab90e2d5c82c8a8ffd45d8c2cd9bf30c1d448f88556ff84daa25f70"
+        },
+        "am/final.mdl": {
+          "size": 13767397,
+          "sha256": "443be3283c6112fbb5628807f84e0f5b369056ea59fcbc5ce73b8dfe10e9e893"
+        },
+        "conf/mfcc.conf": {
+          "size": 107,
+          "sha256": "f4b7deca59c6f7076708a0c27f4000507db272c1233dadbce59cf8934b0d1b04"
+        },
+        "conf/model.conf": {
+          "size": 289,
+          "sha256": "dd7178da0e99fdbe489816c1e9702c3daa28e02accacc2993e0becb7af33b80c"
+        },
+        "graph/Gr.fst": {
+          "size": 24029637,
+          "sha256": "13cf46500ed9bf75e67bda2ecb3e6442f33db4c9ef0ba6b55414454b30b7e85c"
+        },
+        "graph/HCLr.fst": {
+          "size": 10419698,
+          "sha256": "e3a011f91b31c1c7fab8ee26bbbefc2896967789411c888d08e164fe70ff0d77"
+        },
+        "graph/disambig_tid.int": {
+          "size": 72,
+          "sha256": "d4e5cca8ecc7062a10f1458209c884957db77ef4aee84e51f641400b3c4a0493"
+        },
+        "graph/phones/word_boundary.int": {
+          "size": 2751,
+          "sha256": "08f6f114ca793823ada97d41026532a2458b96a63b8a690e440a5e07a256301e"
+        },
+        "ivector/final.dubm": {
+          "size": 168048,
+          "sha256": "37581005e41a33711e70b25de9badfe25fdf832285da09afde4fe9f591584cbe"
+        },
+        "ivector/final.ie": {
+          "size": 8288887,
+          "sha256": "8203f44c17fc9c5ca630d5198dbdac0aeba070b0623a48598abf363083286a76"
+        },
+        "ivector/final.mat": {
+          "size": 22575,
+          "sha256": "c066674f26aefe3d3bdfadca85aec7d4dd9f5b584ad3d4712852893e8a31063a"
+        },
+        "ivector/global_cmvn.stats": {
+          "size": 550,
+          "sha256": "c057702cbafa978adf8123c7ed4367ea3d65fbb84f2bcd5f58a94b0d5bb37058"
+        },
+        "ivector/online_cmvn.conf": {
+          "size": 95,
+          "sha256": "a2f3571754b64297cb7efb2e7ca3df61995c5a45fcbb97188f90613552bb2dfe"
+        },
+        "ivector/splice.conf": {
+          "size": 35,
+          "sha256": "9f0c5f7c82d18eaf25d8bce470efa9f7741f88411fe428774bc0a9bb69a24756"
+        }
+      },
+      "host_smoke": {
+        "sample_kind": "1 second digital silence; initialization/finalization only",
+        "chunks": 4,
+        "segments": [],
+        "partials": [
+          {
+            "partial": ""
+          },
+          {
+            "partial": ""
+          },
+          {
+            "partial": ""
+          },
+          {
+            "partial": ""
+          }
+        ],
+        "final": {
+          "text": ""
+        }
+      }
+    },
+    "vosk-te": {
+      "name": "vosk-model-small-te-0.42",
+      "url": "https://alphacephei.com/vosk/models/vosk-model-small-te-0.42.zip",
+      "catalog_entry": {
+        "lang": "te",
+        "lang_text": "Telugu",
+        "md5": "ae3c093fd7dd883d462983b15900ca61",
+        "name": "vosk-model-small-te-0.42",
+        "obsolete": "false",
+        "size": 60544249,
+        "size_text": "57.7MiB",
+        "type": "small",
+        "url": "https://alphacephei.com/vosk/models/vosk-model-small-te-0.42.zip",
+        "version": "0.42"
+      },
+      "catalog_md5_matches": true,
+      "archive_size": 60544249,
+      "archive_sha256": "3e77b05becc7599a596ccebd8b22cb95eb4eca0cfca524827cdfbfd66af09497",
+      "extracted_size": 127872241,
+      "license": "Apache 2.0",
+      "official_catalog_row": [
+        "vosk-model-small-te-0.42",
+        "58M",
+        "87.9 (Fleurs test)",
+        "Lightweight model for Telugu",
+        "Apache 2.0"
+      ],
+      "license_files": {
+        "README": "Small Telugu model for Vosk\n\nWER\n\n%WER 87.90 [ 7053 / 8024, 23 ins, 6807 del, 223 sub ] exp/chain/tdnn/decode_test_fleurs_look_fast/wer_7_0.0\n%WER 76.05 [ 18433 / 24238, 2159 ins, 5571 del, 10703 sub ] exp/chain/tdnn/decode_test_newsonair_look_fast/wer_13_0.0\n"
+      },
+      "graph_files": [
+        "graph/Gr.fst",
+        "graph/HCLr.fst"
+      ],
+      "archive_files": {
+        "README": {
+          "size": 260,
+          "sha256": "b6f0ecb7e0a27be5930ad50e9e221a735ea4bf696ae36d853a0b569a8b834e2f"
+        },
+        "am/final.mdl": {
+          "size": 16027940,
+          "sha256": "bedbdd5490577e057ae5b48d06c2b02e04af5989bdf95cd002b47e4592c7c56c"
+        },
+        "conf/mfcc.conf": {
+          "size": 153,
+          "sha256": "6c326fea5741c2d78be12f76eb1b36ea2ace040da9e355e4cfe6bb80e5f7d5ab"
+        },
+        "conf/model.conf": {
+          "size": 290,
+          "sha256": "8f14cb1eeb07c762c371db648c6be688d347236155ca0f64fb13b6567a8ce81f"
+        },
+        "graph/Gr.fst": {
+          "size": 64130105,
+          "sha256": "44c8b4f0b025c45c50885e6269ed3d49488e58a1bb4e82b822e9606393de5332"
+        },
+        "graph/HCLr.fst": {
+          "size": 37570114,
+          "sha256": "544483db3afcfdd83ed4cc5130201b04c800ed7ed939cf2b2fd326588130e42c"
+        },
+        "graph/disambig_tid.int": {
+          "size": 30,
+          "sha256": "24937bf8f7ad8316c1d67ef297b32c81293aa068bf036598751d8fee0851beef"
+        },
+        "graph/phones/word_boundary.int": {
+          "size": 1941,
+          "sha256": "c39249476ebabde0c5e00d5c31845332804ef2b057d5e3f8ea29ea171a280dad"
+        },
+        "ivector/final.dubm": {
+          "size": 168048,
+          "sha256": "c8ef134f43231f9491bbe21d26254203a4ba10a8fdf371ca44e483924f9b0996"
+        },
+        "ivector/final.ie": {
+          "size": 9927287,
+          "sha256": "722366da63c52a81bf5b2ec6e9d366b46efae1626f0129e6646578dc2b1f70a5"
+        },
+        "ivector/final.mat": {
+          "size": 44975,
+          "sha256": "d42b3dd59797ec4ffc9e8caa713d2fba379ec0d96b4dca6b07ae62b159a94770"
+        },
+        "ivector/global_cmvn.stats": {
+          "size": 1063,
+          "sha256": "c454130f34cacb195ff993da8354f367bbc5b8abf979aae5c2b96d4f23b51699"
+        },
+        "ivector/online_cmvn.conf": {
+          "size": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "ivector/splice.conf": {
+          "size": 35,
+          "sha256": "9f0c5f7c82d18eaf25d8bce470efa9f7741f88411fe428774bc0a9bb69a24756"
+        }
+      },
+      "host_smoke": {
+        "sample_kind": "1 second digital silence; initialization/finalization only",
+        "chunks": 4,
+        "segments": [],
+        "partials": [
+          {
+            "partial": ""
+          },
+          {
+            "partial": ""
+          },
+          {
+            "partial": ""
+          },
+          {
+            "partial": ""
+          }
+        ],
+        "final": {
+          "text": ""
+        }
+      }
+    },
+    "vosk-hi": {
+      "name": "vosk-model-small-hi-0.22",
+      "url": "https://alphacephei.com/vosk/models/vosk-model-small-hi-0.22.zip",
+      "catalog_entry": {
+        "lang": "hi",
+        "lang_text": "Hindi",
+        "md5": "80f1265262c9a8a515f2707498e1b485",
+        "name": "vosk-model-small-hi-0.22",
+        "obsolete": "false",
+        "size": 44458845,
+        "size_text": "42.4MiB",
+        "type": "small",
+        "url": "https://alphacephei.com/vosk/models/vosk-model-small-hi-0.22.zip",
+        "version": "0.22"
+      },
+      "catalog_md5_matches": true,
+      "archive_size": 44458845,
+      "archive_sha256": "7c50a10866889f0ac21d912c20537a055a597ed09fc1d3e5bcd798f9f0017e48",
+      "extracted_size": 82084166,
+      "license": "Apache 2.0",
+      "official_catalog_row": [
+        "vosk-model-small-hi-0.22",
+        "42M",
+        "20.89 (IITM Challenge) 24.72 (MUCS Challenge)",
+        "Lightweight model for Hindi",
+        "Apache 2.0"
+      ],
+      "license_files": {
+        "README": "Hindi small model for Vosk\n\nWER\n\n%WER 39.08 [ 18597 / 47585, 1277 ins, 5489 del, 11831 sub ] exp/chain/tdnn/decode_test_gram_fast/wer_10_0.0\n%WER 20.89 [ 8400 / 40205, 1380 ins, 1873 del, 5147 sub ] exp/chain/tdnn/decode_test_iitm_fast/wer_11_0.0\n%WER 24.72 [ 11330 / 45839, 1501 ins, 879 del, 8950 sub ] exp/chain/tdnn/decode_test_mucs_fast/wer_10_0.0\n%WER 14.96 [ 19539 / 130589, 1737 ins, 1378 del, 16424 sub ] exp/chain/tdnn/decode_test_tts_fast/wer_7_0.0\n"
+      },
+      "graph_files": [
+        "graph/Gr.fst",
+        "graph/HCLr.fst"
+      ],
+      "archive_files": {
+        "README": {
+          "size": 460,
+          "sha256": "9ffae7d857a7671a0a53b9f6f432e7c312459fde02ca1f139d808fffc3d2644a"
+        },
+        "am/final.mdl": {
+          "size": 15957444,
+          "sha256": "c5d7ea51a074bc64430137a74fc8a0a06097df485a3d356cf37d2d78ef6bd712"
+        },
+        "conf/mfcc.conf": {
+          "size": 128,
+          "sha256": "31dab8bb1dea9b33e039988ac079dfe5d50ebaa4a94826b9f9adc8fe84b147c6"
+        },
+        "conf/model.conf": {
+          "size": 289,
+          "sha256": "d8d91d310a9659fed2d89f8ea4996af6163a43c3ab008cd278e4264120551712"
+        },
+        "graph/Gr.fst": {
+          "size": 30692365,
+          "sha256": "9b219e22fc7d3033ba1b175757a700d8f02139d75d7f57cc12bc318d53038ccf"
+        },
+        "graph/HCLr.fst": {
+          "size": 25289514,
+          "sha256": "4f36aad2566853473603abc66fac3985eff0860229c465540b348c22fcbbb4f5"
+        },
+        "graph/disambig_tid.int": {
+          "size": 66,
+          "sha256": "3f87fd5a92742b3827d2da31dae0874c4077e9f0011e507423b6f876d743e37b"
+        },
+        "graph/phones/word_boundary.int": {
+          "size": 2481,
+          "sha256": "b8f981d84d8765fb15003ac54ec0f9599efa65a00d6d4d60086e5969ad45ff01"
+        },
+        "ivector/final.dubm": {
+          "size": 168048,
+          "sha256": "e495541a7e99e78a42cd098adfd94a72b6118a8c0d3c5ea8fe17436b578c55d4"
+        },
+        "ivector/final.ie": {
+          "size": 9927287,
+          "sha256": "89d91ca6e99e7e4f067b3ef8ac1faa9ba73276c225d927aaa296492a03a639b7"
+        },
+        "ivector/final.mat": {
+          "size": 44975,
+          "sha256": "3009aea21b59ad36f86c89d68dd152264aa3a784260dbdace823d991f3ff71b4"
+        },
+        "ivector/global_cmvn.stats": {
+          "size": 1074,
+          "sha256": "a056b7592116d4a5e5fc6f872f8398190878bb6690bf486827fa79dabaf33f97"
+        },
+        "ivector/online_cmvn.conf": {
+          "size": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "ivector/splice.conf": {
+          "size": 35,
+          "sha256": "9f0c5f7c82d18eaf25d8bce470efa9f7741f88411fe428774bc0a9bb69a24756"
+        }
+      },
+      "host_smoke": {
+        "sample_kind": "1 second digital silence; initialization/finalization only",
+        "chunks": 4,
+        "segments": [],
+        "partials": [
+          {
+            "partial": ""
+          },
+          {
+            "partial": ""
+          },
+          {
+            "partial": ""
+          },
+          {
+            "partial": ""
+          }
+        ],
+        "final": {
+          "text": ""
+        }
+      }
+    }
+  }
+}

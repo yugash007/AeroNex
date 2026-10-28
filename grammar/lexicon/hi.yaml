@@ -1,0 +1,122 @@
+# Lexicon: Hindi (hi). Canonical grammar v1 (spec 4.8, 7.2).
+#
+# `rules`, `plan` and `transcript` are the v0.2.0 Dart tables, verbatim and in
+# source order (golden parity, see en.yaml). Entries the Dart source marks
+# PROVISIONAL (needs native-speaker review) are `provisional: true` here; the
+# v2 additions (zero, halves, English loanwords in Devanagari) are too.
+
+language: hi
+name: Hindi
+script: {name: devanagari, first: 0x0900, last: 0x097F, digit_zero: 0x0966}
+provisional: false
+
+rules:
+  move_verbs: [जाओ, जाइए, जाइये, चलो, बढ़ो]
+  directions:
+    forward: [आगे]
+    backward: [पीछे]
+    left: [बाएं, बाएँ, बायें]
+    right: [दाएं, दाएँ, दायें]
+    up: [ऊपर]
+    down: [नीचे]
+  units: [मीटर]
+  commands:
+    - {command: STOP, phrases: [रुको, रुक जाओ, स्टॉप]}
+    - {command: TAKEOFF, phrases: [टेकऑफ़, टेकऑफ, उड़ान भरो, ऊपर उठो]}
+    - {command: LAND, phrases: [लैंड, उतरो]}
+    - {command: HOVER, phrases: [हॉवर, होवर]}
+  negators: {provisional: true, words: [मत, नहीं, नही, ना, न]}
+  negator_suffixes: []
+  minus_words: {provisional: true, words: [माइनस, ऋण]}
+  other_units: {provisional: true, words: [सेंटीमीटर, मिलीमीटर, किलोमीटर, सेंटी, मिली, किलो, फुट, फीट, इंच, गज, मील]}
+  scale_words: {provisional: true, words: [हज़ार, हजार, लाख, दशमलव, डेढ़, ढाई, साढ़े, सवा, पौने]}
+  numbers: {एक: 1, दो: 2, तीन: 3, चार: 4, पाँच: 5, पांच: 5, छह: 6, छः: 6, सात: 7, आठ: 8, नौ: 9, दस: 10, ग्यारह: 11, बारह: 12, तेरह: 13, चौदह: 14, पंद्रह: 15, सोलह: 16, सत्रह: 17, अठारह: 18, उन्नीस: 19, बीस: 20, इक्कीस: 21, बाईस: 22, तेईस: 23, चौबीस: 24, पच्चीस: 25, छब्बीस: 26, सत्ताईस: 27, अट्ठाईस: 28, उनतीस: 29, तीस: 30, इकतीस: 31, बत्तीस: 32, तैंतीस: 33, चौंतीस: 34, पैंतीस: 35, छत्तीस: 36, सैंतीस: 37, अड़तीस: 38, उनतालीस: 39, चालीस: 40, इकतालीस: 41, बयालीस: 42, तैंतालीस: 43, चवालीस: 44, पैंतालीस: 45, छियालीस: 46, सैंतालीस: 47, अड़तालीस: 48, उनचास: 49, पचास: 50, इक्यावन: 51, बावन: 52, तिरपन: 53, चौवन: 54, पचपन: 55, छप्पन: 56, सत्तावन: 57, अट्ठावन: 58, उनसठ: 59, साठ: 60, इकसठ: 61, बासठ: 62, तिरसठ: 63, चौंसठ: 64, पैंसठ: 65, छियासठ: 66, सड़सठ: 67, अड़सठ: 68, उनहत्तर: 69, सत्तर: 70, इकहत्तर: 71, बहत्तर: 72, तिहत्तर: 73, चौहत्तर: 74, पचहत्तर: 75, छिहत्तर: 76, सतहत्तर: 77, अठहत्तर: 78, उन्यासी: 79, अस्सी: 80, इक्यासी: 81, बयासी: 82, तिरासी: 83, चौरासी: 84, पचासी: 85, छियासी: 86, सत्तासी: 87, अट्ठासी: 88, नवासी: 89, नब्बे: 90, इक्यानबे: 91, बानबे: 92, तिरानबे: 93, चौरानबे: 94, पचानबे: 95, छियानबे: 96, सत्तानबे: 97, अट्ठानबे: 98, निन्यानबे: 99, सौ: 100}
+
+plan:
+  provisional: true
+  connectives: {provisional: false, words: [और फिर, उसके बाद, इसके बाद, फिर, और]}
+  first_words: [सबसे पहले, पहले]
+  courtesy: [कृपया, हाँ, हां, ठीक, है, अच्छा, चलो, ड्रोन, हे, हेलो, हैलो, हाय, ओके, प्लीज़, प्लीज]
+  motion_verbs: {same_as: rules.move_verbs}
+  fractions: [आधा, आधे, आधी, चौथाई, तिहाई]
+  measure_words: [सेकंड, सेकेंड, सेकण्ड, सेकंडों, सेकेंडों, सेकंड्स, सेकेंड्स, मिनट, मिनटों, घंटा, घंटे, घंटों, डिग्री, डिग्रियों, कदम, प्रति, गति]
+  sequence_words: [बार, पहले, बाद, तक, जब, दौरान]
+  indic_filler: [को, की, के, ओर, तरफ, अब, अभी, कृपया, धीरे, थोड़ा, थोड़ी, ज़रा, जरा, ड्रोन, आप, तुम, हाँ, हां, ठीक, है, अच्छा, हे, हेलो, हैलो, हाय, ओके, प्लीज़, प्लीज, करो, करें, कीजिए, हो, और]
+  # StepParser._isIndicFiller: fillers only beside these words.
+  context_fillers:
+    - {word: से, after: [धीरे, फिर]}
+    - {word: फिर, before: [से]}
+    - {word: ले, before: {same_as: rules.move_verbs}}
+    - {word: चले, before: {same_as: rules.move_verbs}}
+  straight_words: [सीधा, सीधे]
+  more_words: [ज्यादा, ज़्यादा]
+  hedge_words: [लगभग, या]
+  correction_words: [सॉरी, मतलब]
+  negation_words: [मना]
+  altitude_words: [तक, ऊंचाई, ऊँचाई, उंचाई, पर]
+  takeoff_words: [ऊंचाई, ऊँचाई, उंचाई]
+  simple_words: [तुरंत, यहीं, यहाँ, यहां, पर, सुरक्षित, हवा, में, चलो]
+  land_words: {same_as: rules.directions.down}
+  # StepParser._lightVerb: "कर (वा) दो/दीजिए/..." is read as "करो".
+  light_verb: {stems: [कर, करवा], auxiliaries: [दो, दीजिए, दीजिये, दें, लो, लीजिए], replacement: करो}
+
+transcript:
+  provisional: true
+  negators: [मत, नहीं, नही, ना, न]
+
+# --- v2 grammar ---------------------------------------------------------------
+
+stop_lane: {provisional: true, words: [रुको, रुक जाओ, स्टॉप]}
+
+numerals:
+  provisional: true
+  # पचानवे: the hi model spells 95 so (rules.numbers has पचानबे, not in the model).
+  extra: {शून्य: 0, पचानवे: 95}
+  fractions: {आधा: 0.5, डेढ़: 1.5, ढाई: 2.5}
+  loans:
+    ones: {जीरो: 0, वन: 1, टू: 2, थ्री: 3, फोर: 4, फाइव: 5, सिक्स: 6, सेवन: 7, एट: 8, नाइन: 9, टेन: 10, इलेवन: 11, ट्वेल्व: 12, थर्टीन: 13, फोर्टीन: 14, फिफ्टीन: 15, सिक्सटीन: 16, सेवनटीन: 17, एटीन: 18, नाइनटीन: 19}
+    tens: {ट्वेंटी: 20, थर्टी: 30, फोर्टी: 40, फिफ्टी: 50, सिक्सटी: 60, सेवेंटी: 70, एटी: 80, नाइंटी: 90}
+    hundred: {हंड्रेड: 100}
+    fractions: {हाफ: 0.5}
+
+# English command loanwords in Devanagari (spec 7.2, 7.3): class and the
+# Hindi form the normaliser may map them to. "अप" (up) is left out: it is one
+# vowel from the common filler "आप" (you).
+loanwords:
+  provisional: true
+  words:
+    - {loan: टेक ऑफ, latin: take off, class: takeoff, native: टेकऑफ}
+    - {loan: लॉन्च, latin: launch, class: takeoff, native: टेकऑफ}
+    - {loan: होल्ड, latin: hold, class: hold, native: होवर}
+    - {loan: फॉरवर्ड, latin: forward, class: dir, native: आगे}
+    - {loan: बैक, latin: back, class: dir, native: पीछे}
+    - {loan: लेफ्ट, latin: left, class: dir, native: बाएं}
+    - {loan: राइट, latin: right, class: dir, native: दाएं}
+    - {loan: डाउन, latin: down, class: dir, native: नीचे}
+    - {loan: मूव, latin: move, class: verb, native: जाओ}
+    - {loan: गो, latin: go, class: verb, native: जाओ}
+    - {loan: मीटर्स, latin: meters, class: unit, native: मीटर}
+    - {loan: स्टेटस, latin: status, class: status, native: null}
+
+templates:
+  takeoff: ["{num} {unit} {takeoff} [करो]", "{num} {unit} {takeoff} कर दो", "{num} {unit} तक {takeoff} [करो]", "{takeoff} {num} {unit}"]
+  move: ["{num} {unit} {dir} {verb}", "{dir} {num} {unit} {verb}"]
+  hold: ["{hold} [करो]", "{hold} कर दो"]
+  stop: ["{stop}"]
+  land: ["{land} [करो]", "{land} कर दो"]
+  status: ["{status}"]
+
+vosk:
+  # Not in the hi model vocabulary (gen.py fails on any other missing word).
+  exclude: [पचानबे]
+  # The model lacks some English loan numerals (एटीन, सेवनटीन), and a partial
+  # loan set can force "eighteen" onto a known loan such as एट (8). So the hi
+  # Vosk grammar has no loan numerals; the native 0-100 are complete.
+  loan_numerals: false
+  # Never fillers: spelling variants of numerals (अठारह, चौबीस), so the spoken
+  # number decodes as the numeral (README "Fillers").
+  filler_exclude: ["अट्ठारह", "चौबिस"]
+  # Acoustic neighbours of रुको, रुक and स्टॉप: never fillers and never decoys in
+  # stop_hi.json (README "Stop lane and keyword spotting").
+  near_stop: ["रूप"]
+  fillers: ["का", "हैं", "ने", "कि", "भी", "लिए", इस, "ही", "तो", यह, "किया", "था", "करने", "गया", "साथ", "कहा", "अपने", "रहे", "जो", "दिया", "रहा", "हुए", "थी", "कुछ", वह, "लेकिन", "थे", "रही", "जा", "कोई", गई, "उन्होंने", "करते", "सरकार", "किसी", "अपनी", "होने", "बात", "लोगों", "ये", "वाले", तरह, गए, "भारत", व, हम, समय, "मैं", "दी", "बहुत", "जाता", "हुआ", आज, "होता", "उनके", "क्या", "पुलिस", कई, "द्वारा", "सकता", "सिंह", "देश", "करना", "सभी", "वे", "दिन", "काम", "सकते", "लेकर", "हुई", "लोग", "साल", "उन्हें", "होगा", इन, "बताया", "जाने", "नाम", "उसे", "वो", उस, "चाहिए", कम, "एवं", "आपको", "लिया", अगर, "होती", "कारण", घर, आ, "उनकी", "तथा", "पास", हर, "ऐसे", "दिल्ली", "प्रदेश", "बीच", "वाली", "शुरू", "दोनों", "करता", "अधिक", "भारतीय", "जी", "कांग्रेस", "बारे", "ऐसा", "मुझे", "जैसे", "देने", "फिल्म", "अपना", "क्षेत्र", "अन्य", "पार्टी", "राज्य", "दे", "मामले", "चुनाव", "टीम", "इससे", "जाती", "लगा", "होते", "इसे", "क्योंकि", "जाएगा", "किए", "जानकारी", "खिलाफ", "कभी", "काफी", "शामिल", "इसी", "हमारे", "मोदी", "मेरे", "वर्ष", "सकती", "आपके", "पूर्व", "होगी", "पूरी", "उसकी", "सामने", "जीवन", "इसलिए", "जारी", "मंत्री", "भाजपा", सब, "वहीं", "कुमार", "आने", "विकास", "अनुसार", "यदि", तब, "उनका", "रुपये", "बना", "जाते", "पिछले", "पानी", "बनाने", "पता", "मुख्यमंत्री", "इसका", नई, "बाहर", "इसमें", "महिला", "दूसरे", "मैंने", उन, "कंपनी", "जहां", "मिल", "विभाग", "जिसमें", "हूं", "जाए", "जबकि", "प्रकार", "व्यक्ति", "दुनिया", "उसने", "वाला", "अलावा", "गांव", "जिस", "परिवार", "करती", "प्राप्त", "दिए", "अध्यक्ष", "करके", "कार्य", बन, "केवल", "मीडिया", "पूरा", "दिनों", "हमें", "नेता", "जांच", "देते", "लिये", "करोड़", "प्रधानमंत्री", अलग, "योजना", "कैसे", "हालांकि", वजह, "आया", "हूँ", "वहां", "करीब", "उसका", "कहना", चल, "खुद", "ऐसी", "मेरी", "श्री", "मे", "जनता", "बड़ी", "समाज", "जिला", आई, "यही", "सिर्फ", "बंद", "आदि", "बच्चों", "तैयार", "दर्ज", "मुख्य", "जाना", जगह, "रात", "कार्यक्रम", "स्थिति", "करेंगे", "क्यों", "ध्यान", "अधिकारी", "होना", मदद, "उत्तर", "पाकिस्तान", "रहने", "पहली", "लेने", "जिसके", "गयी", "मांग", बस, "हाथ", "दूर", "लगता", मन, शहर, तहत, "आरोप", नए, "बिना", "रुपए", "इसकी", "बैंक", "शिक्षा", "सही", "जिससे", "बड़े", "देखा", आए, "राष्ट्रीय", "बता", "चाहते", "कोर्ट", "कहते", "मौत", "पूरे", "आधार", "केंद्र", "लगे", "विशेष", "गांधी", "संख्या", "ली", "सुरक्षा", "निर्माण", "शर्मा", "मुताबिक", "स्तर", "बैठक"]

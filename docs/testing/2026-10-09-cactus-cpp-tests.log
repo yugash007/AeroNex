@@ -1,0 +1,12 @@
+Internal ctest changing into directory: /mnt/c/Users/yugas/Downloads/Drone-app/.worktrees/aeronex-skeleton/build/cactus-checks
+Test project /mnt/c/Users/yugas/Downloads/Drone-app/.worktrees/aeronex-skeleton/build/cactus-checks
+    Start 1: mavlink_native
+1/3 Test #1: mavlink_native ...................   Passed    0.01 sec
+    Start 2: cactus_result_validation
+2/3 Test #2: cactus_result_validation .........   Passed    0.01 sec
+    Start 3: cactus_load_failure
+3/3 Test #3: cactus_load_failure ..............   Passed    0.00 sec
+
+100% tests passed, 0 tests failed out of 3
+
+Total Test time (real) =   0.06 sec

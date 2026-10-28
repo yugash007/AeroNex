@@ -1,0 +1,28 @@
+# Test fixture lexicon (see ../intents.v1.yaml).
+language: en
+name: Mini English
+script: {name: latin, first: 0x0061, last: 0x007A, digit_zero: 0x0030}
+provisional: false
+rules:
+  move_verbs: [move]
+  directions: {forward: [forward], backward: [back], left: [left], right: [right], up: [up], down: [down]}
+  units: [meters]
+  commands:
+    - {command: STOP, phrases: [stop]}
+    - {command: TAKEOFF, phrases: [take off]}
+    - {command: LAND, phrases: [land]}
+    - {command: HOVER, phrases: [hover]}
+  negators: [not]
+  scale_words: [half]
+  ones: {zero: 0, one: 1, two: 2, three: 3}
+stop_lane: [stop]
+numerals:
+  fractions: {half: 0.5}
+templates:
+  takeoff: ["{takeoff} {num} {unit}"]
+  move: ["{verb} {dir} {num} {unit}"]
+  hold: ["{hold}"]
+  stop: ["{stop}"]
+  land: ["{land}"]
+vosk:
+  fillers: [apple, banana]

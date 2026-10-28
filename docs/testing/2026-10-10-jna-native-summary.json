@@ -1,0 +1,64 @@
+{
+  "tests": 74,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 1,
+  "suites": [
+    {
+      "name": "com.aeronex.app.LocalInferenceBridgeTest",
+      "tests": "32",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0"
+    },
+    {
+      "name": "com.aeronex.app.ModelDownloadSmokeTest",
+      "tests": "1",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "1"
+    },
+    {
+      "name": "com.aeronex.app.ModelInventorySmokeTest",
+      "tests": "2",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0"
+    },
+    {
+      "name": "com.aeronex.app.OfflineLanguageSupportTest",
+      "tests": "3",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0"
+    },
+    {
+      "name": "com.aeronex.app.VerifiedModelStoreTest",
+      "tests": "5",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0"
+    },
+    {
+      "name": "com.aeronex.app.VoskModelsTest",
+      "tests": "3",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0"
+    },
+    {
+      "name": "com.aeronex.app.VoskModelStoreTest",
+      "tests": "23",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0"
+    },
+    {
+      "name": "com.aeronex.app.VoskSpeechRecognizerTest",
+      "tests": "5",
+      "failures": "0",
+      "errors": "0",
+      "skipped": "0"
+    }
+  ]
+}

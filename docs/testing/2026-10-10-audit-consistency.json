@@ -1,0 +1,11 @@
+{
+  "documentation_files_checked": 4,
+  "missing_local_links": [],
+  "native_test_xml": {
+    "tests": 74,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 1
+  },
+  "package_reports": "release/debug 0.1.6+7: 17 classes, 52 members, all checks passed"
+}

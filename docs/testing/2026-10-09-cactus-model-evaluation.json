@@ -1,0 +1,328 @@
+{
+  "sample_kind": "Windows SAPI synthetic English; no phone microphone",
+  "files": {
+    "windows-x86_64-needle.exe": {
+      "bytes": 1563136,
+      "sha256": "e8863ca0c06a47d406777077f1ba728b58e57d77fedff252dbe6827d588acc8c"
+    },
+    "whistle.cact": {
+      "bytes": 16919407,
+      "sha256": "b6e02f048568ac5d01a2042556c658061e699acbc0aa2a1439f52f3d461dffeb"
+    },
+    "needle3.cact": {
+      "bytes": 35335380,
+      "sha256": "c9d915eca282ed42d1a09b143b592adb4cc6744ffe2d294adf5cfc5548170c38"
+    }
+  },
+  "speech_without_keywords": {
+    "text": "HADROWN. TAKE OF TO THREE METERS.",
+    "language": "en",
+    "ttft_ms": 30.2,
+    "decode_tps": 274.5
+  },
+  "speech_with_keywords": {
+    "text": "Hey drone, take off to three meters.",
+    "language": "en",
+    "ttft_ms": 27.3,
+    "decode_tps": 280.3
+  },
+  "tools": [
+    {
+      "input": "take off to 3 meters",
+      "output": {
+        "type": "call",
+        "success": true,
+        "error": null,
+        "error_code": null,
+        "reason": null,
+        "function_calls": [
+          {
+            "name": "takeoff",
+            "arguments": {
+              "altitude_m": 3.0
+            }
+          }
+        ],
+        "suppressed_calls": [],
+        "reasoning": "'take off to 3 meters' -> takeoff with altitude_m 3; no other parameters needed.",
+        "confidence": 0.7397,
+        "prefill_tps": 844.4,
+        "decode_tps": 261.4,
+        "peak_ram_mb": 80.5,
+        "validation": {
+          "ungrounded": [],
+          "negation": false
+        }
+      }
+    },
+    {
+      "input": "move left 2 meters",
+      "output": {
+        "type": "call",
+        "success": true,
+        "error": null,
+        "error_code": null,
+        "reason": null,
+        "function_calls": [
+          {
+            "name": "move_relative",
+            "arguments": {
+              "direction": "left",
+              "distance_m": 2.0
+            }
+          }
+        ],
+        "suppressed_calls": [],
+        "reasoning": "'move left 2 meters' -> direction 'left', distance_m 2; 'move' maps to move_relative.",
+        "confidence": 0.4699,
+        "prefill_tps": 735.5,
+        "decode_tps": 280.9,
+        "peak_ram_mb": 80.5,
+        "validation": {
+          "ungrounded": [],
+          "negation": false
+        }
+      }
+    },
+    {
+      "input": "hold",
+      "output": {
+        "type": "call",
+        "success": true,
+        "error": null,
+        "error_code": null,
+        "reason": null,
+        "function_calls": [
+          {
+            "name": "hold",
+            "arguments": {}
+          }
+        ],
+        "suppressed_calls": [],
+        "reasoning": "'hold' -> hold; no arguments needed.",
+        "confidence": 0.7654,
+        "prefill_tps": 697.2,
+        "decode_tps": 229.2,
+        "peak_ram_mb": 80.5,
+        "validation": {
+          "ungrounded": [],
+          "negation": false
+        }
+      }
+    },
+    {
+      "input": "land",
+      "output": {
+        "type": "call",
+        "success": true,
+        "error": null,
+        "error_code": null,
+        "reason": null,
+        "function_calls": [
+          {
+            "name": "land",
+            "arguments": {}
+          }
+        ],
+        "suppressed_calls": [],
+        "reasoning": "'land' -> land tool. No arguments needed.",
+        "confidence": 0.6202,
+        "prefill_tps": 670.5,
+        "decode_tps": 278.1,
+        "peak_ram_mb": 80.5,
+        "validation": {
+          "ungrounded": [],
+          "negation": false
+        }
+      }
+    },
+    {
+      "input": "show drone status",
+      "output": {
+        "type": "call",
+        "success": true,
+        "error": null,
+        "error_code": null,
+        "reason": null,
+        "function_calls": [
+          {
+            "name": "get_status",
+            "arguments": {}
+          }
+        ],
+        "suppressed_calls": [],
+        "reasoning": "User wants drone telemetry. get_status has no required params.",
+        "confidence": 0.862,
+        "prefill_tps": 784.4,
+        "decode_tps": 271.6,
+        "peak_ram_mb": 80.6,
+        "validation": {
+          "ungrounded": [],
+          "negation": false
+        }
+      }
+    },
+    {
+      "input": "fly",
+      "output": {
+        "type": "call",
+        "success": true,
+        "error": null,
+        "error_code": null,
+        "reason": null,
+        "function_calls": [],
+        "suppressed_calls": [
+          {
+            "name": "takeoff",
+            "arguments": {
+              "altitude_m": 10.0
+            }
+          }
+        ],
+        "reasoning": "'fly' means take off -> takeoff with altitude_m default 10.",
+        "confidence": 0.0345,
+        "prefill_tps": 692.6,
+        "decode_tps": 259.8,
+        "peak_ram_mb": 80.5,
+        "validation": {
+          "ungrounded": [
+            "takeoff.altitude_m"
+          ],
+          "negation": false
+        }
+      }
+    },
+    {
+      "input": "do not take off",
+      "output": {
+        "type": "call",
+        "success": false,
+        "error": "tool call truncated: token budget exhausted",
+        "error_code": "truncated",
+        "reason": "runtime_failure",
+        "function_calls": [],
+        "suppressed_calls": [],
+        "reasoning": "'do not take off' means disable drone -> takeoff with altitude_m 0",
+        "confidence": 0.0642,
+        "prefill_tps": 584.4,
+        "decode_tps": 241.5,
+        "peak_ram_mb": 80.5
+      }
+    },
+    {
+      "input": "take off to 100 meters",
+      "output": {
+        "type": "call",
+        "success": true,
+        "error": null,
+        "error_code": null,
+        "reason": null,
+        "function_calls": [
+          {
+            "name": "takeoff",
+            "arguments": {
+              "altitude_m": 1.0
+            }
+          }
+        ],
+        "suppressed_calls": [],
+        "reasoning": "'take off to 100 meters' -> takeoff with altitude_m 100.",
+        "confidence": 0.6364,
+        "prefill_tps": 681.2,
+        "decode_tps": 250.2,
+        "peak_ram_mb": 80.5,
+        "validation": {
+          "ungrounded": [],
+          "negation": false
+        }
+      }
+    },
+    {
+      "input": "take off to 3 meters and land",
+      "output": {
+        "type": "call",
+        "success": true,
+        "error": null,
+        "error_code": null,
+        "reason": null,
+        "function_calls": [
+          {
+            "name": "takeoff",
+            "arguments": {
+              "altitude_m": 3.0
+            }
+          },
+          {
+            "name": "land",
+            "arguments": {}
+          }
+        ],
+        "suppressed_calls": [],
+        "reasoning": "'take off to 3 meters' -> takeoff altitude_m 3; 'land' -> land with no additionalProperties",
+        "confidence": 0.3717,
+        "prefill_tps": 853.5,
+        "decode_tps": 235.4,
+        "peak_ram_mb": 80.5,
+        "validation": {
+          "ungrounded": [],
+          "negation": false
+        }
+      }
+    },
+    {
+      "input": "what is the weather in Delhi",
+      "output": {
+        "type": "call",
+        "success": true,
+        "error": null,
+        "error_code": null,
+        "reason": null,
+        "function_calls": [
+          {
+            "name": "get_status",
+            "arguments": {}
+          }
+        ],
+        "suppressed_calls": [],
+        "reasoning": "No weather tool available. 'what is the weather in Delhi' -> get_status with no arguments.",
+        "confidence": 0.357,
+        "prefill_tps": 717.4,
+        "decode_tps": 238.6,
+        "peak_ram_mb": 80.6,
+        "validation": {
+          "ungrounded": [],
+          "negation": false
+        }
+      }
+    }
+  ],
+  "combined_audio_to_tools": {
+    "type": "call",
+    "success": true,
+    "error": null,
+    "error_code": null,
+    "reason": null,
+    "function_calls": [
+      {
+        "name": "takeoff",
+        "arguments": {
+          "altitude_m": 3.0
+        }
+      }
+    ],
+    "suppressed_calls": [],
+    "reasoning": "'take off to three meters' -> altitude_m 3.",
+    "confidence": 0.6778,
+    "prefill_tps": 815.5,
+    "decode_tps": 285.8,
+    "peak_ram_mb": 96.5,
+    "validation": {
+      "ungrounded": [],
+      "negation": false
+    },
+    "audio_text": "Hey drone, take off to three meters.",
+    "audio_language": "en",
+    "audio_ttft_ms": 34.8,
+    "audio_decode_tps": 278.2
+  }
+}

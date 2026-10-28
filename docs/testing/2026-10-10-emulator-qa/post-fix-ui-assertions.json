@@ -1,0 +1,39 @@
+{
+  "release": "0.1.7+8",
+  "completed_vosk_fixture_runs": 6,
+  "negation_exact_and_blocked": 2,
+  "cases": [
+    {
+      "evidence": "51-fixed-vosk-negation-result-01",
+      "heard": "Heard: do not take off (en-IN)",
+      "interpret_enabled": false
+    },
+    {
+      "evidence": "52-fixed-vosk-move-result-00",
+      "heard": "Heard: move a few meters (en-IN)",
+      "interpret_enabled": true
+    },
+    {
+      "evidence": "53-fixed-vosk-hey-drone-result-01",
+      "heard": "Heard: heat rounds are (en-IN)",
+      "interpret_enabled": true
+    },
+    {
+      "evidence": "55-fixed-vosk-takeoff-result-00",
+      "heard": "Heard: he drowned take off his readers (en-IN)",
+      "interpret_enabled": true
+    },
+    {
+      "evidence": "59-retry-negation-result-01",
+      "heard": "Heard: do not take off (en-IN)",
+      "interpret_enabled": false
+    },
+    {
+      "evidence": "72-final-vosk-negation-result-02",
+      "heard": "Heard: these are take off (en-IN)",
+      "interpret_enabled": true
+    }
+  ],
+  "scope": "Synthetic English through emulator microphone; two exact negation runs followed by one incorrect final rerun. This is not an accuracy pass.",
+  "negation_inconsistent": true
+}

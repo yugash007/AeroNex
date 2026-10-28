@@ -1,0 +1,149 @@
+# Lexicon: English (en-IN). Canonical grammar v1 (spec 4.8, 7.2).
+#
+# Sections `rules`, `plan` and `transcript` are the v0.2.0 Dart tables,
+# verbatim and in source order (rule_intent_engine.dart, plan_interpreter.dart,
+# command_transcript.dart). The Kotlin parser must reproduce the golden
+# vectors from them, so change them only together with the golden contract.
+# The other sections are the v2 grammar: STOP lane, numerals, templates and
+# the Vosk filler list. grammar/README.md documents every key.
+#
+# Entry flags: an item may be `{w: word, provisional: true}`; a table may be
+# `{provisional: true, words: [...]}`; a section may set `provisional: true`
+# as the default for its tables. Quote yes/no/on/off/null-like words.
+
+language: en
+name: English
+script: {name: latin, first: 0x0061, last: 0x007A, digit_zero: 0x0030}
+provisional: false
+
+rules:
+  move_verbs: [move, moves, moving, go, goes, going, fly, flies, flying]
+  directions:
+    forward: [forward, forwards, ahead]
+    backward: [backward, backwards, back]
+    left: [left]
+    right: [right]
+    up: [up, upward, upwards]
+    down: [down, downward, downwards]
+  units: [meters, meter, metres, metre]
+  # A bare "m" counts as a metre word (explicitMetres, StepParser._units).
+  unit_abbreviations: [m]
+  commands:
+    - {command: STOP, phrases: [stop]}
+    - {command: TAKEOFF, phrases: [take off, takeoff, launch]}
+    - {command: LAND, phrases: [land]}
+    - {command: HOVER, phrases: [hover, hold position, hold]}
+  negators: [not, "no", never, dont, "don't", "don’t", cannot, cant, "can't", "can’t", wont, shouldnt, wouldnt, couldnt, mustnt, didnt, doesnt, isnt, arent, wasnt, werent, hasnt, havent]
+  negator_suffixes: ["n't", "n’t", "n‘t", "nʼt", "n＇t"]
+  minus_words: [minus, negative]
+  other_units: [cm, cms, centimeter, centimeters, centimetre, centimetres, centi, mm, millimeter, millimeters, millimetre, millimetres, milli, km, kms, kilometer, kilometers, kilometre, kilometres, kilo, ft, foot, feet, inch, inches, yd, yard, yards, mile, miles]
+  scale_words: [hundred, thousand, lakh, million, point, half]
+  ones: {zero: 0, one: 1, two: 2, three: 3, four: 4, five: 5, six: 6, seven: 7, eight: 8, nine: 9, ten: 10, eleven: 11, twelve: 12, thirteen: 13, fourteen: 14, fifteen: 15, sixteen: 16, seventeen: 17, eighteen: 18, nineteen: 19}
+  tens: {twenty: 20, thirty: 30, forty: 40, fifty: 50, sixty: 60, seventy: 70, eighty: 80, ninety: 90}
+
+plan:
+  connectives: [and then, after that, then, next, and]
+  first_words: [firstly, first]
+  courtesy: [please, ok, okay, thanks, thank, you, sir, hey, now, kindly, drone, hi, hello, "yes", yeah, alright, so, um, uh, also, finally, lastly, secondly, thirdly]
+  ordinals: [second, third]
+  motion_verbs: [fly, go, move]
+  fractions: [quarter, quarters, third, thirds, fourth, fourths, halves]
+  measure_words: [second, seconds, sec, secs, minute, minutes, min, mins, hour, hours, degree, degrees, deg, per, speed, mps, kmph, kph, mph]
+  counted_words: [step, steps, pace, paces]
+  sequence_words: [time, times, twice, thrice, before, after, until, till, while, when, during, later, if, unless]
+  straight_words: [straight]
+  more_words: [more, another, extra, further, additional]
+  hedge_words: [or, about, around, roughly, approximately, nearly, almost]
+  correction_words: [sorry, actually, wait]
+  # StepParser._correctionPhrase: "i mean(t)" anywhere, "make it/that" leading.
+  correction_phrases: {anywhere: [i mean, i meant], leading: [make it, make that]}
+  altitude_words: [to, till, until, upto, altitude, height, level]
+  filler: [the, a, an, please, by, now, slowly, drone, ok, okay, can, could, would, will, you, just, kindly, thanks, thank, sir, hey, also, again, it, hi, hello, "yes", yeah, alright, so, um, uh, hmm, hm, basically, like, should]
+  takeoff_words: [take, "off", takeoff, launch, to, of, height, altitude, level, high, above, ground, first]
+  simple_words: [land, hover, hold, stop, position, place, in, your, here, still, moving, emergency, immediately, safely]
+  land_words: [finally]
+  status_words: [status, telemetry]
+  # StepParser._beforeDirection: "to the right", "towards your left".
+  before_direction: [to, toward, towards, your]
+  before_direction_skip: [the, your]
+  # StepParser._rejectUnknownWords: "land right here".
+  right_here_followers: [here, now]
+  # CommandSplitter._separator: no clause split at "/" before these ("m/s").
+  slash_units: [sec, min, hour, hr]
+  # CommandSplitter._wakePhrase and _clean: "hey drone", a leading "drone".
+  wake: {greetings: [hey], names: [drone]}
+
+transcript:
+  # CommandTranscript.inspect English negation, whole words, plus "<word>n't"
+  # with any of negation_apostrophes.
+  negation_words: [not, never, "no", cannot, dont, cant, wont, shouldnt, wouldnt, couldnt, mustnt, didnt, doesnt, isnt, arent, wasnt, werent, hasnt, havent]
+  negation_apostrophes: ["'", "’", "‘", "ʼ", "＇"]
+  # "one".."ten" become digits after these words, before "meter(s)".
+  numbers: {one: 1, two: 2, three: 3, four: 4, five: 5, six: 6, seven: 7, eight: 8, nine: 9, ten: 10}
+  number_preceders: [to, by, forward, backward, left, right, up, down]
+  spelling: {metres: meters, metre: meter}
+  hold_aliases: [hover, hold position]
+  bare_takeoff: [fly, take off, launch]
+  mishearings: {headrooms slide: "Hey drone, fly"}
+
+# --- v2 grammar ---------------------------------------------------------------
+
+# Negations as the en-in model spells them, so the grammar decodes them (spec
+# 4.8). The parser refuses them through rules.negators ("not") and
+# rules.negator_suffixes ("n't").
+grammar_negators: [do not, "won't", "shouldn't", "wouldn't", "couldn't", "mustn't", "didn't", "doesn't", "isn't", "aren't", "wasn't", "weren't", "hasn't", "haven't"]
+
+# Voice STOP lane triggers (spec 7.5, 4.12). "hold" is deliberately not a STOP
+# trigger (README "Stop lane and keyword spotting"); it stays a HOLD command.
+stop_lane: [stop]
+
+numerals:
+  # 0-19, the tens and tens + 1..9 come from rules.ones / rules.tens.
+  extra: {one hundred: 100, hundred: 100}
+  # 0.4.0: read as their value (README "Spoken numbers"); before 0.4.0 they were refused.
+  fractions: {half: 0.5, a half: 0.5, half a: 0.5, point five: 0.5, zero point five: 0.5, one point five: 1.5, two point five: 2.5, one and a half: 1.5, two and a half: 2.5}
+  # 0.4.0 (README "Spoken numbers"): gen.py adds "<n> point <d>", "point <d>" and "<n> and a half" below
+  # intents.v1.yaml spoken_numbers.below; the Kotlin reader composes any such number ("twenty point five").
+  decimal_point: [point]
+  and_half: [and a half, and half]
+
+# 0.4.0 natural phrasing (README "Natural phrasing"), read only in a clause that names a number. A direction
+# verb without a move verb is a move in its direction ("climb 2 m" = "move up 2 m"; "ahead 2 m" = "move forward
+# 2 m"); a comparative after a move verb is its direction ("go higher 2 m" = "go up 2 m").
+natural:
+  direction_verbs:
+    forward: [advance, ahead]
+    backward: [reverse, retreat, back up]
+    up: [climb, ascend, rise]
+    down: [descend, drop, lower]
+  comparatives:
+    up: [higher]
+    down: [lower]
+
+templates:
+  takeoff: ["{takeoff} to {num} {unit}", "{takeoff} {num} {unit}"]
+  # The last seven are 0.4.0 (README "Natural phrasing"): "go up by 2 m", "move 3 m to the left", "go towards
+  # the right 2 m", "climb 2 m", "go higher by 2 m". {side} is the left and right forms of {dir}.
+  move: ["{verb} {dir} {num} {unit}", "{verb} {num} {unit} {dir}", "{verb} {dir} by {num} {unit}", "{verb} to the {side} {num} {unit}", "{verb} {num} {unit} to the {side}", "{verb} towards the {side} {num} {unit}", "{verb} {num} {unit} towards the {side}", "{dirverb} [by] {num} {unit}", "{verb} {comparative} [by] {num} {unit}"]
+  hold: ["{hold}"]
+  stop: ["{stop}"]
+  land: ["{land}"]
+  status: ["{status}"]
+
+vosk:
+  # Lexicon forms the en-in model cannot emit (missing from its Gr.fst; gen.py
+  # fails on any other missing word). The parser keeps them for typed text;
+  # the grammar has the model's spellings (meters, centimeter, don't, ...).
+  exclude: [metre, metres, dont, shouldnt, wouldnt, couldnt, mustnt, didnt, doesnt, isnt, wasnt, werent, hasnt, havent, cm, cms, centi, centimetre, centimetres, millimetre, millimetres, km, kms, kilometre, kilometres, ft, yd, lakh, deg, secs, mins, mps, kmph, kph, upto]
+  # Never fillers: acoustic neighbours of hover and hold, so a spoken HOLD is
+  # not absorbed by a filler (README "Fillers").
+  filler_exclude: [over, old, whole]
+  # Acoustic neighbours of "stop": never fillers and never decoys in
+  # stop_en.json, so a spoken STOP is not absorbed (README "Stop lane and
+  # keyword spotting"; "start" took 2 of 18 eSpeak "stop"s as a decoy). "drop" (0.4.0, a down verb) is one
+  # sound from "stop" too.
+  near_stop: [start, started, step, steps, stuff, top, drop]
+  # The negations placed right before and after every command word (README
+  # "Negation in the grammar"); the rest are single-word phrases only.
+  negators: ["don't", do not, never, not, "no", cannot, "can't", "won't"]
+  fillers: [is, for, but, know, was, have, they, "on", be, it's, with, are, this, he, my, we, as, what, at, i'm, all, think, there, from, me, people, get, out, that's, said, had, well, really, has, oh, because, how, them, she, been, some, who, their, his, were, good, than, her, see, much, other, you're, got, even, too, only, want, did, him, something, very, where, way, which, lot, say, years, any, new, our, into, ah, i've, they're, year, thing, work, things, those, us, most, why, these, there's, need, being, little, kind, many, day, come, same, last, he's, look, sure, money, doing, pretty, always, guess, dollars, life, long, better, probably, every, we're, world, does, anything, maybe, school, great, find, though, made, big, feel, through, cause, game, put, use, different, home, may, might, used, am, thought, best, since, man, love, own, getting, few, bad, give, part, percent, live, family, i'll, tell, ever, gonna, went, someone, help, i'd, keep, everything, try, play, hard, done, enough, trying, end, away, its, far, talk, both, real, says, country, kids, least, person, bit, such, exactly, what's, told, nothing, friends, believe, let, call, having, able, show, else, watch, ago, job, nice, once, house, government, problem, looking, change, children, each, without, days, found, "true", saying, between, less, week, she's, seen, already, makes, guy, course, care, name, came, pay, talking, making, seems, either, idea, read, yet, definitely, team, working, city, mr, wanted, remember, huh, fact, night, business, months, state, number, against, called, public, understand, everyone, whatever, er, run, friend, case, took, sometimes, today, must, god, important, wrong, heard, couple, set, reason, question, system, together, car, games, women, war, hope, states, happened, guys, coming, sort, small, fun, hear, york, under, let's, quite, agree, free, wow, buy, close, past, food, anyone, you've, saw, side, news, kinda, myself, cool, mind, thinking, company, deal, whether, comes, happen]

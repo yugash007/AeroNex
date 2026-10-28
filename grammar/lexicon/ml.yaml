@@ -1,0 +1,79 @@
+# Lexicon: Malayalam (ml). Canonical grammar v1 (spec 4.8, 7.2).
+#
+# PROVISIONAL as a whole (spec 7.2): no native speaker has reviewed it.
+# `rules` is the edge/app/intent.py reference table (verbatim, in order); the
+# v0.2.0 Dart parser had no Malayalam vocabulary, so these tables feed the CTC
+# lexicon, not the golden-parity parser. `plan.connectives` and the
+# `transcript` negators are the Dart tables' Malayalam entries.
+
+language: ml
+name: Malayalam
+script: {name: malayalam, first: 0x0D00, last: 0x0D7F, digit_zero: 0x0D66}
+provisional: true
+
+rules:
+  move_verbs: [പോകൂ, പോകുക, പറക്കൂ, നീങ്ങൂ]
+  directions:
+    forward: [മുന്നോട്ട്, മുന്നിലേക്ക്]
+    backward: [പിന്നോട്ട്, പിന്നിലേക്ക്]
+    left: [ഇടത്തേക്ക്, ഇടത്]
+    right: [വലത്തേക്ക്, വലത്]
+    up: [മുകളിലേക്ക്, മുകളിൽ]
+    down: [താഴേക്ക്, താഴെ]
+  units: [മീറ്റർ, മീറ്ററുകൾ, മീ]
+  commands:
+    - {command: STOP, phrases: [നിർത്തൂ, നിൽക്കൂ, സ്റ്റോപ്പ്]}
+    - {command: TAKEOFF, phrases: [ടേക്ക്ഓഫ്, മുകളിലേക്ക് പൊങ്ങൂ]}
+    - {command: LAND, phrases: [ഇറങ്ങൂ, ലാൻഡ്]}
+    - {command: HOVER, phrases: [ഹോവർ]}
+  negators: [വേണ്ട, ഇല്ല]
+  negator_suffixes: [രുത്]
+  minus_words: [മൈനസ്]
+  other_units: [സെന്റിമീറ്റർ, മില്ലിമീറ്റർ, കിലോമീറ്റർ, സെന്റി, മില്ലി, കിലോ, അടി, ഇഞ്ച്, മൈൽ]
+  scale_words: [ആയിരം, ദശാംശം, അര]
+  numbers: {ഒരു: 1, ഒന്ന്: 1, രണ്ട്: 2, മൂന്ന്: 3, നാല്: 4, അഞ്ച്: 5, ആറ്: 6, ഏഴ്: 7, എട്ട്: 8, ഒമ്പത്: 9, പത്ത്: 10, പതിനൊന്ന്: 11, പന്ത്രണ്ട്: 12, പതിമൂന്ന്: 13, പതിനാല്: 14, പതിനഞ്ച്: 15, പതിനാറ്: 16, പതിനേഴ്: 17, പതിനെട്ട്: 18, പത്തൊമ്പത്: 19, ഇരുപത്: 20, ഇരുപത്തൊന്ന്: 21, മുപ്പത്: 30, നാല്പത്: 40, അമ്പത്: 50, അറുപത്: 60, എഴുപത്: 70, എൺപത്: 80, തൊണ്ണൂറ്: 90, നൂറ്: 100}
+  tens_values: [20, 30, 40, 50, 60, 70, 80, 90]
+  units19: {ഒരു: 1, ഒന്ന്: 1, രണ്ട്: 2, മൂന്ന്: 3, നാല്: 4, അഞ്ച്: 5, ആറ്: 6, ഏഴ്: 7, എട്ട്: 8, ഒമ്പത്: 9}
+
+plan:
+  connectives: [ശേഷം, പിന്നെ]
+
+transcript:
+  negators: [വേണ്ട, ഇല്ല]
+  fused_negators: [രുത്]
+
+# --- v2 grammar ---------------------------------------------------------------
+
+stop_lane: [നിർത്തൂ, നിൽക്കൂ, സ്റ്റോപ്പ്]
+
+numerals:
+  extra: {പൂജ്യം: 0}
+  fractions: {അര: 0.5, ഒന്നര: 1.5, രണ്ടര: 2.5}
+  loans:
+    ones: {സീറോ: 0, വൺ: 1, ടൂ: 2, ത്രീ: 3, ഫോർ: 4, ഫൈവ്: 5, സിക്സ്: 6, സെവൻ: 7, എയ്റ്റ്: 8, നൈൻ: 9, ടെൻ: 10, ഇലവൻ: 11, ട്വൽവ്: 12, തേർട്ടീൻ: 13, ഫോർട്ടീൻ: 14, ഫിഫ്റ്റീൻ: 15, സിക്സ്റ്റീൻ: 16, സെവന്റീൻ: 17, എയ്റ്റീൻ: 18, നൈന്റീൻ: 19}
+    tens: {ട്വന്റി: 20, തേർട്ടി: 30, ഫോർട്ടി: 40, ഫിഫ്റ്റി: 50, സിക്സ്റ്റി: 60, സെവന്റി: 70, എയ്റ്റി: 80, നൈന്റി: 90}
+    hundred: {ഹൺഡ്രഡ്: 100}
+    fractions: {ഹാഫ്: 0.5}
+
+loanwords:
+  words:
+    - {loan: ടേക്ക് ഓഫ്, latin: take off, class: takeoff, native: ടേക്ക്ഓഫ്}
+    - {loan: ഹോൾഡ്, latin: hold, class: hold, native: ഹോവർ}
+    - {loan: ഫോർവേഡ്, latin: forward, class: dir, native: മുന്നോട്ട്}
+    - {loan: ബാക്ക്, latin: back, class: dir, native: പിന്നോട്ട്}
+    - {loan: ലെഫ്റ്റ്, latin: left, class: dir, native: ഇടത്തേക്ക്}
+    - {loan: റൈറ്റ്, latin: right, class: dir, native: വലത്തേക്ക്}
+    - {loan: അപ്പ്, latin: up, class: dir, native: മുകളിലേക്ക്}
+    - {loan: ഡൗൺ, latin: down, class: dir, native: താഴേക്ക്}
+    - {loan: മൂവ്, latin: move, class: verb, native: പോകൂ}
+    - {loan: ഗോ, latin: go, class: verb, native: പോകൂ}
+    - {loan: മീറ്റേഴ്സ്, latin: meters, class: unit, native: മീറ്റർ}
+    - {loan: സ്റ്റാറ്റസ്, latin: status, class: status, native: null}
+
+templates:
+  takeoff: ["{num} {unit} {takeoff}"]
+  move: ["{num} {unit} {dir} {verb}", "{dir} {num} {unit} {verb}"]
+  hold: ["{hold}"]
+  stop: ["{stop}"]
+  land: ["{land}"]
+  status: ["{status}"]

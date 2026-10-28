@@ -1,0 +1,164 @@
+[
+  {
+    "file": "app/build/app/outputs/flutter-apk/app-release.apk",
+    "package": "com.aeronex.app",
+    "version": "0.1.5",
+    "version_code": 6,
+    "min_sdk": 26,
+    "target_sdk": 36,
+    "abi": "arm64-v8a",
+    "bytes": 38001985,
+    "sha256": "c9cf4472e709d438c73d1f0f20645a21e43e7a2a9c8b4d626ac55111b6365f43",
+    "signing_certificate_sha256": "6313b3f87ccfd799e2c4a96d2de6796836f3559fce9a0b4ab3974456b9d243c1",
+    "signature_verified": true,
+    "zip_and_elf_alignment_16kb_verified": true,
+    "vosk_license_asset_verified": true,
+    "native_libraries": [
+      {
+        "file": "lib/arm64-v8a/libapp.so",
+        "bytes": 5112712,
+        "load_alignments": [
+          65536,
+          65536,
+          65536
+        ]
+      },
+      {
+        "file": "lib/arm64-v8a/libc++_shared.so",
+        "bytes": 1253544,
+        "load_alignments": [
+          16384,
+          16384,
+          16384,
+          16384
+        ]
+      },
+      {
+        "file": "lib/arm64-v8a/libflutter.so",
+        "bytes": 11747864,
+        "load_alignments": [
+          65536,
+          65536,
+          65536
+        ]
+      },
+      {
+        "file": "lib/arm64-v8a/libaeronex_cactus.so",
+        "bytes": 1176608,
+        "load_alignments": [
+          16384,
+          16384,
+          16384
+        ]
+      },
+      {
+        "file": "lib/arm64-v8a/libaeronex_native.so",
+        "bytes": 7952656,
+        "load_alignments": [
+          16384,
+          16384,
+          16384
+        ]
+      },
+      {
+        "file": "lib/arm64-v8a/libjnidispatch.so",
+        "bytes": 165992,
+        "load_alignments": [
+          16384,
+          16384
+        ]
+      },
+      {
+        "file": "lib/arm64-v8a/libvosk.so",
+        "bytes": 10042800,
+        "load_alignments": [
+          16384,
+          16384,
+          16384,
+          16384
+        ]
+      }
+    ]
+  },
+  {
+    "file": "app/build/app/outputs/flutter-apk/app-debug.apk",
+    "package": "com.aeronex.app",
+    "version": "0.1.5",
+    "version_code": 6,
+    "min_sdk": 26,
+    "target_sdk": 36,
+    "abi": "arm64-v8a",
+    "bytes": 111911202,
+    "sha256": "881164491d30371fc32758a0e04f1867d69c4af8b3f7592a6671d610eac5a641",
+    "signing_certificate_sha256": "6313b3f87ccfd799e2c4a96d2de6796836f3559fce9a0b4ab3974456b9d243c1",
+    "signature_verified": true,
+    "zip_and_elf_alignment_16kb_verified": true,
+    "vosk_license_asset_verified": true,
+    "native_libraries": [
+      {
+        "file": "lib/arm64-v8a/libVkLayer_khronos_validation.so",
+        "bytes": 15240080,
+        "load_alignments": [
+          65536,
+          65536,
+          65536
+        ]
+      },
+      {
+        "file": "lib/arm64-v8a/libc++_shared.so",
+        "bytes": 1253544,
+        "load_alignments": [
+          16384,
+          16384,
+          16384,
+          16384
+        ]
+      },
+      {
+        "file": "lib/arm64-v8a/libflutter.so",
+        "bytes": 38828704,
+        "load_alignments": [
+          65536,
+          65536,
+          65536
+        ]
+      },
+      {
+        "file": "lib/arm64-v8a/libaeronex_cactus.so",
+        "bytes": 1204440,
+        "load_alignments": [
+          16384,
+          16384,
+          16384
+        ]
+      },
+      {
+        "file": "lib/arm64-v8a/libaeronex_native.so",
+        "bytes": 21884120,
+        "load_alignments": [
+          16384,
+          16384,
+          16384
+        ]
+      },
+      {
+        "file": "lib/arm64-v8a/libjnidispatch.so",
+        "bytes": 165992,
+        "load_alignments": [
+          16384,
+          16384
+        ]
+      },
+      {
+        "file": "lib/arm64-v8a/libvosk.so",
+        "bytes": 10042800,
+        "load_alignments": [
+          16384,
+          16384,
+          16384,
+          16384
+        ]
+      }
+    ]
+  }
+]

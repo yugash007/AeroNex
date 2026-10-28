@@ -1,0 +1,17 @@
+{
+  "markdown_links_resolve": true,
+  "flutter_tests_passed": 96,
+  "flutter_analysis_clean": true,
+  "native_tests_passed": 75,
+  "native_tests_skipped": 1,
+  "apk_reports_match_delivered_files": [
+    {
+      "variant": "release",
+      "sha256": "0a44607aa90fd1d06bf286136e557f6d4671bde1102102c74df9a1c9328b7832"
+    },
+    {
+      "variant": "debug",
+      "sha256": "0e51ea3b9993b41ac892adc81b6f5168297aefc3b9d78efc2f53ce03aa57f06e"
+    }
+  ]
+}

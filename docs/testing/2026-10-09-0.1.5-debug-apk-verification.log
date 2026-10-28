@@ -1,0 +1,295 @@
+package: name='com.aeronex.app' versionCode='6' versionName='0.1.5' platformBuildVersionName='16' platformBuildVersionCode='36' compileSdkVersion='36' compileSdkVersionCodename='16'
+sdkVersion:'26'
+targetSdkVersion:'36'
+uses-permission: name='android.permission.INTERNET'
+uses-permission: name='android.permission.RECORD_AUDIO'
+uses-permission: name='com.aeronex.app.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION'
+application-label:'AeroNex'
+application-label-af:'AeroNex'
+application-label-am:'AeroNex'
+application-label-ar:'AeroNex'
+application-label-as:'AeroNex'
+application-label-az:'AeroNex'
+application-label-be:'AeroNex'
+application-label-bg:'AeroNex'
+application-label-bn:'AeroNex'
+application-label-bs:'AeroNex'
+application-label-ca:'AeroNex'
+application-label-cs:'AeroNex'
+application-label-da:'AeroNex'
+application-label-de:'AeroNex'
+application-label-el:'AeroNex'
+application-label-en-AU:'AeroNex'
+application-label-en-CA:'AeroNex'
+application-label-en-GB:'AeroNex'
+application-label-en-IN:'AeroNex'
+application-label-en-XC:'AeroNex'
+application-label-es:'AeroNex'
+application-label-es-US:'AeroNex'
+application-label-et:'AeroNex'
+application-label-eu:'AeroNex'
+application-label-fa:'AeroNex'
+application-label-fi:'AeroNex'
+application-label-fr:'AeroNex'
+application-label-fr-CA:'AeroNex'
+application-label-gl:'AeroNex'
+application-label-gu:'AeroNex'
+application-label-hi:'AeroNex'
+application-label-hr:'AeroNex'
+application-label-hu:'AeroNex'
+application-label-hy:'AeroNex'
+application-label-in:'AeroNex'
+application-label-is:'AeroNex'
+application-label-it:'AeroNex'
+application-label-iw:'AeroNex'
+application-label-ja:'AeroNex'
+application-label-ka:'AeroNex'
+application-label-kk:'AeroNex'
+application-label-km:'AeroNex'
+application-label-kn:'AeroNex'
+application-label-ko:'AeroNex'
+application-label-ky:'AeroNex'
+application-label-lo:'AeroNex'
+application-label-lt:'AeroNex'
+application-label-lv:'AeroNex'
+application-label-mk:'AeroNex'
+application-label-ml:'AeroNex'
+application-label-mn:'AeroNex'
+application-label-mr:'AeroNex'
+application-label-ms:'AeroNex'
+application-label-my:'AeroNex'
+application-label-nb:'AeroNex'
+application-label-ne:'AeroNex'
+application-label-nl:'AeroNex'
+application-label-or:'AeroNex'
+application-label-pa:'AeroNex'
+application-label-pl:'AeroNex'
+application-label-pt:'AeroNex'
+application-label-pt-BR:'AeroNex'
+application-label-pt-PT:'AeroNex'
+application-label-ro:'AeroNex'
+application-label-ru:'AeroNex'
+application-label-si:'AeroNex'
+application-label-sk:'AeroNex'
+application-label-sl:'AeroNex'
+application-label-sq:'AeroNex'
+application-label-sr:'AeroNex'
+application-label-sr-Latn:'AeroNex'
+application-label-sv:'AeroNex'
+application-label-sw:'AeroNex'
+application-label-ta:'AeroNex'
+application-label-te:'AeroNex'
+application-label-th:'AeroNex'
+application-label-tl:'AeroNex'
+application-label-tr:'AeroNex'
+application-label-uk:'AeroNex'
+application-label-ur:'AeroNex'
+application-label-uz:'AeroNex'
+application-label-vi:'AeroNex'
+application-label-zh-CN:'AeroNex'
+application-label-zh-HK:'AeroNex'
+application-label-zh-TW:'AeroNex'
+application-label-zu:'AeroNex'
+application-icon-120:'res/mipmap-mdpi-v4/ic_launcher.png'
+application-icon-160:'res/mipmap-mdpi-v4/ic_launcher.png'
+application-icon-240:'res/mipmap-hdpi-v4/ic_launcher.png'
+application-icon-320:'res/mipmap-xhdpi-v4/ic_launcher.png'
+application-icon-480:'res/mipmap-xxhdpi-v4/ic_launcher.png'
+application-icon-640:'res/mipmap-xxxhdpi-v4/ic_launcher.png'
+application-icon-65534:'res/mipmap-mdpi-v4/ic_launcher.png'
+application: label='AeroNex' icon='res/mipmap-mdpi-v4/ic_launcher.png'
+application-debuggable
+launchable-activity: name='com.aeronex.app.MainActivity'  label='' icon=''
+uses-library-not-required:'androidx.window.extensions'
+uses-library-not-required:'androidx.window.sidecar'
+feature-group: label=''
+  uses-feature: name='android.hardware.faketouch'
+  uses-implied-feature: name='android.hardware.faketouch' reason='default feature for all apps'
+  uses-feature: name='android.hardware.microphone'
+  uses-implied-feature: name='android.hardware.microphone' reason='requested android.permission.RECORD_AUDIO permission'
+main
+other-receivers
+supports-screens: 'small' 'normal' 'large' 'xlarge'
+supports-any-density: 'true'
+locales: '--_--' 'af' 'am' 'ar' 'as' 'az' 'be' 'bg' 'bn' 'bs' 'ca' 'cs' 'da' 'de' 'el' 'en-AU' 'en-CA' 'en-GB' 'en-IN' 'en-XC' 'es' 'es-US' 'et' 'eu' 'fa' 'fi' 'fr' 'fr-CA' 'gl' 'gu' 'hi' 'hr' 'hu' 'hy' 'in' 'is' 'it' 'iw' 'ja' 'ka' 'kk' 'km' 'kn' 'ko' 'ky' 'lo' 'lt' 'lv' 'mk' 'ml' 'mn' 'mr' 'ms' 'my' 'nb' 'ne' 'nl' 'or' 'pa' 'pl' 'pt' 'pt-BR' 'pt-PT' 'ro' 'ru' 'si' 'sk' 'sl' 'sq' 'sr' 'sr-Latn' 'sv' 'sw' 'ta' 'te' 'th' 'tl' 'tr' 'uk' 'ur' 'uz' 'vi' 'zh-CN' 'zh-HK' 'zh-TW' 'zu'
+densities: '120' '160' '240' '320' '480' '640' '65534'
+native-code: 'arm64-v8a'
+
+WARNING: A restricted method in java.lang.System has been called
+WARNING: java.lang.System::loadLibrary has been called by org.conscrypt.NativeLibraryUtil in an unnamed module (file:/C:/Users/yugas/AppData/Local/Android/Sdk/build-tools/36.0.0/lib/apksigner.jar)
+WARNING: Use --enable-native-access=ALL-UNNAMED to avoid a warning for callers in this module
+WARNING: Restricted methods will be blocked in a future release unless native access is enabled
+
+Verifies
+Verified using v1 scheme (JAR signing): false
+Verified using v2 scheme (APK Signature Scheme v2): true
+Verified using v3 scheme (APK Signature Scheme v3): false
+Verified using v3.1 scheme (APK Signature Scheme v3.1): false
+Verified using v4 scheme (APK Signature Scheme v4): false
+Verified for SourceStamp: false
+Number of signers: 1
+Signer #1 certificate DN: C=US, O=Android, CN=Android Debug
+Signer #1 certificate SHA-256 digest: 6313b3f87ccfd799e2c4a96d2de6796836f3559fce9a0b4ab3974456b9d243c1
+Signer #1 certificate SHA-1 digest: ee58a1b5ec2402b21908a114828cfd90e53fcbbc
+Signer #1 certificate MD5 digest: 4b7fb106091ebc29142686415cb86b36
+Signer #1 key algorithm: RSA
+Signer #1 key size (bits): 2048
+Signer #1 public key SHA-256 digest: 9f4d2f080387b51216e2cac4fcd6c9a2092adece37fda96ab4ce187e4ac699a1
+Signer #1 public key SHA-1 digest: 226509f0e75eac6d1823fb7b9ca9b13567652367
+Signer #1 public key MD5 digest: 004760722e0a686247af831b6ce80f62
+
+Verifying alignment of C:\Users\yugas\Downloads\Drone-app\.worktrees\aeronex-skeleton\app\build\app\outputs\flutter-apk\app-debug.apk (4)...
+      87 META-INF/com/android/build/gradle/app-metadata.properties (OK - compressed)
+     180 classes.dex (OK - compressed)
+ 2913789 classes2.dex (OK - compressed)
+ 2925582 classes3.dex (OK - compressed)
+ 2926171 classes4.dex (OK - compressed)
+ 2992089 classes5.dex (OK - compressed)
+ 2998272 lib/arm64-v8a/libVkLayer_khronos_validation.so (OK)
+18251776 lib/arm64-v8a/libc++_shared.so (OK)
+19513344 lib/arm64-v8a/libflutter.so (OK)
+58343424 lib/arm64-v8a/libaeronex_cactus.so (OK)
+59555840 lib/arm64-v8a/libaeronex_native.so (OK)
+81444864 lib/arm64-v8a/libjnidispatch.so (OK)
+81625088 lib/arm64-v8a/libvosk.so (OK)
+91667957 assets/flutter_assets/AssetManifest.bin (OK - compressed)
+91668081 assets/flutter_assets/FontManifest.json (OK - compressed)
+91668211 assets/flutter_assets/NOTICES.Z (OK - compressed)
+91764436 assets/flutter_assets/NativeAssetsManifest.json (OK - compressed)
+91764561 assets/flutter_assets/assets/licenses/cactus.txt (OK - compressed)
+91769540 assets/flutter_assets/assets/licenses/vosk.txt (OK - compressed)
+91774202 assets/flutter_assets/fonts/MaterialIcons-Regular.otf (OK - compressed)
+92367321 assets/flutter_assets/isolate_snapshot_data (OK - compressed)
+96773136 assets/flutter_assets/kernel_blob.bin (OK - compressed)
+111750178 assets/flutter_assets/shaders/ink_sparkle.frag (OK - compressed)
+111756440 assets/flutter_assets/shaders/stretch_effect.frag (OK - compressed)
+111760763 assets/flutter_assets/vm_snapshot_data (OK - compressed)
+111760814 AndroidManifest.xml (OK - compressed)
+111762942 res/anim-v21/fragment_fast_out_extra_slow_in.xml (OK - compressed)
+111763227 res/animator/fragment_close_enter.xml (OK - compressed)
+111763688 res/animator/fragment_close_exit.xml (OK - compressed)
+111764149 res/animator/fragment_fade_enter.xml (OK - compressed)
+111764479 res/animator/fragment_fade_exit.xml (OK - compressed)
+111764810 res/animator/fragment_open_enter.xml (OK - compressed)
+111765263 res/animator/fragment_open_exit.xml (OK - compressed)
+111765727 res/drawable-anydpi-v21/ic_call_answer.xml (OK - compressed)
+111766466 res/drawable-anydpi-v21/ic_call_answer_low.xml (OK - compressed)
+111767188 res/drawable-anydpi-v21/ic_call_answer_video.xml (OK - compressed)
+111767691 res/drawable-anydpi-v21/ic_call_answer_video_low.xml (OK - compressed)
+111768165 res/drawable-anydpi-v21/ic_call_decline.xml (OK - compressed)
+111768976 res/drawable-anydpi-v21/ic_call_decline_low.xml (OK - compressed)
+111769760 res/drawable-hdpi-v4/ic_call_answer.png (OK)
+111770308 res/drawable-hdpi-v4/ic_call_answer_low.png (OK)
+111770856 res/drawable-hdpi-v4/ic_call_answer_video.png (OK)
+111771192 res/drawable-hdpi-v4/ic_call_answer_video_low.png (OK)
+111771516 res/drawable-hdpi-v4/ic_call_decline.png (OK)
+111771968 res/drawable-hdpi-v4/ic_call_decline_low.png (OK)
+111772428 res/drawable-hdpi-v4/notification_bg_low_normal.9.png (OK)
+111772724 res/drawable-hdpi-v4/notification_bg_low_pressed.9.png (OK)
+111773028 res/drawable-hdpi-v4/notification_bg_normal.9.png (OK)
+111773328 res/drawable-hdpi-v4/notification_bg_normal_pressed.9.png (OK)
+111773644 res/drawable-hdpi-v4/notification_oversize_large_icon_bg.png (OK)
+111774644 res/drawable-hdpi-v4/notify_panel_notification_icon_bg.png (OK)
+111774820 res/drawable-ldpi-v4/ic_call_answer.png (OK)
+111775164 res/drawable-ldpi-v4/ic_call_answer_low.png (OK)
+111775512 res/drawable-ldpi-v4/ic_call_answer_video.png (OK)
+111775792 res/drawable-ldpi-v4/ic_call_answer_video_low.png (OK)
+111776064 res/drawable-ldpi-v4/ic_call_decline.png (OK)
+111776340 res/drawable-ldpi-v4/ic_call_decline_low.png (OK)
+111776612 res/drawable-mdpi-v4/ic_call_answer.png (OK)
+111777004 res/drawable-mdpi-v4/ic_call_answer_low.png (OK)
+111777396 res/drawable-mdpi-v4/ic_call_answer_video.png (OK)
+111777684 res/drawable-mdpi-v4/ic_call_answer_video_low.png (OK)
+111777960 res/drawable-mdpi-v4/ic_call_decline.png (OK)
+111778300 res/drawable-mdpi-v4/ic_call_decline_low.png (OK)
+111778648 res/drawable-mdpi-v4/notification_bg_low_normal.9.png (OK)
+111778948 res/drawable-mdpi-v4/notification_bg_low_pressed.9.png (OK)
+111779252 res/drawable-mdpi-v4/notification_bg_normal.9.png (OK)
+111779556 res/drawable-mdpi-v4/notification_bg_normal_pressed.9.png (OK)
+111779868 res/drawable-mdpi-v4/notify_panel_notification_icon_bg.png (OK)
+111780034 res/drawable-v21/launch_background.xml (OK - compressed)
+111780300 res/drawable-v21/notification_action_background.xml (OK - compressed)
+111780840 res/drawable-xhdpi-v4/ic_call_answer.png (OK)
+111781540 res/drawable-xhdpi-v4/ic_call_answer_low.png (OK)
+111782240 res/drawable-xhdpi-v4/ic_call_answer_video.png (OK)
+111782612 res/drawable-xhdpi-v4/ic_call_answer_video_low.png (OK)
+111782976 res/drawable-xhdpi-v4/ic_call_decline.png (OK)
+111783504 res/drawable-xhdpi-v4/ic_call_decline_low.png (OK)
+111784040 res/drawable-xhdpi-v4/notification_bg_low_normal.9.png (OK)
+111784348 res/drawable-xhdpi-v4/notification_bg_low_pressed.9.png (OK)
+111784680 res/drawable-xhdpi-v4/notification_bg_normal.9.png (OK)
+111784992 res/drawable-xhdpi-v4/notification_bg_normal_pressed.9.png (OK)
+111785328 res/drawable-xhdpi-v4/notify_panel_notification_icon_bg.png (OK)
+111785540 res/drawable-xxhdpi-v4/ic_call_answer.png (OK)
+111786500 res/drawable-xxhdpi-v4/ic_call_answer_low.png (OK)
+111787464 res/drawable-xxhdpi-v4/ic_call_answer_video.png (OK)
+111787932 res/drawable-xxhdpi-v4/ic_call_answer_video_low.png (OK)
+111788388 res/drawable-xxhdpi-v4/ic_call_decline.png (OK)
+111789092 res/drawable-xxhdpi-v4/ic_call_decline_low.png (OK)
+111789792 res/drawable-xxxhdpi-v4/ic_call_answer.png (OK)
+111791040 res/drawable-xxxhdpi-v4/ic_call_answer_low.png (OK)
+111792292 res/drawable-xxxhdpi-v4/ic_call_answer_video.png (OK)
+111792840 res/drawable-xxxhdpi-v4/ic_call_answer_video_low.png (OK)
+111793380 res/drawable-xxxhdpi-v4/ic_call_decline.png (OK)
+111794280 res/drawable-xxxhdpi-v4/ic_call_decline_low.png (OK)
+111795165 res/drawable/notification_bg.xml (OK - compressed)
+111795483 res/drawable/notification_bg_low.xml (OK - compressed)
+111795810 res/drawable/notification_icon_background.xml (OK - compressed)
+111796061 res/drawable/notification_tile_bg.xml (OK - compressed)
+111796301 res/layout-v21/notification_action.xml (OK - compressed)
+111796864 res/layout-v21/notification_action_tombstone.xml (OK - compressed)
+111797480 res/layout-v21/notification_template_custom_big.xml (OK - compressed)
+111798347 res/layout-v21/notification_template_icon_group.xml (OK - compressed)
+111798823 res/layout/custom_dialog.xml (OK - compressed)
+111799205 res/layout/ime_base_split_test_activity.xml (OK - compressed)
+111799484 res/layout/ime_secondary_split_test_activity.xml (OK - compressed)
+111799984 res/layout/notification_template_part_chronometer.xml (OK - compressed)
+111800318 res/layout/notification_template_part_time.xml (OK - compressed)
+111800644 res/mipmap-hdpi-v4/ic_launcher.png (OK)
+111801252 res/mipmap-mdpi-v4/ic_launcher.png (OK)
+111801760 res/mipmap-xhdpi-v4/ic_launcher.png (OK)
+111802548 res/mipmap-xxhdpi-v4/ic_launcher.png (OK)
+111803648 res/mipmap-xxxhdpi-v4/ic_launcher.png (OK)
+111805136 resources.arsc (OK)
+111864683 DebugProbesKt.bin (OK - compressed)
+111865509 META-INF/AL2.0 (OK - compressed)
+111869116 META-INF/LGPL2.1 (OK - compressed)
+111877812 META-INF/androidx.activity_activity.version (OK)
+111877908 META-INF/androidx.annotation_annotation-experimental.version (OK)
+111877992 META-INF/androidx.arch.core_core-runtime.version (OK - compressed)
+111878124 META-INF/androidx.core_core-ktx.version (OK)
+111878196 META-INF/androidx.core_core.version (OK)
+111878280 META-INF/androidx.customview_customview.version (OK)
+111878372 META-INF/androidx.exifinterface_exifinterface.version (OK)
+111878452 META-INF/androidx.fragment_fragment.version (OK)
+111878540 META-INF/androidx.interpolator_interpolator.version (OK)
+111878640 META-INF/androidx.lifecycle_lifecycle-livedata-core-ktx.version (OK)
+111878736 META-INF/androidx.lifecycle_lifecycle-livedata-core.version (OK)
+111878828 META-INF/androidx.lifecycle_lifecycle-livedata.version (OK)
+111878920 META-INF/androidx.lifecycle_lifecycle-process.version (OK)
+111879012 META-INF/androidx.lifecycle_lifecycle-runtime.version (OK)
+111879116 META-INF/androidx.lifecycle_lifecycle-viewmodel-savedstate.version (OK)
+111879208 META-INF/androidx.lifecycle_lifecycle-viewmodel.version (OK)
+111879284 META-INF/androidx.loader_loader.version (OK)
+111879380 META-INF/androidx.profileinstaller_profileinstaller.version (OK)
+111879464 META-INF/androidx.savedstate_savedstate.version (OK)
+111879552 META-INF/androidx.startup_startup-runtime.version (OK)
+111879632 META-INF/androidx.tracing_tracing.version (OK)
+111879736 META-INF/androidx.versionedparcelable_versionedparcelable.version (OK)
+111879820 META-INF/androidx.viewpager_viewpager.version (OK)
+111879912 META-INF/androidx.window.extensions.core_core.version (OK)
+111879992 META-INF/androidx.window_window-java.version (OK)
+111880068 META-INF/androidx.window_window.version (OK)
+111880148 META-INF/kotlinx_coroutines_android.version (OK)
+111880224 META-INF/kotlinx_coroutines_core.version (OK)
+111880321 META-INF/services/kotlinx.coroutines.CoroutineExceptionHandler (OK - compressed)
+111880468 META-INF/services/kotlinx.coroutines.internal.MainDispatcherFactory (OK - compressed)
+111880591 kotlin/annotation/annotation.kotlin_builtins (OK - compressed)
+111881209 kotlin/collections/collections.kotlin_builtins (OK - compressed)
+111883178 kotlin/concurrent/atomics/atomics.kotlin_builtins (OK - compressed)
+111884363 kotlin/coroutines/coroutines.kotlin_builtins (OK - compressed)
+111884551 kotlin/internal/internal.kotlin_builtins (OK - compressed)
+111884969 kotlin/kotlin.kotlin_builtins (OK - compressed)
+111890538 kotlin/ranges/ranges.kotlin_builtins (OK - compressed)
+111891986 kotlin/reflect/reflect.kotlin_builtins (OK - compressed)
+Verification successful

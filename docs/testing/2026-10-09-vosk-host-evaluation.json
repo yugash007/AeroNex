@@ -1,0 +1,90 @@
+{
+  "sample_source": "Windows default SAPI synthetic voice; not an Indian-accent or microphone accuracy benchmark",
+  "runtime": "Vosk Python 0.3.45 (host smoke only; Android uses 0.3.75)",
+  "models": [
+    {
+      "model": "vosk-model-small-en-in-0.4",
+      "load_seconds": 0.35,
+      "silence": {
+        "text": ""
+      },
+      "vocabulary": {
+        "hey": 71790,
+        "drone": 60197,
+        "fly": 65026,
+        "take": 46181,
+        "off": 514,
+        "three": 46281,
+        "meters": 15906,
+        "left": 15111,
+        "not": 20544,
+        "hundred": 71405,
+        "weather": 24203
+      },
+      "samples": [
+        {
+          "expected": "Hey drone fly",
+          "recognized": "he drowns why",
+          "seconds": 0.426,
+          "partial_updates": 2
+        },
+        {
+          "expected": "Hey drone take off to three meters",
+          "recognized": "hey drown take off to three meters",
+          "seconds": 0.654,
+          "partial_updates": 6
+        },
+        {
+          "expected": "Move left two meters",
+          "recognized": "will do a few meters",
+          "seconds": 0.569,
+          "partial_updates": 2
+        },
+        {
+          "expected": "Do not take off",
+          "recognized": "do not take off",
+          "seconds": 0.349,
+          "partial_updates": 4
+        },
+        {
+          "expected": "Take off to one hundred meters",
+          "recognized": "take off to one hundred meters",
+          "seconds": 0.499,
+          "partial_updates": 5
+        },
+        {
+          "expected": "Land the drone",
+          "recognized": "your own",
+          "seconds": 0.371,
+          "partial_updates": 1
+        },
+        {
+          "expected": "Hold position",
+          "recognized": "hold position",
+          "seconds": 0.335,
+          "partial_updates": 3
+        },
+        {
+          "expected": "What is the weather in Delhi",
+          "recognized": "what is the weather in delhi",
+          "seconds": 0.419,
+          "partial_updates": 4
+        }
+      ]
+    },
+    {
+      "model": "vosk-model-small-te-0.42",
+      "load_seconds": 0.744,
+      "silence": {
+        "text": ""
+      }
+    },
+    {
+      "model": "vosk-model-small-hi-0.22",
+      "load_seconds": 0.564,
+      "silence": {
+        "text": ""
+      }
+    }
+  ]
+}

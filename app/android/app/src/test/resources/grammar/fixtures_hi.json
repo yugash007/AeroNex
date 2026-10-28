@@ -1,0 +1,1878 @@
+{
+ "language": "hi",
+ "loans": [
+  {
+   "arguments": {
+    "altitude_m": 3
+   },
+   "intent": "takeoff",
+   "text": "तीन मीटर्स टेक ऑफ करो",
+   "tool": "takeoff"
+  },
+  {
+   "arguments": {
+    "altitude_m": 3
+   },
+   "intent": "takeoff",
+   "text": "तीन मीटर्स लॉन्च करो",
+   "tool": "takeoff"
+  },
+  {
+   "arguments": {
+    "altitude_m": 3
+   },
+   "intent": "takeoff",
+   "text": "तीन मीटर्स टेक ऑफ",
+   "tool": "takeoff"
+  },
+  {
+   "arguments": {
+    "altitude_m": 3
+   },
+   "intent": "takeoff",
+   "text": "तीन मीटर्स लॉन्च",
+   "tool": "takeoff"
+  },
+  {
+   "arguments": {
+    "altitude_m": 3
+   },
+   "intent": "takeoff",
+   "text": "तीन मीटर्स टेक ऑफ कर दो",
+   "tool": "takeoff"
+  },
+  {
+   "arguments": {
+    "altitude_m": 3
+   },
+   "intent": "takeoff",
+   "text": "तीन मीटर्स लॉन्च कर दो",
+   "tool": "takeoff"
+  },
+  {
+   "arguments": {
+    "altitude_m": 3
+   },
+   "intent": "takeoff",
+   "text": "तीन मीटर्स तक टेक ऑफ करो",
+   "tool": "takeoff"
+  },
+  {
+   "arguments": {
+    "altitude_m": 3
+   },
+   "intent": "takeoff",
+   "text": "तीन मीटर्स तक लॉन्च करो",
+   "tool": "takeoff"
+  },
+  {
+   "arguments": {
+    "altitude_m": 3
+   },
+   "intent": "takeoff",
+   "text": "तीन मीटर्स तक टेक ऑफ",
+   "tool": "takeoff"
+  },
+  {
+   "arguments": {
+    "altitude_m": 3
+   },
+   "intent": "takeoff",
+   "text": "तीन मीटर्स तक लॉन्च",
+   "tool": "takeoff"
+  },
+  {
+   "arguments": {
+    "altitude_m": 3
+   },
+   "intent": "takeoff",
+   "text": "टेक ऑफ तीन मीटर्स",
+   "tool": "takeoff"
+  },
+  {
+   "arguments": {
+    "altitude_m": 3
+   },
+   "intent": "takeoff",
+   "text": "लॉन्च तीन मीटर्स",
+   "tool": "takeoff"
+  },
+  {
+   "arguments": {
+    "direction": "forward",
+    "distance_m": 2
+   },
+   "intent": "move",
+   "text": "दो मीटर्स फॉरवर्ड मूव",
+   "tool": "move_relative"
+  },
+  {
+   "arguments": {
+    "direction": "backward",
+    "distance_m": 2
+   },
+   "intent": "move",
+   "text": "दो मीटर्स बैक मूव",
+   "tool": "move_relative"
+  },
+  {
+   "arguments": {
+    "direction": "left",
+    "distance_m": 2
+   },
+   "intent": "move",
+   "text": "दो मीटर्स लेफ्ट मूव",
+   "tool": "move_relative"
+  },
+  {
+   "arguments": {
+    "direction": "right",
+    "distance_m": 2
+   },
+   "intent": "move",
+   "text": "दो मीटर्स राइट मूव",
+   "tool": "move_relative"
+  },
+  {
+   "arguments": {
+    "direction": "down",
+    "distance_m": 2
+   },
+   "intent": "move",
+   "text": "दो मीटर्स डाउन मूव",
+   "tool": "move_relative"
+  },
+  {
+   "arguments": {
+    "direction": "forward",
+    "distance_m": 2
+   },
+   "intent": "move",
+   "text": "फॉरवर्ड दो मीटर्स मूव",
+   "tool": "move_relative"
+  },
+  {
+   "arguments": {
+    "direction": "backward",
+    "distance_m": 2
+   },
+   "intent": "move",
+   "text": "बैक दो मीटर्स मूव",
+   "tool": "move_relative"
+  },
+  {
+   "arguments": {
+    "direction": "left",
+    "distance_m": 2
+   },
+   "intent": "move",
+   "text": "लेफ्ट दो मीटर्स मूव",
+   "tool": "move_relative"
+  },
+  {
+   "arguments": {
+    "direction": "right",
+    "distance_m": 2
+   },
+   "intent": "move",
+   "text": "राइट दो मीटर्स मूव",
+   "tool": "move_relative"
+  },
+  {
+   "arguments": {
+    "direction": "down",
+    "distance_m": 2
+   },
+   "intent": "move",
+   "text": "डाउन दो मीटर्स मूव",
+   "tool": "move_relative"
+  },
+  {
+   "arguments": {},
+   "intent": "hold",
+   "text": "होल्ड करो",
+   "tool": "hold"
+  },
+  {
+   "arguments": {},
+   "intent": "hold",
+   "text": "होल्ड",
+   "tool": "hold"
+  },
+  {
+   "arguments": {},
+   "intent": "hold",
+   "text": "होल्ड कर दो",
+   "tool": "hold"
+  },
+  {
+   "arguments": {},
+   "intent": "status",
+   "text": "स्टेटस",
+   "tool": "get_status"
+  }
+ ],
+ "negated": [
+  {
+   "text": "तीन मीटर टेकऑफ़ करो मत"
+  },
+  {
+   "text": "तीन मीटर टेकऑफ़ करो नहीं"
+  },
+  {
+   "text": "तीन मीटर टेकऑफ़ मत करो"
+  },
+  {
+   "text": "दो मीटर आगे जाओ मत"
+  },
+  {
+   "text": "दो मीटर आगे जाओ नहीं"
+  },
+  {
+   "text": "दो मीटर आगे मत जाओ"
+  },
+  {
+   "text": "लैंड करो मत"
+  },
+  {
+   "text": "लैंड करो नहीं"
+  },
+  {
+   "text": "लैंड मत करो"
+  },
+  {
+   "text": "हॉवर करो मत"
+  },
+  {
+   "text": "हॉवर करो नहीं"
+  },
+  {
+   "text": "हॉवर मत करो"
+  }
+ ],
+ "numbers": [
+  {
+   "kind": "RULE",
+   "phrase": "एक",
+   "value": 1
+  },
+  {
+   "kind": "RULE",
+   "phrase": "दो",
+   "value": 2
+  },
+  {
+   "kind": "RULE",
+   "phrase": "तीन",
+   "value": 3
+  },
+  {
+   "kind": "RULE",
+   "phrase": "चार",
+   "value": 4
+  },
+  {
+   "kind": "RULE",
+   "phrase": "पाँच",
+   "value": 5
+  },
+  {
+   "kind": "RULE",
+   "phrase": "पांच",
+   "value": 5
+  },
+  {
+   "kind": "RULE",
+   "phrase": "छह",
+   "value": 6
+  },
+  {
+   "kind": "RULE",
+   "phrase": "छः",
+   "value": 6
+  },
+  {
+   "kind": "RULE",
+   "phrase": "सात",
+   "value": 7
+  },
+  {
+   "kind": "RULE",
+   "phrase": "आठ",
+   "value": 8
+  },
+  {
+   "kind": "RULE",
+   "phrase": "नौ",
+   "value": 9
+  },
+  {
+   "kind": "RULE",
+   "phrase": "दस",
+   "value": 10
+  },
+  {
+   "kind": "RULE",
+   "phrase": "ग्यारह",
+   "value": 11
+  },
+  {
+   "kind": "RULE",
+   "phrase": "बारह",
+   "value": 12
+  },
+  {
+   "kind": "RULE",
+   "phrase": "तेरह",
+   "value": 13
+  },
+  {
+   "kind": "RULE",
+   "phrase": "चौदह",
+   "value": 14
+  },
+  {
+   "kind": "RULE",
+   "phrase": "पंद्रह",
+   "value": 15
+  },
+  {
+   "kind": "RULE",
+   "phrase": "सोलह",
+   "value": 16
+  },
+  {
+   "kind": "RULE",
+   "phrase": "सत्रह",
+   "value": 17
+  },
+  {
+   "kind": "RULE",
+   "phrase": "अठारह",
+   "value": 18
+  },
+  {
+   "kind": "RULE",
+   "phrase": "उन्नीस",
+   "value": 19
+  },
+  {
+   "kind": "RULE",
+   "phrase": "बीस",
+   "value": 20
+  },
+  {
+   "kind": "RULE",
+   "phrase": "इक्कीस",
+   "value": 21
+  },
+  {
+   "kind": "RULE",
+   "phrase": "बाईस",
+   "value": 22
+  },
+  {
+   "kind": "RULE",
+   "phrase": "तेईस",
+   "value": 23
+  },
+  {
+   "kind": "RULE",
+   "phrase": "चौबीस",
+   "value": 24
+  },
+  {
+   "kind": "RULE",
+   "phrase": "पच्चीस",
+   "value": 25
+  },
+  {
+   "kind": "RULE",
+   "phrase": "छब्बीस",
+   "value": 26
+  },
+  {
+   "kind": "RULE",
+   "phrase": "सत्ताईस",
+   "value": 27
+  },
+  {
+   "kind": "RULE",
+   "phrase": "अट्ठाईस",
+   "value": 28
+  },
+  {
+   "kind": "RULE",
+   "phrase": "उनतीस",
+   "value": 29
+  },
+  {
+   "kind": "RULE",
+   "phrase": "तीस",
+   "value": 30
+  },
+  {
+   "kind": "RULE",
+   "phrase": "इकतीस",
+   "value": 31
+  },
+  {
+   "kind": "RULE",
+   "phrase": "बत्तीस",
+   "value": 32
+  },
+  {
+   "kind": "RULE",
+   "phrase": "तैंतीस",
+   "value": 33
+  },
+  {
+   "kind": "RULE",
+   "phrase": "चौंतीस",
+   "value": 34
+  },
+  {
+   "kind": "RULE",
+   "phrase": "पैंतीस",
+   "value": 35
+  },
+  {
+   "kind": "RULE",
+   "phrase": "छत्तीस",
+   "value": 36
+  },
+  {
+   "kind": "RULE",
+   "phrase": "सैंतीस",
+   "value": 37
+  },
+  {
+   "kind": "RULE",
+   "phrase": "अड़तीस",
+   "value": 38
+  },
+  {
+   "kind": "RULE",
+   "phrase": "उनतालीस",
+   "value": 39
+  },
+  {
+   "kind": "RULE",
+   "phrase": "चालीस",
+   "value": 40
+  },
+  {
+   "kind": "RULE",
+   "phrase": "इकतालीस",
+   "value": 41
+  },
+  {
+   "kind": "RULE",
+   "phrase": "बयालीस",
+   "value": 42
+  },
+  {
+   "kind": "RULE",
+   "phrase": "तैंतालीस",
+   "value": 43
+  },
+  {
+   "kind": "RULE",
+   "phrase": "चवालीस",
+   "value": 44
+  },
+  {
+   "kind": "RULE",
+   "phrase": "पैंतालीस",
+   "value": 45
+  },
+  {
+   "kind": "RULE",
+   "phrase": "छियालीस",
+   "value": 46
+  },
+  {
+   "kind": "RULE",
+   "phrase": "सैंतालीस",
+   "value": 47
+  },
+  {
+   "kind": "RULE",
+   "phrase": "अड़तालीस",
+   "value": 48
+  },
+  {
+   "kind": "RULE",
+   "phrase": "उनचास",
+   "value": 49
+  },
+  {
+   "kind": "RULE",
+   "phrase": "पचास",
+   "value": 50
+  },
+  {
+   "kind": "RULE",
+   "phrase": "इक्यावन",
+   "value": 51
+  },
+  {
+   "kind": "RULE",
+   "phrase": "बावन",
+   "value": 52
+  },
+  {
+   "kind": "RULE",
+   "phrase": "तिरपन",
+   "value": 53
+  },
+  {
+   "kind": "RULE",
+   "phrase": "चौवन",
+   "value": 54
+  },
+  {
+   "kind": "RULE",
+   "phrase": "पचपन",
+   "value": 55
+  },
+  {
+   "kind": "RULE",
+   "phrase": "छप्पन",
+   "value": 56
+  },
+  {
+   "kind": "RULE",
+   "phrase": "सत्तावन",
+   "value": 57
+  },
+  {
+   "kind": "RULE",
+   "phrase": "अट्ठावन",
+   "value": 58
+  },
+  {
+   "kind": "RULE",
+   "phrase": "उनसठ",
+   "value": 59
+  },
+  {
+   "kind": "RULE",
+   "phrase": "साठ",
+   "value": 60
+  },
+  {
+   "kind": "RULE",
+   "phrase": "इकसठ",
+   "value": 61
+  },
+  {
+   "kind": "RULE",
+   "phrase": "बासठ",
+   "value": 62
+  },
+  {
+   "kind": "RULE",
+   "phrase": "तिरसठ",
+   "value": 63
+  },
+  {
+   "kind": "RULE",
+   "phrase": "चौंसठ",
+   "value": 64
+  },
+  {
+   "kind": "RULE",
+   "phrase": "पैंसठ",
+   "value": 65
+  },
+  {
+   "kind": "RULE",
+   "phrase": "छियासठ",
+   "value": 66
+  },
+  {
+   "kind": "RULE",
+   "phrase": "सड़सठ",
+   "value": 67
+  },
+  {
+   "kind": "RULE",
+   "phrase": "अड़सठ",
+   "value": 68
+  },
+  {
+   "kind": "RULE",
+   "phrase": "उनहत्तर",
+   "value": 69
+  },
+  {
+   "kind": "RULE",
+   "phrase": "सत्तर",
+   "value": 70
+  },
+  {
+   "kind": "RULE",
+   "phrase": "इकहत्तर",
+   "value": 71
+  },
+  {
+   "kind": "RULE",
+   "phrase": "बहत्तर",
+   "value": 72
+  },
+  {
+   "kind": "RULE",
+   "phrase": "तिहत्तर",
+   "value": 73
+  },
+  {
+   "kind": "RULE",
+   "phrase": "चौहत्तर",
+   "value": 74
+  },
+  {
+   "kind": "RULE",
+   "phrase": "पचहत्तर",
+   "value": 75
+  },
+  {
+   "kind": "RULE",
+   "phrase": "छिहत्तर",
+   "value": 76
+  },
+  {
+   "kind": "RULE",
+   "phrase": "सतहत्तर",
+   "value": 77
+  },
+  {
+   "kind": "RULE",
+   "phrase": "अठहत्तर",
+   "value": 78
+  },
+  {
+   "kind": "RULE",
+   "phrase": "उन्यासी",
+   "value": 79
+  },
+  {
+   "kind": "RULE",
+   "phrase": "अस्सी",
+   "value": 80
+  },
+  {
+   "kind": "RULE",
+   "phrase": "इक्यासी",
+   "value": 81
+  },
+  {
+   "kind": "RULE",
+   "phrase": "बयासी",
+   "value": 82
+  },
+  {
+   "kind": "RULE",
+   "phrase": "तिरासी",
+   "value": 83
+  },
+  {
+   "kind": "RULE",
+   "phrase": "चौरासी",
+   "value": 84
+  },
+  {
+   "kind": "RULE",
+   "phrase": "पचासी",
+   "value": 85
+  },
+  {
+   "kind": "RULE",
+   "phrase": "छियासी",
+   "value": 86
+  },
+  {
+   "kind": "RULE",
+   "phrase": "सत्तासी",
+   "value": 87
+  },
+  {
+   "kind": "RULE",
+   "phrase": "अट्ठासी",
+   "value": 88
+  },
+  {
+   "kind": "RULE",
+   "phrase": "नवासी",
+   "value": 89
+  },
+  {
+   "kind": "RULE",
+   "phrase": "नब्बे",
+   "value": 90
+  },
+  {
+   "kind": "RULE",
+   "phrase": "इक्यानबे",
+   "value": 91
+  },
+  {
+   "kind": "RULE",
+   "phrase": "बानबे",
+   "value": 92
+  },
+  {
+   "kind": "RULE",
+   "phrase": "तिरानबे",
+   "value": 93
+  },
+  {
+   "kind": "RULE",
+   "phrase": "चौरानबे",
+   "value": 94
+  },
+  {
+   "kind": "RULE",
+   "phrase": "पचानबे",
+   "value": 95
+  },
+  {
+   "kind": "RULE",
+   "phrase": "छियानबे",
+   "value": 96
+  },
+  {
+   "kind": "RULE",
+   "phrase": "सत्तानबे",
+   "value": 97
+  },
+  {
+   "kind": "RULE",
+   "phrase": "अट्ठानबे",
+   "value": 98
+  },
+  {
+   "kind": "RULE",
+   "phrase": "निन्यानबे",
+   "value": 99
+  },
+  {
+   "kind": "RULE",
+   "phrase": "सौ",
+   "value": 100
+  },
+  {
+   "kind": "EXTRA",
+   "phrase": "शून्य",
+   "value": 0
+  },
+  {
+   "kind": "EXTRA",
+   "phrase": "पचानवे",
+   "value": 95
+  },
+  {
+   "kind": "FRACTION",
+   "phrase": "आधा",
+   "value": 0.5
+  },
+  {
+   "kind": "FRACTION",
+   "phrase": "डेढ़",
+   "value": 1.5
+  },
+  {
+   "kind": "FRACTION",
+   "phrase": "ढाई",
+   "value": 2.5
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "जीरो",
+   "value": 0
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "वन",
+   "value": 1
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "टू",
+   "value": 2
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "थ्री",
+   "value": 3
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "फोर",
+   "value": 4
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "फाइव",
+   "value": 5
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "सिक्स",
+   "value": 6
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "सेवन",
+   "value": 7
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "एट",
+   "value": 8
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "नाइन",
+   "value": 9
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "टेन",
+   "value": 10
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "इलेवन",
+   "value": 11
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "ट्वेल्व",
+   "value": 12
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "थर्टीन",
+   "value": 13
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "फोर्टीन",
+   "value": 14
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "फिफ्टीन",
+   "value": 15
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "सिक्सटीन",
+   "value": 16
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "सेवनटीन",
+   "value": 17
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "एटीन",
+   "value": 18
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "नाइनटीन",
+   "value": 19
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "ट्वेंटी",
+   "value": 20
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "थर्टी",
+   "value": 30
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "फोर्टी",
+   "value": 40
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "फिफ्टी",
+   "value": 50
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "सिक्सटी",
+   "value": 60
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "सेवेंटी",
+   "value": 70
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "एटी",
+   "value": 80
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "नाइंटी",
+   "value": 90
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "हंड्रेड",
+   "value": 100
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "ट्वेंटी वन",
+   "value": 21
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "ट्वेंटी टू",
+   "value": 22
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "ट्वेंटी थ्री",
+   "value": 23
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "ट्वेंटी फोर",
+   "value": 24
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "ट्वेंटी फाइव",
+   "value": 25
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "ट्वेंटी सिक्स",
+   "value": 26
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "ट्वेंटी सेवन",
+   "value": 27
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "ट्वेंटी एट",
+   "value": 28
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "ट्वेंटी नाइन",
+   "value": 29
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "थर्टी वन",
+   "value": 31
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "थर्टी टू",
+   "value": 32
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "थर्टी थ्री",
+   "value": 33
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "थर्टी फोर",
+   "value": 34
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "थर्टी फाइव",
+   "value": 35
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "थर्टी सिक्स",
+   "value": 36
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "थर्टी सेवन",
+   "value": 37
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "थर्टी एट",
+   "value": 38
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "थर्टी नाइन",
+   "value": 39
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "फोर्टी वन",
+   "value": 41
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "फोर्टी टू",
+   "value": 42
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "फोर्टी थ्री",
+   "value": 43
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "फोर्टी फोर",
+   "value": 44
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "फोर्टी फाइव",
+   "value": 45
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "फोर्टी सिक्स",
+   "value": 46
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "फोर्टी सेवन",
+   "value": 47
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "फोर्टी एट",
+   "value": 48
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "फोर्टी नाइन",
+   "value": 49
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "फिफ्टी वन",
+   "value": 51
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "फिफ्टी टू",
+   "value": 52
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "फिफ्टी थ्री",
+   "value": 53
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "फिफ्टी फोर",
+   "value": 54
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "फिफ्टी फाइव",
+   "value": 55
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "फिफ्टी सिक्स",
+   "value": 56
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "फिफ्टी सेवन",
+   "value": 57
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "फिफ्टी एट",
+   "value": 58
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "फिफ्टी नाइन",
+   "value": 59
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "सिक्सटी वन",
+   "value": 61
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "सिक्सटी टू",
+   "value": 62
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "सिक्सटी थ्री",
+   "value": 63
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "सिक्सटी फोर",
+   "value": 64
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "सिक्सटी फाइव",
+   "value": 65
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "सिक्सटी सिक्स",
+   "value": 66
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "सिक्सटी सेवन",
+   "value": 67
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "सिक्सटी एट",
+   "value": 68
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "सिक्सटी नाइन",
+   "value": 69
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "सेवेंटी वन",
+   "value": 71
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "सेवेंटी टू",
+   "value": 72
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "सेवेंटी थ्री",
+   "value": 73
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "सेवेंटी फोर",
+   "value": 74
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "सेवेंटी फाइव",
+   "value": 75
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "सेवेंटी सिक्स",
+   "value": 76
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "सेवेंटी सेवन",
+   "value": 77
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "सेवेंटी एट",
+   "value": 78
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "सेवेंटी नाइन",
+   "value": 79
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "एटी वन",
+   "value": 81
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "एटी टू",
+   "value": 82
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "एटी थ्री",
+   "value": 83
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "एटी फोर",
+   "value": 84
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "एटी फाइव",
+   "value": 85
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "एटी सिक्स",
+   "value": 86
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "एटी सेवन",
+   "value": 87
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "एटी एट",
+   "value": 88
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "एटी नाइन",
+   "value": 89
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "नाइंटी वन",
+   "value": 91
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "नाइंटी टू",
+   "value": 92
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "नाइंटी थ्री",
+   "value": 93
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "नाइंटी फोर",
+   "value": 94
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "नाइंटी फाइव",
+   "value": 95
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "नाइंटी सिक्स",
+   "value": 96
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "नाइंटी सेवन",
+   "value": 97
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "नाइंटी एट",
+   "value": 98
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "नाइंटी नाइन",
+   "value": 99
+  },
+  {
+   "kind": "FRACTION",
+   "phrase": "हाफ",
+   "value": 0.5
+  }
+ ],
+ "out_of_grammar": [
+  {
+   "text": "का हैं ने"
+  },
+  {
+   "text": "कि भी लिए"
+  },
+  {
+   "text": "इस ही तो"
+  },
+  {
+   "text": "यह किया था"
+  }
+ ],
+ "plans": [
+  {
+   "steps": [
+    {
+     "arguments": {
+      "direction": "forward",
+      "distance_m": 2
+     },
+     "tool": "move_relative"
+    },
+    {
+     "arguments": {},
+     "tool": "land"
+    }
+   ],
+   "text": "दो मीटर आगे जाओ और फिर लैंड करो"
+  },
+  {
+   "steps": [
+    {
+     "arguments": {
+      "direction": "forward",
+      "distance_m": 2
+     },
+     "tool": "move_relative"
+    },
+    {
+     "arguments": {},
+     "tool": "land"
+    }
+   ],
+   "text": "दो मीटर आगे जाओ उसके बाद लैंड करो"
+  },
+  {
+   "steps": [
+    {
+     "arguments": {
+      "direction": "forward",
+      "distance_m": 2
+     },
+     "tool": "move_relative"
+    },
+    {
+     "arguments": {},
+     "tool": "land"
+    }
+   ],
+   "text": "दो मीटर आगे जाओ इसके बाद लैंड करो"
+  },
+  {
+   "steps": [
+    {
+     "arguments": {
+      "direction": "forward",
+      "distance_m": 2
+     },
+     "tool": "move_relative"
+    },
+    {
+     "arguments": {},
+     "tool": "land"
+    }
+   ],
+   "text": "दो मीटर आगे जाओ फिर लैंड करो"
+  },
+  {
+   "steps": [
+    {
+     "arguments": {
+      "direction": "forward",
+      "distance_m": 2
+     },
+     "tool": "move_relative"
+    },
+    {
+     "arguments": {},
+     "tool": "land"
+    }
+   ],
+   "text": "दो मीटर आगे जाओ और लैंड करो"
+  }
+ ],
+ "positive": [
+  {
+   "arguments": {
+    "altitude_m": 3
+   },
+   "intent": "takeoff",
+   "text": "तीन मीटर टेकऑफ़ करो",
+   "tool": "takeoff"
+  },
+  {
+   "arguments": {
+    "altitude_m": 3
+   },
+   "intent": "takeoff",
+   "text": "तीन मीटर टेकऑफ करो",
+   "tool": "takeoff"
+  },
+  {
+   "arguments": {
+    "altitude_m": 3
+   },
+   "intent": "takeoff",
+   "text": "तीन मीटर उड़ान भरो करो",
+   "tool": "takeoff"
+  },
+  {
+   "arguments": {
+    "altitude_m": 3
+   },
+   "intent": "takeoff",
+   "text": "तीन मीटर ऊपर उठो करो",
+   "tool": "takeoff"
+  },
+  {
+   "arguments": {
+    "altitude_m": 3
+   },
+   "intent": "takeoff",
+   "text": "तीन मीटर टेकऑफ़",
+   "tool": "takeoff"
+  },
+  {
+   "arguments": {
+    "altitude_m": 3
+   },
+   "intent": "takeoff",
+   "text": "तीन मीटर टेकऑफ",
+   "tool": "takeoff"
+  },
+  {
+   "arguments": {
+    "altitude_m": 3
+   },
+   "intent": "takeoff",
+   "text": "तीन मीटर उड़ान भरो",
+   "tool": "takeoff"
+  },
+  {
+   "arguments": {
+    "altitude_m": 3
+   },
+   "intent": "takeoff",
+   "text": "तीन मीटर ऊपर उठो",
+   "tool": "takeoff"
+  },
+  {
+   "arguments": {
+    "altitude_m": 3
+   },
+   "intent": "takeoff",
+   "text": "तीन मीटर टेकऑफ़ कर दो",
+   "tool": "takeoff"
+  },
+  {
+   "arguments": {
+    "altitude_m": 3
+   },
+   "intent": "takeoff",
+   "text": "तीन मीटर टेकऑफ कर दो",
+   "tool": "takeoff"
+  },
+  {
+   "arguments": {
+    "altitude_m": 3
+   },
+   "intent": "takeoff",
+   "text": "तीन मीटर उड़ान भरो कर दो",
+   "tool": "takeoff"
+  },
+  {
+   "arguments": {
+    "altitude_m": 3
+   },
+   "intent": "takeoff",
+   "text": "तीन मीटर ऊपर उठो कर दो",
+   "tool": "takeoff"
+  },
+  {
+   "arguments": {
+    "altitude_m": 3
+   },
+   "intent": "takeoff",
+   "text": "तीन मीटर तक टेकऑफ़ करो",
+   "tool": "takeoff"
+  },
+  {
+   "arguments": {
+    "altitude_m": 3
+   },
+   "intent": "takeoff",
+   "text": "तीन मीटर तक टेकऑफ करो",
+   "tool": "takeoff"
+  },
+  {
+   "arguments": {
+    "altitude_m": 3
+   },
+   "intent": "takeoff",
+   "text": "तीन मीटर तक उड़ान भरो करो",
+   "tool": "takeoff"
+  },
+  {
+   "arguments": {
+    "altitude_m": 3
+   },
+   "intent": "takeoff",
+   "text": "तीन मीटर तक ऊपर उठो करो",
+   "tool": "takeoff"
+  },
+  {
+   "arguments": {
+    "altitude_m": 3
+   },
+   "intent": "takeoff",
+   "text": "तीन मीटर तक टेकऑफ़",
+   "tool": "takeoff"
+  },
+  {
+   "arguments": {
+    "altitude_m": 3
+   },
+   "intent": "takeoff",
+   "text": "तीन मीटर तक टेकऑफ",
+   "tool": "takeoff"
+  },
+  {
+   "arguments": {
+    "altitude_m": 3
+   },
+   "intent": "takeoff",
+   "text": "तीन मीटर तक उड़ान भरो",
+   "tool": "takeoff"
+  },
+  {
+   "arguments": {
+    "altitude_m": 3
+   },
+   "intent": "takeoff",
+   "text": "तीन मीटर तक ऊपर उठो",
+   "tool": "takeoff"
+  },
+  {
+   "arguments": {
+    "altitude_m": 3
+   },
+   "intent": "takeoff",
+   "text": "टेकऑफ़ तीन मीटर",
+   "tool": "takeoff"
+  },
+  {
+   "arguments": {
+    "altitude_m": 3
+   },
+   "intent": "takeoff",
+   "text": "टेकऑफ तीन मीटर",
+   "tool": "takeoff"
+  },
+  {
+   "arguments": {
+    "altitude_m": 3
+   },
+   "intent": "takeoff",
+   "text": "उड़ान भरो तीन मीटर",
+   "tool": "takeoff"
+  },
+  {
+   "arguments": {
+    "altitude_m": 3
+   },
+   "intent": "takeoff",
+   "text": "ऊपर उठो तीन मीटर",
+   "tool": "takeoff"
+  },
+  {
+   "arguments": {
+    "direction": "forward",
+    "distance_m": 2
+   },
+   "intent": "move",
+   "text": "दो मीटर आगे जाओ",
+   "tool": "move_relative"
+  },
+  {
+   "arguments": {
+    "direction": "backward",
+    "distance_m": 2
+   },
+   "intent": "move",
+   "text": "दो मीटर पीछे जाओ",
+   "tool": "move_relative"
+  },
+  {
+   "arguments": {
+    "direction": "left",
+    "distance_m": 2
+   },
+   "intent": "move",
+   "text": "दो मीटर बाएं जाओ",
+   "tool": "move_relative"
+  },
+  {
+   "arguments": {
+    "direction": "left",
+    "distance_m": 2
+   },
+   "intent": "move",
+   "text": "दो मीटर बाएँ जाओ",
+   "tool": "move_relative"
+  },
+  {
+   "arguments": {
+    "direction": "left",
+    "distance_m": 2
+   },
+   "intent": "move",
+   "text": "दो मीटर बायें जाओ",
+   "tool": "move_relative"
+  },
+  {
+   "arguments": {
+    "direction": "right",
+    "distance_m": 2
+   },
+   "intent": "move",
+   "text": "दो मीटर दाएं जाओ",
+   "tool": "move_relative"
+  },
+  {
+   "arguments": {
+    "direction": "right",
+    "distance_m": 2
+   },
+   "intent": "move",
+   "text": "दो मीटर दाएँ जाओ",
+   "tool": "move_relative"
+  },
+  {
+   "arguments": {
+    "direction": "right",
+    "distance_m": 2
+   },
+   "intent": "move",
+   "text": "दो मीटर दायें जाओ",
+   "tool": "move_relative"
+  },
+  {
+   "arguments": {
+    "direction": "up",
+    "distance_m": 2
+   },
+   "intent": "move",
+   "text": "दो मीटर ऊपर जाओ",
+   "tool": "move_relative"
+  },
+  {
+   "arguments": {
+    "direction": "down",
+    "distance_m": 2
+   },
+   "intent": "move",
+   "text": "दो मीटर नीचे जाओ",
+   "tool": "move_relative"
+  },
+  {
+   "arguments": {
+    "direction": "forward",
+    "distance_m": 2
+   },
+   "intent": "move",
+   "text": "आगे दो मीटर जाओ",
+   "tool": "move_relative"
+  },
+  {
+   "arguments": {
+    "direction": "backward",
+    "distance_m": 2
+   },
+   "intent": "move",
+   "text": "पीछे दो मीटर जाओ",
+   "tool": "move_relative"
+  },
+  {
+   "arguments": {
+    "direction": "left",
+    "distance_m": 2
+   },
+   "intent": "move",
+   "text": "बाएं दो मीटर जाओ",
+   "tool": "move_relative"
+  },
+  {
+   "arguments": {
+    "direction": "left",
+    "distance_m": 2
+   },
+   "intent": "move",
+   "text": "बाएँ दो मीटर जाओ",
+   "tool": "move_relative"
+  },
+  {
+   "arguments": {
+    "direction": "left",
+    "distance_m": 2
+   },
+   "intent": "move",
+   "text": "बायें दो मीटर जाओ",
+   "tool": "move_relative"
+  },
+  {
+   "arguments": {
+    "direction": "right",
+    "distance_m": 2
+   },
+   "intent": "move",
+   "text": "दाएं दो मीटर जाओ",
+   "tool": "move_relative"
+  },
+  {
+   "arguments": {
+    "direction": "right",
+    "distance_m": 2
+   },
+   "intent": "move",
+   "text": "दाएँ दो मीटर जाओ",
+   "tool": "move_relative"
+  },
+  {
+   "arguments": {
+    "direction": "right",
+    "distance_m": 2
+   },
+   "intent": "move",
+   "text": "दायें दो मीटर जाओ",
+   "tool": "move_relative"
+  },
+  {
+   "arguments": {
+    "direction": "up",
+    "distance_m": 2
+   },
+   "intent": "move",
+   "text": "ऊपर दो मीटर जाओ",
+   "tool": "move_relative"
+  },
+  {
+   "arguments": {
+    "direction": "down",
+    "distance_m": 2
+   },
+   "intent": "move",
+   "text": "नीचे दो मीटर जाओ",
+   "tool": "move_relative"
+  },
+  {
+   "arguments": {},
+   "intent": "hold",
+   "text": "हॉवर करो",
+   "tool": "hold"
+  },
+  {
+   "arguments": {},
+   "intent": "hold",
+   "text": "होवर करो",
+   "tool": "hold"
+  },
+  {
+   "arguments": {},
+   "intent": "hold",
+   "text": "हॉवर",
+   "tool": "hold"
+  },
+  {
+   "arguments": {},
+   "intent": "hold",
+   "text": "होवर",
+   "tool": "hold"
+  },
+  {
+   "arguments": {},
+   "intent": "hold",
+   "text": "हॉवर कर दो",
+   "tool": "hold"
+  },
+  {
+   "arguments": {},
+   "intent": "hold",
+   "text": "होवर कर दो",
+   "tool": "hold"
+  },
+  {
+   "arguments": {},
+   "intent": "stop",
+   "text": "रुको",
+   "tool": "hold"
+  },
+  {
+   "arguments": {},
+   "intent": "stop",
+   "text": "रुक जाओ",
+   "tool": "hold"
+  },
+  {
+   "arguments": {},
+   "intent": "stop",
+   "text": "स्टॉप",
+   "tool": "hold"
+  },
+  {
+   "arguments": {},
+   "intent": "land",
+   "text": "लैंड करो",
+   "tool": "land"
+  },
+  {
+   "arguments": {},
+   "intent": "land",
+   "text": "उतरो करो",
+   "tool": "land"
+  },
+  {
+   "arguments": {},
+   "intent": "land",
+   "text": "लैंड",
+   "tool": "land"
+  },
+  {
+   "arguments": {},
+   "intent": "land",
+   "text": "उतरो",
+   "tool": "land"
+  },
+  {
+   "arguments": {},
+   "intent": "land",
+   "text": "लैंड कर दो",
+   "tool": "land"
+  },
+  {
+   "arguments": {},
+   "intent": "land",
+   "text": "उतरो कर दो",
+   "tool": "land"
+  }
+ ],
+ "unk": [
+  {
+   "expect": "hold",
+   "text": "[unk] हॉवर करो"
+  },
+  {
+   "expect": "hold",
+   "text": "रुको [unk]"
+  },
+  {
+   "expect": "reject",
+   "text": "[unk] दो मीटर आगे जाओ"
+  },
+  {
+   "expect": "reject",
+   "text": "दो [unk] मीटर आगे जाओ"
+  }
+ ]
+}

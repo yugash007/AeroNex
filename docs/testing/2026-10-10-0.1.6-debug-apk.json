@@ -1,0 +1,97 @@
+{
+  "file": "build\\app\\outputs\\flutter-apk\\app-debug.apk",
+  "package": "com.aeronex.app",
+  "version": "0.1.6",
+  "version_code": 7,
+  "min_sdk": 26,
+  "target_sdk": 36,
+  "abi": "arm64-v8a",
+  "bytes": 111912498,
+  "sha256": "10da931dd5daff7b60ed05650d39e9e83399777986996ac7a27cec84491e6f6c",
+  "signing_certificate_sha256": "6313b3f87ccfd799e2c4a96d2de6796836f3559fce9a0b4ab3974456b9d243c1",
+  "signature_verified": true,
+  "zip_and_elf_alignment_16kb_verified": true,
+  "jni_contract": {
+    "apk": "build\\app\\outputs\\flutter-apk\\app-debug.apk",
+    "sha256": "10da931dd5daff7b60ed05650d39e9e83399777986996ac7a27cec84491e6f6c",
+    "dex_files": [
+      "classes.dex",
+      "classes2.dex",
+      "classes3.dex",
+      "classes4.dex",
+      "classes5.dex"
+    ],
+    "classes_checked": 17,
+    "members_checked": 52,
+    "contract": "JNA 5.18.1 Native_initIDs and app Vosk adapter symbols",
+    "missing": [],
+    "passed": true,
+    "scope": "Optimized APK JNI symbol contract; does not execute Android JNI or microphone capture"
+  },
+  "native_libraries": [
+    {
+      "file": "lib/arm64-v8a/libVkLayer_khronos_validation.so",
+      "bytes": 15240080,
+      "load_alignments": [
+        65536,
+        65536,
+        65536
+      ]
+    },
+    {
+      "file": "lib/arm64-v8a/libc++_shared.so",
+      "bytes": 1253544,
+      "load_alignments": [
+        16384,
+        16384,
+        16384,
+        16384
+      ]
+    },
+    {
+      "file": "lib/arm64-v8a/libflutter.so",
+      "bytes": 38828704,
+      "load_alignments": [
+        65536,
+        65536,
+        65536
+      ]
+    },
+    {
+      "file": "lib/arm64-v8a/libaeronex_cactus.so",
+      "bytes": 1204440,
+      "load_alignments": [
+        16384,
+        16384,
+        16384
+      ]
+    },
+    {
+      "file": "lib/arm64-v8a/libaeronex_native.so",
+      "bytes": 21884120,
+      "load_alignments": [
+        16384,
+        16384,
+        16384
+      ]
+    },
+    {
+      "file": "lib/arm64-v8a/libjnidispatch.so",
+      "bytes": 165992,
+      "load_alignments": [
+        16384,
+        16384
+      ]
+    },
+    {
+      "file": "lib/arm64-v8a/libvosk.so",
+      "bytes": 10042800,
+      "load_alignments": [
+        16384,
+        16384,
+        16384,
+        16384
+      ]
+    }
+  ]
+}

@@ -1,0 +1,25 @@
+name: aeronex
+description: AeroNex — offline voice command app for AeroNex Edge drones.
+publish_to: "none"
+version: 0.4.0+13
+
+environment:
+  sdk: ">=3.0.0 <4.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/licenses/vosk.txt
+    - assets/licenses/sherpa-onnx.txt
+    - assets/licenses/onnxruntime.txt
+    - assets/licenses/indicconformer.txt
+    - assets/licenses/cactus.txt
+    - assets/licenses/llama_cpp.txt

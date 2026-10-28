@@ -1,0 +1,50 @@
+Resolving dependencies...
+Downloading packages...
+  material_color_utilities 0.13.0 (0.13.1 available)
+  test_api 0.7.12 (0.7.14 available)
+Got dependencies!
+2 packages have newer versions incompatible with dependency constraints.
+Try `flutter pub outdated` for more information.
+00:00 +0: loading C:/Users/yugas/Downloads/Drone-app/.worktrees/aeronex-skeleton/app/test/user_errors_test.dart
+00:00 +0: C:/Users/yugas/Downloads/Drone-app/.worktrees/aeronex-skeleton/app/test/user_errors_test.dart: speech runtime failure explains recovery without leaking native class names
+00:00 +1: C:/Users/yugas/Downloads/Drone-app/.worktrees/aeronex-skeleton/app/test/local_control_screen_test.dart: Vosk runtime error preserves models and offers working Whisper recovery
+00:01 +2: C:/Users/yugas/Downloads/Drone-app/.worktrees/aeronex-skeleton/app/test/local_control_screen_test.dart: known runtime failure stays readable on a small phone with large text
+00:01 +3: C:/Users/yugas/Downloads/Drone-app/.worktrees/aeronex-skeleton/app/test/local_control_screen_test.dart: fresh Telugu default prefers its installed Vosk pack over Whisper
+00:01 +4: C:/Users/yugas/Downloads/Drone-app/.worktrees/aeronex-skeleton/app/test/local_control_screen_test.dart: Vosk partials show only for the active listening session
+00:02 +5: C:/Users/yugas/Downloads/Drone-app/.worktrees/aeronex-skeleton/app/test/local_control_screen_test.dart: Vosk only speech uses Indian English review without unrelated models
+00:02 +6: C:/Users/yugas/Downloads/Drone-app/.worktrees/aeronex-skeleton/app/test/local_control_screen_test.dart: Vosk uses matching Telugu setup and explains mixed speech option
+00:02 +7: C:/Users/yugas/Downloads/Drone-app/.worktrees/aeronex-skeleton/app/test/local_control_screen_test.dart: Vosk falls back to Whisper for Tamil
+00:02 +8: C:/Users/yugas/Downloads/Drone-app/.worktrees/aeronex-skeleton/app/test/local_control_screen_test.dart: Vosk falls back to Whisper for Kannada
+00:02 +9: C:/Users/yugas/Downloads/Drone-app/.worktrees/aeronex-skeleton/app/test/local_control_screen_test.dart: Vosk falls back to Whisper for Malayalam
+00:03 +10: C:/Users/yugas/Downloads/Drone-app/.worktrees/aeronex-skeleton/app/test/local_control_screen_test.dart: failed Finish restores active listening so Finish can retry
+00:03 +11: C:/Users/yugas/Downloads/Drone-app/.worktrees/aeronex-skeleton/app/test/local_control_screen_test.dart: late failed Finish cannot restore listening after Review
+00:03 +12: C:/Users/yugas/Downloads/Drone-app/.worktrees/aeronex-skeleton/app/test/local_control_screen_test.dart: Whistle selects English and Telugu restores Whisper
+00:03 +13: C:/Users/yugas/Downloads/Drone-app/.worktrees/aeronex-skeleton/app/test/local_control_screen_test.dart: Whistle and Needle work through review without LFM or Whisper
+00:04 +14: C:/Users/yugas/Downloads/Drone-app/.worktrees/aeronex-skeleton/app/test/local_control_screen_test.dart: finish is unavailable while microphone setup is pending
+00:04 +15: C:/Users/yugas/Downloads/Drone-app/.worktrees/aeronex-skeleton/app/test/local_control_screen_test.dart: speech waits for editable transcript review before interpretation
+00:04 +16: C:/Users/yugas/Downloads/Drone-app/.worktrees/aeronex-skeleton/app/test/local_control_screen_test.dart: stored Telugu selection survives reopening the screen
+00:04 +17: C:/Users/yugas/Downloads/Drone-app/.worktrees/aeronex-skeleton/app/test/local_control_screen_test.dart: Arabic output in Telugu mode is kept for review but cannot become a command
+00:04 +18: C:/Users/yugas/Downloads/Drone-app/.worktrees/aeronex-skeleton/app/test/local_control_screen_test.dart: reported mishearing needs an explicit correction and a flight height
+00:04 +19: C:/Users/yugas/Downloads/Drone-app/.worktrees/aeronex-skeleton/app/test/local_control_screen_test.dart: negation is never removed to manufacture a flight command
+00:05 +20: C:/Users/yugas/Downloads/Drone-app/.worktrees/aeronex-skeleton/app/test/local_control_screen_test.dart: finish disappears after one tap and transcribing waits for review
+00:05 +21: C:/Users/yugas/Downloads/Drone-app/.worktrees/aeronex-skeleton/app/test/local_control_screen_test.dart: a microphone failure restores Speak so recording can retry
+00:05 +22: C:/Users/yugas/Downloads/Drone-app/.worktrees/aeronex-skeleton/app/test/local_control_screen_test.dart: Android recovery persists Whisper instead of restoring the failing backend
+00:05 +23: C:/Users/yugas/Downloads/Drone-app/.worktrees/aeronex-skeleton/app/test/local_control_screen_test.dart: voice uses local model but cannot send without confirmation
+00:05 +24: C:/Users/yugas/Downloads/Drone-app/.worktrees/aeronex-skeleton/app/test/local_control_screen_test.dart: installed models do not ask for setup or a RAM minimum
+00:06 +25: C:/Users/yugas/Downloads/Drone-app/.worktrees/aeronex-skeleton/app/test/local_control_screen_test.dart: installed models have a ready management panel without setup
+00:06 +26: C:/Users/yugas/Downloads/Drone-app/.worktrees/aeronex-skeleton/app/test/local_control_screen_test.dart: choosing an optional model installs it before changing selection
+00:06 +27: C:/Users/yugas/Downloads/Drone-app/.worktrees/aeronex-skeleton/app/test/local_control_screen_test.dart: cancelling optional setup keeps the installed model selected
+00:06 +28: C:/Users/yugas/Downloads/Drone-app/.worktrees/aeronex-skeleton/app/test/local_control_screen_test.dart: startup verification waits for files before deciding on setup
+00:07 +29: C:/Users/yugas/Downloads/Drone-app/.worktrees/aeronex-skeleton/app/test/local_control_screen_test.dart: cancelling during model verification never starts recording
+00:07 +30: C:/Users/yugas/Downloads/Drone-app/.worktrees/aeronex-skeleton/app/test/local_control_screen_test.dart: cancelled verification cannot open missing-model setup
+00:07 +31: C:/Users/yugas/Downloads/Drone-app/.worktrees/aeronex-skeleton/app/test/local_control_screen_test.dart: ready models panel fits a small phone with larger text
+00:07 +32: C:/Users/yugas/Downloads/Drone-app/.worktrees/aeronex-skeleton/app/test/local_control_screen_test.dart: editing input invalidates a model proposal
+00:07 +33: C:/Users/yugas/Downloads/Drone-app/.worktrees/aeronex-skeleton/app/test/local_control_screen_test.dart: model execution stays locked even in simulator mode
+00:07 +34: C:/Users/yugas/Downloads/Drone-app/.worktrees/aeronex-skeleton/app/test/local_control_screen_test.dart: manual fixtures stay visibly separate from AI
+00:08 +35: C:/Users/yugas/Downloads/Drone-app/.worktrees/aeronex-skeleton/app/test/local_control_screen_test.dart: missing models opens setup before recording or inference
+00:08 +36: C:/Users/yugas/Downloads/Drone-app/.worktrees/aeronex-skeleton/app/test/local_control_screen_test.dart: typing clears an earlier microphone error and uses only LFM
+00:08 +37: C:/Users/yugas/Downloads/Drone-app/.worktrees/aeronex-skeleton/app/test/local_control_screen_test.dart: Android error 13 offers language download and Whisper recovery
+00:08 +38: C:/Users/yugas/Downloads/Drone-app/.worktrees/aeronex-skeleton/app/test/local_control_screen_test.dart: model setup downloads only on request and updates readiness
+00:08 +39: C:/Users/yugas/Downloads/Drone-app/.worktrees/aeronex-skeleton/app/test/local_control_screen_test.dart: restores the native model selection instead of resetting defaults
+00:09 +40: C:/Users/yugas/Downloads/Drone-app/.worktrees/aeronex-skeleton/app/test/local_control_screen_test.dart: model setup fits a small phone with larger text
+00:09 +41: All tests passed!

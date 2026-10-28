@@ -1,0 +1,143 @@
+{
+  "schemaVersion": 1,
+  "seq": 131,
+  "atMs": 120000,
+  "link": {
+    "state": "up",
+    "transport": "udp",
+    "description": "UDP 192.168.0.5:14550 local *:14551",
+    "profile": "wifi",
+    "unsigned": true,
+    "heartbeatAgeMs": 310,
+    "txErrors": 0,
+    "droppedDatagrams": 0,
+    "foregroundService": true
+  },
+  "execution": {
+    "enabled": true
+  },
+  "vehicle": {
+    "connected": true,
+    "mode": 4,
+    "modeName": "GUIDED",
+    "armed": true,
+    "landedState": 2,
+    "landedStateName": "IN_AIR",
+    "modeOwner": "APP",
+    "modeOwnerLabel": null,
+    "altitudeRelM": 3.01,
+    "speed": 1.8,
+    "batteryPercent": 87,
+    "healthy": true,
+    "positionReady": true,
+    "homeKnown": true,
+    "homeDistanceM": 2.63,
+    "lastStatusText": null,
+    "ages": {
+      "heartbeat": 310,
+      "sysStatus": 420,
+      "attitude": 60,
+      "localPosition": 60,
+      "globalPosition": 60,
+      "extendedSysState": 180,
+      "ekfStatus": 520,
+      "home": 9800,
+      "positionTarget": 140,
+      "statusText": null
+    }
+  },
+  "pending": null,
+  "run": {
+    "phase": "EXECUTING",
+    "source": "phone",
+    "summary": "1. Move forward 2 m; 2. Land",
+    "stepIndex": 0,
+    "stepCount": 2,
+    "outcomes": [
+      {
+        "step": "Move forward 2 m",
+        "outcome": "RUNNING",
+        "message": null
+      },
+      {
+        "step": "Land",
+        "outcome": "PENDING",
+        "message": null
+      }
+    ],
+    "message": null
+  },
+  "stop": null,
+  "notice": null,
+  "latency": {
+    "pttUpToDrained": null,
+    "drainedToFinal": null,
+    "pttUpToFinal": {
+      "p50Ms": 92.0,
+      "p95Ms": 141.5,
+      "maxMs": 141.5,
+      "n": 4
+    },
+    "finalToPlan": {
+      "p50Ms": 1.8,
+      "p95Ms": 3.2,
+      "maxMs": 3.2,
+      "n": 4
+    },
+    "pttUpToPlan": null,
+    "confirmToFrame": {
+      "p50Ms": 3.1,
+      "p95Ms": 4.2,
+      "maxMs": 4.2,
+      "n": 2
+    },
+    "confirmToTx": null,
+    "confirmToAck": null,
+    "confirmToMoveTx": {
+      "p50Ms": 3.1,
+      "p95Ms": 4.2,
+      "maxMs": 4.2,
+      "n": 2
+    },
+    "moveTxToEcho": {
+      "p50Ms": 121.5,
+      "p95Ms": 233.0,
+      "maxMs": 233.0,
+      "n": 4
+    },
+    "confirmToInAir": null,
+    "stopToTx": null,
+    "stopToAck": null,
+    "aiGloss": null,
+    "aiPlan": null,
+    "aiTools": null,
+    "aiTotal": null
+  },
+  "speech": {
+    "language": "en",
+    "state": "READY",
+    "level": "OK",
+    "reason": null,
+    "message": null,
+    "engine": "VOSK_GRAMMAR",
+    "spotter": "VOSK_STOP_GRAMMAR",
+    "nativeVoiceStop": true,
+    "partialStop": true,
+    "spotterArmed": true,
+    "pttHeld": false,
+    "utterance": 4,
+    "partial": null,
+    "heard": "move forward 2 metres then land",
+    "error": null
+  },
+  "ai": {
+    "available": false,
+    "reason": null,
+    "state": "IDLE",
+    "request": 0,
+    "heard": null,
+    "gloss": null,
+    "understoodAs": null,
+    "error": null
+  }
+}

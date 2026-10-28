@@ -1,0 +1,18 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- The INTERNET permission is required for development. Specifically,
+         the Flutter tool needs it to communicate with the running application
+         to allow setting breakpoints, to provide hot reload, etc.
+    -->
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <application>
+        <!-- Debug builds only (plan T14): the Phase 0 engine benchmark, started over adb by
+             tools/bench/run_bench.py (`am start -n com.aeronex.app/.bench.BenchActivity`).
+             Exported so the shell can start it; it has no launcher entry and never ships in a release APK. -->
+        <activity
+            android:name=".bench.BenchActivity"
+            android:exported="true"
+            android:excludeFromRecents="true"
+            android:theme="@android:style/Theme.DeviceDefault"
+            android:configChanges="orientation|keyboardHidden|keyboard|screenSize|smallestScreenSize|screenLayout|uiMode|density" />
+    </application>
+</manifest>

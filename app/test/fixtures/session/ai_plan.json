@@ -1,0 +1,141 @@
+{
+  "schemaVersion": 1,
+  "seq": 412,
+  "atMs": 120000,
+  "link": {
+    "state": "up",
+    "transport": "udp",
+    "description": "UDP 192.168.0.5:14550 local *:14551",
+    "profile": "wifi",
+    "unsigned": true,
+    "heartbeatAgeMs": 310,
+    "txErrors": 0,
+    "droppedDatagrams": 0,
+    "foregroundService": true
+  },
+  "execution": {
+    "enabled": true
+  },
+  "vehicle": {
+    "connected": true,
+    "mode": 4,
+    "modeName": "GUIDED",
+    "armed": true,
+    "landedState": 2,
+    "landedStateName": "IN_AIR",
+    "modeOwner": "APP",
+    "modeOwnerLabel": null,
+    "altitudeRelM": 3.02,
+    "speed": 0.0,
+    "batteryPercent": 87,
+    "healthy": true,
+    "positionReady": true,
+    "homeKnown": true,
+    "homeDistanceM": 1.55,
+    "lastStatusText": null,
+    "ages": {
+      "heartbeat": 310,
+      "sysStatus": 420,
+      "attitude": 60,
+      "localPosition": 60,
+      "globalPosition": 60,
+      "extendedSysState": 180,
+      "ekfStatus": 520,
+      "home": 9800,
+      "positionTarget": null,
+      "statusText": null
+    }
+  },
+  "pending": {
+    "token": "7c1d2e3f-4a5b-4c6d-8e9f-0a1b2c3d4e5f",
+    "summary": "1. Move forward 3 m; 2. Land",
+    "steps": [
+      {
+        "name": "move_relative",
+        "arguments": {
+          "direction": "forward",
+          "distance_m": 3
+        },
+        "source": "ai",
+        "description": "Move forward 3 m"
+      },
+      {
+        "name": "land",
+        "arguments": {},
+        "source": "ai",
+        "description": "Land"
+      }
+    ],
+    "source": "ai",
+    "expiresInMs": 13100
+  },
+  "run": null,
+  "stop": null,
+  "notice": null,
+  "latency": {
+    "pttUpToDrained": null,
+    "drainedToFinal": null,
+    "pttUpToFinal": null,
+    "finalToPlan": null,
+    "pttUpToPlan": null,
+    "confirmToFrame": null,
+    "confirmToTx": null,
+    "confirmToAck": null,
+    "confirmToMoveTx": null,
+    "moveTxToEcho": null,
+    "confirmToInAir": null,
+    "stopToTx": null,
+    "stopToAck": null,
+    "aiGloss": {
+      "p50Ms": 0.8,
+      "p95Ms": 0.8,
+      "maxMs": 0.8,
+      "n": 1
+    },
+    "aiPlan": {
+      "p50Ms": 1840.0,
+      "p95Ms": 1840.0,
+      "maxMs": 1840.0,
+      "n": 1
+    },
+    "aiTools": {
+      "p50Ms": 2.5,
+      "p95Ms": 2.5,
+      "maxMs": 2.5,
+      "n": 1
+    },
+    "aiTotal": {
+      "p50Ms": 1861.0,
+      "p95Ms": 1861.0,
+      "maxMs": 1861.0,
+      "n": 1
+    }
+  },
+  "speech": {
+    "language": "te",
+    "state": "READY",
+    "level": "OK",
+    "reason": null,
+    "message": null,
+    "engine": "VOSK_GRAMMAR",
+    "spotter": "VOSK_STOP_GRAMMAR",
+    "nativeVoiceStop": true,
+    "partialStop": true,
+    "spotterArmed": true,
+    "pttHeld": false,
+    "utterance": 8,
+    "partial": null,
+    "heard": "ముందుకు మూడు మీటర్లు తర్వాత దిగు",
+    "error": null
+  },
+  "ai": {
+    "available": true,
+    "reason": null,
+    "state": "IDLE",
+    "request": 2,
+    "heard": "ముందుకు మూడు మీటర్లు తర్వాత దిగు",
+    "gloss": "forward 3 meters then land",
+    "understoodAs": "move forward 3 meters, then land",
+    "error": null
+  }
+}

@@ -1,0 +1,2044 @@
+{
+ "language": "en",
+ "loans": [],
+ "negated": [
+  {
+   "text": "don't take off to three meters"
+  },
+  {
+   "text": "do not take off to three meters"
+  },
+  {
+   "text": "never take off to three meters"
+  },
+  {
+   "text": "don't move forward two meters"
+  },
+  {
+   "text": "do not move forward two meters"
+  },
+  {
+   "text": "never move forward two meters"
+  },
+  {
+   "text": "don't land"
+  },
+  {
+   "text": "do not land"
+  },
+  {
+   "text": "never land"
+  },
+  {
+   "text": "don't hover"
+  },
+  {
+   "text": "do not hover"
+  },
+  {
+   "text": "never hover"
+  }
+ ],
+ "numbers": [
+  {
+   "kind": "RULE",
+   "phrase": "zero",
+   "value": 0
+  },
+  {
+   "kind": "RULE",
+   "phrase": "one",
+   "value": 1
+  },
+  {
+   "kind": "RULE",
+   "phrase": "two",
+   "value": 2
+  },
+  {
+   "kind": "RULE",
+   "phrase": "three",
+   "value": 3
+  },
+  {
+   "kind": "RULE",
+   "phrase": "four",
+   "value": 4
+  },
+  {
+   "kind": "RULE",
+   "phrase": "five",
+   "value": 5
+  },
+  {
+   "kind": "RULE",
+   "phrase": "six",
+   "value": 6
+  },
+  {
+   "kind": "RULE",
+   "phrase": "seven",
+   "value": 7
+  },
+  {
+   "kind": "RULE",
+   "phrase": "eight",
+   "value": 8
+  },
+  {
+   "kind": "RULE",
+   "phrase": "nine",
+   "value": 9
+  },
+  {
+   "kind": "RULE",
+   "phrase": "ten",
+   "value": 10
+  },
+  {
+   "kind": "RULE",
+   "phrase": "eleven",
+   "value": 11
+  },
+  {
+   "kind": "RULE",
+   "phrase": "twelve",
+   "value": 12
+  },
+  {
+   "kind": "RULE",
+   "phrase": "thirteen",
+   "value": 13
+  },
+  {
+   "kind": "RULE",
+   "phrase": "fourteen",
+   "value": 14
+  },
+  {
+   "kind": "RULE",
+   "phrase": "fifteen",
+   "value": 15
+  },
+  {
+   "kind": "RULE",
+   "phrase": "sixteen",
+   "value": 16
+  },
+  {
+   "kind": "RULE",
+   "phrase": "seventeen",
+   "value": 17
+  },
+  {
+   "kind": "RULE",
+   "phrase": "eighteen",
+   "value": 18
+  },
+  {
+   "kind": "RULE",
+   "phrase": "nineteen",
+   "value": 19
+  },
+  {
+   "kind": "RULE",
+   "phrase": "twenty",
+   "value": 20
+  },
+  {
+   "kind": "RULE",
+   "phrase": "thirty",
+   "value": 30
+  },
+  {
+   "kind": "RULE",
+   "phrase": "forty",
+   "value": 40
+  },
+  {
+   "kind": "RULE",
+   "phrase": "fifty",
+   "value": 50
+  },
+  {
+   "kind": "RULE",
+   "phrase": "sixty",
+   "value": 60
+  },
+  {
+   "kind": "RULE",
+   "phrase": "seventy",
+   "value": 70
+  },
+  {
+   "kind": "RULE",
+   "phrase": "eighty",
+   "value": 80
+  },
+  {
+   "kind": "RULE",
+   "phrase": "ninety",
+   "value": 90
+  },
+  {
+   "kind": "RULE",
+   "phrase": "twenty one",
+   "value": 21
+  },
+  {
+   "kind": "RULE",
+   "phrase": "twenty two",
+   "value": 22
+  },
+  {
+   "kind": "RULE",
+   "phrase": "twenty three",
+   "value": 23
+  },
+  {
+   "kind": "RULE",
+   "phrase": "twenty four",
+   "value": 24
+  },
+  {
+   "kind": "RULE",
+   "phrase": "twenty five",
+   "value": 25
+  },
+  {
+   "kind": "RULE",
+   "phrase": "twenty six",
+   "value": 26
+  },
+  {
+   "kind": "RULE",
+   "phrase": "twenty seven",
+   "value": 27
+  },
+  {
+   "kind": "RULE",
+   "phrase": "twenty eight",
+   "value": 28
+  },
+  {
+   "kind": "RULE",
+   "phrase": "twenty nine",
+   "value": 29
+  },
+  {
+   "kind": "RULE",
+   "phrase": "thirty one",
+   "value": 31
+  },
+  {
+   "kind": "RULE",
+   "phrase": "thirty two",
+   "value": 32
+  },
+  {
+   "kind": "RULE",
+   "phrase": "thirty three",
+   "value": 33
+  },
+  {
+   "kind": "RULE",
+   "phrase": "thirty four",
+   "value": 34
+  },
+  {
+   "kind": "RULE",
+   "phrase": "thirty five",
+   "value": 35
+  },
+  {
+   "kind": "RULE",
+   "phrase": "thirty six",
+   "value": 36
+  },
+  {
+   "kind": "RULE",
+   "phrase": "thirty seven",
+   "value": 37
+  },
+  {
+   "kind": "RULE",
+   "phrase": "thirty eight",
+   "value": 38
+  },
+  {
+   "kind": "RULE",
+   "phrase": "thirty nine",
+   "value": 39
+  },
+  {
+   "kind": "RULE",
+   "phrase": "forty one",
+   "value": 41
+  },
+  {
+   "kind": "RULE",
+   "phrase": "forty two",
+   "value": 42
+  },
+  {
+   "kind": "RULE",
+   "phrase": "forty three",
+   "value": 43
+  },
+  {
+   "kind": "RULE",
+   "phrase": "forty four",
+   "value": 44
+  },
+  {
+   "kind": "RULE",
+   "phrase": "forty five",
+   "value": 45
+  },
+  {
+   "kind": "RULE",
+   "phrase": "forty six",
+   "value": 46
+  },
+  {
+   "kind": "RULE",
+   "phrase": "forty seven",
+   "value": 47
+  },
+  {
+   "kind": "RULE",
+   "phrase": "forty eight",
+   "value": 48
+  },
+  {
+   "kind": "RULE",
+   "phrase": "forty nine",
+   "value": 49
+  },
+  {
+   "kind": "RULE",
+   "phrase": "fifty one",
+   "value": 51
+  },
+  {
+   "kind": "RULE",
+   "phrase": "fifty two",
+   "value": 52
+  },
+  {
+   "kind": "RULE",
+   "phrase": "fifty three",
+   "value": 53
+  },
+  {
+   "kind": "RULE",
+   "phrase": "fifty four",
+   "value": 54
+  },
+  {
+   "kind": "RULE",
+   "phrase": "fifty five",
+   "value": 55
+  },
+  {
+   "kind": "RULE",
+   "phrase": "fifty six",
+   "value": 56
+  },
+  {
+   "kind": "RULE",
+   "phrase": "fifty seven",
+   "value": 57
+  },
+  {
+   "kind": "RULE",
+   "phrase": "fifty eight",
+   "value": 58
+  },
+  {
+   "kind": "RULE",
+   "phrase": "fifty nine",
+   "value": 59
+  },
+  {
+   "kind": "RULE",
+   "phrase": "sixty one",
+   "value": 61
+  },
+  {
+   "kind": "RULE",
+   "phrase": "sixty two",
+   "value": 62
+  },
+  {
+   "kind": "RULE",
+   "phrase": "sixty three",
+   "value": 63
+  },
+  {
+   "kind": "RULE",
+   "phrase": "sixty four",
+   "value": 64
+  },
+  {
+   "kind": "RULE",
+   "phrase": "sixty five",
+   "value": 65
+  },
+  {
+   "kind": "RULE",
+   "phrase": "sixty six",
+   "value": 66
+  },
+  {
+   "kind": "RULE",
+   "phrase": "sixty seven",
+   "value": 67
+  },
+  {
+   "kind": "RULE",
+   "phrase": "sixty eight",
+   "value": 68
+  },
+  {
+   "kind": "RULE",
+   "phrase": "sixty nine",
+   "value": 69
+  },
+  {
+   "kind": "RULE",
+   "phrase": "seventy one",
+   "value": 71
+  },
+  {
+   "kind": "RULE",
+   "phrase": "seventy two",
+   "value": 72
+  },
+  {
+   "kind": "RULE",
+   "phrase": "seventy three",
+   "value": 73
+  },
+  {
+   "kind": "RULE",
+   "phrase": "seventy four",
+   "value": 74
+  },
+  {
+   "kind": "RULE",
+   "phrase": "seventy five",
+   "value": 75
+  },
+  {
+   "kind": "RULE",
+   "phrase": "seventy six",
+   "value": 76
+  },
+  {
+   "kind": "RULE",
+   "phrase": "seventy seven",
+   "value": 77
+  },
+  {
+   "kind": "RULE",
+   "phrase": "seventy eight",
+   "value": 78
+  },
+  {
+   "kind": "RULE",
+   "phrase": "seventy nine",
+   "value": 79
+  },
+  {
+   "kind": "RULE",
+   "phrase": "eighty one",
+   "value": 81
+  },
+  {
+   "kind": "RULE",
+   "phrase": "eighty two",
+   "value": 82
+  },
+  {
+   "kind": "RULE",
+   "phrase": "eighty three",
+   "value": 83
+  },
+  {
+   "kind": "RULE",
+   "phrase": "eighty four",
+   "value": 84
+  },
+  {
+   "kind": "RULE",
+   "phrase": "eighty five",
+   "value": 85
+  },
+  {
+   "kind": "RULE",
+   "phrase": "eighty six",
+   "value": 86
+  },
+  {
+   "kind": "RULE",
+   "phrase": "eighty seven",
+   "value": 87
+  },
+  {
+   "kind": "RULE",
+   "phrase": "eighty eight",
+   "value": 88
+  },
+  {
+   "kind": "RULE",
+   "phrase": "eighty nine",
+   "value": 89
+  },
+  {
+   "kind": "RULE",
+   "phrase": "ninety one",
+   "value": 91
+  },
+  {
+   "kind": "RULE",
+   "phrase": "ninety two",
+   "value": 92
+  },
+  {
+   "kind": "RULE",
+   "phrase": "ninety three",
+   "value": 93
+  },
+  {
+   "kind": "RULE",
+   "phrase": "ninety four",
+   "value": 94
+  },
+  {
+   "kind": "RULE",
+   "phrase": "ninety five",
+   "value": 95
+  },
+  {
+   "kind": "RULE",
+   "phrase": "ninety six",
+   "value": 96
+  },
+  {
+   "kind": "RULE",
+   "phrase": "ninety seven",
+   "value": 97
+  },
+  {
+   "kind": "RULE",
+   "phrase": "ninety eight",
+   "value": 98
+  },
+  {
+   "kind": "RULE",
+   "phrase": "ninety nine",
+   "value": 99
+  },
+  {
+   "kind": "REJECT",
+   "phrase": "one hundred",
+   "value": 100
+  },
+  {
+   "kind": "REJECT",
+   "phrase": "hundred",
+   "value": 100
+  },
+  {
+   "kind": "FRACTION",
+   "phrase": "half",
+   "value": 0.5
+  },
+  {
+   "kind": "FRACTION",
+   "phrase": "a half",
+   "value": 0.5
+  },
+  {
+   "kind": "FRACTION",
+   "phrase": "half a",
+   "value": 0.5
+  },
+  {
+   "kind": "FRACTION",
+   "phrase": "point five",
+   "value": 0.5
+  },
+  {
+   "kind": "FRACTION",
+   "phrase": "zero point five",
+   "value": 0.5
+  },
+  {
+   "kind": "FRACTION",
+   "phrase": "one point five",
+   "value": 1.5
+  },
+  {
+   "kind": "FRACTION",
+   "phrase": "two point five",
+   "value": 2.5
+  },
+  {
+   "kind": "FRACTION",
+   "phrase": "one and a half",
+   "value": 1.5
+  },
+  {
+   "kind": "FRACTION",
+   "phrase": "two and a half",
+   "value": 2.5
+  },
+  {
+   "kind": "FRACTION",
+   "phrase": "zero point one",
+   "value": 0.1
+  },
+  {
+   "kind": "FRACTION",
+   "phrase": "zero point two",
+   "value": 0.2
+  },
+  {
+   "kind": "FRACTION",
+   "phrase": "zero point three",
+   "value": 0.3
+  },
+  {
+   "kind": "FRACTION",
+   "phrase": "zero point four",
+   "value": 0.4
+  },
+  {
+   "kind": "FRACTION",
+   "phrase": "zero point six",
+   "value": 0.6
+  },
+  {
+   "kind": "FRACTION",
+   "phrase": "zero point seven",
+   "value": 0.7
+  },
+  {
+   "kind": "FRACTION",
+   "phrase": "zero point eight",
+   "value": 0.8
+  },
+  {
+   "kind": "FRACTION",
+   "phrase": "zero point nine",
+   "value": 0.9
+  },
+  {
+   "kind": "FRACTION",
+   "phrase": "one point one",
+   "value": 1.1
+  },
+  {
+   "kind": "FRACTION",
+   "phrase": "one point two",
+   "value": 1.2
+  },
+  {
+   "kind": "FRACTION",
+   "phrase": "one point three",
+   "value": 1.3
+  },
+  {
+   "kind": "FRACTION",
+   "phrase": "one point four",
+   "value": 1.4
+  },
+  {
+   "kind": "FRACTION",
+   "phrase": "one point six",
+   "value": 1.6
+  },
+  {
+   "kind": "FRACTION",
+   "phrase": "one point seven",
+   "value": 1.7
+  },
+  {
+   "kind": "FRACTION",
+   "phrase": "one point eight",
+   "value": 1.8
+  },
+  {
+   "kind": "FRACTION",
+   "phrase": "one point nine",
+   "value": 1.9
+  },
+  {
+   "kind": "FRACTION",
+   "phrase": "two point one",
+   "value": 2.1
+  },
+  {
+   "kind": "FRACTION",
+   "phrase": "two point two",
+   "value": 2.2
+  },
+  {
+   "kind": "FRACTION",
+   "phrase": "two point three",
+   "value": 2.3
+  },
+  {
+   "kind": "FRACTION",
+   "phrase": "two point four",
+   "value": 2.4
+  },
+  {
+   "kind": "FRACTION",
+   "phrase": "two point six",
+   "value": 2.6
+  },
+  {
+   "kind": "FRACTION",
+   "phrase": "two point seven",
+   "value": 2.7
+  },
+  {
+   "kind": "FRACTION",
+   "phrase": "two point eight",
+   "value": 2.8
+  },
+  {
+   "kind": "FRACTION",
+   "phrase": "two point nine",
+   "value": 2.9
+  },
+  {
+   "kind": "FRACTION",
+   "phrase": "three point one",
+   "value": 3.1
+  },
+  {
+   "kind": "FRACTION",
+   "phrase": "three point two",
+   "value": 3.2
+  },
+  {
+   "kind": "FRACTION",
+   "phrase": "three point three",
+   "value": 3.3
+  },
+  {
+   "kind": "FRACTION",
+   "phrase": "three point four",
+   "value": 3.4
+  },
+  {
+   "kind": "FRACTION",
+   "phrase": "three point five",
+   "value": 3.5
+  },
+  {
+   "kind": "FRACTION",
+   "phrase": "three point six",
+   "value": 3.6
+  },
+  {
+   "kind": "FRACTION",
+   "phrase": "three point seven",
+   "value": 3.7
+  },
+  {
+   "kind": "FRACTION",
+   "phrase": "three point eight",
+   "value": 3.8
+  },
+  {
+   "kind": "FRACTION",
+   "phrase": "three point nine",
+   "value": 3.9
+  },
+  {
+   "kind": "FRACTION",
+   "phrase": "four point one",
+   "value": 4.1
+  },
+  {
+   "kind": "FRACTION",
+   "phrase": "four point two",
+   "value": 4.2
+  },
+  {
+   "kind": "FRACTION",
+   "phrase": "four point three",
+   "value": 4.3
+  },
+  {
+   "kind": "FRACTION",
+   "phrase": "four point four",
+   "value": 4.4
+  },
+  {
+   "kind": "FRACTION",
+   "phrase": "four point five",
+   "value": 4.5
+  },
+  {
+   "kind": "FRACTION",
+   "phrase": "four point six",
+   "value": 4.6
+  },
+  {
+   "kind": "FRACTION",
+   "phrase": "four point seven",
+   "value": 4.7
+  },
+  {
+   "kind": "FRACTION",
+   "phrase": "four point eight",
+   "value": 4.8
+  },
+  {
+   "kind": "FRACTION",
+   "phrase": "four point nine",
+   "value": 4.9
+  },
+  {
+   "kind": "FRACTION",
+   "phrase": "five point one",
+   "value": 5.1
+  },
+  {
+   "kind": "FRACTION",
+   "phrase": "five point two",
+   "value": 5.2
+  },
+  {
+   "kind": "FRACTION",
+   "phrase": "five point three",
+   "value": 5.3
+  },
+  {
+   "kind": "FRACTION",
+   "phrase": "five point four",
+   "value": 5.4
+  },
+  {
+   "kind": "FRACTION",
+   "phrase": "five point five",
+   "value": 5.5
+  },
+  {
+   "kind": "FRACTION",
+   "phrase": "five point six",
+   "value": 5.6
+  },
+  {
+   "kind": "FRACTION",
+   "phrase": "five point seven",
+   "value": 5.7
+  },
+  {
+   "kind": "FRACTION",
+   "phrase": "five point eight",
+   "value": 5.8
+  },
+  {
+   "kind": "FRACTION",
+   "phrase": "five point nine",
+   "value": 5.9
+  },
+  {
+   "kind": "FRACTION",
+   "phrase": "six point one",
+   "value": 6.1
+  },
+  {
+   "kind": "FRACTION",
+   "phrase": "six point two",
+   "value": 6.2
+  },
+  {
+   "kind": "FRACTION",
+   "phrase": "six point three",
+   "value": 6.3
+  },
+  {
+   "kind": "FRACTION",
+   "phrase": "six point four",
+   "value": 6.4
+  },
+  {
+   "kind": "FRACTION",
+   "phrase": "six point five",
+   "value": 6.5
+  },
+  {
+   "kind": "FRACTION",
+   "phrase": "six point six",
+   "value": 6.6
+  },
+  {
+   "kind": "FRACTION",
+   "phrase": "six point seven",
+   "value": 6.7
+  },
+  {
+   "kind": "FRACTION",
+   "phrase": "six point eight",
+   "value": 6.8
+  },
+  {
+   "kind": "FRACTION",
+   "phrase": "six point nine",
+   "value": 6.9
+  },
+  {
+   "kind": "FRACTION",
+   "phrase": "seven point one",
+   "value": 7.1
+  },
+  {
+   "kind": "FRACTION",
+   "phrase": "seven point two",
+   "value": 7.2
+  },
+  {
+   "kind": "FRACTION",
+   "phrase": "seven point three",
+   "value": 7.3
+  },
+  {
+   "kind": "FRACTION",
+   "phrase": "seven point four",
+   "value": 7.4
+  },
+  {
+   "kind": "FRACTION",
+   "phrase": "seven point five",
+   "value": 7.5
+  },
+  {
+   "kind": "FRACTION",
+   "phrase": "seven point six",
+   "value": 7.6
+  },
+  {
+   "kind": "FRACTION",
+   "phrase": "seven point seven",
+   "value": 7.7
+  },
+  {
+   "kind": "FRACTION",
+   "phrase": "seven point eight",
+   "value": 7.8
+  },
+  {
+   "kind": "FRACTION",
+   "phrase": "seven point nine",
+   "value": 7.9
+  },
+  {
+   "kind": "FRACTION",
+   "phrase": "eight point one",
+   "value": 8.1
+  },
+  {
+   "kind": "FRACTION",
+   "phrase": "eight point two",
+   "value": 8.2
+  },
+  {
+   "kind": "FRACTION",
+   "phrase": "eight point three",
+   "value": 8.3
+  },
+  {
+   "kind": "FRACTION",
+   "phrase": "eight point four",
+   "value": 8.4
+  },
+  {
+   "kind": "FRACTION",
+   "phrase": "eight point five",
+   "value": 8.5
+  },
+  {
+   "kind": "FRACTION",
+   "phrase": "eight point six",
+   "value": 8.6
+  },
+  {
+   "kind": "FRACTION",
+   "phrase": "eight point seven",
+   "value": 8.7
+  },
+  {
+   "kind": "FRACTION",
+   "phrase": "eight point eight",
+   "value": 8.8
+  },
+  {
+   "kind": "FRACTION",
+   "phrase": "eight point nine",
+   "value": 8.9
+  },
+  {
+   "kind": "FRACTION",
+   "phrase": "nine point one",
+   "value": 9.1
+  },
+  {
+   "kind": "FRACTION",
+   "phrase": "nine point two",
+   "value": 9.2
+  },
+  {
+   "kind": "FRACTION",
+   "phrase": "nine point three",
+   "value": 9.3
+  },
+  {
+   "kind": "FRACTION",
+   "phrase": "nine point four",
+   "value": 9.4
+  },
+  {
+   "kind": "FRACTION",
+   "phrase": "nine point five",
+   "value": 9.5
+  },
+  {
+   "kind": "FRACTION",
+   "phrase": "nine point six",
+   "value": 9.6
+  },
+  {
+   "kind": "FRACTION",
+   "phrase": "nine point seven",
+   "value": 9.7
+  },
+  {
+   "kind": "FRACTION",
+   "phrase": "nine point eight",
+   "value": 9.8
+  },
+  {
+   "kind": "FRACTION",
+   "phrase": "nine point nine",
+   "value": 9.9
+  },
+  {
+   "kind": "FRACTION",
+   "phrase": "point one",
+   "value": 0.1
+  },
+  {
+   "kind": "FRACTION",
+   "phrase": "point two",
+   "value": 0.2
+  },
+  {
+   "kind": "FRACTION",
+   "phrase": "point three",
+   "value": 0.3
+  },
+  {
+   "kind": "FRACTION",
+   "phrase": "point four",
+   "value": 0.4
+  },
+  {
+   "kind": "FRACTION",
+   "phrase": "point six",
+   "value": 0.6
+  },
+  {
+   "kind": "FRACTION",
+   "phrase": "point seven",
+   "value": 0.7
+  },
+  {
+   "kind": "FRACTION",
+   "phrase": "point eight",
+   "value": 0.8
+  },
+  {
+   "kind": "FRACTION",
+   "phrase": "point nine",
+   "value": 0.9
+  },
+  {
+   "kind": "FRACTION",
+   "phrase": "three and a half",
+   "value": 3.5
+  },
+  {
+   "kind": "FRACTION",
+   "phrase": "four and a half",
+   "value": 4.5
+  },
+  {
+   "kind": "FRACTION",
+   "phrase": "five and a half",
+   "value": 5.5
+  },
+  {
+   "kind": "FRACTION",
+   "phrase": "six and a half",
+   "value": 6.5
+  },
+  {
+   "kind": "FRACTION",
+   "phrase": "seven and a half",
+   "value": 7.5
+  },
+  {
+   "kind": "FRACTION",
+   "phrase": "eight and a half",
+   "value": 8.5
+  },
+  {
+   "kind": "FRACTION",
+   "phrase": "nine and a half",
+   "value": 9.5
+  },
+  {
+   "kind": "FRACTION",
+   "phrase": "one and half",
+   "value": 1.5
+  },
+  {
+   "kind": "FRACTION",
+   "phrase": "two and half",
+   "value": 2.5
+  },
+  {
+   "kind": "FRACTION",
+   "phrase": "three and half",
+   "value": 3.5
+  },
+  {
+   "kind": "FRACTION",
+   "phrase": "four and half",
+   "value": 4.5
+  },
+  {
+   "kind": "FRACTION",
+   "phrase": "five and half",
+   "value": 5.5
+  },
+  {
+   "kind": "FRACTION",
+   "phrase": "six and half",
+   "value": 6.5
+  },
+  {
+   "kind": "FRACTION",
+   "phrase": "seven and half",
+   "value": 7.5
+  },
+  {
+   "kind": "FRACTION",
+   "phrase": "eight and half",
+   "value": 8.5
+  },
+  {
+   "kind": "FRACTION",
+   "phrase": "nine and half",
+   "value": 9.5
+  }
+ ],
+ "out_of_grammar": [
+  {
+   "text": "is for but"
+  },
+  {
+   "text": "know was have"
+  },
+  {
+   "text": "they on be"
+  },
+  {
+   "text": "it's with are"
+  }
+ ],
+ "plans": [
+  {
+   "steps": [
+    {
+     "arguments": {
+      "direction": "forward",
+      "distance_m": 2
+     },
+     "tool": "move_relative"
+    },
+    {
+     "arguments": {},
+     "tool": "land"
+    }
+   ],
+   "text": "move forward two meters and then land"
+  },
+  {
+   "steps": [
+    {
+     "arguments": {
+      "direction": "forward",
+      "distance_m": 2
+     },
+     "tool": "move_relative"
+    },
+    {
+     "arguments": {},
+     "tool": "land"
+    }
+   ],
+   "text": "move forward two meters after that land"
+  },
+  {
+   "steps": [
+    {
+     "arguments": {
+      "direction": "forward",
+      "distance_m": 2
+     },
+     "tool": "move_relative"
+    },
+    {
+     "arguments": {},
+     "tool": "land"
+    }
+   ],
+   "text": "move forward two meters then land"
+  },
+  {
+   "steps": [
+    {
+     "arguments": {
+      "direction": "forward",
+      "distance_m": 2
+     },
+     "tool": "move_relative"
+    },
+    {
+     "arguments": {},
+     "tool": "land"
+    }
+   ],
+   "text": "move forward two meters next land"
+  },
+  {
+   "steps": [
+    {
+     "arguments": {
+      "direction": "forward",
+      "distance_m": 2
+     },
+     "tool": "move_relative"
+    },
+    {
+     "arguments": {},
+     "tool": "land"
+    }
+   ],
+   "text": "move forward two meters and land"
+  }
+ ],
+ "positive": [
+  {
+   "arguments": {
+    "altitude_m": 3
+   },
+   "intent": "takeoff",
+   "text": "take off to three meters",
+   "tool": "takeoff"
+  },
+  {
+   "arguments": {
+    "altitude_m": 3
+   },
+   "intent": "takeoff",
+   "text": "takeoff to three meters",
+   "tool": "takeoff"
+  },
+  {
+   "arguments": {
+    "altitude_m": 3
+   },
+   "intent": "takeoff",
+   "text": "launch to three meters",
+   "tool": "takeoff"
+  },
+  {
+   "arguments": {
+    "altitude_m": 3
+   },
+   "intent": "takeoff",
+   "text": "take off three meters",
+   "tool": "takeoff"
+  },
+  {
+   "arguments": {
+    "altitude_m": 3
+   },
+   "intent": "takeoff",
+   "text": "takeoff three meters",
+   "tool": "takeoff"
+  },
+  {
+   "arguments": {
+    "altitude_m": 3
+   },
+   "intent": "takeoff",
+   "text": "launch three meters",
+   "tool": "takeoff"
+  },
+  {
+   "arguments": {
+    "direction": "forward",
+    "distance_m": 2
+   },
+   "intent": "move",
+   "text": "move forward two meters",
+   "tool": "move_relative"
+  },
+  {
+   "arguments": {
+    "direction": "forward",
+    "distance_m": 2
+   },
+   "intent": "move",
+   "text": "move forwards two meters",
+   "tool": "move_relative"
+  },
+  {
+   "arguments": {
+    "direction": "forward",
+    "distance_m": 2
+   },
+   "intent": "move",
+   "text": "move ahead two meters",
+   "tool": "move_relative"
+  },
+  {
+   "arguments": {
+    "direction": "backward",
+    "distance_m": 2
+   },
+   "intent": "move",
+   "text": "move backward two meters",
+   "tool": "move_relative"
+  },
+  {
+   "arguments": {
+    "direction": "backward",
+    "distance_m": 2
+   },
+   "intent": "move",
+   "text": "move backwards two meters",
+   "tool": "move_relative"
+  },
+  {
+   "arguments": {
+    "direction": "backward",
+    "distance_m": 2
+   },
+   "intent": "move",
+   "text": "move back two meters",
+   "tool": "move_relative"
+  },
+  {
+   "arguments": {
+    "direction": "left",
+    "distance_m": 2
+   },
+   "intent": "move",
+   "text": "move left two meters",
+   "tool": "move_relative"
+  },
+  {
+   "arguments": {
+    "direction": "right",
+    "distance_m": 2
+   },
+   "intent": "move",
+   "text": "move right two meters",
+   "tool": "move_relative"
+  },
+  {
+   "arguments": {
+    "direction": "up",
+    "distance_m": 2
+   },
+   "intent": "move",
+   "text": "move up two meters",
+   "tool": "move_relative"
+  },
+  {
+   "arguments": {
+    "direction": "up",
+    "distance_m": 2
+   },
+   "intent": "move",
+   "text": "move upward two meters",
+   "tool": "move_relative"
+  },
+  {
+   "arguments": {
+    "direction": "up",
+    "distance_m": 2
+   },
+   "intent": "move",
+   "text": "move upwards two meters",
+   "tool": "move_relative"
+  },
+  {
+   "arguments": {
+    "direction": "down",
+    "distance_m": 2
+   },
+   "intent": "move",
+   "text": "move down two meters",
+   "tool": "move_relative"
+  },
+  {
+   "arguments": {
+    "direction": "down",
+    "distance_m": 2
+   },
+   "intent": "move",
+   "text": "move downward two meters",
+   "tool": "move_relative"
+  },
+  {
+   "arguments": {
+    "direction": "down",
+    "distance_m": 2
+   },
+   "intent": "move",
+   "text": "move downwards two meters",
+   "tool": "move_relative"
+  },
+  {
+   "arguments": {
+    "direction": "forward",
+    "distance_m": 2
+   },
+   "intent": "move",
+   "text": "move two meters forward",
+   "tool": "move_relative"
+  },
+  {
+   "arguments": {
+    "direction": "forward",
+    "distance_m": 2
+   },
+   "intent": "move",
+   "text": "move two meters forwards",
+   "tool": "move_relative"
+  },
+  {
+   "arguments": {
+    "direction": "forward",
+    "distance_m": 2
+   },
+   "intent": "move",
+   "text": "move two meters ahead",
+   "tool": "move_relative"
+  },
+  {
+   "arguments": {
+    "direction": "backward",
+    "distance_m": 2
+   },
+   "intent": "move",
+   "text": "move two meters backward",
+   "tool": "move_relative"
+  },
+  {
+   "arguments": {
+    "direction": "backward",
+    "distance_m": 2
+   },
+   "intent": "move",
+   "text": "move two meters backwards",
+   "tool": "move_relative"
+  },
+  {
+   "arguments": {
+    "direction": "backward",
+    "distance_m": 2
+   },
+   "intent": "move",
+   "text": "move two meters back",
+   "tool": "move_relative"
+  },
+  {
+   "arguments": {
+    "direction": "left",
+    "distance_m": 2
+   },
+   "intent": "move",
+   "text": "move two meters left",
+   "tool": "move_relative"
+  },
+  {
+   "arguments": {
+    "direction": "right",
+    "distance_m": 2
+   },
+   "intent": "move",
+   "text": "move two meters right",
+   "tool": "move_relative"
+  },
+  {
+   "arguments": {
+    "direction": "up",
+    "distance_m": 2
+   },
+   "intent": "move",
+   "text": "move two meters up",
+   "tool": "move_relative"
+  },
+  {
+   "arguments": {
+    "direction": "up",
+    "distance_m": 2
+   },
+   "intent": "move",
+   "text": "move two meters upward",
+   "tool": "move_relative"
+  },
+  {
+   "arguments": {
+    "direction": "up",
+    "distance_m": 2
+   },
+   "intent": "move",
+   "text": "move two meters upwards",
+   "tool": "move_relative"
+  },
+  {
+   "arguments": {
+    "direction": "down",
+    "distance_m": 2
+   },
+   "intent": "move",
+   "text": "move two meters down",
+   "tool": "move_relative"
+  },
+  {
+   "arguments": {
+    "direction": "down",
+    "distance_m": 2
+   },
+   "intent": "move",
+   "text": "move two meters downward",
+   "tool": "move_relative"
+  },
+  {
+   "arguments": {
+    "direction": "down",
+    "distance_m": 2
+   },
+   "intent": "move",
+   "text": "move two meters downwards",
+   "tool": "move_relative"
+  },
+  {
+   "arguments": {
+    "direction": "forward",
+    "distance_m": 2
+   },
+   "intent": "move",
+   "text": "move forward by two meters",
+   "tool": "move_relative"
+  },
+  {
+   "arguments": {
+    "direction": "forward",
+    "distance_m": 2
+   },
+   "intent": "move",
+   "text": "move forwards by two meters",
+   "tool": "move_relative"
+  },
+  {
+   "arguments": {
+    "direction": "forward",
+    "distance_m": 2
+   },
+   "intent": "move",
+   "text": "move ahead by two meters",
+   "tool": "move_relative"
+  },
+  {
+   "arguments": {
+    "direction": "backward",
+    "distance_m": 2
+   },
+   "intent": "move",
+   "text": "move backward by two meters",
+   "tool": "move_relative"
+  },
+  {
+   "arguments": {
+    "direction": "backward",
+    "distance_m": 2
+   },
+   "intent": "move",
+   "text": "move backwards by two meters",
+   "tool": "move_relative"
+  },
+  {
+   "arguments": {
+    "direction": "backward",
+    "distance_m": 2
+   },
+   "intent": "move",
+   "text": "move back by two meters",
+   "tool": "move_relative"
+  },
+  {
+   "arguments": {
+    "direction": "left",
+    "distance_m": 2
+   },
+   "intent": "move",
+   "text": "move left by two meters",
+   "tool": "move_relative"
+  },
+  {
+   "arguments": {
+    "direction": "right",
+    "distance_m": 2
+   },
+   "intent": "move",
+   "text": "move right by two meters",
+   "tool": "move_relative"
+  },
+  {
+   "arguments": {
+    "direction": "up",
+    "distance_m": 2
+   },
+   "intent": "move",
+   "text": "move up by two meters",
+   "tool": "move_relative"
+  },
+  {
+   "arguments": {
+    "direction": "up",
+    "distance_m": 2
+   },
+   "intent": "move",
+   "text": "move upward by two meters",
+   "tool": "move_relative"
+  },
+  {
+   "arguments": {
+    "direction": "up",
+    "distance_m": 2
+   },
+   "intent": "move",
+   "text": "move upwards by two meters",
+   "tool": "move_relative"
+  },
+  {
+   "arguments": {
+    "direction": "down",
+    "distance_m": 2
+   },
+   "intent": "move",
+   "text": "move down by two meters",
+   "tool": "move_relative"
+  },
+  {
+   "arguments": {
+    "direction": "down",
+    "distance_m": 2
+   },
+   "intent": "move",
+   "text": "move downward by two meters",
+   "tool": "move_relative"
+  },
+  {
+   "arguments": {
+    "direction": "down",
+    "distance_m": 2
+   },
+   "intent": "move",
+   "text": "move downwards by two meters",
+   "tool": "move_relative"
+  },
+  {
+   "arguments": {
+    "direction": "left",
+    "distance_m": 2
+   },
+   "intent": "move",
+   "text": "move to the left two meters",
+   "tool": "move_relative"
+  },
+  {
+   "arguments": {
+    "direction": "right",
+    "distance_m": 2
+   },
+   "intent": "move",
+   "text": "move to the right two meters",
+   "tool": "move_relative"
+  },
+  {
+   "arguments": {
+    "direction": "left",
+    "distance_m": 2
+   },
+   "intent": "move",
+   "text": "move two meters to the left",
+   "tool": "move_relative"
+  },
+  {
+   "arguments": {
+    "direction": "right",
+    "distance_m": 2
+   },
+   "intent": "move",
+   "text": "move two meters to the right",
+   "tool": "move_relative"
+  },
+  {
+   "arguments": {
+    "direction": "left",
+    "distance_m": 2
+   },
+   "intent": "move",
+   "text": "move towards the left two meters",
+   "tool": "move_relative"
+  },
+  {
+   "arguments": {
+    "direction": "right",
+    "distance_m": 2
+   },
+   "intent": "move",
+   "text": "move towards the right two meters",
+   "tool": "move_relative"
+  },
+  {
+   "arguments": {
+    "direction": "left",
+    "distance_m": 2
+   },
+   "intent": "move",
+   "text": "move two meters towards the left",
+   "tool": "move_relative"
+  },
+  {
+   "arguments": {
+    "direction": "right",
+    "distance_m": 2
+   },
+   "intent": "move",
+   "text": "move two meters towards the right",
+   "tool": "move_relative"
+  },
+  {
+   "arguments": {
+    "direction": "forward",
+    "distance_m": 2
+   },
+   "intent": "move",
+   "text": "advance by two meters",
+   "tool": "move_relative"
+  },
+  {
+   "arguments": {
+    "direction": "forward",
+    "distance_m": 2
+   },
+   "intent": "move",
+   "text": "ahead by two meters",
+   "tool": "move_relative"
+  },
+  {
+   "arguments": {
+    "direction": "backward",
+    "distance_m": 2
+   },
+   "intent": "move",
+   "text": "reverse by two meters",
+   "tool": "move_relative"
+  },
+  {
+   "arguments": {
+    "direction": "backward",
+    "distance_m": 2
+   },
+   "intent": "move",
+   "text": "retreat by two meters",
+   "tool": "move_relative"
+  },
+  {
+   "arguments": {
+    "direction": "backward",
+    "distance_m": 2
+   },
+   "intent": "move",
+   "text": "back up by two meters",
+   "tool": "move_relative"
+  },
+  {
+   "arguments": {
+    "direction": "up",
+    "distance_m": 2
+   },
+   "intent": "move",
+   "text": "climb by two meters",
+   "tool": "move_relative"
+  },
+  {
+   "arguments": {
+    "direction": "up",
+    "distance_m": 2
+   },
+   "intent": "move",
+   "text": "ascend by two meters",
+   "tool": "move_relative"
+  },
+  {
+   "arguments": {
+    "direction": "up",
+    "distance_m": 2
+   },
+   "intent": "move",
+   "text": "rise by two meters",
+   "tool": "move_relative"
+  },
+  {
+   "arguments": {
+    "direction": "down",
+    "distance_m": 2
+   },
+   "intent": "move",
+   "text": "descend by two meters",
+   "tool": "move_relative"
+  },
+  {
+   "arguments": {
+    "direction": "down",
+    "distance_m": 2
+   },
+   "intent": "move",
+   "text": "drop by two meters",
+   "tool": "move_relative"
+  },
+  {
+   "arguments": {
+    "direction": "down",
+    "distance_m": 2
+   },
+   "intent": "move",
+   "text": "lower by two meters",
+   "tool": "move_relative"
+  },
+  {
+   "arguments": {
+    "direction": "forward",
+    "distance_m": 2
+   },
+   "intent": "move",
+   "text": "advance two meters",
+   "tool": "move_relative"
+  },
+  {
+   "arguments": {
+    "direction": "forward",
+    "distance_m": 2
+   },
+   "intent": "move",
+   "text": "ahead two meters",
+   "tool": "move_relative"
+  },
+  {
+   "arguments": {
+    "direction": "backward",
+    "distance_m": 2
+   },
+   "intent": "move",
+   "text": "reverse two meters",
+   "tool": "move_relative"
+  },
+  {
+   "arguments": {
+    "direction": "backward",
+    "distance_m": 2
+   },
+   "intent": "move",
+   "text": "retreat two meters",
+   "tool": "move_relative"
+  },
+  {
+   "arguments": {
+    "direction": "backward",
+    "distance_m": 2
+   },
+   "intent": "move",
+   "text": "back up two meters",
+   "tool": "move_relative"
+  },
+  {
+   "arguments": {
+    "direction": "up",
+    "distance_m": 2
+   },
+   "intent": "move",
+   "text": "climb two meters",
+   "tool": "move_relative"
+  },
+  {
+   "arguments": {
+    "direction": "up",
+    "distance_m": 2
+   },
+   "intent": "move",
+   "text": "ascend two meters",
+   "tool": "move_relative"
+  },
+  {
+   "arguments": {
+    "direction": "up",
+    "distance_m": 2
+   },
+   "intent": "move",
+   "text": "rise two meters",
+   "tool": "move_relative"
+  },
+  {
+   "arguments": {
+    "direction": "down",
+    "distance_m": 2
+   },
+   "intent": "move",
+   "text": "descend two meters",
+   "tool": "move_relative"
+  },
+  {
+   "arguments": {
+    "direction": "down",
+    "distance_m": 2
+   },
+   "intent": "move",
+   "text": "drop two meters",
+   "tool": "move_relative"
+  },
+  {
+   "arguments": {
+    "direction": "down",
+    "distance_m": 2
+   },
+   "intent": "move",
+   "text": "lower two meters",
+   "tool": "move_relative"
+  },
+  {
+   "arguments": {
+    "direction": "up",
+    "distance_m": 2
+   },
+   "intent": "move",
+   "text": "move higher by two meters",
+   "tool": "move_relative"
+  },
+  {
+   "arguments": {
+    "direction": "down",
+    "distance_m": 2
+   },
+   "intent": "move",
+   "text": "move lower by two meters",
+   "tool": "move_relative"
+  },
+  {
+   "arguments": {
+    "direction": "up",
+    "distance_m": 2
+   },
+   "intent": "move",
+   "text": "move higher two meters",
+   "tool": "move_relative"
+  },
+  {
+   "arguments": {
+    "direction": "down",
+    "distance_m": 2
+   },
+   "intent": "move",
+   "text": "move lower two meters",
+   "tool": "move_relative"
+  },
+  {
+   "arguments": {},
+   "intent": "hold",
+   "text": "hover",
+   "tool": "hold"
+  },
+  {
+   "arguments": {},
+   "intent": "hold",
+   "text": "hold position",
+   "tool": "hold"
+  },
+  {
+   "arguments": {},
+   "intent": "hold",
+   "text": "hold",
+   "tool": "hold"
+  },
+  {
+   "arguments": {},
+   "intent": "stop",
+   "text": "stop",
+   "tool": "hold"
+  },
+  {
+   "arguments": {},
+   "intent": "land",
+   "text": "land",
+   "tool": "land"
+  },
+  {
+   "arguments": {},
+   "intent": "status",
+   "text": "status",
+   "tool": "get_status"
+  },
+  {
+   "arguments": {},
+   "intent": "status",
+   "text": "telemetry",
+   "tool": "get_status"
+  }
+ ],
+ "unk": [
+  {
+   "expect": "hold",
+   "text": "[unk] hover"
+  },
+  {
+   "expect": "hold",
+   "text": "stop [unk]"
+  },
+  {
+   "expect": "reject",
+   "text": "[unk] move forward two meters"
+  },
+  {
+   "expect": "reject",
+   "text": "move [unk] forward two meters"
+  }
+ ]
+}

@@ -1,0 +1,1742 @@
+{
+ "language": "te",
+ "loans": [
+  {
+   "arguments": {
+    "altitude_m": 3
+   },
+   "intent": "takeoff",
+   "text": "మూడు మీటర్స్ టేక్ ఆఫ్",
+   "tool": "takeoff"
+  },
+  {
+   "arguments": {
+    "altitude_m": 3
+   },
+   "intent": "takeoff",
+   "text": "మూడు మీటర్స్ లాంచ్",
+   "tool": "takeoff"
+  },
+  {
+   "arguments": {
+    "altitude_m": 3
+   },
+   "intent": "takeoff",
+   "text": "మూడు మీటర్స్ వరకు టేక్ ఆఫ్",
+   "tool": "takeoff"
+  },
+  {
+   "arguments": {
+    "altitude_m": 3
+   },
+   "intent": "takeoff",
+   "text": "మూడు మీటర్స్ వరకు లాంచ్",
+   "tool": "takeoff"
+  },
+  {
+   "arguments": {
+    "direction": "forward",
+    "distance_m": 2
+   },
+   "intent": "move",
+   "text": "రెండు మీటర్స్ ఫార్వర్డ్ మూవ్",
+   "tool": "move_relative"
+  },
+  {
+   "arguments": {
+    "direction": "backward",
+    "distance_m": 2
+   },
+   "intent": "move",
+   "text": "రెండు మీటర్స్ బ్యాక్ మూవ్",
+   "tool": "move_relative"
+  },
+  {
+   "arguments": {
+    "direction": "left",
+    "distance_m": 2
+   },
+   "intent": "move",
+   "text": "రెండు మీటర్స్ లెఫ్ట్ మూవ్",
+   "tool": "move_relative"
+  },
+  {
+   "arguments": {
+    "direction": "right",
+    "distance_m": 2
+   },
+   "intent": "move",
+   "text": "రెండు మీటర్స్ రైట్ మూవ్",
+   "tool": "move_relative"
+  },
+  {
+   "arguments": {
+    "direction": "up",
+    "distance_m": 2
+   },
+   "intent": "move",
+   "text": "రెండు మీటర్స్ అప్ మూవ్",
+   "tool": "move_relative"
+  },
+  {
+   "arguments": {
+    "direction": "down",
+    "distance_m": 2
+   },
+   "intent": "move",
+   "text": "రెండు మీటర్స్ డౌన్ మూవ్",
+   "tool": "move_relative"
+  },
+  {
+   "arguments": {
+    "direction": "forward",
+    "distance_m": 2
+   },
+   "intent": "move",
+   "text": "ఫార్వర్డ్ రెండు మీటర్స్ మూవ్",
+   "tool": "move_relative"
+  },
+  {
+   "arguments": {
+    "direction": "backward",
+    "distance_m": 2
+   },
+   "intent": "move",
+   "text": "బ్యాక్ రెండు మీటర్స్ మూవ్",
+   "tool": "move_relative"
+  },
+  {
+   "arguments": {
+    "direction": "left",
+    "distance_m": 2
+   },
+   "intent": "move",
+   "text": "లెఫ్ట్ రెండు మీటర్స్ మూవ్",
+   "tool": "move_relative"
+  },
+  {
+   "arguments": {
+    "direction": "right",
+    "distance_m": 2
+   },
+   "intent": "move",
+   "text": "రైట్ రెండు మీటర్స్ మూవ్",
+   "tool": "move_relative"
+  },
+  {
+   "arguments": {
+    "direction": "up",
+    "distance_m": 2
+   },
+   "intent": "move",
+   "text": "అప్ రెండు మీటర్స్ మూవ్",
+   "tool": "move_relative"
+  },
+  {
+   "arguments": {
+    "direction": "down",
+    "distance_m": 2
+   },
+   "intent": "move",
+   "text": "డౌన్ రెండు మీటర్స్ మూవ్",
+   "tool": "move_relative"
+  },
+  {
+   "arguments": {},
+   "intent": "hold",
+   "text": "హోల్డ్ చేయి",
+   "tool": "hold"
+  },
+  {
+   "arguments": {},
+   "intent": "hold",
+   "text": "హోల్డ్",
+   "tool": "hold"
+  },
+  {
+   "arguments": {},
+   "intent": "status",
+   "text": "స్టేటస్",
+   "tool": "get_status"
+  }
+ ],
+ "negated": [
+  {
+   "text": "మూడు మీటర్లు టేకాఫ్ వద్దు"
+  },
+  {
+   "text": "మూడు మీటర్లు టేకాఫ్ చేయకు"
+  },
+  {
+   "text": "మూడు మీటర్లు వద్దు టేకాఫ్"
+  },
+  {
+   "text": "రెండు మీటర్లు ముందుకు వెళ్ళు వద్దు"
+  },
+  {
+   "text": "రెండు మీటర్లు ముందుకు వెళ్ళు చేయకు"
+  },
+  {
+   "text": "రెండు మీటర్లు ముందుకు వద్దు వెళ్ళు"
+  },
+  {
+   "text": "రెండు మీటర్లు ముందుకు వెళ్ళకు"
+  },
+  {
+   "text": "రెండు మీటర్లు ముందుకు వెళ్ళకండి"
+  },
+  {
+   "text": "ల్యాండ్ వద్దు"
+  },
+  {
+   "text": "ల్యాండ్ చేయకు"
+  },
+  {
+   "text": "వద్దు ల్యాండ్"
+  },
+  {
+   "text": "హోవర్ చేయి వద్దు"
+  },
+  {
+   "text": "హోవర్ చేయి చేయకు"
+  },
+  {
+   "text": "హోవర్ వద్దు చేయి"
+  },
+  {
+   "text": "హోవర్ చేయవద్దు"
+  },
+  {
+   "text": "హోవర్ చేయద్దు"
+  }
+ ],
+ "numbers": [
+  {
+   "kind": "RULE",
+   "phrase": "ఒక",
+   "value": 1
+  },
+  {
+   "kind": "RULE",
+   "phrase": "ఒకటి",
+   "value": 1
+  },
+  {
+   "kind": "RULE",
+   "phrase": "రెండు",
+   "value": 2
+  },
+  {
+   "kind": "RULE",
+   "phrase": "మూడు",
+   "value": 3
+  },
+  {
+   "kind": "RULE",
+   "phrase": "నాలుగు",
+   "value": 4
+  },
+  {
+   "kind": "RULE",
+   "phrase": "ఐదు",
+   "value": 5
+  },
+  {
+   "kind": "RULE",
+   "phrase": "ఆరు",
+   "value": 6
+  },
+  {
+   "kind": "RULE",
+   "phrase": "ఏడు",
+   "value": 7
+  },
+  {
+   "kind": "RULE",
+   "phrase": "ఎనిమిది",
+   "value": 8
+  },
+  {
+   "kind": "RULE",
+   "phrase": "తొమ్మిది",
+   "value": 9
+  },
+  {
+   "kind": "RULE",
+   "phrase": "పది",
+   "value": 10
+  },
+  {
+   "kind": "RULE",
+   "phrase": "పదకొండు",
+   "value": 11
+  },
+  {
+   "kind": "RULE",
+   "phrase": "పన్నెండు",
+   "value": 12
+  },
+  {
+   "kind": "RULE",
+   "phrase": "పదమూడు",
+   "value": 13
+  },
+  {
+   "kind": "RULE",
+   "phrase": "పద్నాలుగు",
+   "value": 14
+  },
+  {
+   "kind": "RULE",
+   "phrase": "పదిహేను",
+   "value": 15
+  },
+  {
+   "kind": "RULE",
+   "phrase": "పదహారు",
+   "value": 16
+  },
+  {
+   "kind": "RULE",
+   "phrase": "పదిహేడు",
+   "value": 17
+  },
+  {
+   "kind": "RULE",
+   "phrase": "పద్దెనిమిది",
+   "value": 18
+  },
+  {
+   "kind": "RULE",
+   "phrase": "పందొమ్మిది",
+   "value": 19
+  },
+  {
+   "kind": "RULE",
+   "phrase": "ఇరవై",
+   "value": 20
+  },
+  {
+   "kind": "RULE",
+   "phrase": "ముప్పై",
+   "value": 30
+  },
+  {
+   "kind": "RULE",
+   "phrase": "నలభై",
+   "value": 40
+  },
+  {
+   "kind": "RULE",
+   "phrase": "యాభై",
+   "value": 50
+  },
+  {
+   "kind": "RULE",
+   "phrase": "అరవై",
+   "value": 60
+  },
+  {
+   "kind": "RULE",
+   "phrase": "డెబ్బై",
+   "value": 70
+  },
+  {
+   "kind": "RULE",
+   "phrase": "ఎనభై",
+   "value": 80
+  },
+  {
+   "kind": "RULE",
+   "phrase": "తొంభై",
+   "value": 90
+  },
+  {
+   "kind": "RULE",
+   "phrase": "వంద",
+   "value": 100
+  },
+  {
+   "kind": "RULE",
+   "phrase": "నూరు",
+   "value": 100
+  },
+  {
+   "kind": "RULE",
+   "phrase": "ఇరవై ఒక",
+   "value": 21
+  },
+  {
+   "kind": "RULE",
+   "phrase": "ఇరవై ఒకటి",
+   "value": 21
+  },
+  {
+   "kind": "RULE",
+   "phrase": "ఇరవై రెండు",
+   "value": 22
+  },
+  {
+   "kind": "RULE",
+   "phrase": "ఇరవై మూడు",
+   "value": 23
+  },
+  {
+   "kind": "RULE",
+   "phrase": "ఇరవై నాలుగు",
+   "value": 24
+  },
+  {
+   "kind": "RULE",
+   "phrase": "ఇరవై ఐదు",
+   "value": 25
+  },
+  {
+   "kind": "RULE",
+   "phrase": "ఇరవై ఆరు",
+   "value": 26
+  },
+  {
+   "kind": "RULE",
+   "phrase": "ఇరవై ఏడు",
+   "value": 27
+  },
+  {
+   "kind": "RULE",
+   "phrase": "ఇరవై ఎనిమిది",
+   "value": 28
+  },
+  {
+   "kind": "RULE",
+   "phrase": "ఇరవై తొమ్మిది",
+   "value": 29
+  },
+  {
+   "kind": "RULE",
+   "phrase": "ముప్పై ఒక",
+   "value": 31
+  },
+  {
+   "kind": "RULE",
+   "phrase": "ముప్పై ఒకటి",
+   "value": 31
+  },
+  {
+   "kind": "RULE",
+   "phrase": "ముప్పై రెండు",
+   "value": 32
+  },
+  {
+   "kind": "RULE",
+   "phrase": "ముప్పై మూడు",
+   "value": 33
+  },
+  {
+   "kind": "RULE",
+   "phrase": "ముప్పై నాలుగు",
+   "value": 34
+  },
+  {
+   "kind": "RULE",
+   "phrase": "ముప్పై ఐదు",
+   "value": 35
+  },
+  {
+   "kind": "RULE",
+   "phrase": "ముప్పై ఆరు",
+   "value": 36
+  },
+  {
+   "kind": "RULE",
+   "phrase": "ముప్పై ఏడు",
+   "value": 37
+  },
+  {
+   "kind": "RULE",
+   "phrase": "ముప్పై ఎనిమిది",
+   "value": 38
+  },
+  {
+   "kind": "RULE",
+   "phrase": "ముప్పై తొమ్మిది",
+   "value": 39
+  },
+  {
+   "kind": "RULE",
+   "phrase": "నలభై ఒక",
+   "value": 41
+  },
+  {
+   "kind": "RULE",
+   "phrase": "నలభై ఒకటి",
+   "value": 41
+  },
+  {
+   "kind": "RULE",
+   "phrase": "నలభై రెండు",
+   "value": 42
+  },
+  {
+   "kind": "RULE",
+   "phrase": "నలభై మూడు",
+   "value": 43
+  },
+  {
+   "kind": "RULE",
+   "phrase": "నలభై నాలుగు",
+   "value": 44
+  },
+  {
+   "kind": "RULE",
+   "phrase": "నలభై ఐదు",
+   "value": 45
+  },
+  {
+   "kind": "RULE",
+   "phrase": "నలభై ఆరు",
+   "value": 46
+  },
+  {
+   "kind": "RULE",
+   "phrase": "నలభై ఏడు",
+   "value": 47
+  },
+  {
+   "kind": "RULE",
+   "phrase": "నలభై ఎనిమిది",
+   "value": 48
+  },
+  {
+   "kind": "RULE",
+   "phrase": "నలభై తొమ్మిది",
+   "value": 49
+  },
+  {
+   "kind": "RULE",
+   "phrase": "యాభై ఒక",
+   "value": 51
+  },
+  {
+   "kind": "RULE",
+   "phrase": "యాభై ఒకటి",
+   "value": 51
+  },
+  {
+   "kind": "RULE",
+   "phrase": "యాభై రెండు",
+   "value": 52
+  },
+  {
+   "kind": "RULE",
+   "phrase": "యాభై మూడు",
+   "value": 53
+  },
+  {
+   "kind": "RULE",
+   "phrase": "యాభై నాలుగు",
+   "value": 54
+  },
+  {
+   "kind": "RULE",
+   "phrase": "యాభై ఐదు",
+   "value": 55
+  },
+  {
+   "kind": "RULE",
+   "phrase": "యాభై ఆరు",
+   "value": 56
+  },
+  {
+   "kind": "RULE",
+   "phrase": "యాభై ఏడు",
+   "value": 57
+  },
+  {
+   "kind": "RULE",
+   "phrase": "యాభై ఎనిమిది",
+   "value": 58
+  },
+  {
+   "kind": "RULE",
+   "phrase": "యాభై తొమ్మిది",
+   "value": 59
+  },
+  {
+   "kind": "RULE",
+   "phrase": "అరవై ఒక",
+   "value": 61
+  },
+  {
+   "kind": "RULE",
+   "phrase": "అరవై ఒకటి",
+   "value": 61
+  },
+  {
+   "kind": "RULE",
+   "phrase": "అరవై రెండు",
+   "value": 62
+  },
+  {
+   "kind": "RULE",
+   "phrase": "అరవై మూడు",
+   "value": 63
+  },
+  {
+   "kind": "RULE",
+   "phrase": "అరవై నాలుగు",
+   "value": 64
+  },
+  {
+   "kind": "RULE",
+   "phrase": "అరవై ఐదు",
+   "value": 65
+  },
+  {
+   "kind": "RULE",
+   "phrase": "అరవై ఆరు",
+   "value": 66
+  },
+  {
+   "kind": "RULE",
+   "phrase": "అరవై ఏడు",
+   "value": 67
+  },
+  {
+   "kind": "RULE",
+   "phrase": "అరవై ఎనిమిది",
+   "value": 68
+  },
+  {
+   "kind": "RULE",
+   "phrase": "అరవై తొమ్మిది",
+   "value": 69
+  },
+  {
+   "kind": "RULE",
+   "phrase": "డెబ్బై ఒక",
+   "value": 71
+  },
+  {
+   "kind": "RULE",
+   "phrase": "డెబ్బై ఒకటి",
+   "value": 71
+  },
+  {
+   "kind": "RULE",
+   "phrase": "డెబ్బై రెండు",
+   "value": 72
+  },
+  {
+   "kind": "RULE",
+   "phrase": "డెబ్బై మూడు",
+   "value": 73
+  },
+  {
+   "kind": "RULE",
+   "phrase": "డెబ్బై నాలుగు",
+   "value": 74
+  },
+  {
+   "kind": "RULE",
+   "phrase": "డెబ్బై ఐదు",
+   "value": 75
+  },
+  {
+   "kind": "RULE",
+   "phrase": "డెబ్బై ఆరు",
+   "value": 76
+  },
+  {
+   "kind": "RULE",
+   "phrase": "డెబ్బై ఏడు",
+   "value": 77
+  },
+  {
+   "kind": "RULE",
+   "phrase": "డెబ్బై ఎనిమిది",
+   "value": 78
+  },
+  {
+   "kind": "RULE",
+   "phrase": "డెబ్బై తొమ్మిది",
+   "value": 79
+  },
+  {
+   "kind": "RULE",
+   "phrase": "ఎనభై ఒక",
+   "value": 81
+  },
+  {
+   "kind": "RULE",
+   "phrase": "ఎనభై ఒకటి",
+   "value": 81
+  },
+  {
+   "kind": "RULE",
+   "phrase": "ఎనభై రెండు",
+   "value": 82
+  },
+  {
+   "kind": "RULE",
+   "phrase": "ఎనభై మూడు",
+   "value": 83
+  },
+  {
+   "kind": "RULE",
+   "phrase": "ఎనభై నాలుగు",
+   "value": 84
+  },
+  {
+   "kind": "RULE",
+   "phrase": "ఎనభై ఐదు",
+   "value": 85
+  },
+  {
+   "kind": "RULE",
+   "phrase": "ఎనభై ఆరు",
+   "value": 86
+  },
+  {
+   "kind": "RULE",
+   "phrase": "ఎనభై ఏడు",
+   "value": 87
+  },
+  {
+   "kind": "RULE",
+   "phrase": "ఎనభై ఎనిమిది",
+   "value": 88
+  },
+  {
+   "kind": "RULE",
+   "phrase": "ఎనభై తొమ్మిది",
+   "value": 89
+  },
+  {
+   "kind": "RULE",
+   "phrase": "తొంభై ఒక",
+   "value": 91
+  },
+  {
+   "kind": "RULE",
+   "phrase": "తొంభై ఒకటి",
+   "value": 91
+  },
+  {
+   "kind": "RULE",
+   "phrase": "తొంభై రెండు",
+   "value": 92
+  },
+  {
+   "kind": "RULE",
+   "phrase": "తొంభై మూడు",
+   "value": 93
+  },
+  {
+   "kind": "RULE",
+   "phrase": "తొంభై నాలుగు",
+   "value": 94
+  },
+  {
+   "kind": "RULE",
+   "phrase": "తొంభై ఐదు",
+   "value": 95
+  },
+  {
+   "kind": "RULE",
+   "phrase": "తొంభై ఆరు",
+   "value": 96
+  },
+  {
+   "kind": "RULE",
+   "phrase": "తొంభై ఏడు",
+   "value": 97
+  },
+  {
+   "kind": "RULE",
+   "phrase": "తొంభై ఎనిమిది",
+   "value": 98
+  },
+  {
+   "kind": "RULE",
+   "phrase": "తొంభై తొమ్మిది",
+   "value": 99
+  },
+  {
+   "kind": "EXTRA",
+   "phrase": "సున్నా",
+   "value": 0
+  },
+  {
+   "kind": "FRACTION",
+   "phrase": "అర",
+   "value": 0.5
+  },
+  {
+   "kind": "FRACTION",
+   "phrase": "సగం",
+   "value": 0.5
+  },
+  {
+   "kind": "FRACTION",
+   "phrase": "ఒకటిన్నర",
+   "value": 1.5
+  },
+  {
+   "kind": "FRACTION",
+   "phrase": "రెండున్నర",
+   "value": 2.5
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "జీరో",
+   "value": 0
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "వన్",
+   "value": 1
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "టూ",
+   "value": 2
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "త్రీ",
+   "value": 3
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "ఫోర్",
+   "value": 4
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "ఫైవ్",
+   "value": 5
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "సిక్స్",
+   "value": 6
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "సెవెన్",
+   "value": 7
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "ఎయిట్",
+   "value": 8
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "నైన్",
+   "value": 9
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "టెన్",
+   "value": 10
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "ఎలెవెన్",
+   "value": 11
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "ట్వెల్వ్",
+   "value": 12
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "థర్టీన్",
+   "value": 13
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "ఫోర్టీన్",
+   "value": 14
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "ఫిఫ్టీన్",
+   "value": 15
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "సిక్స్టీన్",
+   "value": 16
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "సెవెంటీన్",
+   "value": 17
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "ఎయిటీన్",
+   "value": 18
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "నైన్టీన్",
+   "value": 19
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "ట్వెంటీ",
+   "value": 20
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "థర్టీ",
+   "value": 30
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "ఫోర్టీ",
+   "value": 40
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "ఫిఫ్టీ",
+   "value": 50
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "సిక్స్టీ",
+   "value": 60
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "సెవెంటీ",
+   "value": 70
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "ఎయిటీ",
+   "value": 80
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "నైంటీ",
+   "value": 90
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "హండ్రెడ్",
+   "value": 100
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "ట్వెంటీ వన్",
+   "value": 21
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "ట్వెంటీ టూ",
+   "value": 22
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "ట్వెంటీ త్రీ",
+   "value": 23
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "ట్వెంటీ ఫోర్",
+   "value": 24
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "ట్వెంటీ ఫైవ్",
+   "value": 25
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "ట్వెంటీ సిక్స్",
+   "value": 26
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "ట్వెంటీ సెవెన్",
+   "value": 27
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "ట్వెంటీ ఎయిట్",
+   "value": 28
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "ట్వెంటీ నైన్",
+   "value": 29
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "థర్టీ వన్",
+   "value": 31
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "థర్టీ టూ",
+   "value": 32
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "థర్టీ త్రీ",
+   "value": 33
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "థర్టీ ఫోర్",
+   "value": 34
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "థర్టీ ఫైవ్",
+   "value": 35
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "థర్టీ సిక్స్",
+   "value": 36
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "థర్టీ సెవెన్",
+   "value": 37
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "థర్టీ ఎయిట్",
+   "value": 38
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "థర్టీ నైన్",
+   "value": 39
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "ఫోర్టీ వన్",
+   "value": 41
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "ఫోర్టీ టూ",
+   "value": 42
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "ఫోర్టీ త్రీ",
+   "value": 43
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "ఫోర్టీ ఫోర్",
+   "value": 44
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "ఫోర్టీ ఫైవ్",
+   "value": 45
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "ఫోర్టీ సిక్స్",
+   "value": 46
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "ఫోర్టీ సెవెన్",
+   "value": 47
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "ఫోర్టీ ఎయిట్",
+   "value": 48
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "ఫోర్టీ నైన్",
+   "value": 49
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "ఫిఫ్టీ వన్",
+   "value": 51
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "ఫిఫ్టీ టూ",
+   "value": 52
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "ఫిఫ్టీ త్రీ",
+   "value": 53
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "ఫిఫ్టీ ఫోర్",
+   "value": 54
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "ఫిఫ్టీ ఫైవ్",
+   "value": 55
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "ఫిఫ్టీ సిక్స్",
+   "value": 56
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "ఫిఫ్టీ సెవెన్",
+   "value": 57
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "ఫిఫ్టీ ఎయిట్",
+   "value": 58
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "ఫిఫ్టీ నైన్",
+   "value": 59
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "సిక్స్టీ వన్",
+   "value": 61
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "సిక్స్టీ టూ",
+   "value": 62
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "సిక్స్టీ త్రీ",
+   "value": 63
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "సిక్స్టీ ఫోర్",
+   "value": 64
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "సిక్స్టీ ఫైవ్",
+   "value": 65
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "సిక్స్టీ సిక్స్",
+   "value": 66
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "సిక్స్టీ సెవెన్",
+   "value": 67
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "సిక్స్టీ ఎయిట్",
+   "value": 68
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "సిక్స్టీ నైన్",
+   "value": 69
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "సెవెంటీ వన్",
+   "value": 71
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "సెవెంటీ టూ",
+   "value": 72
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "సెవెంటీ త్రీ",
+   "value": 73
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "సెవెంటీ ఫోర్",
+   "value": 74
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "సెవెంటీ ఫైవ్",
+   "value": 75
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "సెవెంటీ సిక్స్",
+   "value": 76
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "సెవెంటీ సెవెన్",
+   "value": 77
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "సెవెంటీ ఎయిట్",
+   "value": 78
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "సెవెంటీ నైన్",
+   "value": 79
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "ఎయిటీ వన్",
+   "value": 81
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "ఎయిటీ టూ",
+   "value": 82
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "ఎయిటీ త్రీ",
+   "value": 83
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "ఎయిటీ ఫోర్",
+   "value": 84
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "ఎయిటీ ఫైవ్",
+   "value": 85
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "ఎయిటీ సిక్స్",
+   "value": 86
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "ఎయిటీ సెవెన్",
+   "value": 87
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "ఎయిటీ ఎయిట్",
+   "value": 88
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "ఎయిటీ నైన్",
+   "value": 89
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "నైంటీ వన్",
+   "value": 91
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "నైంటీ టూ",
+   "value": 92
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "నైంటీ త్రీ",
+   "value": 93
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "నైంటీ ఫోర్",
+   "value": 94
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "నైంటీ ఫైవ్",
+   "value": 95
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "నైంటీ సిక్స్",
+   "value": 96
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "నైంటీ సెవెన్",
+   "value": 97
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "నైంటీ ఎయిట్",
+   "value": 98
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "నైంటీ నైన్",
+   "value": 99
+  },
+  {
+   "kind": "FRACTION",
+   "phrase": "హాఫ్",
+   "value": 0.5
+  }
+ ],
+ "out_of_grammar": [
+  {
+   "text": "ఈ కూడా యొక్క"
+  },
+  {
+   "text": "లో ఇది కోసం"
+  },
+  {
+   "text": "ఉంది చాలా అని"
+  },
+  {
+   "text": "కానీ నుంచి తన"
+  }
+ ],
+ "plans": [
+  {
+   "steps": [
+    {
+     "arguments": {
+      "direction": "forward",
+      "distance_m": 2
+     },
+     "tool": "move_relative"
+    },
+    {
+     "arguments": {},
+     "tool": "land"
+    }
+   ],
+   "text": "రెండు మీటర్లు ముందుకు వెళ్ళు ఆ తర్వాత ల్యాండ్"
+  },
+  {
+   "steps": [
+    {
+     "arguments": {
+      "direction": "forward",
+      "distance_m": 2
+     },
+     "tool": "move_relative"
+    },
+    {
+     "arguments": {},
+     "tool": "land"
+    }
+   ],
+   "text": "రెండు మీటర్లు ముందుకు వెళ్ళు తర్వాత ల్యాండ్"
+  },
+  {
+   "steps": [
+    {
+     "arguments": {
+      "direction": "forward",
+      "distance_m": 2
+     },
+     "tool": "move_relative"
+    },
+    {
+     "arguments": {},
+     "tool": "land"
+    }
+   ],
+   "text": "రెండు మీటర్లు ముందుకు వెళ్ళు తరువాత ల్యాండ్"
+  },
+  {
+   "steps": [
+    {
+     "arguments": {
+      "direction": "forward",
+      "distance_m": 2
+     },
+     "tool": "move_relative"
+    },
+    {
+     "arguments": {},
+     "tool": "land"
+    }
+   ],
+   "text": "రెండు మీటర్లు ముందుకు వెళ్ళు మరియు ల్యాండ్"
+  },
+  {
+   "steps": [
+    {
+     "arguments": {
+      "direction": "forward",
+      "distance_m": 2
+     },
+     "tool": "move_relative"
+    },
+    {
+     "arguments": {},
+     "tool": "land"
+    }
+   ],
+   "text": "రెండు మీటర్లు ముందుకు వెళ్ళు అప్పుడు ల్యాండ్"
+  }
+ ],
+ "positive": [
+  {
+   "arguments": {
+    "altitude_m": 3
+   },
+   "intent": "takeoff",
+   "text": "మూడు మీటర్లు టేకాఫ్",
+   "tool": "takeoff"
+  },
+  {
+   "arguments": {
+    "altitude_m": 3
+   },
+   "intent": "takeoff",
+   "text": "మూడు మీటర్లు పైకి లే",
+   "tool": "takeoff"
+  },
+  {
+   "arguments": {
+    "altitude_m": 3
+   },
+   "intent": "takeoff",
+   "text": "మూడు మీటర్లు వరకు టేకాఫ్",
+   "tool": "takeoff"
+  },
+  {
+   "arguments": {
+    "altitude_m": 3
+   },
+   "intent": "takeoff",
+   "text": "మూడు మీటర్లు వరకు పైకి లే",
+   "tool": "takeoff"
+  },
+  {
+   "arguments": {
+    "direction": "forward",
+    "distance_m": 2
+   },
+   "intent": "move",
+   "text": "రెండు మీటర్లు ముందుకు వెళ్ళు",
+   "tool": "move_relative"
+  },
+  {
+   "arguments": {
+    "direction": "backward",
+    "distance_m": 2
+   },
+   "intent": "move",
+   "text": "రెండు మీటర్లు వెనక్కి వెళ్ళు",
+   "tool": "move_relative"
+  },
+  {
+   "arguments": {
+    "direction": "backward",
+    "distance_m": 2
+   },
+   "intent": "move",
+   "text": "రెండు మీటర్లు వెనుకకు వెళ్ళు",
+   "tool": "move_relative"
+  },
+  {
+   "arguments": {
+    "direction": "left",
+    "distance_m": 2
+   },
+   "intent": "move",
+   "text": "రెండు మీటర్లు ఎడమకు వెళ్ళు",
+   "tool": "move_relative"
+  },
+  {
+   "arguments": {
+    "direction": "left",
+    "distance_m": 2
+   },
+   "intent": "move",
+   "text": "రెండు మీటర్లు ఎడమవైపుకు వెళ్ళు",
+   "tool": "move_relative"
+  },
+  {
+   "arguments": {
+    "direction": "left",
+    "distance_m": 2
+   },
+   "intent": "move",
+   "text": "రెండు మీటర్లు ఎడమ వైపుకు వెళ్ళు",
+   "tool": "move_relative"
+  },
+  {
+   "arguments": {
+    "direction": "left",
+    "distance_m": 2
+   },
+   "intent": "move",
+   "text": "రెండు మీటర్లు ఎడమ వెళ్ళు",
+   "tool": "move_relative"
+  },
+  {
+   "arguments": {
+    "direction": "right",
+    "distance_m": 2
+   },
+   "intent": "move",
+   "text": "రెండు మీటర్లు కుడికి వెళ్ళు",
+   "tool": "move_relative"
+  },
+  {
+   "arguments": {
+    "direction": "right",
+    "distance_m": 2
+   },
+   "intent": "move",
+   "text": "రెండు మీటర్లు కుడివైపుకు వెళ్ళు",
+   "tool": "move_relative"
+  },
+  {
+   "arguments": {
+    "direction": "right",
+    "distance_m": 2
+   },
+   "intent": "move",
+   "text": "రెండు మీటర్లు కుడి వైపుకు వెళ్ళు",
+   "tool": "move_relative"
+  },
+  {
+   "arguments": {
+    "direction": "right",
+    "distance_m": 2
+   },
+   "intent": "move",
+   "text": "రెండు మీటర్లు కుడి వెళ్ళు",
+   "tool": "move_relative"
+  },
+  {
+   "arguments": {
+    "direction": "up",
+    "distance_m": 2
+   },
+   "intent": "move",
+   "text": "రెండు మీటర్లు పైకి వెళ్ళు",
+   "tool": "move_relative"
+  },
+  {
+   "arguments": {
+    "direction": "down",
+    "distance_m": 2
+   },
+   "intent": "move",
+   "text": "రెండు మీటర్లు కిందికి వెళ్ళు",
+   "tool": "move_relative"
+  },
+  {
+   "arguments": {
+    "direction": "down",
+    "distance_m": 2
+   },
+   "intent": "move",
+   "text": "రెండు మీటర్లు క్రిందికి వెళ్ళు",
+   "tool": "move_relative"
+  },
+  {
+   "arguments": {
+    "direction": "forward",
+    "distance_m": 2
+   },
+   "intent": "move",
+   "text": "ముందుకు రెండు మీటర్లు వెళ్ళు",
+   "tool": "move_relative"
+  },
+  {
+   "arguments": {
+    "direction": "backward",
+    "distance_m": 2
+   },
+   "intent": "move",
+   "text": "వెనక్కి రెండు మీటర్లు వెళ్ళు",
+   "tool": "move_relative"
+  },
+  {
+   "arguments": {
+    "direction": "backward",
+    "distance_m": 2
+   },
+   "intent": "move",
+   "text": "వెనుకకు రెండు మీటర్లు వెళ్ళు",
+   "tool": "move_relative"
+  },
+  {
+   "arguments": {
+    "direction": "left",
+    "distance_m": 2
+   },
+   "intent": "move",
+   "text": "ఎడమకు రెండు మీటర్లు వెళ్ళు",
+   "tool": "move_relative"
+  },
+  {
+   "arguments": {
+    "direction": "left",
+    "distance_m": 2
+   },
+   "intent": "move",
+   "text": "ఎడమవైపుకు రెండు మీటర్లు వెళ్ళు",
+   "tool": "move_relative"
+  },
+  {
+   "arguments": {
+    "direction": "left",
+    "distance_m": 2
+   },
+   "intent": "move",
+   "text": "ఎడమ వైపుకు రెండు మీటర్లు వెళ్ళు",
+   "tool": "move_relative"
+  },
+  {
+   "arguments": {
+    "direction": "left",
+    "distance_m": 2
+   },
+   "intent": "move",
+   "text": "ఎడమ రెండు మీటర్లు వెళ్ళు",
+   "tool": "move_relative"
+  },
+  {
+   "arguments": {
+    "direction": "right",
+    "distance_m": 2
+   },
+   "intent": "move",
+   "text": "కుడికి రెండు మీటర్లు వెళ్ళు",
+   "tool": "move_relative"
+  },
+  {
+   "arguments": {
+    "direction": "right",
+    "distance_m": 2
+   },
+   "intent": "move",
+   "text": "కుడివైపుకు రెండు మీటర్లు వెళ్ళు",
+   "tool": "move_relative"
+  },
+  {
+   "arguments": {
+    "direction": "right",
+    "distance_m": 2
+   },
+   "intent": "move",
+   "text": "కుడి వైపుకు రెండు మీటర్లు వెళ్ళు",
+   "tool": "move_relative"
+  },
+  {
+   "arguments": {
+    "direction": "right",
+    "distance_m": 2
+   },
+   "intent": "move",
+   "text": "కుడి రెండు మీటర్లు వెళ్ళు",
+   "tool": "move_relative"
+  },
+  {
+   "arguments": {
+    "direction": "up",
+    "distance_m": 2
+   },
+   "intent": "move",
+   "text": "పైకి రెండు మీటర్లు వెళ్ళు",
+   "tool": "move_relative"
+  },
+  {
+   "arguments": {
+    "direction": "down",
+    "distance_m": 2
+   },
+   "intent": "move",
+   "text": "కిందికి రెండు మీటర్లు వెళ్ళు",
+   "tool": "move_relative"
+  },
+  {
+   "arguments": {
+    "direction": "down",
+    "distance_m": 2
+   },
+   "intent": "move",
+   "text": "క్రిందికి రెండు మీటర్లు వెళ్ళు",
+   "tool": "move_relative"
+  },
+  {
+   "arguments": {},
+   "intent": "hold",
+   "text": "హోవర్ చేయి",
+   "tool": "hold"
+  },
+  {
+   "arguments": {},
+   "intent": "hold",
+   "text": "హోవర్",
+   "tool": "hold"
+  },
+  {
+   "arguments": {},
+   "intent": "stop",
+   "text": "ఆపు",
+   "tool": "hold"
+  },
+  {
+   "arguments": {},
+   "intent": "stop",
+   "text": "ఆగు",
+   "tool": "hold"
+  },
+  {
+   "arguments": {},
+   "intent": "stop",
+   "text": "స్టాప్",
+   "tool": "hold"
+  },
+  {
+   "arguments": {},
+   "intent": "land",
+   "text": "ల్యాండ్",
+   "tool": "land"
+  },
+  {
+   "arguments": {},
+   "intent": "land",
+   "text": "దిగు",
+   "tool": "land"
+  }
+ ],
+ "unk": [
+  {
+   "expect": "hold",
+   "text": "[unk] హోవర్ చేయి"
+  },
+  {
+   "expect": "hold",
+   "text": "ఆపు [unk]"
+  },
+  {
+   "expect": "reject",
+   "text": "[unk] రెండు మీటర్లు ముందుకు వెళ్ళు"
+  },
+  {
+   "expect": "reject",
+   "text": "రెండు [unk] మీటర్లు ముందుకు వెళ్ళు"
+  }
+ ]
+}

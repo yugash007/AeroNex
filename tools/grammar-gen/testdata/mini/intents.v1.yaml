@@ -1,0 +1,24 @@
+# Test fixture: a tiny one-language grammar for tools/grammar-gen/test_gen.py.
+version: 1
+languages: [en]
+rule_languages: [en]
+script_tie_order: []
+rule_commands: {STOP: stop, TAKEOFF: takeoff, LAND: land, HOVER: hold}
+directions: [forward, backward, left, right, up, down]
+numerals: {min: 0, max: 3}
+halves: [0.5]
+fillers: {min: 2, max: 10}
+engines:
+  vosk:
+    en: {model: mini-model}
+  ctc: []
+kws:
+  keywords: [stop]
+  models: {}
+intents:
+  status: {tool: get_status, confirm: false}
+  takeoff: {tool: takeoff, confirm: true}
+  move: {tool: move_relative, confirm: true}
+  hold: {tool: hold, confirm: false}
+  stop: {tool: hold, confirm: false}
+  land: {tool: land, confirm: true}

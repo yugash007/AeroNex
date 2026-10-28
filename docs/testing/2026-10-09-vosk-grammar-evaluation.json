@@ -1,0 +1,78 @@
+{
+  "purpose": "Throwaway grammar evaluation; not enabled in app",
+  "phrases": [
+    "[unk]",
+    "hey drone",
+    "hey drone fly",
+    "take off",
+    "takeoff",
+    "fly",
+    "land",
+    "land the drone",
+    "hold",
+    "hold position",
+    "stop",
+    "hover",
+    "move",
+    "go",
+    "return home",
+    "return to launch",
+    "show drone status",
+    "what is the battery level",
+    "move forward",
+    "move backward",
+    "move left",
+    "move right",
+    "move up",
+    "move down",
+    "do not take off",
+    "do not land",
+    "do not move",
+    "do not fly",
+    "never take off",
+    "cancel",
+    "abort",
+    "negative",
+    "minus",
+    "zero one two three four five six seven eight nine ten eleven twelve thirteen fourteen fifteen sixteen seventeen eighteen nineteen twenty thirty forty fifty sixty seventy eighty ninety hundred thousand point half",
+    "take off to three meters",
+    "take off to one hundred meters",
+    "move left two meters",
+    "meters metres meter metre feet foot centimeters",
+    "and then after before please"
+  ],
+  "results": [
+    {
+      "expected": "Hey drone fly",
+      "hinted": "hey drone fly"
+    },
+    {
+      "expected": "Hey drone take off to three meters",
+      "hinted": "hey drone take off to three meters"
+    },
+    {
+      "expected": "Move left two meters",
+      "hinted": "move left two meters"
+    },
+    {
+      "expected": "Do not take off",
+      "hinted": "do not take off"
+    },
+    {
+      "expected": "Take off to one hundred meters",
+      "hinted": "take off to one hundred meters"
+    },
+    {
+      "expected": "Land the drone",
+      "hinted": "land the drone"
+    },
+    {
+      "expected": "Hold position",
+      "hinted": "[unk] hold position"
+    },
+    {
+      "expected": "What is the weather in Delhi",
+      "hinted": "[unk] what is the [unk] fly"
+    }
+  ]
+}

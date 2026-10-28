@@ -1,0 +1,2365 @@
+{
+ "schema": "aeronex-test-report/1",
+ "version": "0.3.0+12",
+ "date": "2026-10-14",
+ "task": "T15 full verification (plan 2026-10-12-architecture-v2-phases-0-1)",
+ "host": {
+  "machine": "Windows 11, AMD Ryzen 7 6800H, 16 GB; WSL Ubuntu-24.04 (mirrored networking, 6 vCPU, 7 GB cap)",
+  "jvm_suite": {
+   "command": "gradlew --offline testDebugUnitTest",
+   "tests": 617,
+   "skipped": 14,
+   "failures": 0,
+   "errors": 0,
+   "skipped_detail": {
+    "SupervisorSitlTest": 11,
+    "SessionControllerSitlTest": 1,
+    "LinkSessionSitlTest": 1,
+    "VoskModelsTest (network smoke)": 1
+   },
+   "first_run": {
+    "tests": 615,
+    "failures": 1,
+    "failed": "VoiceSessionTest.rejectionsAreShownAndRepeatedUnclearAnswersDegradeVoice (race: expected UNSURE but was null)",
+    "fixed_by": "the test waits for the published outcome"
+   }
+  },
+  "flutter_test": {
+   "command": "flutter test",
+   "passed": 231,
+   "failed": 0
+  },
+  "dart_analyze": {
+   "command": "dart analyze lib test",
+   "issues": 0
+  },
+  "pytest": {
+   "command": "python -m pytest edge/tests tools",
+   "passed": 358,
+   "skipped": 5,
+   "skipped_reason": "v0.2.0 Dart parser removed",
+   "note": "the task's command 'edge/tests tools tools/grammar-gen' collects only 303 tests under pytest 8.4.1 (298 passed, 5 skipped): naming tools/grammar-gen next to tools drops the tools/ and tools/bench tests"
+  },
+  "grammar_check": {
+   "command": "python tools/grammar-gen/gen.py --check",
+   "result": "grammar outputs are current (18 files)",
+   "vosk_vocabulary_words": {
+    "en": 531,
+    "hi": 567,
+    "te": 502
+   }
+  }
+ },
+ "sitl": {
+  "simulator": "ArduCopter SITL + Gazebo Harmonic (headless) + MAVProxy in WSL, UDP 127.0.0.1:14550",
+  "self_test": {
+   "command": "aeronex_sim.py --headless --self-test",
+   "result": "PASS",
+   "duration_s": 74.98,
+   "max_altitude_m": 3.04,
+   "position_error_m": 0.037,
+   "client": "pymavlink (check_gazebo.py ported from the removed C codec)"
+  },
+  "SupervisorSitlTest": {
+   "tests": 11,
+   "failures": 0,
+   "time_s": 221.1,
+   "stop_to_frame_queued_ms": {
+    "p50": 0.46,
+    "p95": 0.73,
+    "n": 10
+   },
+   "stop_to_brake_ack_ms": {
+    "p50": 6.42,
+    "p95": 8.83,
+    "n": 10
+   },
+   "stop_to_heartbeat_brake_ms": {
+    "p50": 6.5,
+    "p95": 9.51,
+    "n": 10
+   },
+   "confirm_to_first_ack_ms": {
+    "p50": 4.84,
+    "p95": 14.47,
+    "n": 18
+   },
+   "move_frame_to_echo_ms_supervisor_only": {
+    "p50": 631.2,
+    "p95": 727.0,
+    "n": 16,
+    "note": "the supervisor alone, without the controller's early echo stream (plan deviation row)"
+   },
+   "stop_during_arm_round_trip_disarm_ack_ms": 9.89,
+   "home_distance_rejection_at_m": 23.9
+  },
+  "LinkSessionSitlTest": {
+   "tests": 1,
+   "failures": 0,
+   "note": "needs AERONEX_SITL=1 as well (it was skipped in the first -Psitl=1 run)"
+  },
+  "SessionControllerSitlTest": {
+   "result": "FLAKY: failed the plan's extra wall bound only in both T15 runs; passed in the independent review re-run",
+   "runs": [
+    {
+     "m2_wall_ms": {
+      "p50": 314.3,
+      "p95": 378.3,
+      "max": 398.5,
+      "n": 20
+     },
+     "simulator_speed": 0.635,
+     "m2_real_time_ms": {
+      "p50": 199.5,
+      "p95": 240.1
+     },
+     "wall_bound_ms": 375.1,
+     "stop_to_brake_ack_ms": 5.53,
+     "run": "T15 run 1",
+     "passed": false,
+     "stream_period_ms": 315.1
+    },
+    {
+     "m2_wall_ms": {
+      "p50": 338.5,
+      "p95": 395.2,
+      "max": 411.2,
+      "n": 20
+     },
+     "simulator_speed": 0.643,
+     "m2_real_time_ms": {
+      "p50": 217.8,
+      "p95": 254.3
+     },
+     "wall_bound_ms": 388.9,
+     "stop_to_brake_ack_ms": 30.87,
+     "run": "T15 run 2",
+     "passed": false,
+     "stream_period_ms": 328.9
+    },
+    {
+     "run": "review re-run, 2026-10-14 22:15-22:21 IST, -Psitl=1 and AERONEX_SITL=1",
+     "passed": true,
+     "m2_wall_ms": {
+      "p50": 325.6,
+      "p95": 364.0,
+      "max": 398.0,
+      "n": 20
+     },
+     "simulator_speed": 0.604,
+     "m2_real_time_ms": {
+      "p50": 196.8,
+      "p95": 220.0
+     },
+     "wall_bound_ms": 390.9,
+     "stream_period_ms": 330.9,
+     "stop_to_brake_ack_ms": 6.62,
+     "source": "JUnit XML app/build/app/test-results/testDebugUnitTest/TEST-com.aeronex.app.session.SessionControllerSitlTest.xml"
+    }
+   ],
+   "spec_M2_target_p95_ms": 300,
+   "app_side": {
+    "confirm_to_frame_ms": {
+     "p50": 0.24,
+     "p95": 0.3,
+     "n": 6
+    }
+   },
+   "explanation": "The extra wall bound (one echo-stream period + WALL_MARGIN_MS 60) is borderline on this host: the margin depends on ArduCopter's wall-time scheduling jitter at the simulator's current speed (0.60-0.76x seen). Spec M2 (p95 <= 300 ms at real time) passed in all three runs. Takeoff, four five-step plans, STOP -> BRAKE and land passed before the final assertion in every run. The bound was not loosened; follow-up: scale WALL_MARGIN_MS by simulator speed.",
+   "wall_margin_over_stream_period_ms": {
+    "allowance": 60,
+    "T8c": [
+     10,
+     34
+    ],
+    "T15": [
+     63.2,
+     66.3
+    ],
+    "review_rerun": [
+     33.1
+    ]
+   }
+  },
+  "check_sitl_py": {
+   "command": "python3 tools/check_sitl.py <arducopter> <copter.parm> (WSL venv)",
+   "result": "pass",
+   "checks": [
+    "Simulator heartbeat verified",
+    "Telemetry stream requests acknowledged",
+    "Takeoff altitude confirmed",
+    "land mode acknowledged"
+   ]
+  },
+  "suite_review_rerun": {
+   "when": "2026-10-14 22:15-22:21 IST",
+   "who": "T15 reviewer (independent re-run); numbers read back by T15 from the JUnit XML it left",
+   "command": ".\\gradlew.bat --offline testDebugUnitTest -Psitl=1 --tests *Sitl* with AERONEX_SITL=1, headless Gazebo SITL",
+   "tests": 13,
+   "failures": 0,
+   "LinkSessionSitlTest": 1,
+   "SupervisorSitlTest": 11,
+   "SessionControllerSitlTest": 1,
+   "supervisor_stop_to_frame_queued_ms": {
+    "p50": 0.47,
+    "p95": 1.48,
+    "n": 10
+   },
+   "supervisor_stop_to_brake_ack_ms": {
+    "p50": 3.87,
+    "p95": 6.25,
+    "n": 10
+   }
+  }
+ },
+ "apks": {
+  "fat": {
+   "version": "0.3.0",
+   "version_code": 12,
+   "abis": [
+    "armeabi-v7a",
+    "arm64-v8a"
+   ],
+   "bytes": 97839955,
+   "sha256": "18172872b08fcd847acfbe6ed9bb87f51b602c74635fac4198e50bf8894143d8",
+   "signing_certificate_sha256": "6313b3f87ccfd799e2c4a96d2de6796836f3559fce9a0b4ab3974456b9d243c1",
+   "signature_verified": true,
+   "zip_and_elf_alignment_16kb_verified": true,
+   "native_bytes_per_abi": {
+    "armeabi-v7a": 42470588,
+    "arm64-v8a": 54418360
+   },
+   "jni_contract": {
+    "classes_checked": 139,
+    "members_checked": 560,
+    "missing": [],
+    "passed": true
+   },
+   "file": "aeronex-0.3.0-release.apk",
+   "build": "flutter build apk --release --target-platform android-arm,android-arm64"
+  },
+  "armeabi-v7a": {
+   "version": "0.3.0",
+   "version_code": 1012,
+   "abis": [
+    "armeabi-v7a"
+   ],
+   "bytes": 43346328,
+   "sha256": "6a05281c921382b209a9f01a5e2c2b87b214d19ae5ad445b8235fe526b48e697",
+   "signing_certificate_sha256": "6313b3f87ccfd799e2c4a96d2de6796836f3559fce9a0b4ab3974456b9d243c1",
+   "signature_verified": true,
+   "zip_and_elf_alignment_16kb_verified": true,
+   "native_bytes_per_abi": {
+    "armeabi-v7a": 42470588
+   },
+   "jni_contract": {
+    "classes_checked": 139,
+    "members_checked": 560,
+    "missing": [],
+    "passed": true
+   },
+   "file": "aeronex-0.3.0-armeabi-v7a-release.apk",
+   "build": "flutter build apk --release --split-per-abi --target-platform android-arm,android-arm64"
+  },
+  "arm64-v8a": {
+   "version": "0.3.0",
+   "version_code": 2012,
+   "abis": [
+    "arm64-v8a"
+   ],
+   "bytes": 55315232,
+   "sha256": "80f3e2152887eb2bb2a0b672cb987f8b56f7ccb36fd437627ef0ecf8932c5cd4",
+   "signing_certificate_sha256": "6313b3f87ccfd799e2c4a96d2de6796836f3559fce9a0b4ab3974456b9d243c1",
+   "signature_verified": true,
+   "zip_and_elf_alignment_16kb_verified": true,
+   "native_bytes_per_abi": {
+    "arm64-v8a": 54418360
+   },
+   "jni_contract": {
+    "classes_checked": 139,
+    "members_checked": 560,
+    "missing": [],
+    "passed": true
+   },
+   "file": "aeronex-0.3.0-arm64-v8a-release.apk",
+   "build": "flutter build apk --release --split-per-abi --target-platform android-arm,android-arm64"
+  },
+  "debug_for_emulator": {
+   "bytes": 272962054,
+   "sha256": "9d9da6c61f166f00afa418972bfeda8380dbce9ac2b00afbbfd3c01d8b2fa922",
+   "abis": [
+    "armeabi-v7a",
+    "arm64-v8a",
+    "x86_64"
+   ]
+  },
+  "checker": "python tools/check_android_package.py: PASS for all three release APKs",
+  "copied_to": ".worktrees/tooling/android-qa/"
+ },
+ "emulator_e2e": {
+  "device": "AVD AeroNex_QA_API35: Android 15 google_apis x86_64, 4 cores, hw.ramSize 2G (EnginePolicy Tier L). EMULATOR: not representative of R0-R5",
+  "apk": "0.3.0+12 debug (x86_64)",
+  "link": "UDP 10.0.2.2:14550, local 14551, wifi profile, unsigned",
+  "steps": [
+   {
+    "step": "launch, auto-connect (dry run)",
+    "result": "Connected, Stabilize (Pilot mode)"
+   },
+   {
+    "step": "speech pack import route",
+    "result": "kws-gigaspeech-3.3M-chunk-16 moved out of files/speech-packs; re-imported from files/import at voice start"
+   },
+   {
+    "step": "Link setup: Fly the drone + notice",
+    "result": "On"
+   },
+   {
+    "step": "tap pad Take off 3 m + CONFIRM",
+    "result": "COMPLETED, Alt 3.0 m, Guided (this app); confirm -> in air 12.6 s"
+   },
+   {
+    "step": "typed 'go forward 5 meters and move right 3 meters' (submitText, Kotlin parser)",
+    "result": "plan 1. Move forward 5 m, 2. Move right 3 m"
+   },
+   {
+    "step": "CONFIRM, on-screen STOP 2.5 s later",
+    "result": "STOP confirmed: BRAKE; step 1 UNKNOWN (interrupted by STOP), step 2 SKIPPED - not sent; tlog: one move frame (5 m), BRAKE ACK 3 ms after the command"
+   },
+   {
+    "step": "Volume-Down while braked",
+    "result": "a new BRAKE, accepted, no mode change (tlog)"
+   },
+   {
+    "step": "tap pad Forward 3 m + CONFIRM, Volume-Down mid-move",
+    "result": "Guided -> Brake (this app); last STOP trigger VOLUME_DOWN, CONFIRMED; tlog ACK 4 ms after the command"
+   },
+   {
+    "step": "hold Talk 2.5 s; long-press Volume-Up",
+    "result": "two PTT utterances through the service (Vosk te, then en), both 'Nothing was recognised'; the emulator microphone delivers digital zeros, so the app shows MICROPHONE_SILENCED"
+   },
+   {
+    "step": "language picker",
+    "result": "Indian English, Hindi, Telugu, Tamil, Kannada, Malayalam; Models: en/hi/te Ready, ta/kn/ml 'Coming in the next update'"
+   },
+   {
+    "step": "tap pad Land + CONFIRM",
+    "result": "COMPLETED, Alt 0.0 m"
+   },
+   {
+    "step": "Licenses screen",
+    "result": "sherpa-onnx, ONNX Runtime and GigaSpeech keyword spotter model entries; all four notice files in every APK"
+   }
+  ],
+  "app_latency_ms": {
+   "stopToTx": {
+    "p50": 3.7,
+    "p95": 6.6,
+    "n": 3
+   },
+   "stopToAck": {
+    "p50": 14.6,
+    "p95": 53.7,
+    "n": 3
+   },
+   "confirmToFrame": {
+    "p50": 2.2,
+    "p95": 26.6,
+    "n": 4
+   },
+   "moveTxToEcho": {
+    "p50": 45.0,
+    "p95": 306.2,
+    "n": 2
+   },
+   "pttUpToFinal": {
+    "p50": 68.3,
+    "p95": 84.2,
+    "n": 2
+   }
+  },
+  "logcat": {
+   "lines": 80998,
+   "FATAL": 0,
+   "ANR": 0
+  }
+ },
+ "bench_rerun_emulator": {
+  "schema": "aeronex-bench-runs/1",
+  "measuredOn": "EMULATOR",
+  "representativeOfR0R5": false,
+  "note": "EMULATOR (x86_64 guest on a desktop CPU): every number here is not representative of the R0-R5 reference phones (spec 10.1); the spec Tier gates (6.2, 6.3) stay pending real phones.",
+  "generatedBy": "tools/bench/run_bench.py",
+  "request": {
+   "vosk": [
+    "en",
+    "hi",
+    "te"
+   ],
+   "ctc": [],
+   "kws": [],
+   "clips": 7,
+   "threads": null,
+   "rawDir": "C:\\Users\\yugas\\AppData\\Local\\Temp\\claude\\C--Users-yugas-Downloads-Drone-app\\26859c3c-1011-495e-9801-fd0875b0b739\\scratchpad\\t15\\bench-raw"
+  },
+  "runs": [
+   {
+    "schema": "aeronex-bench/1",
+    "measuredOn": "EMULATOR",
+    "representativeOfR0R5": false,
+    "note": "EMULATOR (x86_64 guest on a desktop CPU): every number here is not representative of the R0-R5 reference phones (spec 10.1); the spec Tier gates (6.2, 6.3) stay pending real phones.",
+    "startedAt": "2026-10-14T16:25:39.244Z",
+    "finishedAt": "2026-10-14T16:26:00.177Z",
+    "environment": {
+     "manufacturer": "Google",
+     "model": "sdk_gphone64_x86_64",
+     "product": "sdk_gphone64_x86_64",
+     "hardware": "ranchu",
+     "fingerprint": "google/sdk_gphone64_x86_64/emu64xa:15/AE3A.240806.043/12960925:userdebug/dev-keys",
+     "sdk": 35,
+     "release": "15",
+     "supportedAbis": [
+      "x86_64",
+      "arm64-v8a"
+     ],
+     "processArch": "x86_64",
+     "totalMemBytes": 2592722944,
+     "lowRamDevice": false,
+     "cpuCores": 4,
+     "tier": "L",
+     "asrThreads": 2,
+     "app": {
+      "package": "com.aeronex.app",
+      "versionName": "0.3.0",
+      "versionCode": 12,
+      "debuggable": true
+     },
+     "policy": {
+      "en": {
+       "command": "vosk:vosk-en-in",
+       "spotter": "vosk-stop-grammar",
+       "reason": null
+      }
+     }
+    },
+    "settings": {
+     "engines": [
+      "vosk"
+     ],
+     "languages": [
+      "en"
+     ],
+     "clipsPerLanguage": 7,
+     "ctcThreads": 2,
+     "feed": "real time: one 20 ms frame per 20 ms through AudioCapture (EnergyVad) into the 3 s AudioRing",
+     "ptt": "PttUtterance: press at the clip start (500 ms pre-roll), release at the clip's last frame, adaptive tail 60 ms non-speech / 250 ms max",
+     "spotter": "SpotterGate armed for the whole clip (the in-flight case), fed on the speech thread",
+     "settleMs": 800,
+     "clips": "eSpeak NG 1.52 TTS (T3 clips-espeak), 16 kHz mono, 200 ms silence padding at both ends"
+    },
+    "install": [
+     {
+      "id": "vosk-en-in",
+      "before": "ready",
+      "after": "ready",
+      "importMs": null,
+      "error": null
+     }
+    ],
+    "skipped": {},
+    "baseline": {
+     "label": "baseline",
+     "privateDirtyKb": 26096,
+     "swapPssKb": 20316,
+     "privateDirtyPlusSwapKb": 46412,
+     "totalPssKb": 35607,
+     "fileBackedKb": 78388,
+     "stats": {
+      "summary.code": 2356,
+      "summary.stack": 484,
+      "summary.graphics": 0,
+      "summary.java-heap": 9020,
+      "summary.native-heap": 3316,
+      "summary.system": 7203,
+      "summary.total-pss": 35607,
+      "summary.private-other": 13228,
+      "summary.total-swap": 20316
+     },
+     "smapsRollupKb": {
+      "Rss": 128860,
+      "Pss": 40415,
+      "Pss_Dirty": 32588,
+      "Pss_Anon": 31912,
+      "Pss_File": 6808,
+      "Pss_Shmem": 1694,
+      "Shared_Clean": 74100,
+      "Shared_Dirty": 22000,
+      "Private_Clean": 2304,
+      "Private_Dirty": 30456,
+      "Referenced": 125252,
+      "Anonymous": 50472,
+      "KSM": 0,
+      "LazyFree": 0,
+      "AnonHugePages": 0,
+      "ShmemPmdMapped": 0,
+      "FilePmdMapped": 0,
+      "Shared_Hugetlb": 0,
+      "Private_Hugetlb": 0,
+      "Swap": 20152,
+      "SwapPss": 596,
+      "Locked": 0
+     }
+    },
+    "engines": [
+     {
+      "measuredOn": "EMULATOR",
+      "id": "vosk-en",
+      "kind": "vosk",
+      "language": "en",
+      "pack": null,
+      "engine": "VOSK_GRAMMAR vosk-en-in (vosk-android 0.3.75)",
+      "threads": 1,
+      "loadMs": 1298.9,
+      "error": null,
+      "summary": {
+       "measuredOn": "EMULATOR",
+       "clips": 7,
+       "verdicts": {
+        "EXACT": 5,
+        "FALSE_ACCEPT": 0,
+        "REJECTED": 2,
+        "FALSE_STOP": 0
+       },
+       "statuses": {
+        "ENDED": 6,
+        "STOP_TOKEN": 1,
+        "OVERRUN": 0,
+        "TIMEOUT": 0
+       },
+       "pttUpToFinalMs": {
+        "n": 6,
+        "p50Ms": 76.6,
+        "p95Ms": 97.3,
+        "maxMs": 97.3
+       },
+       "pttUpToParsedMs": {
+        "n": 6,
+        "p50Ms": 81.8,
+        "p95Ms": 258.3,
+        "maxMs": 258.3
+       },
+       "drainedToFinalMs": {
+        "n": 6,
+        "p50Ms": 15.8,
+        "p95Ms": 29.4,
+        "maxMs": 29.4
+       },
+       "rtf": {
+        "n": 6,
+        "p50": 0.0441,
+        "p95": 0.0552,
+        "max": 0.0552
+       },
+       "spotter": {
+        "stopClips": 1,
+        "hits": 1,
+        "otherClips": 6,
+        "falseFires": 0,
+        "firstAfterReleaseMs": {
+         "n": 1,
+         "p50Ms": -13.4,
+         "p95Ms": -13.4,
+         "maxMs": -13.4
+        },
+        "rtf": {
+         "n": 7,
+         "p50": 0.0352,
+         "p95": 0.0414,
+         "max": 0.0414
+        }
+       },
+       "loadPrivateDirtyPlusSwapKb": 97936,
+       "peakPrivateDirtyPlusSwapKb": 156540,
+       "peakFileBackedKb": 103380
+      },
+      "memory": [
+       {
+        "label": "before_load",
+        "privateDirtyKb": 38656,
+        "swapPssKb": 19948,
+        "privateDirtyPlusSwapKb": 58604,
+        "totalPssKb": 50609,
+        "fileBackedKb": 84624,
+        "stats": {
+         "summary.code": 2556,
+         "summary.stack": 588,
+         "summary.graphics": 0,
+         "summary.java-heap": 11896,
+         "summary.native-heap": 8936,
+         "summary.system": 9493,
+         "summary.total-pss": 50609,
+         "summary.private-other": 17140,
+         "summary.total-swap": 19948
+        },
+        "smapsRollupKb": {
+         "Rss": 143324,
+         "Pss": 50428,
+         "Pss_Dirty": 41734,
+         "Pss_Anon": 40175,
+         "Pss_File": 7631,
+         "Pss_Shmem": 2622,
+         "Shared_Clean": 78412,
+         "Shared_Dirty": 23788,
+         "Private_Clean": 2460,
+         "Private_Dirty": 38664,
+         "Referenced": 140004,
+         "Anonymous": 58700,
+         "KSM": 0,
+         "LazyFree": 0,
+         "AnonHugePages": 0,
+         "ShmemPmdMapped": 0,
+         "FilePmdMapped": 0,
+         "Shared_Hugetlb": 0,
+         "Private_Hugetlb": 0,
+         "Swap": 19948,
+         "SwapPss": 587,
+         "Locked": 0
+        }
+       },
+       {
+        "label": "after_load",
+        "privateDirtyKb": 136620,
+        "swapPssKb": 19920,
+        "privateDirtyPlusSwapKb": 156540,
+        "totalPssKb": 157856,
+        "fileBackedKb": 96868,
+        "stats": {
+         "summary.code": 10576,
+         "summary.stack": 632,
+         "summary.graphics": 0,
+         "summary.java-heap": 12720,
+         "summary.native-heap": 104048,
+         "summary.system": 11456,
+         "summary.total-pss": 157856,
+         "summary.private-other": 18424,
+         "summary.total-swap": 19920
+        },
+        "smapsRollupKb": {
+         "Rss": 252900,
+         "Pss": 157665,
+         "Pss_Dirty": 141602,
+         "Pss_Anon": 137554,
+         "Pss_File": 14988,
+         "Pss_Shmem": 5122,
+         "Shared_Clean": 78948,
+         "Shared_Dirty": 27532,
+         "Private_Clean": 9784,
+         "Private_Dirty": 136636,
+         "Referenced": 249684,
+         "Anonymous": 156032,
+         "KSM": 0,
+         "LazyFree": 0,
+         "AnonHugePages": 0,
+         "ShmemPmdMapped": 0,
+         "FilePmdMapped": 0,
+         "Shared_Hugetlb": 0,
+         "Private_Hugetlb": 0,
+         "Swap": 19916,
+         "SwapPss": 586,
+         "Locked": 0
+        }
+       },
+       {
+        "label": "after_decode",
+        "privateDirtyKb": 127012,
+        "swapPssKb": 19756,
+        "privateDirtyPlusSwapKb": 146768,
+        "totalPssKb": 151808,
+        "fileBackedKb": 103380,
+        "stats": {
+         "summary.code": 10580,
+         "summary.stack": 644,
+         "summary.graphics": 0,
+         "summary.java-heap": 10704,
+         "summary.native-heap": 103852,
+         "summary.system": 14428,
+         "summary.total-pss": 151808,
+         "summary.private-other": 11600,
+         "summary.total-swap": 19756
+        },
+        "smapsRollupKb": {
+         "Rss": 250328,
+         "Pss": 151580,
+         "Pss_Dirty": 134891,
+         "Pss_Anon": 128514,
+         "Pss_File": 15599,
+         "Pss_Shmem": 7466,
+         "Shared_Clean": 79628,
+         "Shared_Dirty": 33300,
+         "Private_Clean": 10368,
+         "Private_Dirty": 127032,
+         "Referenced": 247656,
+         "Anonymous": 146948,
+         "KSM": 0,
+         "LazyFree": 0,
+         "AnonHugePages": 0,
+         "ShmemPmdMapped": 0,
+         "FilePmdMapped": 0,
+         "Shared_Hugetlb": 0,
+         "Private_Hugetlb": 0,
+         "Swap": 19756,
+         "SwapPss": 568,
+         "Locked": 0
+        }
+       }
+      ],
+      "probes": {
+       "voskPartialWords": {
+        "partialWordsOff": {
+         "steps": 22,
+         "endpoints": 0,
+         "nonEmptyPartials": 9,
+         "partialsWithWordList": 0,
+         "lastPartial": "takeoff three meter",
+         "final": "takeoff three meter"
+        },
+        "partialWordsOn": {
+         "steps": 22,
+         "endpoints": 0,
+         "nonEmptyPartials": 0,
+         "partialsWithWordList": 0,
+         "lastPartial": "",
+         "final": "takeoff three meter"
+        }
+       },
+       "voskRecognizerSetters": [
+        "setEndpointerDelays",
+        "setEndpointerMode",
+        "setGrammar",
+        "setMaxAlternatives",
+        "setPartialWords",
+        "setPointer",
+        "setSpeakerModel",
+        "setWords"
+       ]
+      },
+      "clips": [
+       {
+        "measuredOn": "EMULATOR",
+        "file": "en/takeoff_3_v0.wav",
+        "id": "takeoff_3",
+        "intent": "takeoff",
+        "text": "take off to three metres",
+        "clipMs": 2190.0,
+        "status": "ENDED",
+        "transcript": "takeoff three meter",
+        "alternatives": [
+         {
+          "text": "takeoff three meter",
+          "score": 184.876862
+         },
+         {
+          "text": "take off three meter",
+          "score": 184.563004
+         },
+         {
+          "text": "takeoff three meters",
+          "score": 184.407684
+         }
+        ],
+        "failure": null,
+        "plan": [
+         {
+          "name": "takeoff",
+          "arguments": {
+           "altitude_m": 3
+          }
+         }
+        ],
+        "rejection": null,
+        "verdict": "EXACT",
+        "audioMs": 2760.0,
+        "pttUpToDrainedMs": 67.9,
+        "drainedToFinalMs": 29.4,
+        "pttUpToFinalMs": 97.3,
+        "parseMs": 161.01,
+        "pttUpToParsedMs": 258.3,
+        "stopTokenAfterReleaseMs": null,
+        "acceptMs": 123.0,
+        "finishMs": 29.4,
+        "rtf": 0.0552,
+        "spotter": {
+         "detections": 0,
+         "verdict": "QUIET",
+         "firstAfterClipStartMs": null,
+         "firstAfterReleaseMs": null,
+         "fedMs": 2240.0,
+         "computeMs": 92.7,
+         "rtf": 0.0414
+        }
+       },
+       {
+        "measuredOn": "EMULATOR",
+        "file": "en/forward_3_v0.wav",
+        "id": "forward_3",
+        "intent": "move",
+        "text": "move forward three metres",
+        "clipMs": 2274.0,
+        "status": "ENDED",
+        "transcript": "forward free meter",
+        "alternatives": [
+         {
+          "text": "forward free meter",
+          "score": 187.82251
+         },
+         {
+          "text": "forward three meter",
+          "score": 187.38887
+         },
+         {
+          "text": "forward free meters",
+          "score": 186.206512
+         }
+        ],
+        "failure": null,
+        "plan": null,
+        "rejection": "Step 1 (\"forward free meter\"): not understood; say it again with the supported words, for example: move forward 3 m.",
+        "verdict": "REJECTED",
+        "audioMs": 2840.0,
+        "pttUpToDrainedMs": 59.1,
+        "drainedToFinalMs": 15.6,
+        "pttUpToFinalMs": 74.7,
+        "parseMs": 6.67,
+        "pttUpToParsedMs": 81.3,
+        "stopTokenAfterReleaseMs": null,
+        "acceptMs": 102.6,
+        "finishMs": 15.5,
+        "rtf": 0.0416,
+        "spotter": {
+         "detections": 0,
+         "verdict": "QUIET",
+         "firstAfterClipStartMs": null,
+         "firstAfterReleaseMs": null,
+         "fedMs": 2340.0,
+         "computeMs": 83.1,
+         "rtf": 0.0355
+        }
+       },
+       {
+        "measuredOn": "EMULATOR",
+        "file": "en/left_2_v0.wav",
+        "id": "left_2",
+        "intent": "move",
+        "text": "go left two metres",
+        "clipMs": 1972.0,
+        "status": "ENDED",
+        "transcript": "left two meter",
+        "alternatives": [
+         {
+          "text": "left two meter",
+          "score": 169.653717
+         },
+         {
+          "text": "twelve left two meter",
+          "score": 169.477203
+         },
+         {
+          "text": "left two",
+          "score": 168.004837
+         }
+        ],
+        "failure": null,
+        "plan": null,
+        "rejection": "Step 1 (\"left 2 meter\"): not understood; say it again with the supported words, for example: move forward 3 m.",
+        "verdict": "REJECTED",
+        "audioMs": 2540.0,
+        "pttUpToDrainedMs": 60.4,
+        "drainedToFinalMs": 22.7,
+        "pttUpToFinalMs": 83.1,
+        "parseMs": 6.91,
+        "pttUpToParsedMs": 90.0,
+        "stopTokenAfterReleaseMs": null,
+        "acceptMs": 91.3,
+        "finishMs": 22.7,
+        "rtf": 0.0449,
+        "spotter": {
+         "detections": 0,
+         "verdict": "QUIET",
+         "firstAfterClipStartMs": null,
+         "firstAfterReleaseMs": null,
+         "fedMs": 2040.0,
+         "computeMs": 74.6,
+         "rtf": 0.0366
+        }
+       },
+       {
+        "measuredOn": "EMULATOR",
+        "file": "en/land_v0.wav",
+        "id": "land",
+        "intent": "land",
+        "text": "land",
+        "clipMs": 1212.0,
+        "status": "ENDED",
+        "transcript": "land",
+        "alternatives": [
+         {
+          "text": "land",
+          "score": 129.901184
+         },
+         {
+          "text": "",
+          "score": 127.379318
+         }
+        ],
+        "failure": null,
+        "plan": [
+         {
+          "name": "land",
+          "arguments": {}
+         }
+        ],
+        "rejection": null,
+        "verdict": "EXACT",
+        "audioMs": 1780.0,
+        "pttUpToDrainedMs": 65.4,
+        "drainedToFinalMs": 26.4,
+        "pttUpToFinalMs": 91.8,
+        "parseMs": 11.55,
+        "pttUpToParsedMs": 103.3,
+        "stopTokenAfterReleaseMs": null,
+        "acceptMs": 52.0,
+        "finishMs": 26.4,
+        "rtf": 0.0441,
+        "spotter": {
+         "detections": 0,
+         "verdict": "QUIET",
+         "firstAfterClipStartMs": null,
+         "firstAfterReleaseMs": null,
+         "fedMs": 1260.0,
+         "computeMs": 31.7,
+         "rtf": 0.0251
+        }
+       },
+       {
+        "measuredOn": "EMULATOR",
+        "file": "en/stop_v0.wav",
+        "id": "stop",
+        "intent": "stop",
+        "text": "stop",
+        "clipMs": 1211.0,
+        "status": "STOP_TOKEN",
+        "transcript": null,
+        "alternatives": null,
+        "failure": null,
+        "plan": null,
+        "rejection": null,
+        "verdict": "EXACT",
+        "audioMs": 1700.0,
+        "pttUpToDrainedMs": null,
+        "drainedToFinalMs": null,
+        "pttUpToFinalMs": null,
+        "parseMs": null,
+        "pttUpToParsedMs": null,
+        "stopTokenAfterReleaseMs": -19.3,
+        "acceptMs": 53.1,
+        "finishMs": 0.0,
+        "rtf": null,
+        "spotter": {
+         "detections": 1,
+         "verdict": "HIT",
+         "firstAfterClipStartMs": 1206.5,
+         "firstAfterReleaseMs": -13.4,
+         "fedMs": 1200.0,
+         "computeMs": 35.0,
+         "rtf": 0.0292
+        }
+       },
+       {
+        "measuredOn": "EMULATOR",
+        "file": "en/hold_v0.wav",
+        "id": "hold",
+        "intent": "hold",
+        "text": "hold",
+        "clipMs": 1256.0,
+        "status": "ENDED",
+        "transcript": "hold",
+        "alternatives": [
+         {
+          "text": "hold",
+          "score": 160.12851
+         },
+         {
+          "text": "oh",
+          "score": 159.154404
+         }
+        ],
+        "failure": null,
+        "plan": [
+         {
+          "name": "hold",
+          "arguments": {}
+         }
+        ],
+        "rejection": null,
+        "verdict": "EXACT",
+        "audioMs": 1820.0,
+        "pttUpToDrainedMs": 60.3,
+        "drainedToFinalMs": 15.4,
+        "pttUpToFinalMs": 75.7,
+        "parseMs": 6.1,
+        "pttUpToParsedMs": 81.8,
+        "stopTokenAfterReleaseMs": null,
+        "acceptMs": 77.7,
+        "finishMs": 15.4,
+        "rtf": 0.0511,
+        "spotter": {
+         "detections": 0,
+         "verdict": "QUIET",
+         "firstAfterClipStartMs": null,
+         "firstAfterReleaseMs": null,
+         "fedMs": 1320.0,
+         "computeMs": 46.4,
+         "rtf": 0.0352
+        }
+       },
+       {
+        "measuredOn": "EMULATOR",
+        "file": "en/neg_takeoff_v0.wav",
+        "id": "neg_takeoff",
+        "intent": "negated",
+        "text": "do not take off",
+        "clipMs": 1757.0,
+        "status": "ENDED",
+        "transcript": "takeoff",
+        "alternatives": [
+         {
+          "text": "takeoff",
+          "score": 150.094818
+         },
+         {
+          "text": "take off",
+          "score": 149.567596
+         }
+        ],
+        "failure": null,
+        "plan": null,
+        "rejection": "To what height? Add the altitude, for example: take off to 3 meters.",
+        "verdict": "EXACT",
+        "audioMs": 2320.0,
+        "pttUpToDrainedMs": 60.7,
+        "drainedToFinalMs": 15.8,
+        "pttUpToFinalMs": 76.6,
+        "parseMs": 0.86,
+        "pttUpToParsedMs": 77.4,
+        "stopTokenAfterReleaseMs": null,
+        "acceptMs": 83.4,
+        "finishMs": 15.8,
+        "rtf": 0.0428,
+        "spotter": {
+         "detections": 0,
+         "verdict": "QUIET",
+         "firstAfterClipStartMs": null,
+         "firstAfterReleaseMs": null,
+         "fedMs": 1820.0,
+         "computeMs": 62.5,
+         "rtf": 0.0343
+        }
+       }
+      ]
+     }
+    ],
+    "error": null,
+    "unit": "vosk-en"
+   },
+   {
+    "schema": "aeronex-bench/1",
+    "measuredOn": "EMULATOR",
+    "representativeOfR0R5": false,
+    "note": "EMULATOR (x86_64 guest on a desktop CPU): every number here is not representative of the R0-R5 reference phones (spec 10.1); the spec Tier gates (6.2, 6.3) stay pending real phones.",
+    "startedAt": "2026-10-14T16:26:03.294Z",
+    "finishedAt": "2026-10-14T16:26:24.020Z",
+    "environment": {
+     "manufacturer": "Google",
+     "model": "sdk_gphone64_x86_64",
+     "product": "sdk_gphone64_x86_64",
+     "hardware": "ranchu",
+     "fingerprint": "google/sdk_gphone64_x86_64/emu64xa:15/AE3A.240806.043/12960925:userdebug/dev-keys",
+     "sdk": 35,
+     "release": "15",
+     "supportedAbis": [
+      "x86_64",
+      "arm64-v8a"
+     ],
+     "processArch": "x86_64",
+     "totalMemBytes": 2592722944,
+     "lowRamDevice": false,
+     "cpuCores": 4,
+     "tier": "L",
+     "asrThreads": 2,
+     "app": {
+      "package": "com.aeronex.app",
+      "versionName": "0.3.0",
+      "versionCode": 12,
+      "debuggable": true
+     },
+     "policy": {
+      "hi": {
+       "command": "vosk:vosk-hi",
+       "spotter": "vosk-stop-grammar",
+       "reason": null
+      }
+     }
+    },
+    "settings": {
+     "engines": [
+      "vosk"
+     ],
+     "languages": [
+      "hi"
+     ],
+     "clipsPerLanguage": 7,
+     "ctcThreads": 2,
+     "feed": "real time: one 20 ms frame per 20 ms through AudioCapture (EnergyVad) into the 3 s AudioRing",
+     "ptt": "PttUtterance: press at the clip start (500 ms pre-roll), release at the clip's last frame, adaptive tail 60 ms non-speech / 250 ms max",
+     "spotter": "SpotterGate armed for the whole clip (the in-flight case), fed on the speech thread",
+     "settleMs": 800,
+     "clips": "eSpeak NG 1.52 TTS (T3 clips-espeak), 16 kHz mono, 200 ms silence padding at both ends"
+    },
+    "install": [
+     {
+      "id": "vosk-hi",
+      "before": "ready",
+      "after": "ready",
+      "importMs": null,
+      "error": null
+     }
+    ],
+    "skipped": {},
+    "baseline": {
+     "label": "baseline",
+     "privateDirtyKb": 26164,
+     "swapPssKb": 20296,
+     "privateDirtyPlusSwapKb": 46460,
+     "totalPssKb": 35348,
+     "fileBackedKb": 77672,
+     "stats": {
+      "summary.code": 2288,
+      "summary.stack": 420,
+      "summary.graphics": 0,
+      "summary.java-heap": 9000,
+      "summary.native-heap": 3488,
+      "summary.system": 6932,
+      "summary.total-pss": 35348,
+      "summary.private-other": 13220,
+      "summary.total-swap": 20296
+     },
+     "smapsRollupKb": {
+      "Rss": 128216,
+      "Pss": 40120,
+      "Pss_Dirty": 32368,
+      "Pss_Anon": 31983,
+      "Pss_File": 6734,
+      "Pss_Shmem": 1402,
+      "Shared_Clean": 73956,
+      "Shared_Dirty": 21544,
+      "Private_Clean": 2248,
+      "Private_Dirty": 30468,
+      "Referenced": 124608,
+      "Anonymous": 50544,
+      "KSM": 0,
+      "LazyFree": 0,
+      "AnonHugePages": 0,
+      "ShmemPmdMapped": 0,
+      "FilePmdMapped": 0,
+      "Shared_Hugetlb": 0,
+      "Private_Hugetlb": 0,
+      "Swap": 20140,
+      "SwapPss": 595,
+      "Locked": 0
+     }
+    },
+    "engines": [
+     {
+      "measuredOn": "EMULATOR",
+      "id": "vosk-hi",
+      "kind": "vosk",
+      "language": "hi",
+      "pack": null,
+      "engine": "VOSK_GRAMMAR vosk-hi (vosk-android 0.3.75)",
+      "threads": 1,
+      "loadMs": 1332.3,
+      "error": null,
+      "summary": {
+       "measuredOn": "EMULATOR",
+       "clips": 7,
+       "verdicts": {
+        "EXACT": 3,
+        "FALSE_ACCEPT": 0,
+        "REJECTED": 4,
+        "FALSE_STOP": 0
+       },
+       "statuses": {
+        "ENDED": 7,
+        "STOP_TOKEN": 0,
+        "OVERRUN": 0,
+        "TIMEOUT": 0
+       },
+       "pttUpToFinalMs": {
+        "n": 7,
+        "p50Ms": 91.3,
+        "p95Ms": 134.8,
+        "maxMs": 134.8
+       },
+       "pttUpToParsedMs": {
+        "n": 7,
+        "p50Ms": 121.3,
+        "p95Ms": 184.1,
+        "maxMs": 184.1
+       },
+       "drainedToFinalMs": {
+        "n": 7,
+        "p50Ms": 18.8,
+        "p95Ms": 53.3,
+        "maxMs": 53.3
+       },
+       "rtf": {
+        "n": 7,
+        "p50": 0.0641,
+        "p95": 0.1176,
+        "max": 0.1176
+       },
+       "spotter": {
+        "stopClips": 1,
+        "hits": 0,
+        "otherClips": 6,
+        "falseFires": 0,
+        "firstAfterReleaseMs": null,
+        "rtf": {
+         "n": 7,
+         "p50": 0.0545,
+         "p95": 0.1267,
+         "max": 0.1267
+        }
+       },
+       "loadPrivateDirtyPlusSwapKb": 152924,
+       "peakPrivateDirtyPlusSwapKb": 211596,
+       "peakFileBackedKb": 103732
+      },
+      "memory": [
+       {
+        "label": "before_load",
+        "privateDirtyKb": 38740,
+        "swapPssKb": 19932,
+        "privateDirtyPlusSwapKb": 58672,
+        "totalPssKb": 50694,
+        "fileBackedKb": 84672,
+        "stats": {
+         "summary.code": 2616,
+         "summary.stack": 540,
+         "summary.graphics": 0,
+         "summary.java-heap": 11908,
+         "summary.native-heap": 8992,
+         "summary.system": 9498,
+         "summary.total-pss": 50694,
+         "summary.private-other": 17140,
+         "summary.total-swap": 19932
+        },
+        "smapsRollupKb": {
+         "Rss": 143388,
+         "Pss": 50518,
+         "Pss_Dirty": 41838,
+         "Pss_Anon": 40190,
+         "Pss_File": 7620,
+         "Pss_Shmem": 2706,
+         "Shared_Clean": 78400,
+         "Shared_Dirty": 23740,
+         "Private_Clean": 2456,
+         "Private_Dirty": 38792,
+         "Referenced": 140068,
+         "Anonymous": 58716,
+         "KSM": 0,
+         "LazyFree": 0,
+         "AnonHugePages": 0,
+         "ShmemPmdMapped": 0,
+         "FilePmdMapped": 0,
+         "Shared_Hugetlb": 0,
+         "Private_Hugetlb": 0,
+         "Swap": 19932,
+         "SwapPss": 586,
+         "Locked": 0
+        }
+       },
+       {
+        "label": "after_load",
+        "privateDirtyKb": 191708,
+        "swapPssKb": 19888,
+        "privateDirtyPlusSwapKb": 211596,
+        "totalPssKb": 213348,
+        "fileBackedKb": 98180,
+        "stats": {
+         "summary.code": 10836,
+         "summary.stack": 584,
+         "summary.graphics": 0,
+         "summary.java-heap": 13348,
+         "summary.native-heap": 158204,
+         "summary.system": 11964,
+         "summary.total-pss": 213348,
+         "summary.private-other": 18412,
+         "summary.total-swap": 19888
+        },
+        "smapsRollupKb": {
+         "Rss": 308928,
+         "Pss": 213169,
+         "Pss_Dirty": 197226,
+         "Pss_Anon": 192272,
+         "Pss_File": 14865,
+         "Pss_Shmem": 6030,
+         "Shared_Clean": 78936,
+         "Shared_Dirty": 28584,
+         "Private_Clean": 9676,
+         "Private_Dirty": 191732,
+         "Referenced": 305720,
+         "Anonymous": 210748,
+         "KSM": 0,
+         "LazyFree": 0,
+         "AnonHugePages": 0,
+         "ShmemPmdMapped": 0,
+         "FilePmdMapped": 0,
+         "Shared_Hugetlb": 0,
+         "Private_Hugetlb": 0,
+         "Swap": 19884,
+         "SwapPss": 584,
+         "Locked": 0
+        }
+       },
+       {
+        "label": "after_decode",
+        "privateDirtyKb": 185456,
+        "swapPssKb": 19736,
+        "privateDirtyPlusSwapKb": 205192,
+        "totalPssKb": 210549,
+        "fileBackedKb": 103732,
+        "stats": {
+         "summary.code": 10852,
+         "summary.stack": 596,
+         "summary.graphics": 0,
+         "summary.java-heap": 12344,
+         "summary.native-heap": 160608,
+         "summary.system": 14433,
+         "summary.total-pss": 210549,
+         "summary.private-other": 11716,
+         "summary.total-swap": 19736
+        },
+        "smapsRollupKb": {
+         "Rss": 309148,
+         "Pss": 210324,
+         "Pss_Dirty": 193351,
+         "Pss_Anon": 186983,
+         "Pss_File": 15882,
+         "Pss_Shmem": 7458,
+         "Shared_Clean": 79684,
+         "Shared_Dirty": 33328,
+         "Private_Clean": 10660,
+         "Private_Dirty": 185476,
+         "Referenced": 306468,
+         "Anonymous": 205416,
+         "KSM": 0,
+         "LazyFree": 0,
+         "AnonHugePages": 0,
+         "ShmemPmdMapped": 0,
+         "FilePmdMapped": 0,
+         "Shared_Hugetlb": 0,
+         "Private_Hugetlb": 0,
+         "Swap": 19736,
+         "SwapPss": 567,
+         "Locked": 0
+        }
+       }
+      ],
+      "probes": {
+       "voskPartialWords": {
+        "partialWordsOff": {
+         "steps": 20,
+         "endpoints": 0,
+         "nonEmptyPartials": 12,
+         "partialsWithWordList": 0,
+         "lastPartial": "टेकऑफ़ तीन मीटर",
+         "final": "टेकऑफ़ तीन मीटर"
+        },
+        "partialWordsOn": {
+         "steps": 20,
+         "endpoints": 0,
+         "nonEmptyPartials": 0,
+         "partialsWithWordList": 0,
+         "lastPartial": "",
+         "final": "टेकऑफ़ तीन मीटर"
+        }
+       },
+       "voskRecognizerSetters": [
+        "setEndpointerDelays",
+        "setEndpointerMode",
+        "setGrammar",
+        "setMaxAlternatives",
+        "setPartialWords",
+        "setPointer",
+        "setSpeakerModel",
+        "setWords"
+       ]
+      },
+      "clips": [
+       {
+        "measuredOn": "EMULATOR",
+        "file": "hi/takeoff_3_v0.wav",
+        "id": "takeoff_3",
+        "intent": "takeoff",
+        "text": "टेकऑफ तीन मीटर",
+        "clipMs": 1943.0,
+        "status": "ENDED",
+        "transcript": "टेकऑफ़ तीन मीटर",
+        "alternatives": [
+         {
+          "text": "टेकऑफ़ तीन मीटर",
+          "score": 140.017685
+         },
+         {
+          "text": "टेकऑफ तीन मीटर",
+          "score": 139.761414
+         },
+         {
+          "text": "टेकऑफ़ तीन मीटर्स",
+          "score": 138.166504
+         }
+        ],
+        "failure": null,
+        "plan": [
+         {
+          "name": "takeoff",
+          "arguments": {
+           "altitude_m": 3
+          }
+         }
+        ],
+        "rejection": null,
+        "verdict": "EXACT",
+        "audioMs": 2520.0,
+        "pttUpToDrainedMs": 59.9,
+        "drainedToFinalMs": 17.8,
+        "pttUpToFinalMs": 77.7,
+        "parseMs": 106.34,
+        "pttUpToParsedMs": 184.1,
+        "stopTokenAfterReleaseMs": null,
+        "acceptMs": 114.2,
+        "finishMs": 17.8,
+        "rtf": 0.0524,
+        "spotter": {
+         "detections": 0,
+         "verdict": "QUIET",
+         "firstAfterClipStartMs": null,
+         "firstAfterReleaseMs": null,
+         "fedMs": 2000.0,
+         "computeMs": 109.0,
+         "rtf": 0.0545
+        }
+       },
+       {
+        "measuredOn": "EMULATOR",
+        "file": "hi/forward_3_v0.wav",
+        "id": "forward_3",
+        "intent": "move",
+        "text": "तीन मीटर आगे जाओ",
+        "clipMs": 2077.0,
+        "status": "ENDED",
+        "transcript": "तीन मीटर आगे जाओ",
+        "alternatives": [
+         {
+          "text": "तीन मीटर आगे जाओ",
+          "score": 159.722794
+         },
+         {
+          "text": "तीन मीटर्स आगे जाओ",
+          "score": 155.769379
+         }
+        ],
+        "failure": null,
+        "plan": [
+         {
+          "name": "move_relative",
+          "arguments": {
+           "direction": "forward",
+           "distance_m": 3
+          }
+         }
+        ],
+        "rejection": null,
+        "verdict": "EXACT",
+        "audioMs": 2640.0,
+        "pttUpToDrainedMs": 60.7,
+        "drainedToFinalMs": 12.6,
+        "pttUpToFinalMs": 73.3,
+        "parseMs": 7.51,
+        "pttUpToParsedMs": 80.9,
+        "stopTokenAfterReleaseMs": null,
+        "acceptMs": 116.5,
+        "finishMs": 12.6,
+        "rtf": 0.0489,
+        "spotter": {
+         "detections": 0,
+         "verdict": "QUIET",
+         "firstAfterClipStartMs": null,
+         "firstAfterReleaseMs": null,
+         "fedMs": 2140.0,
+         "computeMs": 110.3,
+         "rtf": 0.0515
+        }
+       },
+       {
+        "measuredOn": "EMULATOR",
+        "file": "hi/left_2_v0.wav",
+        "id": "left_2",
+        "intent": "move",
+        "text": "दो मीटर बाएं जाओ",
+        "clipMs": 2024.0,
+        "status": "ENDED",
+        "transcript": "मीटर बाएँ जाओ",
+        "alternatives": [
+         {
+          "text": "मीटर बाएँ जाओ",
+          "score": 140.301056
+         },
+         {
+          "text": "मीटर बायें जाओ",
+          "score": 139.153015
+         },
+         {
+          "text": "दो मीटर बाएँ जाओ",
+          "score": 138.957794
+         }
+        ],
+        "failure": null,
+        "plan": null,
+        "rejection": "Step 1 (\"मीटर बाएँ जाओ\"): say a distance, for example: move forward 3 m.",
+        "verdict": "REJECTED",
+        "audioMs": 2600.0,
+        "pttUpToDrainedMs": 72.6,
+        "drainedToFinalMs": 18.8,
+        "pttUpToFinalMs": 91.3,
+        "parseMs": 4.91,
+        "pttUpToParsedMs": 96.2,
+        "stopTokenAfterReleaseMs": null,
+        "acceptMs": 125.5,
+        "finishMs": 18.7,
+        "rtf": 0.0555,
+        "spotter": {
+         "detections": 0,
+         "verdict": "QUIET",
+         "firstAfterClipStartMs": null,
+         "firstAfterReleaseMs": null,
+         "fedMs": 2080.0,
+         "computeMs": 90.9,
+         "rtf": 0.0437
+        }
+       },
+       {
+        "measuredOn": "EMULATOR",
+        "file": "hi/land_v0.wav",
+        "id": "land",
+        "intent": "land",
+        "text": "लैंड",
+        "clipMs": 1121.0,
+        "status": "ENDED",
+        "transcript": "",
+        "alternatives": [
+         {
+          "text": "",
+          "score": 81.393608
+         },
+         {
+          "text": "लैंड",
+          "score": 80.360641
+         }
+        ],
+        "failure": null,
+        "plan": null,
+        "rejection": "Nothing was recognised. Say the command again.",
+        "verdict": "REJECTED",
+        "audioMs": 1700.0,
+        "pttUpToDrainedMs": 98.8,
+        "drainedToFinalMs": 22.4,
+        "pttUpToFinalMs": 121.2,
+        "parseMs": 0.08,
+        "pttUpToParsedMs": 121.3,
+        "stopTokenAfterReleaseMs": null,
+        "acceptMs": 86.5,
+        "finishMs": 22.4,
+        "rtf": 0.0641,
+        "spotter": {
+         "detections": 0,
+         "verdict": "QUIET",
+         "firstAfterClipStartMs": null,
+         "firstAfterReleaseMs": null,
+         "fedMs": 1180.0,
+         "computeMs": 48.2,
+         "rtf": 0.0409
+        }
+       },
+       {
+        "measuredOn": "EMULATOR",
+        "file": "hi/stop_v0.wav",
+        "id": "stop",
+        "intent": "stop",
+        "text": "रुको",
+        "clipMs": 1145.0,
+        "status": "ENDED",
+        "transcript": "उठो",
+        "alternatives": [
+         {
+          "text": "उठो",
+          "score": 86.362518
+         },
+         {
+          "text": "और उठो",
+          "score": 83.338837
+         },
+         {
+          "text": "उठो उठो",
+          "score": 83.292068
+         }
+        ],
+        "failure": null,
+        "plan": null,
+        "rejection": "Step 1 (\"उठो\"): not understood; say it again with the supported words, for example: move forward 3 m.",
+        "verdict": "REJECTED",
+        "audioMs": 1720.0,
+        "pttUpToDrainedMs": 88.7,
+        "drainedToFinalMs": 46.2,
+        "pttUpToFinalMs": 134.8,
+        "parseMs": 24.28,
+        "pttUpToParsedMs": 159.1,
+        "stopTokenAfterReleaseMs": null,
+        "acceptMs": 156.2,
+        "finishMs": 46.1,
+        "rtf": 0.1176,
+        "spotter": {
+         "detections": 0,
+         "verdict": "MISS",
+         "firstAfterClipStartMs": null,
+         "firstAfterReleaseMs": null,
+         "fedMs": 1200.0,
+         "computeMs": 152.1,
+         "rtf": 0.1267
+        }
+       },
+       {
+        "measuredOn": "EMULATOR",
+        "file": "hi/hold_v0.wav",
+        "id": "hold",
+        "intent": "hold",
+        "text": "होवर",
+        "clipMs": 1225.0,
+        "status": "ENDED",
+        "transcript": "हॉवर",
+        "alternatives": [
+         {
+          "text": "हॉवर",
+          "score": 90.274094
+         },
+         {
+          "text": "होवर",
+          "score": 90.254974
+         },
+         {
+          "text": "मत",
+          "score": 88.263977
+         }
+        ],
+        "failure": null,
+        "plan": null,
+        "rejection": "The command was not clear. Say it again.",
+        "verdict": "REJECTED",
+        "audioMs": 1800.0,
+        "pttUpToDrainedMs": 79.9,
+        "drainedToFinalMs": 53.3,
+        "pttUpToFinalMs": 133.3,
+        "parseMs": 8.01,
+        "pttUpToParsedMs": 141.3,
+        "stopTokenAfterReleaseMs": null,
+        "acceptMs": 92.2,
+        "finishMs": 53.3,
+        "rtf": 0.0808,
+        "spotter": {
+         "detections": 0,
+         "verdict": "QUIET",
+         "firstAfterClipStartMs": null,
+         "firstAfterReleaseMs": null,
+         "fedMs": 1280.0,
+         "computeMs": 71.4,
+         "rtf": 0.0557
+        }
+       },
+       {
+        "measuredOn": "EMULATOR",
+        "file": "hi/neg_takeoff_v0.wav",
+        "id": "neg_takeoff",
+        "intent": "negated",
+        "text": "टेकऑफ मत करो",
+        "clipMs": 1887.0,
+        "status": "ENDED",
+        "transcript": "टेकऑफ़ लेफ्ट आरोप",
+        "alternatives": [
+         {
+          "text": "टेकऑफ़ लेफ्ट आरोप",
+          "score": 90.067734
+         },
+         {
+          "text": "टेकऑफ़ आरोप",
+          "score": 89.797577
+         },
+         {
+          "text": "टेकऑफ आरोप",
+          "score": 89.518417
+         }
+        ],
+        "failure": null,
+        "plan": null,
+        "rejection": "Step 1 (\"टेकऑफ़ बाएं आरोप\"): say a takeoff height, for example: take off to 3 m.",
+        "verdict": "EXACT",
+        "audioMs": 2460.0,
+        "pttUpToDrainedMs": 60.5,
+        "drainedToFinalMs": 15.4,
+        "pttUpToFinalMs": 75.9,
+        "parseMs": 4.86,
+        "pttUpToParsedMs": 80.8,
+        "stopTokenAfterReleaseMs": null,
+        "acceptMs": 158.2,
+        "finishMs": 15.4,
+        "rtf": 0.0706,
+        "spotter": {
+         "detections": 0,
+         "verdict": "QUIET",
+         "firstAfterClipStartMs": null,
+         "firstAfterReleaseMs": null,
+         "fedMs": 1940.0,
+         "computeMs": 105.7,
+         "rtf": 0.0545
+        }
+       }
+      ]
+     }
+    ],
+    "error": null,
+    "unit": "vosk-hi"
+   },
+   {
+    "schema": "aeronex-bench/1",
+    "measuredOn": "EMULATOR",
+    "representativeOfR0R5": false,
+    "note": "EMULATOR (x86_64 guest on a desktop CPU): every number here is not representative of the R0-R5 reference phones (spec 10.1); the spec Tier gates (6.2, 6.3) stay pending real phones.",
+    "startedAt": "2026-10-14T16:26:26.228Z",
+    "finishedAt": "2026-10-14T16:26:50.147Z",
+    "environment": {
+     "manufacturer": "Google",
+     "model": "sdk_gphone64_x86_64",
+     "product": "sdk_gphone64_x86_64",
+     "hardware": "ranchu",
+     "fingerprint": "google/sdk_gphone64_x86_64/emu64xa:15/AE3A.240806.043/12960925:userdebug/dev-keys",
+     "sdk": 35,
+     "release": "15",
+     "supportedAbis": [
+      "x86_64",
+      "arm64-v8a"
+     ],
+     "processArch": "x86_64",
+     "totalMemBytes": 2592722944,
+     "lowRamDevice": false,
+     "cpuCores": 4,
+     "tier": "L",
+     "asrThreads": 2,
+     "app": {
+      "package": "com.aeronex.app",
+      "versionName": "0.3.0",
+      "versionCode": 12,
+      "debuggable": true
+     },
+     "policy": {
+      "te": {
+       "command": "vosk:vosk-te",
+       "spotter": "vosk-stop-grammar",
+       "reason": null
+      }
+     }
+    },
+    "settings": {
+     "engines": [
+      "vosk"
+     ],
+     "languages": [
+      "te"
+     ],
+     "clipsPerLanguage": 7,
+     "ctcThreads": 2,
+     "feed": "real time: one 20 ms frame per 20 ms through AudioCapture (EnergyVad) into the 3 s AudioRing",
+     "ptt": "PttUtterance: press at the clip start (500 ms pre-roll), release at the clip's last frame, adaptive tail 60 ms non-speech / 250 ms max",
+     "spotter": "SpotterGate armed for the whole clip (the in-flight case), fed on the speech thread",
+     "settleMs": 800,
+     "clips": "eSpeak NG 1.52 TTS (T3 clips-espeak), 16 kHz mono, 200 ms silence padding at both ends"
+    },
+    "install": [
+     {
+      "id": "vosk-te",
+      "before": "ready",
+      "after": "ready",
+      "importMs": null,
+      "error": null
+     }
+    ],
+    "skipped": {},
+    "baseline": {
+     "label": "baseline",
+     "privateDirtyKb": 26060,
+     "swapPssKb": 20312,
+     "privateDirtyPlusSwapKb": 46372,
+     "totalPssKb": 35408,
+     "fileBackedKb": 78788,
+     "stats": {
+      "summary.code": 2200,
+      "summary.stack": 476,
+      "summary.graphics": 0,
+      "summary.java-heap": 9008,
+      "summary.native-heap": 3320,
+      "summary.system": 7176,
+      "summary.total-pss": 35408,
+      "summary.private-other": 13228,
+      "summary.total-swap": 20312
+     },
+     "smapsRollupKb": {
+      "Rss": 129552,
+      "Pss": 40582,
+      "Pss_Dirty": 32608,
+      "Pss_Anon": 32207,
+      "Pss_File": 6956,
+      "Pss_Shmem": 1418,
+      "Shared_Clean": 75148,
+      "Shared_Dirty": 21520,
+      "Private_Clean": 2168,
+      "Private_Dirty": 30716,
+      "Referenced": 125984,
+      "Anonymous": 50764,
+      "KSM": 0,
+      "LazyFree": 0,
+      "AnonHugePages": 0,
+      "ShmemPmdMapped": 0,
+      "FilePmdMapped": 0,
+      "Shared_Hugetlb": 0,
+      "Private_Hugetlb": 0,
+      "Swap": 20132,
+      "SwapPss": 595,
+      "Locked": 0
+     }
+    },
+    "engines": [
+     {
+      "measuredOn": "EMULATOR",
+      "id": "vosk-te",
+      "kind": "vosk",
+      "language": "te",
+      "pack": null,
+      "engine": "VOSK_GRAMMAR vosk-te (vosk-android 0.3.75)",
+      "threads": 1,
+      "loadMs": 2297.0,
+      "error": null,
+      "summary": {
+       "measuredOn": "EMULATOR",
+       "clips": 7,
+       "verdicts": {
+        "EXACT": 2,
+        "FALSE_ACCEPT": 0,
+        "REJECTED": 5,
+        "FALSE_STOP": 0
+       },
+       "statuses": {
+        "ENDED": 7,
+        "STOP_TOKEN": 0,
+        "OVERRUN": 0,
+        "TIMEOUT": 0
+       },
+       "pttUpToFinalMs": {
+        "n": 7,
+        "p50Ms": 75.8,
+        "p95Ms": 84.2,
+        "maxMs": 84.2
+       },
+       "pttUpToParsedMs": {
+        "n": 7,
+        "p50Ms": 77.7,
+        "p95Ms": 168.6,
+        "maxMs": 168.6
+       },
+       "drainedToFinalMs": {
+        "n": 7,
+        "p50Ms": 15.6,
+        "p95Ms": 23.8,
+        "maxMs": 23.8
+       },
+       "rtf": {
+        "n": 7,
+        "p50": 0.0449,
+        "p95": 0.0525,
+        "max": 0.0525
+       },
+       "spotter": {
+        "stopClips": 1,
+        "hits": 0,
+        "otherClips": 6,
+        "falseFires": 0,
+        "firstAfterReleaseMs": null,
+        "rtf": {
+         "n": 7,
+         "p50": 0.0342,
+         "p95": 0.0441,
+         "max": 0.0441
+        }
+       },
+       "loadPrivateDirtyPlusSwapKb": 218456,
+       "peakPrivateDirtyPlusSwapKb": 277392,
+       "peakFileBackedKb": 103684
+      },
+      "memory": [
+       {
+        "label": "before_load",
+        "privateDirtyKb": 38988,
+        "swapPssKb": 19948,
+        "privateDirtyPlusSwapKb": 58936,
+        "totalPssKb": 51612,
+        "fileBackedKb": 86680,
+        "stats": {
+         "summary.code": 2720,
+         "summary.stack": 536,
+         "summary.graphics": 0,
+         "summary.java-heap": 12024,
+         "summary.native-heap": 8944,
+         "summary.system": 10244,
+         "summary.total-pss": 51612,
+         "summary.private-other": 17144,
+         "summary.total-swap": 19948
+        },
+        "smapsRollupKb": {
+         "Rss": 145480,
+         "Pss": 51507,
+         "Pss_Dirty": 42854,
+         "Pss_Anon": 40267,
+         "Pss_File": 7584,
+         "Pss_Shmem": 3654,
+         "Shared_Clean": 78568,
+         "Shared_Dirty": 25708,
+         "Private_Clean": 2380,
+         "Private_Dirty": 38824,
+         "Referenced": 142176,
+         "Anonymous": 58800,
+         "KSM": 0,
+         "LazyFree": 0,
+         "AnonHugePages": 0,
+         "ShmemPmdMapped": 0,
+         "FilePmdMapped": 0,
+         "Shared_Hugetlb": 0,
+         "Private_Hugetlb": 0,
+         "Swap": 19936,
+         "SwapPss": 587,
+         "Locked": 0
+        }
+       },
+       {
+        "label": "after_load",
+        "privateDirtyKb": 257516,
+        "swapPssKb": 19876,
+        "privateDirtyPlusSwapKb": 277392,
+        "totalPssKb": 279950,
+        "fileBackedKb": 100288,
+        "stats": {
+         "summary.code": 11336,
+         "summary.stack": 580,
+         "summary.graphics": 0,
+         "summary.java-heap": 13700,
+         "summary.native-heap": 229988,
+         "summary.system": 12770,
+         "summary.total-pss": 279950,
+         "summary.private-other": 11576,
+         "summary.total-swap": 19876
+        },
+        "smapsRollupKb": {
+         "Rss": 376336,
+         "Pss": 279697,
+         "Pss_Dirty": 263722,
+         "Pss_Anon": 257571,
+         "Pss_File": 14891,
+         "Pss_Shmem": 7234,
+         "Shared_Clean": 79036,
+         "Shared_Dirty": 30236,
+         "Private_Clean": 9664,
+         "Private_Dirty": 257400,
+         "Referenced": 373136,
+         "Anonymous": 276048,
+         "KSM": 0,
+         "LazyFree": 0,
+         "AnonHugePages": 0,
+         "ShmemPmdMapped": 0,
+         "FilePmdMapped": 0,
+         "Shared_Hugetlb": 0,
+         "Private_Hugetlb": 0,
+         "Swap": 19876,
+         "SwapPss": 585,
+         "Locked": 0
+        }
+       },
+       {
+        "label": "after_decode",
+        "privateDirtyKb": 251980,
+        "swapPssKb": 19732,
+        "privateDirtyPlusSwapKb": 271712,
+        "totalPssKb": 276996,
+        "fileBackedKb": 103684,
+        "stats": {
+         "summary.code": 10696,
+         "summary.stack": 592,
+         "summary.graphics": 0,
+         "summary.java-heap": 11492,
+         "summary.native-heap": 227952,
+         "summary.system": 14484,
+         "summary.total-pss": 276996,
+         "summary.private-other": 11780,
+         "summary.total-swap": 19732
+        },
+        "smapsRollupKb": {
+         "Rss": 375632,
+         "Pss": 276750,
+         "Pss_Dirty": 259863,
+         "Pss_Anon": 253514,
+         "Pss_File": 15796,
+         "Pss_Shmem": 7438,
+         "Shared_Clean": 79776,
+         "Shared_Dirty": 33344,
+         "Private_Clean": 10532,
+         "Private_Dirty": 251980,
+         "Referenced": 372948,
+         "Anonymous": 271948,
+         "KSM": 0,
+         "LazyFree": 0,
+         "AnonHugePages": 0,
+         "ShmemPmdMapped": 0,
+         "FilePmdMapped": 0,
+         "Shared_Hugetlb": 0,
+         "Private_Hugetlb": 0,
+         "Swap": 19728,
+         "SwapPss": 567,
+         "Locked": 0
+        }
+       }
+      ],
+      "probes": {
+       "voskPartialWords": {
+        "partialWordsOff": {
+         "steps": 24,
+         "endpoints": 0,
+         "nonEmptyPartials": 0,
+         "partialsWithWordList": 0,
+         "lastPartial": "",
+         "final": ""
+        },
+        "partialWordsOn": {
+         "steps": 24,
+         "endpoints": 0,
+         "nonEmptyPartials": 0,
+         "partialsWithWordList": 0,
+         "lastPartial": "",
+         "final": ""
+        }
+       },
+       "voskRecognizerSetters": [
+        "setEndpointerDelays",
+        "setEndpointerMode",
+        "setGrammar",
+        "setMaxAlternatives",
+        "setPartialWords",
+        "setPointer",
+        "setSpeakerModel",
+        "setWords"
+       ]
+      },
+      "clips": [
+       {
+        "measuredOn": "EMULATOR",
+        "file": "te/takeoff_3_v0.wav",
+        "id": "takeoff_3",
+        "intent": "takeoff",
+        "text": "మూడు మీటర్లు టేకాఫ్",
+        "clipMs": 2349.0,
+        "status": "ENDED",
+        "transcript": "",
+        "alternatives": [],
+        "failure": null,
+        "plan": null,
+        "rejection": "Nothing was recognised. Say the command again.",
+        "verdict": "REJECTED",
+        "audioMs": 2920.0,
+        "pttUpToDrainedMs": 60.1,
+        "drainedToFinalMs": 15.7,
+        "pttUpToFinalMs": 75.8,
+        "parseMs": 4.74,
+        "pttUpToParsedMs": 80.6,
+        "stopTokenAfterReleaseMs": null,
+        "acceptMs": 137.6,
+        "finishMs": 15.7,
+        "rtf": 0.0525,
+        "spotter": {
+         "detections": 0,
+         "verdict": "QUIET",
+         "firstAfterClipStartMs": null,
+         "firstAfterReleaseMs": null,
+         "fedMs": 2400.0,
+         "computeMs": 103.1,
+         "rtf": 0.043
+        }
+       },
+       {
+        "measuredOn": "EMULATOR",
+        "file": "te/forward_3_v0.wav",
+        "id": "forward_3",
+        "intent": "move",
+        "text": "మూడు మీటర్లు ముందుకు వెళ్ళు",
+        "clipMs": 2567.0,
+        "status": "ENDED",
+        "transcript": "",
+        "alternatives": [
+         {
+          "text": "",
+          "score": 119.408073
+         },
+         {
+          "text": "మూవ్",
+          "score": 118.37619
+         }
+        ],
+        "failure": null,
+        "plan": null,
+        "rejection": "Nothing was recognised. Say the command again.",
+        "verdict": "REJECTED",
+        "audioMs": 3140.0,
+        "pttUpToDrainedMs": 59.3,
+        "drainedToFinalMs": 12.1,
+        "pttUpToFinalMs": 71.4,
+        "parseMs": 4.12,
+        "pttUpToParsedMs": 75.5,
+        "stopTokenAfterReleaseMs": null,
+        "acceptMs": 145.8,
+        "finishMs": 12.1,
+        "rtf": 0.0503,
+        "spotter": {
+         "detections": 0,
+         "verdict": "QUIET",
+         "firstAfterClipStartMs": null,
+         "firstAfterReleaseMs": null,
+         "fedMs": 2620.0,
+         "computeMs": 115.5,
+         "rtf": 0.0441
+        }
+       },
+       {
+        "measuredOn": "EMULATOR",
+        "file": "te/left_2_v0.wav",
+        "id": "left_2",
+        "intent": "move",
+        "text": "రెండు మీటర్లు ఎడమకు వెళ్ళు",
+        "clipMs": 2606.0,
+        "status": "ENDED",
+        "transcript": "",
+        "alternatives": [
+         {
+          "text": "",
+          "score": 125.229469
+         },
+         {
+          "text": "ఎడమ",
+          "score": 124.349541
+         }
+        ],
+        "failure": null,
+        "plan": null,
+        "rejection": "Nothing was recognised. Say the command again.",
+        "verdict": "REJECTED",
+        "audioMs": 3180.0,
+        "pttUpToDrainedMs": 60.4,
+        "drainedToFinalMs": 23.8,
+        "pttUpToFinalMs": 84.2,
+        "parseMs": 0.07,
+        "pttUpToParsedMs": 84.3,
+        "stopTokenAfterReleaseMs": null,
+        "acceptMs": 119.4,
+        "finishMs": 23.7,
+        "rtf": 0.045,
+        "spotter": {
+         "detections": 0,
+         "verdict": "QUIET",
+         "firstAfterClipStartMs": null,
+         "firstAfterReleaseMs": null,
+         "fedMs": 2660.0,
+         "computeMs": 103.2,
+         "rtf": 0.0388
+        }
+       },
+       {
+        "measuredOn": "EMULATOR",
+        "file": "te/land_v0.wav",
+        "id": "land",
+        "intent": "land",
+        "text": "ల్యాండ్",
+        "clipMs": 1221.0,
+        "status": "ENDED",
+        "transcript": "",
+        "alternatives": [],
+        "failure": null,
+        "plan": null,
+        "rejection": "Nothing was recognised. Say the command again.",
+        "verdict": "REJECTED",
+        "audioMs": 1800.0,
+        "pttUpToDrainedMs": 60.6,
+        "drainedToFinalMs": 15.6,
+        "pttUpToFinalMs": 76.2,
+        "parseMs": 0.02,
+        "pttUpToParsedMs": 76.2,
+        "stopTokenAfterReleaseMs": null,
+        "acceptMs": 60.6,
+        "finishMs": 15.6,
+        "rtf": 0.0423,
+        "spotter": {
+         "detections": 0,
+         "verdict": "QUIET",
+         "firstAfterClipStartMs": null,
+         "firstAfterReleaseMs": null,
+         "fedMs": 1280.0,
+         "computeMs": 38.7,
+         "rtf": 0.0302
+        }
+       },
+       {
+        "measuredOn": "EMULATOR",
+        "file": "te/stop_v0.wav",
+        "id": "stop",
+        "intent": "stop",
+        "text": "ఆపు",
+        "clipMs": 1139.0,
+        "status": "ENDED",
+        "transcript": "ఆపు",
+        "alternatives": [
+         {
+          "text": "ఆపు",
+          "score": 70.175026
+         },
+         {
+          "text": "",
+          "score": 68.969978
+         }
+        ],
+        "failure": null,
+        "plan": [
+         {
+          "name": "hold",
+          "arguments": {}
+         }
+        ],
+        "rejection": null,
+        "verdict": "EXACT",
+        "audioMs": 1700.0,
+        "pttUpToDrainedMs": 60.8,
+        "drainedToFinalMs": 10.0,
+        "pttUpToFinalMs": 70.8,
+        "parseMs": 97.78,
+        "pttUpToParsedMs": 168.6,
+        "stopTokenAfterReleaseMs": null,
+        "acceptMs": 66.3,
+        "finishMs": 10.0,
+        "rtf": 0.0449,
+        "spotter": {
+         "detections": 0,
+         "verdict": "MISS",
+         "firstAfterClipStartMs": null,
+         "firstAfterReleaseMs": null,
+         "fedMs": 1200.0,
+         "computeMs": 41.1,
+         "rtf": 0.0342
+        }
+       },
+       {
+        "measuredOn": "EMULATOR",
+        "file": "te/hold_v0.wav",
+        "id": "hold",
+        "intent": "hold",
+        "text": "హోవర్",
+        "clipMs": 1362.0,
+        "status": "ENDED",
+        "transcript": "",
+        "alternatives": [],
+        "failure": null,
+        "plan": null,
+        "rejection": "Nothing was recognised. Say the command again.",
+        "verdict": "REJECTED",
+        "audioMs": 1940.0,
+        "pttUpToDrainedMs": 59.4,
+        "drainedToFinalMs": 9.3,
+        "pttUpToFinalMs": 68.7,
+        "parseMs": 0.03,
+        "pttUpToParsedMs": 68.7,
+        "stopTokenAfterReleaseMs": null,
+        "acceptMs": 70.8,
+        "finishMs": 9.3,
+        "rtf": 0.0413,
+        "spotter": {
+         "detections": 0,
+         "verdict": "QUIET",
+         "firstAfterClipStartMs": null,
+         "firstAfterReleaseMs": null,
+         "fedMs": 1420.0,
+         "computeMs": 44.0,
+         "rtf": 0.031
+        }
+       },
+       {
+        "measuredOn": "EMULATOR",
+        "file": "te/neg_takeoff_v0.wav",
+        "id": "neg_takeoff",
+        "intent": "negated",
+        "text": "టేకాఫ్ చేయకు",
+        "clipMs": 1979.0,
+        "status": "ENDED",
+        "transcript": "",
+        "alternatives": [],
+        "failure": null,
+        "plan": null,
+        "rejection": "Nothing was recognised. Say the command again.",
+        "verdict": "EXACT",
+        "audioMs": 2540.0,
+        "pttUpToDrainedMs": 60.0,
+        "drainedToFinalMs": 17.7,
+        "pttUpToFinalMs": 77.7,
+        "parseMs": 0.02,
+        "pttUpToParsedMs": 77.7,
+        "stopTokenAfterReleaseMs": null,
+        "acceptMs": 90.3,
+        "finishMs": 17.7,
+        "rtf": 0.0425,
+        "spotter": {
+         "detections": 0,
+         "verdict": "QUIET",
+         "firstAfterClipStartMs": null,
+         "firstAfterReleaseMs": null,
+         "fedMs": 2040.0,
+         "computeMs": 69.6,
+         "rtf": 0.0341
+        }
+       }
+      ]
+     }
+    ],
+    "error": null,
+    "unit": "vosk-te"
+   }
+  ]
+ }
+}

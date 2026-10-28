@@ -1,0 +1,101 @@
+# Canonical grammar v1: the intent schema (architecture v2 spec 4.8, 7.2).
+#
+# One source for every recognizer artifact and the Kotlin parser tables.
+# tools/grammar-gen/gen.py reads this file and grammar/lexicon/<lang>.yaml and
+# writes GrammarTables.kt, the Vosk phrase lists, the CTC lexicons, the
+# manifest and the CI fixtures. Never edit those outputs; edit the YAML and
+# run `python tools/grammar-gen/gen.py`. `--check` is the drift gate.
+# grammar/README.md documents the schema and the decisions.
+
+version: 1
+
+# Order matters: tables of several languages are joined in this order.
+languages: [en, hi, te, ta, kn, ml]
+
+# Languages whose tables the v0.2.0 Dart parser read. The Kotlin parser keeps
+# exactly these vocabularies, so it reproduces app/test/golden/plan_vectors.json.
+# ta, kn and ml tables come from the provisional edge/app/intent.py reference
+# and feed the CTC lexicons only (README "Parser parity").
+rule_languages: [en, hi, te]
+
+# Tie-break order of the script vote (StepParser._scriptLanguage and the edge
+# detect_language): the Indic script with the most letters, ties in this order.
+script_tie_order: [te, hi, ta, kn, ml]
+
+# v0.2.0 rule command ids -> intents. A spoken stop is a hold step in a plan
+# (v0.2.0); the STOP lane (spec 4.12) is separate.
+rule_commands: {STOP: stop, TAKEOFF: takeoff, LAND: land, HOVER: hold}
+
+# Canonical directions: lexicon keys and the move_relative `direction` argument.
+directions: [forward, backward, left, right, up, down]
+
+# Spec 7.4: every language's grammar holds every integer in this range, plus
+# these halves. Since 0.4.0 the halves are read as their value (spec
+# 2026-10-15 "Number words"; README "Spoken numbers"); before, they were
+# refused ("say a plain number").
+numerals: {min: 0, max: 100}
+halves: [0.5, 1.5, 2.5]
+# 0.4.0: a lexicon with numerals.decimal_point / numerals.and_half gets
+# "<n> point <d>", "point <d>" and "<n> and a half" numerals for every n below
+# this bound (the 1-10 m distances and heights the validator accepts).
+spoken_numbers: {below: 10}
+
+# Spec 4.6: single-word fillers per Vosk grammar.
+fillers: {min: 200, max: 2000}
+
+engines:
+  # Vosk grammar mode (Tier L streaming path): en-IN, hi, te. gen.py checks
+  # every grammar word against the model's Gr.fst vocabulary when the model
+  # is on disk (default ../tooling/vosk/<model>).
+  vosk:
+    en: {model: vosk-model-small-en-in-0.4}
+    hi: {model: vosk-model-small-hi-0.22}
+    te: {model: vosk-model-small-te-0.42}
+  # IndicConformer CTC + template matching (spec 4.8): te, ta, kn, ml.
+  ctc: [te, ta, kn, ml]
+
+# Keyword spotter (spec 4.12, sherpa KWS). W1 decision (README "Stop lane and
+# keyword spotting"): the spotter listens for "stop" only. "hold" is not a
+# keyword: it fired on the loanword "hover" (ta/kn/ml/hi) and, in zh-en, on
+# kn ಹೋಗು and ml പോകൂ. HOLD stays a push-to-talk grammar command.
+kws:
+  keywords: [stop]
+  # Keyword-file token lines per model (tools/bench/sherpa_bench.py
+  # keyword_lines, W1). The spotter writes "<tokens> @<keyword>".
+  models:
+    kws-gigaspeech-3.3M-chunk-16: {stop: "▁ST O P"}
+    kws-zh-en-3M-chunk-8: {stop: "S T AA1 P"}
+
+intents:
+  status:
+    tool: get_status
+    confirm: false
+  takeoff:
+    tool: takeoff
+    confirm: true
+    slots: {h: {argument: altitude_m, unit: m, min: 1, max: 10}}
+  move:
+    tool: move_relative
+    confirm: true
+    slots:
+      dir: {argument: direction}
+      d: {argument: distance_m, unit: m, min_exclusive: 0, max: 10}
+  hold:
+    tool: hold
+    confirm: false
+  stop:
+    tool: hold
+    confirm: false
+    note: A spoken stop in a plan is a hold step (v0.2.0). The voice STOP lane (spec 4.12) calls the supervisor's stop() instead.
+  land:
+    tool: land
+    confirm: true
+  confirm:
+    enabled: false
+    note: Not a voice command in Phase 1b. CONFIRM is the on-screen button (spec 4.10).
+  cancel:
+    enabled: false
+    note: Not a voice command in Phase 1b. Cancel is the on-screen button (STOP while executing).
+  rtl:
+    enabled: false
+    note: Only after a safety review (spec 4.8).

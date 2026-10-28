@@ -1,0 +1,10 @@
+{
+  "sys.boot_completed": "1",
+  "ro.build.version.release": "15",
+  "ro.build.version.sdk": "35",
+  "ro.product.cpu.abilist": "x86_64,arm64-v8a",
+  "ro.dalvik.vm.native.bridge": "libndk_translation.so",
+  "ro.build.fingerprint": "google/sdk_gphone64_x86_64/emu64xa:15/AE3A.240806.043/12960925:userdebug/dev-keys",
+  "display": "Physical size: 1080x1920",
+  "density": "Physical density: 420"
+}

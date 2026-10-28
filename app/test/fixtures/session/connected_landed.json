@@ -1,0 +1,103 @@
+{
+  "schemaVersion": 1,
+  "seq": 42,
+  "atMs": 120000,
+  "link": {
+    "state": "up",
+    "transport": "udp",
+    "description": "UDP 192.168.0.5:14550 local *:14551",
+    "profile": "wifi",
+    "unsigned": true,
+    "heartbeatAgeMs": 310,
+    "txErrors": 0,
+    "droppedDatagrams": 0,
+    "foregroundService": true
+  },
+  "execution": {
+    "enabled": false
+  },
+  "vehicle": {
+    "connected": true,
+    "mode": 0,
+    "modeName": "STABILIZE",
+    "armed": false,
+    "landedState": 1,
+    "landedStateName": "ON_GROUND",
+    "modeOwner": "EXTERNAL",
+    "modeOwnerLabel": "Pilot mode",
+    "altitudeRelM": 0.02,
+    "speed": 0.0,
+    "batteryPercent": 100,
+    "healthy": true,
+    "positionReady": true,
+    "homeKnown": true,
+    "homeDistanceM": 0.22,
+    "lastStatusText": {
+      "severity": 6,
+      "text": "EKF3 IMU0 is using GPS",
+      "ageMs": 5000
+    },
+    "ages": {
+      "heartbeat": 310,
+      "sysStatus": 420,
+      "attitude": 60,
+      "localPosition": 60,
+      "globalPosition": 60,
+      "extendedSysState": 180,
+      "ekfStatus": 520,
+      "home": 9800,
+      "positionTarget": null,
+      "statusText": 5000
+    }
+  },
+  "pending": null,
+  "run": null,
+  "stop": null,
+  "notice": null,
+  "latency": {
+    "pttUpToDrained": null,
+    "drainedToFinal": null,
+    "pttUpToFinal": null,
+    "finalToPlan": null,
+    "pttUpToPlan": null,
+    "confirmToFrame": null,
+    "confirmToTx": null,
+    "confirmToAck": null,
+    "confirmToMoveTx": null,
+    "moveTxToEcho": null,
+    "confirmToInAir": null,
+    "stopToTx": null,
+    "stopToAck": null,
+    "aiGloss": null,
+    "aiPlan": null,
+    "aiTools": null,
+    "aiTotal": null
+  },
+  "speech": {
+    "language": "en",
+    "state": "READY",
+    "level": "OK",
+    "reason": null,
+    "message": null,
+    "engine": "VOSK_GRAMMAR",
+    "spotter": "VOSK_STOP_GRAMMAR",
+    "nativeVoiceStop": true,
+    "partialStop": true,
+    "spotterArmed": false,
+    "pttHeld": false,
+    "utterance": 0,
+    "partial": null,
+    "heard": null,
+    "error": null
+  },
+  "ai": {
+    "available": false,
+    "reason": null,
+    "state": "IDLE",
+    "request": 0,
+    "heard": null,
+    "gloss": null,
+    "understoodAs": null,
+    "error": null
+  }
+}

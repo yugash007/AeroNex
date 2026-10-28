@@ -1,0 +1,494 @@
+package com.aeronex.app.vehicle.executor
+
+import com.aeronex.app.command.model.FlightCommand
+import com.aeronex.app.link.LinkSession
+import com.aeronex.app.link.mavlink.Attitude
+import com.aeronex.app.link.mavlink.CommandAck
+import com.aeronex.app.link.mavlink.CommandLong
+import com.aeronex.app.link.mavlink.EkfStatusReport
+import com.aeronex.app.link.mavlink.ExtendedSysState
+import com.aeronex.app.link.mavlink.GlobalPositionInt
+import com.aeronex.app.link.mavlink.LocalPositionNed
+import com.aeronex.app.link.mavlink.PositionTargetLocalNed
+import com.aeronex.app.link.mavlink.SetPositionTargetLocalNed
+import com.aeronex.app.link.mavlink.SysStatus
+import com.aeronex.app.observability.Trace
+import com.aeronex.app.observability.TracePoint
+import com.aeronex.app.vehicle.CopterMode
+import com.aeronex.app.vehicle.Ned
+import com.aeronex.app.vehicle.VehicleState
+import com.aeronex.app.vehicle.VehicleStateStore
+import java.util.Locale
+import kotlin.math.cos
+import kotlin.math.min
+import kotlin.math.sin
+import kotlin.math.sqrt
+
+/** How a step stands after [ArduPilotExecutor.start] or [ArduPilotExecutor.update]. */
+sealed interface StepUpdate {
+    data object Running : StepUpdate
+
+    /** Confirmed by telemetry; [detail] is the get_status line ([ArduPilotExecutor.statusReport]). */
+    data class Completed(val detail: String? = null) : StepUpdate
+
+    /** Nothing of this step was sent. */
+    data class Rejected(val reason: String) : StepUpdate
+
+    /** Something was sent and the outcome is not confirmed: never retry blindly (S3). */
+    data class Unknown(val reason: String) : StepUpdate
+}
+
+/**
+ * ArduCopter adapter for plan steps (spec 4.14), one plan per instance, driven by the supervisor thread: [start] a
+ * step with a fresh snapshot, then [update] it with every new snapshot and the COMMAND_ACKs since the last call.
+ *
+ * - Takeoff(h): DO_SET_MODE GUIDED → ARM → NAV_TAKEOFF(h), each confirmed by its ACK, then altitude ≥ h − 0.4 m and
+ *   landed state IN_AIR.
+ * - Move: one SET_POSITION_TARGET_LOCAL_NED in BODY_OFFSET_NED (9), type_mask 3576, **sent exactly once**; GUIDED is
+ *   set first only if the app does not already own GUIDED. POSITION_TARGET_LOCAL_NED streams while the move is
+ *   pending (for the whole plan when the supervisor streams it, see [planStreamsPositionTarget]). Confirmed by an
+ *   echo of the target within [ExecutorTiming.echoTimeoutMs], then arrival within
+ *   min(0.5 m, d/2) of the target computed from the position at send time, at < 0.3 m/s, on position samples newer
+ *   than the echo.
+ * - Land: DO_SET_MODE LAND by ACK, then ON_GROUND. Hold (a plan step): DO_SET_MODE BRAKE by ACK, then < 0.3 m/s.
+ * - get_status: the v0.2.0 vehicle status line; nothing is sent.
+ *
+ * COMMAND_LONGs are re-sent with `confirmation` + 1 per [ExecutorTiming.commandRetryMs], [ExecutorTiming.commandTries]
+ * sends at most. Any refusal or missing confirmation after a send is UNKNOWN. Preconditions keep the v0.2.0 rules
+ * and messages. The plan-level rules (deadline, external mode, failsafe text, link loss, STOP) are the
+ * supervisor's; [externalModeChange] and [ownsMode] answer the mode-ownership part. An ARM is reported to the
+ * [ModeWatch] from its first send until it is refused, or, unanswered or accepted, until a later heartbeat shows the
+ * vehicle's state, so a STOP in the ARM round trip still disarms.
+ */
+class ArduPilotExecutor(
+    private val link: LinkSession,
+    store: VehicleStateStore,
+    private val timing: ExecutorTiming,
+    private val trace: Trace = Trace(),
+    private val traceId: Long = 0,
+    /** Shared with the STOP lane of the same connection. */
+    private val watch: ModeWatch = ModeWatch(store),
+    /**
+     * True while the supervisor streams POSITION_TARGET_LOCAL_NED for the whole plan: a move then neither requests
+     * nor stops the stream. Otherwise each move streams it itself from its start to its end (the fallback).
+     */
+    private val planStreamsPositionTarget: () -> Boolean = { false },
+) {
+    private var step: Step? = null
+    /** The plan's step number (1-based), for the trace. */
+    private var stepNumber = 1
+
+    /** Something of the current (or last) step was queued: a failure is then UNKNOWN, not REJECTED. */
+    var sentInStep = false
+        private set
+
+    /** The app owned the flight mode at some point of this plan. */
+    private var owned: Boolean? = null
+    private var unobservedMode: Long? = null
+    private var heartbeatsAtModeAck = 0L
+    /** This executor's DO_SET_MODE is queued without an ACK. */
+    private var modeInFlight = false
+
+    fun start(command: FlightCommand, state: VehicleState, nowMs: Long, stepNumber: Int = 1): StepUpdate {
+        cancel()
+        if (owned == null) owned = watch.ownsMode(state)
+        sentInStep = false
+        this.stepNumber = stepNumber
+        val next = when (command.name) {
+            FlightCommand.TAKEOFF -> Takeoff(command.altitudeM!!)
+            FlightCommand.MOVE -> Move(command.direction!!, command.distanceM!!)
+            FlightCommand.LAND -> ModeStep(CopterMode.LAND)
+            FlightCommand.HOLD -> ModeStep(CopterMode.BRAKE)
+            FlightCommand.STATUS -> return common(state, needsPosition = false)?.let { StepUpdate.Rejected(it) }
+                ?: StepUpdate.Completed(statusReport(state))
+            else -> return StepUpdate.Rejected("Tool is not allowed.")
+        }
+        step = next
+        return settle(next.start(state, nowMs))
+    }
+
+    fun update(state: VehicleState, acks: List<CommandAck>, nowMs: Long): StepUpdate {
+        val current = step ?: return StepUpdate.Unknown(INTERRUPTED)
+        observeMode(state)
+        if (sentInStep && !state.connected) return settle(StepUpdate.Unknown(LOST))
+        return settle(current.update(state, acks, nowMs))
+    }
+
+    /** Ends the current step: nothing more is sent and POSITION_TARGET streaming is switched off. */
+    fun cancel() {
+        step?.end()
+        step = null
+        if (modeInFlight) watch.withdraw()
+        modeInFlight = false
+    }
+
+    /** The app owns the flight mode, counting its own mode change in flight or just accepted ([ModeWatch]). */
+    fun ownsMode(state: VehicleState) = watch.ownsMode(state)
+
+    /** The app owned the mode in this plan and a later heartbeat shows a mode it did not command (spec 4.14). */
+    fun externalModeChange(state: VehicleState) = owned == true && state.connected && !watch.ownsMode(state)
+
+    private fun settle(update: StepUpdate): StepUpdate {
+        if (update != StepUpdate.Running) cancel()
+        return update
+    }
+
+    private fun modeAccepted(mode: Long, state: VehicleState) {
+        watch.accepted(mode)
+        modeInFlight = false
+        owned = true
+        unobservedMode = mode
+        heartbeatsAtModeAck = ModeWatch.heartbeats(state)
+    }
+
+    private fun observeMode(state: VehicleState) {
+        val mode = unobservedMode ?: return
+        if (ModeWatch.heartbeats(state) > heartbeatsAtModeAck && state.mode == mode) {
+            unobservedMode = null
+            trace.mark(TracePoint.MODE_OBSERVED, traceId, mapOf("mode" to CopterMode.name(mode)))
+        }
+    }
+
+    /** The v0.2.0 checks before any step. */
+    private fun common(state: VehicleState, needsPosition: Boolean): String? = when {
+        !state.connected || !state.fresh(SysStatus.messageId) || !state.fresh(ExtendedSysState.messageId) -> STALE
+        state.healthy != true -> "Vehicle sensors are not healthy."
+        needsPosition && !state.positionReady -> POSITION_NOT_READY
+        else -> null
+    }
+
+    private fun exchange(command: CommandLong) = CommandExchange(link, command, timing.commandRetryMs, timing.commandTries) {
+        sentInStep = true
+        if (it.command == MAV_CMD_DO_SET_MODE) {
+            watch.requested(it.param2.toLong())
+            modeInFlight = true
+        }
+        if (it.command == MAV_CMD_COMPONENT_ARM_DISARM && it.param1 == 1f) watch.armRequested()
+        trace.mark(TracePoint.TX, traceId, mapOf("command" to it.command, "confirmation" to it.confirmation, "step" to stepNumber))
+    }
+
+    private fun setMode(mode: Long) = CommandLong(link.targetSystem, link.targetComponent, MAV_CMD_DO_SET_MODE,
+        param1 = MAV_MODE_FLAG_CUSTOM_MODE_ENABLED, param2 = mode.toFloat())
+
+    /** A queued first send is Running; an unqueued one fails like any other send. */
+    private fun begin(exchange: CommandExchange, nowMs: Long): StepUpdate =
+        if (exchange.start(nowMs)) StepUpdate.Running
+        else if (sentInStep) StepUpdate.Unknown(NOT_QUEUED_AFTER_SEND) else StepUpdate.Rejected(NOT_QUEUED)
+
+    /**
+     * The result of a pending exchange: null when accepted, else the update to return. [failed] hears how it failed:
+     * refused (true) or unanswered (false).
+     */
+    private fun outcome(
+        exchange: CommandExchange,
+        acks: List<CommandAck>,
+        nowMs: Long,
+        failed: (refused: Boolean) -> Unit = {},
+    ): StepUpdate? = when (val result = exchange.update(acks, nowMs)) {
+        CommandExchange.Result.Waiting -> StepUpdate.Running
+        is CommandExchange.Result.Accepted -> {
+            traceAck(result.ack)
+            null
+        }
+        is CommandExchange.Result.Refused -> {
+            traceAck(result.ack)
+            failed(true)
+            StepUpdate.Unknown("execution failed: ArduPilot rejected command ${result.ack.command} (result ${result.ack.result}).")
+        }
+        CommandExchange.Result.TimedOut -> {
+            failed(false)
+            StepUpdate.Unknown(NO_CONFIRMATION)
+        }
+    }
+
+    private fun traceAck(ack: CommandAck) =
+        trace.mark(TracePoint.ACK, traceId, mapOf("command" to ack.command, "result" to ack.result, "step" to stepNumber))
+
+    private abstract inner class Step {
+        abstract fun start(state: VehicleState, nowMs: Long): StepUpdate
+        abstract fun update(state: VehicleState, acks: List<CommandAck>, nowMs: Long): StepUpdate
+        open fun end() {}
+    }
+
+    private inner class Takeoff(private val altitude: Double) : Step() {
+        private var phase = Phase.GUIDED
+        private var pending: CommandExchange? = null
+        private var inAir = false
+
+        override fun start(state: VehicleState, nowMs: Long): StepUpdate {
+            common(state, needsPosition = true)?.let { return StepUpdate.Rejected(it) }
+            if (!state.fresh(GlobalPositionInt.messageId)) return StepUpdate.Rejected(STALE)
+            if (state.armed != false || state.landedState != VehicleState.LANDED_ON_GROUND ||
+                (state.batteryPercent ?: -1) < MIN_TAKEOFF_BATTERY
+            ) return StepUpdate.Rejected("Takeoff requires disarmed, landed vehicle and known battery >=20%.")
+            return send(setMode(CopterMode.GUIDED), nowMs)
+        }
+
+        override fun update(state: VehicleState, acks: List<CommandAck>, nowMs: Long): StepUpdate {
+            pending?.let { exchange ->
+                outcome(exchange, acks, nowMs) { refused ->
+                    when {
+                        phase != Phase.ARM -> {}
+                        refused -> watch.armRefused()
+                        else -> watch.armUnanswered()
+                    }
+                }?.let { return it }
+                pending = null
+                when (phase) {
+                    Phase.GUIDED -> {
+                        modeAccepted(CopterMode.GUIDED, state)
+                        phase = Phase.ARM
+                        return send(CommandLong(link.targetSystem, link.targetComponent, MAV_CMD_COMPONENT_ARM_DISARM,
+                            param1 = 1f), nowMs)
+                    }
+                    Phase.ARM -> {
+                        watch.armAccepted()
+                        phase = Phase.TAKEOFF
+                        return send(CommandLong(link.targetSystem, link.targetComponent, MAV_CMD_NAV_TAKEOFF,
+                            param7 = altitude.toFloat()), nowMs)
+                    }
+                    Phase.TAKEOFF -> phase = Phase.CLIMB
+                    Phase.CLIMB -> {}
+                }
+            }
+            if (!state.fresh(GlobalPositionInt.messageId) || !state.fresh(ExtendedSysState.messageId)) {
+                return StepUpdate.Unknown(LOST)
+            }
+            if (state.landedState == VehicleState.LANDED_IN_AIR && !inAir) {
+                inAir = true
+                trace.mark(TracePoint.IN_AIR, traceId)
+            }
+            val reached = (state.altitudeRelM ?: 0.0) >= altitude - ALTITUDE_TOLERANCE_M
+            return if (reached && state.landedState == VehicleState.LANDED_IN_AIR) StepUpdate.Completed() else StepUpdate.Running
+        }
+
+        private fun send(command: CommandLong, nowMs: Long) = exchange(command).let {
+            pending = it
+            begin(it, nowMs)
+        }
+    }
+
+    /** Land (LAND, then on the ground) and Hold (BRAKE, then slow). */
+    private inner class ModeStep(private val mode: Long) : Step() {
+        private var pending: CommandExchange? = null
+
+        override fun start(state: VehicleState, nowMs: Long): StepUpdate {
+            if (mode == CopterMode.LAND) {
+                common(state, needsPosition = false)?.let { return StepUpdate.Rejected(it) }
+                if (state.armed != true) return StepUpdate.Rejected("Vehicle is not armed.")
+            } else {
+                common(state, needsPosition = true)?.let { return StepUpdate.Rejected(it) }
+                if (state.armed != true || state.landedState != VehicleState.LANDED_IN_AIR) {
+                    return StepUpdate.Rejected("Hold requires an airborne vehicle.")
+                }
+                if (!state.fresh(LocalPositionNed.messageId)) return StepUpdate.Rejected(STALE)
+            }
+            return exchange(setMode(mode)).let {
+                pending = it
+                begin(it, nowMs)
+            }
+        }
+
+        override fun update(state: VehicleState, acks: List<CommandAck>, nowMs: Long): StepUpdate {
+            pending?.let { exchange ->
+                outcome(exchange, acks, nowMs)?.let { return it }
+                pending = null
+                modeAccepted(mode, state)
+            }
+            return if (mode == CopterMode.LAND) {
+                if (!state.fresh(ExtendedSysState.messageId)) StepUpdate.Unknown(LOST)
+                else if (state.landedState == VehicleState.LANDED_ON_GROUND) StepUpdate.Completed()
+                else StepUpdate.Running
+            } else {
+                if (!state.fresh(LocalPositionNed.messageId)) StepUpdate.Unknown(LOST)
+                else if ((state.speed ?: Double.MAX_VALUE) < STILL_SPEED) StepUpdate.Completed()
+                else StepUpdate.Running
+            }
+        }
+    }
+
+    private inner class Move(private val direction: String, private val distance: Double) : Step() {
+        private var guided: CommandExchange? = null
+        private var streaming = false
+        private var target: Ned? = null
+        private var sentAtMs = 0L
+        private var echoesAtSend = 0L
+        private var positionsAtEcho: Long? = null
+
+        override fun start(state: VehicleState, nowMs: Long): StepUpdate {
+            common(state, needsPosition = true)?.let { return StepUpdate.Rejected(it) }
+            if (state.armed != true || state.landedState != VehicleState.LANDED_IN_AIR) {
+                return StepUpdate.Rejected("Movement requires an airborne vehicle.")
+            }
+            if (!fresh(state, Attitude.messageId, LocalPositionNed.messageId, GlobalPositionInt.messageId)) {
+                return StepUpdate.Rejected(STALE)
+            }
+            val projected = target(state)
+            val altitude = state.altitudeRelM!! - (projected.z - state.position!!.z)
+            if (altitude < 1 || altitude > 10) return StepUpdate.Rejected("Target exceeds simulator altitude limits.")
+            streaming = !planStreamsPositionTarget() && link.setPositionTargetStreaming(true)
+            if (watch.ownsMode(state) && watch.mode(state) == CopterMode.GUIDED) return sendFrame(state, nowMs)
+            return exchange(setMode(CopterMode.GUIDED)).let {
+                guided = it
+                begin(it, nowMs)
+            }
+        }
+
+        override fun update(state: VehicleState, acks: List<CommandAck>, nowMs: Long): StepUpdate {
+            guided?.let { exchange ->
+                outcome(exchange, acks, nowMs)?.let { return it }
+                guided = null
+                modeAccepted(CopterMode.GUIDED, state)
+                return sendFrame(state, nowMs)
+            }
+            if (!fresh(state, Attitude.messageId, LocalPositionNed.messageId)) return StepUpdate.Unknown(LOST)
+            val goal = target!!
+            val echoedAt = positionsAtEcho
+            if (echoedAt == null) {
+                val echo = state.lastPositionTarget?.message
+                if (state.positionTargetCount > echoesAtSend && echo != null && echo.matches(goal)) {
+                    positionsAtEcho = state.samples[LocalPositionNed.messageId] ?: 0
+                    trace.mark(TracePoint.ECHO, traceId, mapOf("step" to stepNumber))
+                    return StepUpdate.Running
+                }
+                return if (nowMs - sentAtMs > timing.echoTimeoutMs) StepUpdate.Unknown(NO_ECHO) else StepUpdate.Running
+            }
+            val newer = (state.samples[LocalPositionNed.messageId] ?: 0) > echoedAt
+            val position = state.position!!
+            val arrived = distance(position, goal) < min(ARRIVAL_TOLERANCE_M, distance / 2) &&
+                (state.speed ?: Double.MAX_VALUE) < STILL_SPEED
+            if (newer && arrived) {
+                trace.mark(TracePoint.ARRIVED, traceId)
+                return StepUpdate.Completed()
+            }
+            return StepUpdate.Running
+        }
+
+        override fun end() {
+            if (streaming) link.setPositionTargetStreaming(false)
+            streaming = false
+        }
+
+        /** The one and only move frame: never retried or duplicated (S9). */
+        private fun sendFrame(state: VehicleState, nowMs: Long): StepUpdate {
+            if (!fresh(state, Attitude.messageId, LocalPositionNed.messageId)) {
+                return if (sentInStep) StepUpdate.Unknown(LOST) else StepUpdate.Rejected(STALE)
+            }
+            target = target(state)
+            echoesAtSend = state.positionTargetCount
+            sentAtMs = nowMs
+            val (x, y, z) = bodyOffset()
+            val frame = SetPositionTargetLocalNed(0, link.targetSystem, link.targetComponent, MAV_FRAME_BODY_OFFSET_NED,
+                TYPE_MASK_POSITION_ONLY, x, y, z)
+            if (!link.send(frame)) return if (sentInStep) StepUpdate.Unknown(NOT_QUEUED_AFTER_SEND) else StepUpdate.Rejected(NOT_QUEUED)
+            sentInStep = true
+            trace.mark(TracePoint.MOVE_TX, traceId, mapOf("direction" to direction, "distance_m" to distance, "step" to stepNumber))
+            return StepUpdate.Running
+        }
+
+        private fun bodyOffset(): Triple<Float, Float, Float> {
+            val d = distance.toFloat()
+            return when (direction) {
+                "forward" -> Triple(d, 0f, 0f)
+                "backward" -> Triple(-d, 0f, 0f)
+                "right" -> Triple(0f, d, 0f)
+                "left" -> Triple(0f, -d, 0f)
+                "up" -> Triple(0f, 0f, -d)
+                else -> Triple(0f, 0f, d) // down; FlightCommand allows nothing else
+            }
+        }
+
+        /** The v0.2.0 projection: the body offset rotated by the current yaw, from the current position. */
+        private fun target(state: VehicleState): Ned {
+            val p = state.position!!
+            val yaw = state.yaw!!
+            val (x, y, z) = bodyOffset()
+            return Ned(p.x + cos(yaw) * x - sin(yaw) * y, p.y + sin(yaw) * x + cos(yaw) * y, p.z + z)
+        }
+
+        /** The echo is this move's target, not the previous one (which is [distance] away). */
+        private fun PositionTargetLocalNed.matches(goal: Ned) =
+            distance(Ned(x.toDouble(), y.toDouble(), z.toDouble()), goal) < min(ECHO_TOLERANCE_M, distance / 2)
+    }
+
+    companion object {
+        const val STALE = "Fresh Copter telemetry is required. Nothing sent."
+        const val POSITION_NOT_READY = "Position estimator is not ready. Wait for a fresh EKF solution. Nothing sent."
+        const val LOST = "Telemetry lost after commands were sent; vehicle outcome unknown."
+        const val NO_CONFIRMATION = "no confirmation in time. Check the simulator before sending another command."
+        const val NO_ECHO = "the vehicle did not echo the move target; vehicle outcome unknown. " +
+            "Check the simulator before sending another command."
+        const val INTERRUPTED = "interrupted; check the simulator before sending another command."
+        const val NOT_QUEUED = "The link did not accept the command. Nothing sent."
+        const val NOT_QUEUED_AFTER_SEND = "The link did not accept a command after others were sent; vehicle outcome unknown."
+
+        const val MAV_CMD_DO_SET_MODE = 176
+        const val MAV_CMD_COMPONENT_ARM_DISARM = 400
+        const val MAV_CMD_NAV_TAKEOFF = 22
+        const val MAV_MODE_FLAG_CUSTOM_MODE_ENABLED = 1f
+        const val MAV_FRAME_BODY_OFFSET_NED = 9
+        /** Position only: velocity, acceleration, yaw and yaw rate ignored. */
+        const val TYPE_MASK_POSITION_ONLY = 3576
+
+        private const val MIN_TAKEOFF_BATTERY = 20
+        private const val ALTITUDE_TOLERANCE_M = 0.4
+        private const val ARRIVAL_TOLERANCE_M = 0.5
+        private const val ECHO_TOLERANCE_M = 1.0
+        private const val STILL_SPEED = 0.3
+
+        private fun fresh(state: VehicleState, vararg ids: Int) = ids.all(state::fresh)
+
+        private fun distance(a: Ned, b: Ned): Double {
+            val dx = a.x - b.x
+            val dy = a.y - b.y
+            val dz = a.z - b.z
+            return sqrt(dx * dx + dy * dy + dz * dz)
+        }
+
+        /** v0.2.0 `vehicle_status.dart` mode names; others read "Mode n". */
+        private val STATUS_MODES = mapOf(
+            CopterMode.STABILIZE to "Stabilize", CopterMode.ALT_HOLD to "AltHold", CopterMode.AUTO to "Auto",
+            CopterMode.GUIDED to "Guided", CopterMode.LOITER to "Loiter", CopterMode.RTL to "RTL",
+            CopterMode.LAND to "Land", CopterMode.POSHOLD to "PosHold", CopterMode.BRAKE to "Brake",
+        )
+        private val STATUS_LANDED = mapOf(VehicleState.LANDED_ON_GROUND to "On ground",
+            VehicleState.LANDED_IN_AIR to "In air", VehicleState.LANDED_TAKEOFF to "Taking off",
+            VehicleState.LANDED_LANDING to "Landing")
+
+        /**
+         * The get_status line, as v0.2.0's `vehicleStatus`: for example `Connected · Disarmed · On ground ·
+         * Stabilize · Alt 0.0 m · Battery 100% · Position ready`. A value whose stream went stale is left out and
+         * the line ends `Telemetry stale`. The outcome reads `COMPLETED — <line>`.
+         */
+        fun statusReport(state: VehicleState): String {
+            if (!state.connected) return "Not connected"
+            var stale = false
+            fun <T> current(value: T?, messageId: Int): T? = when {
+                value == null -> null
+                state.fresh(messageId) -> value
+                else -> {
+                    stale = true
+                    null
+                }
+            }
+            val landed = current(state.landedState, ExtendedSysState.messageId)
+            val altitude = current(state.altitudeRelM, GlobalPositionInt.messageId)
+            val battery = current(state.batteryPercent, SysStatus.messageId)
+            val healthy = current(state.healthy, SysStatus.messageId)
+            val flags = current(state.ekfFlags, EkfStatusReport.messageId)
+            return listOfNotNull(
+                "Connected",
+                state.armed?.let { if (it) "Armed" else "Disarmed" },
+                landed?.let(STATUS_LANDED::get),
+                state.mode?.let { STATUS_MODES[it] ?: "Mode $it" },
+                altitude?.let { "Alt " + String.format(Locale.ROOT, "%.1f", it).let { a -> if (a == "-0.0") "0.0" else a } + " m" },
+                battery?.let { "Battery $it%" },
+                if (healthy == false) "Sensors not healthy" else null,
+                flags?.let { if (state.positionReady) "Position ready" else "Position not ready" },
+                if (stale) "Telemetry stale" else null,
+            ).joinToString(" · ")
+        }
+    }
+
+    private enum class Phase { GUIDED, ARM, TAKEOFF, CLIMB }
+}

@@ -1,0 +1,93 @@
+{
+  "file": "build\\app\\outputs\\flutter-apk\\app-release.apk",
+  "package": "com.aeronex.app",
+  "version": "0.1.7",
+  "version_code": 8,
+  "min_sdk": 26,
+  "target_sdk": 36,
+  "abi": "arm64-v8a",
+  "bytes": 38116797,
+  "sha256": "0a44607aa90fd1d06bf286136e557f6d4671bde1102102c74df9a1c9328b7832",
+  "signing_certificate_sha256": "6313b3f87ccfd799e2c4a96d2de6796836f3559fce9a0b4ab3974456b9d243c1",
+  "signature_verified": true,
+  "zip_and_elf_alignment_16kb_verified": true,
+  "jni_contract": {
+    "apk": "build\\app\\outputs\\flutter-apk\\app-release.apk",
+    "sha256": "0a44607aa90fd1d06bf286136e557f6d4671bde1102102c74df9a1c9328b7832",
+    "dex_files": [
+      "classes.dex"
+    ],
+    "classes_checked": 17,
+    "members_checked": 52,
+    "contract": "JNA 5.18.1 Native_initIDs and app Vosk adapter symbols",
+    "missing": [],
+    "passed": true,
+    "scope": "Optimized APK JNI symbol contract; does not execute Android JNI or microphone capture"
+  },
+  "native_libraries": [
+    {
+      "file": "lib/arm64-v8a/libapp.so",
+      "bytes": 5178248,
+      "load_alignments": [
+        65536,
+        65536,
+        65536
+      ]
+    },
+    {
+      "file": "lib/arm64-v8a/libc++_shared.so",
+      "bytes": 1253544,
+      "load_alignments": [
+        16384,
+        16384,
+        16384,
+        16384
+      ]
+    },
+    {
+      "file": "lib/arm64-v8a/libflutter.so",
+      "bytes": 11747864,
+      "load_alignments": [
+        65536,
+        65536,
+        65536
+      ]
+    },
+    {
+      "file": "lib/arm64-v8a/libaeronex_cactus.so",
+      "bytes": 1176608,
+      "load_alignments": [
+        16384,
+        16384,
+        16384
+      ]
+    },
+    {
+      "file": "lib/arm64-v8a/libaeronex_native.so",
+      "bytes": 7952656,
+      "load_alignments": [
+        16384,
+        16384,
+        16384
+      ]
+    },
+    {
+      "file": "lib/arm64-v8a/libjnidispatch.so",
+      "bytes": 165992,
+      "load_alignments": [
+        16384,
+        16384
+      ]
+    },
+    {
+      "file": "lib/arm64-v8a/libvosk.so",
+      "bytes": 10042800,
+      "load_alignments": [
+        16384,
+        16384,
+        16384,
+        16384
+      ]
+    }
+  ]
+}

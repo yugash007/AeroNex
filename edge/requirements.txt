@@ -1,0 +1,7 @@
+fastapi==0.137.1
+starlette==0.52.1
+uvicorn==0.54.0
+websockets==15.0.1
+# Tests and demo_client.run_in_process only (Starlette TestClient needs httpx).
+httpx==0.28.1
+pytest==8.4.1

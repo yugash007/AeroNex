@@ -1,0 +1,125 @@
+package: name='com.aeronex.app' versionCode='6' versionName='0.1.5' platformBuildVersionName='16' platformBuildVersionCode='36' compileSdkVersion='36' compileSdkVersionCodename='16'
+sdkVersion:'26'
+targetSdkVersion:'36'
+uses-permission: name='android.permission.RECORD_AUDIO'
+uses-permission: name='android.permission.INTERNET'
+uses-permission: name='com.aeronex.app.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION'
+application-label:'AeroNex'
+application-icon-160:'res/9w.png'
+application-icon-240:'res/yn.png'
+application-icon-320:'res/FS.png'
+application-icon-480:'res/RJ.png'
+application-icon-640:'res/o-.png'
+application: label='AeroNex' icon='res/9w.png'
+launchable-activity: name='com.aeronex.app.MainActivity'  label='' icon=''
+uses-library-not-required:'androidx.window.extensions'
+uses-library-not-required:'androidx.window.sidecar'
+feature-group: label=''
+  uses-feature: name='android.hardware.faketouch'
+  uses-implied-feature: name='android.hardware.faketouch' reason='default feature for all apps'
+  uses-feature: name='android.hardware.microphone'
+  uses-implied-feature: name='android.hardware.microphone' reason='requested android.permission.RECORD_AUDIO permission'
+main
+other-receivers
+supports-screens: 'small' 'normal' 'large' 'xlarge'
+supports-any-density: 'true'
+locales: '--_--'
+densities: '160' '240' '320' '480' '640'
+native-code: 'arm64-v8a'
+
+WARNING: A restricted method in java.lang.System has been called
+WARNING: java.lang.System::loadLibrary has been called by org.conscrypt.NativeLibraryUtil in an unnamed module (file:/C:/Users/yugas/AppData/Local/Android/Sdk/build-tools/36.0.0/lib/apksigner.jar)
+WARNING: Use --enable-native-access=ALL-UNNAMED to avoid a warning for callers in this module
+WARNING: Restricted methods will be blocked in a future release unless native access is enabled
+
+Verifies
+Verified using v1 scheme (JAR signing): false
+Verified using v2 scheme (APK Signature Scheme v2): true
+Verified using v3 scheme (APK Signature Scheme v3): false
+Verified using v3.1 scheme (APK Signature Scheme v3.1): false
+Verified using v4 scheme (APK Signature Scheme v4): false
+Verified for SourceStamp: false
+Number of signers: 1
+Signer #1 certificate DN: C=US, O=Android, CN=Android Debug
+Signer #1 certificate SHA-256 digest: 6313b3f87ccfd799e2c4a96d2de6796836f3559fce9a0b4ab3974456b9d243c1
+Signer #1 certificate SHA-1 digest: ee58a1b5ec2402b21908a114828cfd90e53fcbbc
+Signer #1 certificate MD5 digest: 4b7fb106091ebc29142686415cb86b36
+Signer #1 key algorithm: RSA
+Signer #1 key size (bits): 2048
+Signer #1 public key SHA-256 digest: 9f4d2f080387b51216e2cac4fcd6c9a2092adece37fda96ab4ce187e4ac699a1
+Signer #1 public key SHA-1 digest: 226509f0e75eac6d1823fb7b9ca9b13567652367
+Signer #1 public key MD5 digest: 004760722e0a686247af831b6ce80f62
+
+Verifying alignment of C:\Users\yugas\Downloads\Drone-app\.worktrees\aeronex-skeleton\app\build\app\outputs\flutter-apk\app-release.apk (4)...
+      87 META-INF/com/android/build/gradle/app-metadata.properties (OK - compressed)
+     208 META-INF/version-control-info.textproto (OK - compressed)
+     316 assets/dexopt/baseline.prof (OK)
+     608 assets/dexopt/baseline.profm (OK)
+     721 classes.dex (OK - compressed)
+  311296 lib/arm64-v8a/libapp.so (OK)
+ 5439488 lib/arm64-v8a/libc++_shared.so (OK)
+ 6701056 lib/arm64-v8a/libflutter.so (OK)
+18464768 lib/arm64-v8a/libaeronex_cactus.so (OK)
+19644416 lib/arm64-v8a/libaeronex_native.so (OK)
+27607040 lib/arm64-v8a/libjnidispatch.so (OK)
+27787264 lib/arm64-v8a/libvosk.so (OK)
+37830133 assets/flutter_assets/AssetManifest.bin (OK - compressed)
+37830256 assets/flutter_assets/FontManifest.json (OK - compressed)
+37830386 assets/flutter_assets/NOTICES.Z (OK - compressed)
+37926574 assets/flutter_assets/NativeAssetsManifest.json (OK - compressed)
+37926699 assets/flutter_assets/assets/licenses/cactus.txt (OK - compressed)
+37931173 assets/flutter_assets/assets/licenses/vosk.txt (OK - compressed)
+37935376 assets/flutter_assets/fonts/MaterialIcons-Regular.otf (OK - compressed)
+37936520 assets/flutter_assets/shaders/ink_sparkle.frag (OK - compressed)
+37941874 assets/flutter_assets/shaders/stretch_effect.frag (OK - compressed)
+37945424 DebugProbesKt.bin (OK - compressed)
+37946250 META-INF/AL2.0 (OK - compressed)
+37949857 META-INF/LGPL2.1 (OK - compressed)
+37958552 META-INF/androidx.activity_activity.version (OK - compressed)
+37958650 META-INF/androidx.annotation_annotation-experimental.version (OK - compressed)
+37958736 META-INF/androidx.arch.core_core-runtime.version (OK - compressed)
+37958866 META-INF/androidx.core_core-ktx.version (OK - compressed)
+37958940 META-INF/androidx.core_core.version (OK - compressed)
+37959026 META-INF/androidx.customview_customview.version (OK - compressed)
+37959117 META-INF/androidx.exifinterface_exifinterface.version (OK - compressed)
+37959198 META-INF/androidx.fragment_fragment.version (OK - compressed)
+37959287 META-INF/androidx.interpolator_interpolator.version (OK - compressed)
+37959388 META-INF/androidx.lifecycle_lifecycle-livedata-core-ktx.version (OK - compressed)
+37959485 META-INF/androidx.lifecycle_lifecycle-livedata-core.version (OK - compressed)
+37959577 META-INF/androidx.lifecycle_lifecycle-livedata.version (OK - compressed)
+37959668 META-INF/androidx.lifecycle_lifecycle-process.version (OK - compressed)
+37959759 META-INF/androidx.lifecycle_lifecycle-runtime.version (OK - compressed)
+37959863 META-INF/androidx.lifecycle_lifecycle-viewmodel-savedstate.version (OK - compressed)
+37959956 META-INF/androidx.lifecycle_lifecycle-viewmodel.version (OK - compressed)
+37960033 META-INF/androidx.loader_loader.version (OK - compressed)
+37960130 META-INF/androidx.profileinstaller_profileinstaller.version (OK - compressed)
+37960215 META-INF/androidx.savedstate_savedstate.version (OK - compressed)
+37960302 META-INF/androidx.startup_startup-runtime.version (OK - compressed)
+37960381 META-INF/androidx.tracing_tracing.version (OK - compressed)
+37960484 META-INF/androidx.versionedparcelable_versionedparcelable.version (OK - compressed)
+37960567 META-INF/androidx.viewpager_viewpager.version (OK - compressed)
+37960658 META-INF/androidx.window.extensions.core_core.version (OK - compressed)
+37960740 META-INF/androidx.window_window-java.version (OK - compressed)
+37960817 META-INF/androidx.window_window.version (OK - compressed)
+37960898 META-INF/kotlinx_coroutines_android.version (OK - compressed)
+37960975 META-INF/kotlinx_coroutines_core.version (OK - compressed)
+37961032 META-INF/services/l0 (OK - compressed)
+37961087 META-INF/services/m0 (OK - compressed)
+37961150 kotlin-tooling-metadata.json (OK - compressed)
+37961507 kotlin/annotation/annotation.kotlin_builtins (OK - compressed)
+37962125 kotlin/collections/collections.kotlin_builtins (OK - compressed)
+37964094 kotlin/concurrent/atomics/atomics.kotlin_builtins (OK - compressed)
+37965279 kotlin/coroutines/coroutines.kotlin_builtins (OK - compressed)
+37965467 kotlin/internal/internal.kotlin_builtins (OK - compressed)
+37965885 kotlin/kotlin.kotlin_builtins (OK - compressed)
+37971454 kotlin/ranges/ranges.kotlin_builtins (OK - compressed)
+37972902 kotlin/reflect/reflect.kotlin_builtins (OK - compressed)
+37974398 AndroidManifest.xml (OK - compressed)
+37976472 res/9w.png (OK)
+37976920 res/FS.png (OK)
+37977644 res/RJ.png (OK)
+37978678 res/Zn.xml (OK - compressed)
+37978904 res/o-.png (OK)
+37980352 res/yn.png (OK)
+37980904 resources.arsc (OK)
+Verification successful

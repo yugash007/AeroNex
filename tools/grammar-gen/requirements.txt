@@ -1,0 +1,13 @@
+# tools/grammar-gen: the canonical grammar generator (grammar/README.md).
+# gen.py needs only PyYAML; the tests also need pytest. No network access, no
+# native code: the Vosk vocabulary is read straight from each model's Gr.fst.
+#   python tools/grammar-gen/gen.py [--check]
+#   python -m pytest tools/grammar-gen -q
+PyYAML==6.0.2
+pytest
+# Optional: vosk_eval.py (host A/B of the Vosk grammars: negation pairs, the
+# stop grammar, plan connectives) also needs numpy, eSpeak NG and the desktop
+# Vosk package in ../tooling/vosk/python.
+# Optional: word2number (test_gen.py cross-checks the composed spoken decimals
+# with it; the test is skipped when it is not installed). The app has no Python:
+# command/SpokenNumbers.kt is its Kotlin equivalent.

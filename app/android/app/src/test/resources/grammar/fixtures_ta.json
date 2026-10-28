@@ -1,0 +1,2018 @@
+{
+ "language": "ta",
+ "loans": [
+  {
+   "arguments": {
+    "altitude_m": 3
+   },
+   "intent": "takeoff",
+   "text": "மூன்று மீட்டர்ஸ் டேக் ஆஃப்",
+   "tool": "takeoff"
+  },
+  {
+   "arguments": {
+    "direction": "forward",
+    "distance_m": 2
+   },
+   "intent": "move",
+   "text": "இரண்டு மீட்டர்ஸ் ஃபார்வர்ட் மூவ்",
+   "tool": "move_relative"
+  },
+  {
+   "arguments": {
+    "direction": "backward",
+    "distance_m": 2
+   },
+   "intent": "move",
+   "text": "இரண்டு மீட்டர்ஸ் பேக் மூவ்",
+   "tool": "move_relative"
+  },
+  {
+   "arguments": {
+    "direction": "left",
+    "distance_m": 2
+   },
+   "intent": "move",
+   "text": "இரண்டு மீட்டர்ஸ் லெஃப்ட் மூவ்",
+   "tool": "move_relative"
+  },
+  {
+   "arguments": {
+    "direction": "right",
+    "distance_m": 2
+   },
+   "intent": "move",
+   "text": "இரண்டு மீட்டர்ஸ் ரைட் மூவ்",
+   "tool": "move_relative"
+  },
+  {
+   "arguments": {
+    "direction": "up",
+    "distance_m": 2
+   },
+   "intent": "move",
+   "text": "இரண்டு மீட்டர்ஸ் அப் மூவ்",
+   "tool": "move_relative"
+  },
+  {
+   "arguments": {
+    "direction": "down",
+    "distance_m": 2
+   },
+   "intent": "move",
+   "text": "இரண்டு மீட்டர்ஸ் டவுன் மூவ்",
+   "tool": "move_relative"
+  },
+  {
+   "arguments": {
+    "direction": "forward",
+    "distance_m": 2
+   },
+   "intent": "move",
+   "text": "ஃபார்வர்ட் இரண்டு மீட்டர்ஸ் மூவ்",
+   "tool": "move_relative"
+  },
+  {
+   "arguments": {
+    "direction": "backward",
+    "distance_m": 2
+   },
+   "intent": "move",
+   "text": "பேக் இரண்டு மீட்டர்ஸ் மூவ்",
+   "tool": "move_relative"
+  },
+  {
+   "arguments": {
+    "direction": "left",
+    "distance_m": 2
+   },
+   "intent": "move",
+   "text": "லெஃப்ட் இரண்டு மீட்டர்ஸ் மூவ்",
+   "tool": "move_relative"
+  },
+  {
+   "arguments": {
+    "direction": "right",
+    "distance_m": 2
+   },
+   "intent": "move",
+   "text": "ரைட் இரண்டு மீட்டர்ஸ் மூவ்",
+   "tool": "move_relative"
+  },
+  {
+   "arguments": {
+    "direction": "up",
+    "distance_m": 2
+   },
+   "intent": "move",
+   "text": "அப் இரண்டு மீட்டர்ஸ் மூவ்",
+   "tool": "move_relative"
+  },
+  {
+   "arguments": {
+    "direction": "down",
+    "distance_m": 2
+   },
+   "intent": "move",
+   "text": "டவுன் இரண்டு மீட்டர்ஸ் மூவ்",
+   "tool": "move_relative"
+  },
+  {
+   "arguments": {},
+   "intent": "hold",
+   "text": "ஹோல்ட்",
+   "tool": "hold"
+  },
+  {
+   "arguments": {},
+   "intent": "status",
+   "text": "ஸ்டேட்டஸ்",
+   "tool": "get_status"
+  }
+ ],
+ "negated": [
+  {
+   "text": "மூன்று மீட்டர் டேக்ஆஃப் வேண்டாம்"
+  },
+  {
+   "text": "மூன்று மீட்டர் டேக்ஆஃப் இல்லை"
+  },
+  {
+   "text": "மூன்று மீட்டர் வேண்டாம் டேக்ஆஃப்"
+  },
+  {
+   "text": "இரண்டு மீட்டர் முன்னால் செல் வேண்டாம்"
+  },
+  {
+   "text": "இரண்டு மீட்டர் முன்னால் செல் இல்லை"
+  },
+  {
+   "text": "இரண்டு மீட்டர் முன்னால் வேண்டாம் செல்"
+  },
+  {
+   "text": "தரையிறங்கு வேண்டாம்"
+  },
+  {
+   "text": "தரையிறங்கு இல்லை"
+  },
+  {
+   "text": "வேண்டாம் தரையிறங்கு"
+  },
+  {
+   "text": "ஹோவர் வேண்டாம்"
+  },
+  {
+   "text": "ஹோவர் இல்லை"
+  },
+  {
+   "text": "வேண்டாம் ஹோவர்"
+  }
+ ],
+ "numbers": [
+  {
+   "kind": "RULE",
+   "phrase": "ஒரு",
+   "value": 1
+  },
+  {
+   "kind": "RULE",
+   "phrase": "ஒன்று",
+   "value": 1
+  },
+  {
+   "kind": "RULE",
+   "phrase": "இரண்டு",
+   "value": 2
+  },
+  {
+   "kind": "RULE",
+   "phrase": "மூன்று",
+   "value": 3
+  },
+  {
+   "kind": "RULE",
+   "phrase": "நான்கு",
+   "value": 4
+  },
+  {
+   "kind": "RULE",
+   "phrase": "ஐந்து",
+   "value": 5
+  },
+  {
+   "kind": "RULE",
+   "phrase": "ஆறு",
+   "value": 6
+  },
+  {
+   "kind": "RULE",
+   "phrase": "ஏழு",
+   "value": 7
+  },
+  {
+   "kind": "RULE",
+   "phrase": "எட்டு",
+   "value": 8
+  },
+  {
+   "kind": "RULE",
+   "phrase": "ஒன்பது",
+   "value": 9
+  },
+  {
+   "kind": "RULE",
+   "phrase": "பத்து",
+   "value": 10
+  },
+  {
+   "kind": "RULE",
+   "phrase": "பதினொன்று",
+   "value": 11
+  },
+  {
+   "kind": "RULE",
+   "phrase": "பன்னிரண்டு",
+   "value": 12
+  },
+  {
+   "kind": "RULE",
+   "phrase": "பதிமூன்று",
+   "value": 13
+  },
+  {
+   "kind": "RULE",
+   "phrase": "பதினான்கு",
+   "value": 14
+  },
+  {
+   "kind": "RULE",
+   "phrase": "பதினைந்து",
+   "value": 15
+  },
+  {
+   "kind": "RULE",
+   "phrase": "பதினாறு",
+   "value": 16
+  },
+  {
+   "kind": "RULE",
+   "phrase": "பதினேழு",
+   "value": 17
+  },
+  {
+   "kind": "RULE",
+   "phrase": "பதினெட்டு",
+   "value": 18
+  },
+  {
+   "kind": "RULE",
+   "phrase": "பத்தொன்பது",
+   "value": 19
+  },
+  {
+   "kind": "RULE",
+   "phrase": "இருபது",
+   "value": 20
+  },
+  {
+   "kind": "RULE",
+   "phrase": "இருபத்தி",
+   "value": 20
+  },
+  {
+   "kind": "RULE",
+   "phrase": "முப்பது",
+   "value": 30
+  },
+  {
+   "kind": "RULE",
+   "phrase": "முப்பத்தி",
+   "value": 30
+  },
+  {
+   "kind": "RULE",
+   "phrase": "நாற்பது",
+   "value": 40
+  },
+  {
+   "kind": "RULE",
+   "phrase": "நாற்பத்தி",
+   "value": 40
+  },
+  {
+   "kind": "RULE",
+   "phrase": "ஐம்பது",
+   "value": 50
+  },
+  {
+   "kind": "RULE",
+   "phrase": "ஐம்பத்தி",
+   "value": 50
+  },
+  {
+   "kind": "RULE",
+   "phrase": "அறுபது",
+   "value": 60
+  },
+  {
+   "kind": "RULE",
+   "phrase": "அறுபத்தி",
+   "value": 60
+  },
+  {
+   "kind": "RULE",
+   "phrase": "எழுபது",
+   "value": 70
+  },
+  {
+   "kind": "RULE",
+   "phrase": "எழுபத்தி",
+   "value": 70
+  },
+  {
+   "kind": "RULE",
+   "phrase": "எண்பது",
+   "value": 80
+  },
+  {
+   "kind": "RULE",
+   "phrase": "எண்பத்தி",
+   "value": 80
+  },
+  {
+   "kind": "RULE",
+   "phrase": "தொண்ணூறு",
+   "value": 90
+  },
+  {
+   "kind": "RULE",
+   "phrase": "தொண்ணூற்றி",
+   "value": 90
+  },
+  {
+   "kind": "RULE",
+   "phrase": "நூறு",
+   "value": 100
+  },
+  {
+   "kind": "RULE",
+   "phrase": "இருபது ஒரு",
+   "value": 21
+  },
+  {
+   "kind": "RULE",
+   "phrase": "இருபது ஒன்று",
+   "value": 21
+  },
+  {
+   "kind": "RULE",
+   "phrase": "இருபது இரண்டு",
+   "value": 22
+  },
+  {
+   "kind": "RULE",
+   "phrase": "இருபது மூன்று",
+   "value": 23
+  },
+  {
+   "kind": "RULE",
+   "phrase": "இருபது நான்கு",
+   "value": 24
+  },
+  {
+   "kind": "RULE",
+   "phrase": "இருபது ஐந்து",
+   "value": 25
+  },
+  {
+   "kind": "RULE",
+   "phrase": "இருபது ஆறு",
+   "value": 26
+  },
+  {
+   "kind": "RULE",
+   "phrase": "இருபது ஏழு",
+   "value": 27
+  },
+  {
+   "kind": "RULE",
+   "phrase": "இருபது எட்டு",
+   "value": 28
+  },
+  {
+   "kind": "RULE",
+   "phrase": "இருபது ஒன்பது",
+   "value": 29
+  },
+  {
+   "kind": "RULE",
+   "phrase": "இருபத்தி ஒரு",
+   "value": 21
+  },
+  {
+   "kind": "RULE",
+   "phrase": "இருபத்தி ஒன்று",
+   "value": 21
+  },
+  {
+   "kind": "RULE",
+   "phrase": "இருபத்தி இரண்டு",
+   "value": 22
+  },
+  {
+   "kind": "RULE",
+   "phrase": "இருபத்தி மூன்று",
+   "value": 23
+  },
+  {
+   "kind": "RULE",
+   "phrase": "இருபத்தி நான்கு",
+   "value": 24
+  },
+  {
+   "kind": "RULE",
+   "phrase": "இருபத்தி ஐந்து",
+   "value": 25
+  },
+  {
+   "kind": "RULE",
+   "phrase": "இருபத்தி ஆறு",
+   "value": 26
+  },
+  {
+   "kind": "RULE",
+   "phrase": "இருபத்தி ஏழு",
+   "value": 27
+  },
+  {
+   "kind": "RULE",
+   "phrase": "இருபத்தி எட்டு",
+   "value": 28
+  },
+  {
+   "kind": "RULE",
+   "phrase": "இருபத்தி ஒன்பது",
+   "value": 29
+  },
+  {
+   "kind": "RULE",
+   "phrase": "முப்பது ஒரு",
+   "value": 31
+  },
+  {
+   "kind": "RULE",
+   "phrase": "முப்பது ஒன்று",
+   "value": 31
+  },
+  {
+   "kind": "RULE",
+   "phrase": "முப்பது இரண்டு",
+   "value": 32
+  },
+  {
+   "kind": "RULE",
+   "phrase": "முப்பது மூன்று",
+   "value": 33
+  },
+  {
+   "kind": "RULE",
+   "phrase": "முப்பது நான்கு",
+   "value": 34
+  },
+  {
+   "kind": "RULE",
+   "phrase": "முப்பது ஐந்து",
+   "value": 35
+  },
+  {
+   "kind": "RULE",
+   "phrase": "முப்பது ஆறு",
+   "value": 36
+  },
+  {
+   "kind": "RULE",
+   "phrase": "முப்பது ஏழு",
+   "value": 37
+  },
+  {
+   "kind": "RULE",
+   "phrase": "முப்பது எட்டு",
+   "value": 38
+  },
+  {
+   "kind": "RULE",
+   "phrase": "முப்பது ஒன்பது",
+   "value": 39
+  },
+  {
+   "kind": "RULE",
+   "phrase": "முப்பத்தி ஒரு",
+   "value": 31
+  },
+  {
+   "kind": "RULE",
+   "phrase": "முப்பத்தி ஒன்று",
+   "value": 31
+  },
+  {
+   "kind": "RULE",
+   "phrase": "முப்பத்தி இரண்டு",
+   "value": 32
+  },
+  {
+   "kind": "RULE",
+   "phrase": "முப்பத்தி மூன்று",
+   "value": 33
+  },
+  {
+   "kind": "RULE",
+   "phrase": "முப்பத்தி நான்கு",
+   "value": 34
+  },
+  {
+   "kind": "RULE",
+   "phrase": "முப்பத்தி ஐந்து",
+   "value": 35
+  },
+  {
+   "kind": "RULE",
+   "phrase": "முப்பத்தி ஆறு",
+   "value": 36
+  },
+  {
+   "kind": "RULE",
+   "phrase": "முப்பத்தி ஏழு",
+   "value": 37
+  },
+  {
+   "kind": "RULE",
+   "phrase": "முப்பத்தி எட்டு",
+   "value": 38
+  },
+  {
+   "kind": "RULE",
+   "phrase": "முப்பத்தி ஒன்பது",
+   "value": 39
+  },
+  {
+   "kind": "RULE",
+   "phrase": "நாற்பது ஒரு",
+   "value": 41
+  },
+  {
+   "kind": "RULE",
+   "phrase": "நாற்பது ஒன்று",
+   "value": 41
+  },
+  {
+   "kind": "RULE",
+   "phrase": "நாற்பது இரண்டு",
+   "value": 42
+  },
+  {
+   "kind": "RULE",
+   "phrase": "நாற்பது மூன்று",
+   "value": 43
+  },
+  {
+   "kind": "RULE",
+   "phrase": "நாற்பது நான்கு",
+   "value": 44
+  },
+  {
+   "kind": "RULE",
+   "phrase": "நாற்பது ஐந்து",
+   "value": 45
+  },
+  {
+   "kind": "RULE",
+   "phrase": "நாற்பது ஆறு",
+   "value": 46
+  },
+  {
+   "kind": "RULE",
+   "phrase": "நாற்பது ஏழு",
+   "value": 47
+  },
+  {
+   "kind": "RULE",
+   "phrase": "நாற்பது எட்டு",
+   "value": 48
+  },
+  {
+   "kind": "RULE",
+   "phrase": "நாற்பது ஒன்பது",
+   "value": 49
+  },
+  {
+   "kind": "RULE",
+   "phrase": "நாற்பத்தி ஒரு",
+   "value": 41
+  },
+  {
+   "kind": "RULE",
+   "phrase": "நாற்பத்தி ஒன்று",
+   "value": 41
+  },
+  {
+   "kind": "RULE",
+   "phrase": "நாற்பத்தி இரண்டு",
+   "value": 42
+  },
+  {
+   "kind": "RULE",
+   "phrase": "நாற்பத்தி மூன்று",
+   "value": 43
+  },
+  {
+   "kind": "RULE",
+   "phrase": "நாற்பத்தி நான்கு",
+   "value": 44
+  },
+  {
+   "kind": "RULE",
+   "phrase": "நாற்பத்தி ஐந்து",
+   "value": 45
+  },
+  {
+   "kind": "RULE",
+   "phrase": "நாற்பத்தி ஆறு",
+   "value": 46
+  },
+  {
+   "kind": "RULE",
+   "phrase": "நாற்பத்தி ஏழு",
+   "value": 47
+  },
+  {
+   "kind": "RULE",
+   "phrase": "நாற்பத்தி எட்டு",
+   "value": 48
+  },
+  {
+   "kind": "RULE",
+   "phrase": "நாற்பத்தி ஒன்பது",
+   "value": 49
+  },
+  {
+   "kind": "RULE",
+   "phrase": "ஐம்பது ஒரு",
+   "value": 51
+  },
+  {
+   "kind": "RULE",
+   "phrase": "ஐம்பது ஒன்று",
+   "value": 51
+  },
+  {
+   "kind": "RULE",
+   "phrase": "ஐம்பது இரண்டு",
+   "value": 52
+  },
+  {
+   "kind": "RULE",
+   "phrase": "ஐம்பது மூன்று",
+   "value": 53
+  },
+  {
+   "kind": "RULE",
+   "phrase": "ஐம்பது நான்கு",
+   "value": 54
+  },
+  {
+   "kind": "RULE",
+   "phrase": "ஐம்பது ஐந்து",
+   "value": 55
+  },
+  {
+   "kind": "RULE",
+   "phrase": "ஐம்பது ஆறு",
+   "value": 56
+  },
+  {
+   "kind": "RULE",
+   "phrase": "ஐம்பது ஏழு",
+   "value": 57
+  },
+  {
+   "kind": "RULE",
+   "phrase": "ஐம்பது எட்டு",
+   "value": 58
+  },
+  {
+   "kind": "RULE",
+   "phrase": "ஐம்பது ஒன்பது",
+   "value": 59
+  },
+  {
+   "kind": "RULE",
+   "phrase": "ஐம்பத்தி ஒரு",
+   "value": 51
+  },
+  {
+   "kind": "RULE",
+   "phrase": "ஐம்பத்தி ஒன்று",
+   "value": 51
+  },
+  {
+   "kind": "RULE",
+   "phrase": "ஐம்பத்தி இரண்டு",
+   "value": 52
+  },
+  {
+   "kind": "RULE",
+   "phrase": "ஐம்பத்தி மூன்று",
+   "value": 53
+  },
+  {
+   "kind": "RULE",
+   "phrase": "ஐம்பத்தி நான்கு",
+   "value": 54
+  },
+  {
+   "kind": "RULE",
+   "phrase": "ஐம்பத்தி ஐந்து",
+   "value": 55
+  },
+  {
+   "kind": "RULE",
+   "phrase": "ஐம்பத்தி ஆறு",
+   "value": 56
+  },
+  {
+   "kind": "RULE",
+   "phrase": "ஐம்பத்தி ஏழு",
+   "value": 57
+  },
+  {
+   "kind": "RULE",
+   "phrase": "ஐம்பத்தி எட்டு",
+   "value": 58
+  },
+  {
+   "kind": "RULE",
+   "phrase": "ஐம்பத்தி ஒன்பது",
+   "value": 59
+  },
+  {
+   "kind": "RULE",
+   "phrase": "அறுபது ஒரு",
+   "value": 61
+  },
+  {
+   "kind": "RULE",
+   "phrase": "அறுபது ஒன்று",
+   "value": 61
+  },
+  {
+   "kind": "RULE",
+   "phrase": "அறுபது இரண்டு",
+   "value": 62
+  },
+  {
+   "kind": "RULE",
+   "phrase": "அறுபது மூன்று",
+   "value": 63
+  },
+  {
+   "kind": "RULE",
+   "phrase": "அறுபது நான்கு",
+   "value": 64
+  },
+  {
+   "kind": "RULE",
+   "phrase": "அறுபது ஐந்து",
+   "value": 65
+  },
+  {
+   "kind": "RULE",
+   "phrase": "அறுபது ஆறு",
+   "value": 66
+  },
+  {
+   "kind": "RULE",
+   "phrase": "அறுபது ஏழு",
+   "value": 67
+  },
+  {
+   "kind": "RULE",
+   "phrase": "அறுபது எட்டு",
+   "value": 68
+  },
+  {
+   "kind": "RULE",
+   "phrase": "அறுபது ஒன்பது",
+   "value": 69
+  },
+  {
+   "kind": "RULE",
+   "phrase": "அறுபத்தி ஒரு",
+   "value": 61
+  },
+  {
+   "kind": "RULE",
+   "phrase": "அறுபத்தி ஒன்று",
+   "value": 61
+  },
+  {
+   "kind": "RULE",
+   "phrase": "அறுபத்தி இரண்டு",
+   "value": 62
+  },
+  {
+   "kind": "RULE",
+   "phrase": "அறுபத்தி மூன்று",
+   "value": 63
+  },
+  {
+   "kind": "RULE",
+   "phrase": "அறுபத்தி நான்கு",
+   "value": 64
+  },
+  {
+   "kind": "RULE",
+   "phrase": "அறுபத்தி ஐந்து",
+   "value": 65
+  },
+  {
+   "kind": "RULE",
+   "phrase": "அறுபத்தி ஆறு",
+   "value": 66
+  },
+  {
+   "kind": "RULE",
+   "phrase": "அறுபத்தி ஏழு",
+   "value": 67
+  },
+  {
+   "kind": "RULE",
+   "phrase": "அறுபத்தி எட்டு",
+   "value": 68
+  },
+  {
+   "kind": "RULE",
+   "phrase": "அறுபத்தி ஒன்பது",
+   "value": 69
+  },
+  {
+   "kind": "RULE",
+   "phrase": "எழுபது ஒரு",
+   "value": 71
+  },
+  {
+   "kind": "RULE",
+   "phrase": "எழுபது ஒன்று",
+   "value": 71
+  },
+  {
+   "kind": "RULE",
+   "phrase": "எழுபது இரண்டு",
+   "value": 72
+  },
+  {
+   "kind": "RULE",
+   "phrase": "எழுபது மூன்று",
+   "value": 73
+  },
+  {
+   "kind": "RULE",
+   "phrase": "எழுபது நான்கு",
+   "value": 74
+  },
+  {
+   "kind": "RULE",
+   "phrase": "எழுபது ஐந்து",
+   "value": 75
+  },
+  {
+   "kind": "RULE",
+   "phrase": "எழுபது ஆறு",
+   "value": 76
+  },
+  {
+   "kind": "RULE",
+   "phrase": "எழுபது ஏழு",
+   "value": 77
+  },
+  {
+   "kind": "RULE",
+   "phrase": "எழுபது எட்டு",
+   "value": 78
+  },
+  {
+   "kind": "RULE",
+   "phrase": "எழுபது ஒன்பது",
+   "value": 79
+  },
+  {
+   "kind": "RULE",
+   "phrase": "எழுபத்தி ஒரு",
+   "value": 71
+  },
+  {
+   "kind": "RULE",
+   "phrase": "எழுபத்தி ஒன்று",
+   "value": 71
+  },
+  {
+   "kind": "RULE",
+   "phrase": "எழுபத்தி இரண்டு",
+   "value": 72
+  },
+  {
+   "kind": "RULE",
+   "phrase": "எழுபத்தி மூன்று",
+   "value": 73
+  },
+  {
+   "kind": "RULE",
+   "phrase": "எழுபத்தி நான்கு",
+   "value": 74
+  },
+  {
+   "kind": "RULE",
+   "phrase": "எழுபத்தி ஐந்து",
+   "value": 75
+  },
+  {
+   "kind": "RULE",
+   "phrase": "எழுபத்தி ஆறு",
+   "value": 76
+  },
+  {
+   "kind": "RULE",
+   "phrase": "எழுபத்தி ஏழு",
+   "value": 77
+  },
+  {
+   "kind": "RULE",
+   "phrase": "எழுபத்தி எட்டு",
+   "value": 78
+  },
+  {
+   "kind": "RULE",
+   "phrase": "எழுபத்தி ஒன்பது",
+   "value": 79
+  },
+  {
+   "kind": "RULE",
+   "phrase": "எண்பது ஒரு",
+   "value": 81
+  },
+  {
+   "kind": "RULE",
+   "phrase": "எண்பது ஒன்று",
+   "value": 81
+  },
+  {
+   "kind": "RULE",
+   "phrase": "எண்பது இரண்டு",
+   "value": 82
+  },
+  {
+   "kind": "RULE",
+   "phrase": "எண்பது மூன்று",
+   "value": 83
+  },
+  {
+   "kind": "RULE",
+   "phrase": "எண்பது நான்கு",
+   "value": 84
+  },
+  {
+   "kind": "RULE",
+   "phrase": "எண்பது ஐந்து",
+   "value": 85
+  },
+  {
+   "kind": "RULE",
+   "phrase": "எண்பது ஆறு",
+   "value": 86
+  },
+  {
+   "kind": "RULE",
+   "phrase": "எண்பது ஏழு",
+   "value": 87
+  },
+  {
+   "kind": "RULE",
+   "phrase": "எண்பது எட்டு",
+   "value": 88
+  },
+  {
+   "kind": "RULE",
+   "phrase": "எண்பது ஒன்பது",
+   "value": 89
+  },
+  {
+   "kind": "RULE",
+   "phrase": "எண்பத்தி ஒரு",
+   "value": 81
+  },
+  {
+   "kind": "RULE",
+   "phrase": "எண்பத்தி ஒன்று",
+   "value": 81
+  },
+  {
+   "kind": "RULE",
+   "phrase": "எண்பத்தி இரண்டு",
+   "value": 82
+  },
+  {
+   "kind": "RULE",
+   "phrase": "எண்பத்தி மூன்று",
+   "value": 83
+  },
+  {
+   "kind": "RULE",
+   "phrase": "எண்பத்தி நான்கு",
+   "value": 84
+  },
+  {
+   "kind": "RULE",
+   "phrase": "எண்பத்தி ஐந்து",
+   "value": 85
+  },
+  {
+   "kind": "RULE",
+   "phrase": "எண்பத்தி ஆறு",
+   "value": 86
+  },
+  {
+   "kind": "RULE",
+   "phrase": "எண்பத்தி ஏழு",
+   "value": 87
+  },
+  {
+   "kind": "RULE",
+   "phrase": "எண்பத்தி எட்டு",
+   "value": 88
+  },
+  {
+   "kind": "RULE",
+   "phrase": "எண்பத்தி ஒன்பது",
+   "value": 89
+  },
+  {
+   "kind": "RULE",
+   "phrase": "தொண்ணூறு ஒரு",
+   "value": 91
+  },
+  {
+   "kind": "RULE",
+   "phrase": "தொண்ணூறு ஒன்று",
+   "value": 91
+  },
+  {
+   "kind": "RULE",
+   "phrase": "தொண்ணூறு இரண்டு",
+   "value": 92
+  },
+  {
+   "kind": "RULE",
+   "phrase": "தொண்ணூறு மூன்று",
+   "value": 93
+  },
+  {
+   "kind": "RULE",
+   "phrase": "தொண்ணூறு நான்கு",
+   "value": 94
+  },
+  {
+   "kind": "RULE",
+   "phrase": "தொண்ணூறு ஐந்து",
+   "value": 95
+  },
+  {
+   "kind": "RULE",
+   "phrase": "தொண்ணூறு ஆறு",
+   "value": 96
+  },
+  {
+   "kind": "RULE",
+   "phrase": "தொண்ணூறு ஏழு",
+   "value": 97
+  },
+  {
+   "kind": "RULE",
+   "phrase": "தொண்ணூறு எட்டு",
+   "value": 98
+  },
+  {
+   "kind": "RULE",
+   "phrase": "தொண்ணூறு ஒன்பது",
+   "value": 99
+  },
+  {
+   "kind": "RULE",
+   "phrase": "தொண்ணூற்றி ஒரு",
+   "value": 91
+  },
+  {
+   "kind": "RULE",
+   "phrase": "தொண்ணூற்றி ஒன்று",
+   "value": 91
+  },
+  {
+   "kind": "RULE",
+   "phrase": "தொண்ணூற்றி இரண்டு",
+   "value": 92
+  },
+  {
+   "kind": "RULE",
+   "phrase": "தொண்ணூற்றி மூன்று",
+   "value": 93
+  },
+  {
+   "kind": "RULE",
+   "phrase": "தொண்ணூற்றி நான்கு",
+   "value": 94
+  },
+  {
+   "kind": "RULE",
+   "phrase": "தொண்ணூற்றி ஐந்து",
+   "value": 95
+  },
+  {
+   "kind": "RULE",
+   "phrase": "தொண்ணூற்றி ஆறு",
+   "value": 96
+  },
+  {
+   "kind": "RULE",
+   "phrase": "தொண்ணூற்றி ஏழு",
+   "value": 97
+  },
+  {
+   "kind": "RULE",
+   "phrase": "தொண்ணூற்றி எட்டு",
+   "value": 98
+  },
+  {
+   "kind": "RULE",
+   "phrase": "தொண்ணூற்றி ஒன்பது",
+   "value": 99
+  },
+  {
+   "kind": "EXTRA",
+   "phrase": "பூஜ்ஜியம்",
+   "value": 0
+  },
+  {
+   "kind": "FRACTION",
+   "phrase": "அரை",
+   "value": 0.5
+  },
+  {
+   "kind": "FRACTION",
+   "phrase": "ஒன்றரை",
+   "value": 1.5
+  },
+  {
+   "kind": "FRACTION",
+   "phrase": "இரண்டரை",
+   "value": 2.5
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "ஜீரோ",
+   "value": 0
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "ஒன்",
+   "value": 1
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "டூ",
+   "value": 2
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "த்ரீ",
+   "value": 3
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "ஃபோர்",
+   "value": 4
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "ஃபைவ்",
+   "value": 5
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "சிக்ஸ்",
+   "value": 6
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "செவன்",
+   "value": 7
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "எய்ட்",
+   "value": 8
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "நைன்",
+   "value": 9
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "டென்",
+   "value": 10
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "லெவன்",
+   "value": 11
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "ட்வெல்வ்",
+   "value": 12
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "தர்டீன்",
+   "value": 13
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "ஃபோர்டீன்",
+   "value": 14
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "ஃபிஃப்டீன்",
+   "value": 15
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "சிக்ஸ்டீன்",
+   "value": 16
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "செவன்டீன்",
+   "value": 17
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "எய்டீன்",
+   "value": 18
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "நைன்டீன்",
+   "value": 19
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "ட்வென்டி",
+   "value": 20
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "தர்ட்டி",
+   "value": 30
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "ஃபோர்ட்டி",
+   "value": 40
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "ஃபிஃப்டி",
+   "value": 50
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "சிக்ஸ்டி",
+   "value": 60
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "செவன்டி",
+   "value": 70
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "எய்ட்டி",
+   "value": 80
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "நைன்டி",
+   "value": 90
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "ஹன்ட்ரட்",
+   "value": 100
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "ட்வென்டி ஒன்",
+   "value": 21
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "ட்வென்டி டூ",
+   "value": 22
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "ட்வென்டி த்ரீ",
+   "value": 23
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "ட்வென்டி ஃபோர்",
+   "value": 24
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "ட்வென்டி ஃபைவ்",
+   "value": 25
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "ட்வென்டி சிக்ஸ்",
+   "value": 26
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "ட்வென்டி செவன்",
+   "value": 27
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "ட்வென்டி எய்ட்",
+   "value": 28
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "ட்வென்டி நைன்",
+   "value": 29
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "தர்ட்டி ஒன்",
+   "value": 31
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "தர்ட்டி டூ",
+   "value": 32
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "தர்ட்டி த்ரீ",
+   "value": 33
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "தர்ட்டி ஃபோர்",
+   "value": 34
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "தர்ட்டி ஃபைவ்",
+   "value": 35
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "தர்ட்டி சிக்ஸ்",
+   "value": 36
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "தர்ட்டி செவன்",
+   "value": 37
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "தர்ட்டி எய்ட்",
+   "value": 38
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "தர்ட்டி நைன்",
+   "value": 39
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "ஃபோர்ட்டி ஒன்",
+   "value": 41
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "ஃபோர்ட்டி டூ",
+   "value": 42
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "ஃபோர்ட்டி த்ரீ",
+   "value": 43
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "ஃபோர்ட்டி ஃபோர்",
+   "value": 44
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "ஃபோர்ட்டி ஃபைவ்",
+   "value": 45
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "ஃபோர்ட்டி சிக்ஸ்",
+   "value": 46
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "ஃபோர்ட்டி செவன்",
+   "value": 47
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "ஃபோர்ட்டி எய்ட்",
+   "value": 48
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "ஃபோர்ட்டி நைன்",
+   "value": 49
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "ஃபிஃப்டி ஒன்",
+   "value": 51
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "ஃபிஃப்டி டூ",
+   "value": 52
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "ஃபிஃப்டி த்ரீ",
+   "value": 53
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "ஃபிஃப்டி ஃபோர்",
+   "value": 54
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "ஃபிஃப்டி ஃபைவ்",
+   "value": 55
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "ஃபிஃப்டி சிக்ஸ்",
+   "value": 56
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "ஃபிஃப்டி செவன்",
+   "value": 57
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "ஃபிஃப்டி எய்ட்",
+   "value": 58
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "ஃபிஃப்டி நைன்",
+   "value": 59
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "சிக்ஸ்டி ஒன்",
+   "value": 61
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "சிக்ஸ்டி டூ",
+   "value": 62
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "சிக்ஸ்டி த்ரீ",
+   "value": 63
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "சிக்ஸ்டி ஃபோர்",
+   "value": 64
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "சிக்ஸ்டி ஃபைவ்",
+   "value": 65
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "சிக்ஸ்டி சிக்ஸ்",
+   "value": 66
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "சிக்ஸ்டி செவன்",
+   "value": 67
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "சிக்ஸ்டி எய்ட்",
+   "value": 68
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "சிக்ஸ்டி நைன்",
+   "value": 69
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "செவன்டி ஒன்",
+   "value": 71
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "செவன்டி டூ",
+   "value": 72
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "செவன்டி த்ரீ",
+   "value": 73
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "செவன்டி ஃபோர்",
+   "value": 74
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "செவன்டி ஃபைவ்",
+   "value": 75
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "செவன்டி சிக்ஸ்",
+   "value": 76
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "செவன்டி செவன்",
+   "value": 77
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "செவன்டி எய்ட்",
+   "value": 78
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "செவன்டி நைன்",
+   "value": 79
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "எய்ட்டி ஒன்",
+   "value": 81
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "எய்ட்டி டூ",
+   "value": 82
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "எய்ட்டி த்ரீ",
+   "value": 83
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "எய்ட்டி ஃபோர்",
+   "value": 84
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "எய்ட்டி ஃபைவ்",
+   "value": 85
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "எய்ட்டி சிக்ஸ்",
+   "value": 86
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "எய்ட்டி செவன்",
+   "value": 87
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "எய்ட்டி எய்ட்",
+   "value": 88
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "எய்ட்டி நைன்",
+   "value": 89
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "நைன்டி ஒன்",
+   "value": 91
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "நைன்டி டூ",
+   "value": 92
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "நைன்டி த்ரீ",
+   "value": 93
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "நைன்டி ஃபோர்",
+   "value": 94
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "நைன்டி ஃபைவ்",
+   "value": 95
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "நைன்டி சிக்ஸ்",
+   "value": 96
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "நைன்டி செவன்",
+   "value": 97
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "நைன்டி எய்ட்",
+   "value": 98
+  },
+  {
+   "kind": "LOAN",
+   "phrase": "நைன்டி நைன்",
+   "value": 99
+  },
+  {
+   "kind": "FRACTION",
+   "phrase": "ஹாஃப்",
+   "value": 0.5
+  }
+ ],
+ "plans": [
+  {
+   "steps": [
+    {
+     "arguments": {
+      "direction": "forward",
+      "distance_m": 2
+     },
+     "tool": "move_relative"
+    },
+    {
+     "arguments": {},
+     "tool": "land"
+    }
+   ],
+   "text": "இரண்டு மீட்டர் முன்னால் செல் பிறகு தரையிறங்கு"
+  },
+  {
+   "steps": [
+    {
+     "arguments": {
+      "direction": "forward",
+      "distance_m": 2
+     },
+     "tool": "move_relative"
+    },
+    {
+     "arguments": {},
+     "tool": "land"
+    }
+   ],
+   "text": "இரண்டு மீட்டர் முன்னால் செல் மற்றும் தரையிறங்கு"
+  }
+ ],
+ "positive": [
+  {
+   "arguments": {
+    "altitude_m": 3
+   },
+   "intent": "takeoff",
+   "text": "மூன்று மீட்டர் டேக்ஆஃப்",
+   "tool": "takeoff"
+  },
+  {
+   "arguments": {
+    "altitude_m": 3
+   },
+   "intent": "takeoff",
+   "text": "மூன்று மீட்டர் புறப்படு",
+   "tool": "takeoff"
+  },
+  {
+   "arguments": {
+    "altitude_m": 3
+   },
+   "intent": "takeoff",
+   "text": "மூன்று மீட்டர் மேலே எழு",
+   "tool": "takeoff"
+  },
+  {
+   "arguments": {
+    "direction": "forward",
+    "distance_m": 2
+   },
+   "intent": "move",
+   "text": "இரண்டு மீட்டர் முன்னால் செல்",
+   "tool": "move_relative"
+  },
+  {
+   "arguments": {
+    "direction": "forward",
+    "distance_m": 2
+   },
+   "intent": "move",
+   "text": "இரண்டு மீட்டர் முன்னோக்கி செல்",
+   "tool": "move_relative"
+  },
+  {
+   "arguments": {
+    "direction": "backward",
+    "distance_m": 2
+   },
+   "intent": "move",
+   "text": "இரண்டு மீட்டர் பின்னால் செல்",
+   "tool": "move_relative"
+  },
+  {
+   "arguments": {
+    "direction": "backward",
+    "distance_m": 2
+   },
+   "intent": "move",
+   "text": "இரண்டு மீட்டர் பின்னோக்கி செல்",
+   "tool": "move_relative"
+  },
+  {
+   "arguments": {
+    "direction": "left",
+    "distance_m": 2
+   },
+   "intent": "move",
+   "text": "இரண்டு மீட்டர் இடதுபுறம் செல்",
+   "tool": "move_relative"
+  },
+  {
+   "arguments": {
+    "direction": "left",
+    "distance_m": 2
+   },
+   "intent": "move",
+   "text": "இரண்டு மீட்டர் இடது செல்",
+   "tool": "move_relative"
+  },
+  {
+   "arguments": {
+    "direction": "right",
+    "distance_m": 2
+   },
+   "intent": "move",
+   "text": "இரண்டு மீட்டர் வலதுபுறம் செல்",
+   "tool": "move_relative"
+  },
+  {
+   "arguments": {
+    "direction": "right",
+    "distance_m": 2
+   },
+   "intent": "move",
+   "text": "இரண்டு மீட்டர் வலது செல்",
+   "tool": "move_relative"
+  },
+  {
+   "arguments": {
+    "direction": "up",
+    "distance_m": 2
+   },
+   "intent": "move",
+   "text": "இரண்டு மீட்டர் மேலே செல்",
+   "tool": "move_relative"
+  },
+  {
+   "arguments": {
+    "direction": "up",
+    "distance_m": 2
+   },
+   "intent": "move",
+   "text": "இரண்டு மீட்டர் மேல்நோக்கி செல்",
+   "tool": "move_relative"
+  },
+  {
+   "arguments": {
+    "direction": "down",
+    "distance_m": 2
+   },
+   "intent": "move",
+   "text": "இரண்டு மீட்டர் கீழே செல்",
+   "tool": "move_relative"
+  },
+  {
+   "arguments": {
+    "direction": "down",
+    "distance_m": 2
+   },
+   "intent": "move",
+   "text": "இரண்டு மீட்டர் கீழ்நோக்கி செல்",
+   "tool": "move_relative"
+  },
+  {
+   "arguments": {
+    "direction": "forward",
+    "distance_m": 2
+   },
+   "intent": "move",
+   "text": "முன்னால் இரண்டு மீட்டர் செல்",
+   "tool": "move_relative"
+  },
+  {
+   "arguments": {
+    "direction": "forward",
+    "distance_m": 2
+   },
+   "intent": "move",
+   "text": "முன்னோக்கி இரண்டு மீட்டர் செல்",
+   "tool": "move_relative"
+  },
+  {
+   "arguments": {
+    "direction": "backward",
+    "distance_m": 2
+   },
+   "intent": "move",
+   "text": "பின்னால் இரண்டு மீட்டர் செல்",
+   "tool": "move_relative"
+  },
+  {
+   "arguments": {
+    "direction": "backward",
+    "distance_m": 2
+   },
+   "intent": "move",
+   "text": "பின்னோக்கி இரண்டு மீட்டர் செல்",
+   "tool": "move_relative"
+  },
+  {
+   "arguments": {
+    "direction": "left",
+    "distance_m": 2
+   },
+   "intent": "move",
+   "text": "இடதுபுறம் இரண்டு மீட்டர் செல்",
+   "tool": "move_relative"
+  },
+  {
+   "arguments": {
+    "direction": "left",
+    "distance_m": 2
+   },
+   "intent": "move",
+   "text": "இடது இரண்டு மீட்டர் செல்",
+   "tool": "move_relative"
+  },
+  {
+   "arguments": {
+    "direction": "right",
+    "distance_m": 2
+   },
+   "intent": "move",
+   "text": "வலதுபுறம் இரண்டு மீட்டர் செல்",
+   "tool": "move_relative"
+  },
+  {
+   "arguments": {
+    "direction": "right",
+    "distance_m": 2
+   },
+   "intent": "move",
+   "text": "வலது இரண்டு மீட்டர் செல்",
+   "tool": "move_relative"
+  },
+  {
+   "arguments": {
+    "direction": "up",
+    "distance_m": 2
+   },
+   "intent": "move",
+   "text": "மேலே இரண்டு மீட்டர் செல்",
+   "tool": "move_relative"
+  },
+  {
+   "arguments": {
+    "direction": "up",
+    "distance_m": 2
+   },
+   "intent": "move",
+   "text": "மேல்நோக்கி இரண்டு மீட்டர் செல்",
+   "tool": "move_relative"
+  },
+  {
+   "arguments": {
+    "direction": "down",
+    "distance_m": 2
+   },
+   "intent": "move",
+   "text": "கீழே இரண்டு மீட்டர் செல்",
+   "tool": "move_relative"
+  },
+  {
+   "arguments": {
+    "direction": "down",
+    "distance_m": 2
+   },
+   "intent": "move",
+   "text": "கீழ்நோக்கி இரண்டு மீட்டர் செல்",
+   "tool": "move_relative"
+  },
+  {
+   "arguments": {},
+   "intent": "hold",
+   "text": "ஹோவர்",
+   "tool": "hold"
+  },
+  {
+   "arguments": {},
+   "intent": "stop",
+   "text": "நில்",
+   "tool": "hold"
+  },
+  {
+   "arguments": {},
+   "intent": "stop",
+   "text": "நிறுத்து",
+   "tool": "hold"
+  },
+  {
+   "arguments": {},
+   "intent": "stop",
+   "text": "ஸ்டாப்",
+   "tool": "hold"
+  },
+  {
+   "arguments": {},
+   "intent": "land",
+   "text": "தரையிறங்கு",
+   "tool": "land"
+  },
+  {
+   "arguments": {},
+   "intent": "land",
+   "text": "லேண்ட்",
+   "tool": "land"
+  }
+ ],
+ "unk": [
+  {
+   "expect": "hold",
+   "text": "[unk] ஹோவர்"
+  },
+  {
+   "expect": "hold",
+   "text": "நில் [unk]"
+  },
+  {
+   "expect": "reject",
+   "text": "[unk] இரண்டு மீட்டர் முன்னால் செல்"
+  },
+  {
+   "expect": "reject",
+   "text": "இரண்டு [unk] மீட்டர் முன்னால் செல்"
+  }
+ ]
+}

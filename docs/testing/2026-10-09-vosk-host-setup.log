@@ -1,0 +1,64 @@
+Collecting vosk==0.3.45
+  Downloading vosk-0.3.45-py3-none-win_amd64.whl.metadata (1.8 kB)
+Collecting cffi>=1.0 (from vosk==0.3.45)
+  Downloading cffi-2.1.1-cp312-cp312-win_amd64.whl.metadata (2.6 kB)
+Collecting requests (from vosk==0.3.45)
+  Downloading requests-2.34.2-py3-none-any.whl.metadata (4.8 kB)
+Collecting srt (from vosk==0.3.45)
+  Downloading srt-3.5.3.tar.gz (28 kB)
+  Installing build dependencies: started
+  Installing build dependencies: finished with status 'done'
+  Getting requirements to build wheel: started
+  Getting requirements to build wheel: finished with status 'done'
+  Preparing metadata (pyproject.toml): started
+  Preparing metadata (pyproject.toml): finished with status 'done'
+Collecting tqdm (from vosk==0.3.45)
+  Downloading tqdm-4.70.1-py3-none-any.whl.metadata (57 kB)
+Collecting websockets (from vosk==0.3.45)
+  Downloading websockets-17.2-cp312-cp312-win_amd64.whl.metadata (6.5 kB)
+Collecting pycparser (from cffi>=1.0->vosk==0.3.45)
+  Downloading pycparser-3.11-py3-none-any.whl.metadata (8.2 kB)
+Collecting charset_normalizer<4,>=2 (from requests->vosk==0.3.45)
+  Downloading charset_normalizer-3.5.2-cp312-cp312-win_amd64.whl.metadata (47 kB)
+Collecting idna<4,>=2.5 (from requests->vosk==0.3.45)
+  Downloading idna-3.20-py3-none-any.whl.metadata (7.2 kB)
+Collecting urllib3<3,>=1.26 (from requests->vosk==0.3.45)
+  Downloading urllib3-2.8.0-py3-none-any.whl.metadata (7.4 kB)
+Collecting certifi>=2023.5.7 (from requests->vosk==0.3.45)
+  Downloading certifi-2026.7.22-py3-none-any.whl.metadata (2.5 kB)
+Collecting colorama (from tqdm->vosk==0.3.45)
+  Downloading colorama-0.4.6-py2.py3-none-any.whl.metadata (17 kB)
+Downloading vosk-0.3.45-py3-none-win_amd64.whl (14.0 MB)
+   ---------------------------------------- 14.0/14.0 MB 3.1 MB/s  0:00:04
+Downloading cffi-2.1.1-cp312-cp312-win_amd64.whl (185 kB)
+Downloading pycparser-3.11-py3-none-any.whl (51 kB)
+Downloading requests-2.34.2-py3-none-any.whl (73 kB)
+Downloading charset_normalizer-3.5.2-cp312-cp312-win_amd64.whl (207 kB)
+Downloading idna-3.20-py3-none-any.whl (69 kB)
+Downloading urllib3-2.8.0-py3-none-any.whl (135 kB)
+Downloading certifi-2026.7.22-py3-none-any.whl (136 kB)
+Downloading tqdm-4.70.1-py3-none-any.whl (80 kB)
+Downloading colorama-0.4.6-py2.py3-none-any.whl (25 kB)
+Downloading websockets-17.2-cp312-cp312-win_amd64.whl (218 kB)
+Building wheels for collected packages: srt
+  Building wheel for srt (pyproject.toml): started
+  Building wheel for srt (pyproject.toml): finished with status 'done'
+  Created wheel for srt: filename=srt-3.5.3-py3-none-any.whl size=22639 sha256=36b28e25bbc0bf66ea06a372ca04584ade80a6b90ff384085aa5a139e0da9498
+  Stored in directory: c:\users\yugas\appdata\local\pip\cache\wheels\7e\75\5b\e1d5c3756631e4bda806f6cc9640153b39484bb6f7b0b8def3
+Successfully built srt
+Installing collected packages: websockets, urllib3, srt, pycparser, idna, colorama, charset_normalizer, certifi, tqdm, requests, cffi, vosk
+
+ERROR: pip's dependency resolver does not currently take into account all the packages that are installed. This behaviour is the source of the following dependency conflicts.
+fastmcp 3.2.4 requires pydantic[email]>=2.11.7, but you have pydantic 2.10.6 which is incompatible.
+fastmcp 3.2.4 requires python-dotenv>=1.1.0, but you have python-dotenv 1.0.1 which is incompatible.
+google-genai 2.3.0 requires websockets<17.0,>=13.0.0, but you have websockets 17.2 which is incompatible.
+gradio-client 1.10.0 requires websockets<16.0,>=10.0, but you have websockets 17.2 which is incompatible.
+pyhanko 0.34.1 requires cryptography>=43.0.3, but you have cryptography 42.0.8 which is incompatible.
+sentence-transformers 2.3.1 requires transformers<5.0.0,>=4.32.0, but you have transformers 5.12.1 which is incompatible.
+langchain-community 0.2.17 requires langchain<0.3.0,>=0.2.16, but you have langchain 0.3.28 which is incompatible.
+langchain-community 0.2.17 requires langchain-core<0.3.0,>=0.2.39, but you have langchain-core 0.3.84 which is incompatible.
+langchain-community 0.2.17 requires langsmith<0.2.0,>=0.1.112, but you have langsmith 0.7.37 which is incompatible.
+langchain-community 0.2.17 requires numpy<2.0.0,>=1.26.0; python_version >= "3.12", but you have numpy 2.1.2 which is incompatible.
+langchain-together 0.1.5 requires langchain-core<0.3.0,>=0.2.26, but you have langchain-core 0.3.84 which is incompatible.
+langchain-together 0.1.5 requires langchain-openai<0.2.0,>=0.1.16, but you have langchain-openai 0.3.35 which is incompatible.
+Successfully installed certifi-2026.7.22 cffi-2.1.1 charset_normalizer-3.5.2 colorama-0.4.6 idna-3.20 pycparser-3.11 requests-2.34.2 srt-3.5.3 tqdm-4.70.1 urllib3-2.8.0 vosk-0.3.45 websockets-17.2

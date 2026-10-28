@@ -1,0 +1,218 @@
+{
+ "schema": "aeronex-speech-packs/1",
+ "source": "tooling/models/sherpa/manifest.json (T3, 2026-10-12T10:18:32+00:00)",
+ "note": "Packs are not bundled: ModelPackStore installs them from these HTTPS URLs (the Models screen) or from getExternalFilesDir(null)/import/<id>/, verified against bytes and sha256. A null url means import only.",
+ "packs": [
+  {
+   "id": "indicconformer-ta-ctc-int8",
+   "engine": "sherpa-onnx-nemo-ctc",
+   "language": "ta",
+   "streaming": false,
+   "tier": "M",
+   "min_ram_mb": null,
+   "licence": "MIT (AI4Bharat IndicConformer weights, ai4bharat/indicconformer_stt_<lang>_hybrid_ctc_rnnt_large); the parismitaglobalsolutions/indicconformer-sherpa-onnx card declares Apache-2.0 for the repackaging",
+   "licence_confirmed": true,
+   "grammar_version": 1,
+   "default_enabled": true,
+   "files": [
+    {
+     "name": "model.int8.onnx",
+     "role": "model",
+     "bytes": 197595513,
+     "sha256": "abb7b59d706b8d27ba3fb5e5e3db7671c9e1a09bf7bc6122de507c60030e65fb",
+     "url": "https://huggingface.co/parismitaglobalsolutions/indicconformer-sherpa-onnx/resolve/9721eb71eea141fae0982cfcdb9dd2e3d4953c4a/ta/model.int8.onnx"
+    },
+    {
+     "name": "tokens.txt",
+     "role": "tokens",
+     "bytes": 67605,
+     "sha256": "ee60967630213f31951817ac8b402b92ec18cce80718a24a49b388e56672dfb2",
+     "url": "https://huggingface.co/parismitaglobalsolutions/indicconformer-sherpa-onnx/resolve/9721eb71eea141fae0982cfcdb9dd2e3d4953c4a/tokens.txt"
+    }
+   ]
+  },
+  {
+   "id": "indicconformer-kn-ctc-int8",
+   "engine": "sherpa-onnx-nemo-ctc",
+   "language": "kn",
+   "streaming": false,
+   "tier": "M",
+   "min_ram_mb": null,
+   "licence": "MIT (AI4Bharat IndicConformer weights, ai4bharat/indicconformer_stt_<lang>_hybrid_ctc_rnnt_large); the parismitaglobalsolutions/indicconformer-sherpa-onnx card declares Apache-2.0 for the repackaging",
+   "licence_confirmed": true,
+   "grammar_version": 1,
+   "default_enabled": true,
+   "files": [
+    {
+     "name": "model.int8.onnx",
+     "role": "model",
+     "bytes": 197595728,
+     "sha256": "b226ce7e4ea35b0dd66991964bd00e011b6b14b0fcdf4f7d1cccd777781c94dc",
+     "url": "https://huggingface.co/parismitaglobalsolutions/indicconformer-sherpa-onnx/resolve/9721eb71eea141fae0982cfcdb9dd2e3d4953c4a/kn/model.int8.onnx"
+    },
+    {
+     "name": "tokens.txt",
+     "role": "tokens",
+     "bytes": 67605,
+     "sha256": "ee60967630213f31951817ac8b402b92ec18cce80718a24a49b388e56672dfb2",
+     "url": "https://huggingface.co/parismitaglobalsolutions/indicconformer-sherpa-onnx/resolve/9721eb71eea141fae0982cfcdb9dd2e3d4953c4a/tokens.txt"
+    }
+   ]
+  },
+  {
+   "id": "indicconformer-ml-ctc-int8",
+   "engine": "sherpa-onnx-nemo-ctc",
+   "language": "ml",
+   "streaming": false,
+   "tier": "M",
+   "min_ram_mb": null,
+   "licence": "MIT (AI4Bharat IndicConformer weights, ai4bharat/indicconformer_stt_<lang>_hybrid_ctc_rnnt_large); the parismitaglobalsolutions/indicconformer-sherpa-onnx card declares Apache-2.0 for the repackaging",
+   "licence_confirmed": true,
+   "grammar_version": 1,
+   "default_enabled": true,
+   "files": [
+    {
+     "name": "model.int8.onnx",
+     "role": "model",
+     "bytes": 197595555,
+     "sha256": "dcbdfa9f773db910508b40b703cb76c5974e8d4c6f123ea81265b40853c3f0c2",
+     "url": "https://huggingface.co/parismitaglobalsolutions/indicconformer-sherpa-onnx/resolve/9721eb71eea141fae0982cfcdb9dd2e3d4953c4a/ml/model.int8.onnx"
+    },
+    {
+     "name": "tokens.txt",
+     "role": "tokens",
+     "bytes": 67605,
+     "sha256": "ee60967630213f31951817ac8b402b92ec18cce80718a24a49b388e56672dfb2",
+     "url": "https://huggingface.co/parismitaglobalsolutions/indicconformer-sherpa-onnx/resolve/9721eb71eea141fae0982cfcdb9dd2e3d4953c4a/tokens.txt"
+    }
+   ]
+  },
+  {
+   "id": "indicconformer-te-ctc-int8",
+   "engine": "sherpa-onnx-nemo-ctc",
+   "language": "te",
+   "streaming": false,
+   "tier": "M",
+   "min_ram_mb": null,
+   "licence": "MIT (AI4Bharat IndicConformer weights, ai4bharat/indicconformer_stt_<lang>_hybrid_ctc_rnnt_large); the parismitaglobalsolutions/indicconformer-sherpa-onnx card declares Apache-2.0 for the repackaging",
+   "licence_confirmed": true,
+   "grammar_version": 1,
+   "default_enabled": true,
+   "files": [
+    {
+     "name": "model.int8.onnx",
+     "role": "model",
+     "bytes": 197595693,
+     "sha256": "710f176e33080f1be84b4f38bb5f33be3f522dcf4f191bf4d5cc89f7a85924f3",
+     "url": "https://huggingface.co/parismitaglobalsolutions/indicconformer-sherpa-onnx/resolve/9721eb71eea141fae0982cfcdb9dd2e3d4953c4a/te/model.int8.onnx"
+    },
+    {
+     "name": "tokens.txt",
+     "role": "tokens",
+     "bytes": 67605,
+     "sha256": "ee60967630213f31951817ac8b402b92ec18cce80718a24a49b388e56672dfb2",
+     "url": "https://huggingface.co/parismitaglobalsolutions/indicconformer-sherpa-onnx/resolve/9721eb71eea141fae0982cfcdb9dd2e3d4953c4a/tokens.txt"
+    }
+   ]
+  },
+  {
+   "id": "kws-zh-en-3M-chunk-8",
+   "engine": "sherpa-onnx-kws",
+   "language": "en",
+   "streaming": true,
+   "tier": "L",
+   "min_ram_mb": null,
+   "licence": "UNCONFIRMED: no licence file in the archive and training data unstated; sherpa-onnx itself is Apache-2.0. Confirm with k2-fsa before shipping",
+   "licence_confirmed": false,
+   "grammar_version": 1,
+   "default_enabled": false,
+   "files": [
+    {
+     "name": "encoder-epoch-13-avg-2-chunk-8-left-64.int8.onnx",
+     "role": "encoder",
+     "bytes": 4600657,
+     "sha256": "2ca84d6bfe73e1ea3c9c49f600f7cad1c9ddd423c53c906b8bfe802444dd78d5",
+     "url": null
+    },
+    {
+     "name": "decoder-epoch-13-avg-2-chunk-8-left-64.onnx",
+     "role": "decoder",
+     "bytes": 759829,
+     "sha256": "63a22dd60f40fff082ac3e09afa507f6787da36df76ded2fbe145fa233e22c21",
+     "url": null
+    },
+    {
+     "name": "joiner-epoch-13-avg-2-chunk-8-left-64.int8.onnx",
+     "role": "joiner",
+     "bytes": 86629,
+     "sha256": "190d4067b4cc20b72a42a1916e69d92052000fb7051a427ebb1bc72a69207dc1",
+     "url": null
+    },
+    {
+     "name": "tokens.txt",
+     "role": "tokens",
+     "bytes": 1928,
+     "sha256": "2d3f32311f9b692b964da3c90e830258d3e78e013cb0c992dbfb15cd5a1a71b0",
+     "url": null
+    },
+    {
+     "name": "en.phone",
+     "role": "lexicon",
+     "bytes": 3330061,
+     "sha256": "f7000ec3a90544c0c7c16090d8951779c2b322e14dad5006290f498567d439ea",
+     "url": null
+    }
+   ]
+  },
+  {
+   "id": "kws-gigaspeech-3.3M-chunk-16",
+   "engine": "sherpa-onnx-kws",
+   "language": "en",
+   "streaming": true,
+   "tier": "L",
+   "min_ram_mb": null,
+   "licence": "Apache-2.0 (model card README.md inside the archive; trained on GigaSpeech XL with icefall)",
+   "licence_confirmed": true,
+   "grammar_version": 1,
+   "default_enabled": true,
+   "files": [
+    {
+     "name": "encoder-epoch-12-avg-2-chunk-16-left-64.int8.onnx",
+     "role": "encoder",
+     "bytes": 4807159,
+     "sha256": "1e721676515bcd42a186979733981213c66c80db680e1cc582dfedf3be76e678",
+     "url": "https://huggingface.co/mobilebytesensei/sherpa-onnx-kws-zipformer-gigaspeech-3.3M/resolve/e8ca74a794ce66e38a100e7c60c0214189ff4100/encoder-epoch-12-avg-2-chunk-16-left-64.int8.onnx"
+    },
+    {
+     "name": "decoder-epoch-12-avg-2-chunk-16-left-64.onnx",
+     "role": "decoder",
+     "bytes": 1063189,
+     "sha256": "f61ebd3eed3773a44d088d53dfae92dbb6aec4839f4dcaee2d402414741663a3",
+     "url": "https://huggingface.co/mobilebytesensei/sherpa-onnx-kws-zipformer-gigaspeech-3.3M/resolve/e8ca74a794ce66e38a100e7c60c0214189ff4100/decoder-epoch-12-avg-2-chunk-16-left-64.onnx"
+    },
+    {
+     "name": "joiner-epoch-12-avg-2-chunk-16-left-64.int8.onnx",
+     "role": "joiner",
+     "bytes": 163380,
+     "sha256": "eae9da0c7e1e6c6a3f4cc42d167899c388f6c6701b94cb96320e4f55df79624c",
+     "url": "https://huggingface.co/mobilebytesensei/sherpa-onnx-kws-zipformer-gigaspeech-3.3M/resolve/e8ca74a794ce66e38a100e7c60c0214189ff4100/joiner-epoch-12-avg-2-chunk-16-left-64.int8.onnx"
+    },
+    {
+     "name": "tokens.txt",
+     "role": "tokens",
+     "bytes": 5006,
+     "sha256": "fd2ded4050a55d2b1578870ba8697d02371980217806b7558bd0a5cc60f3ba53",
+     "url": "https://huggingface.co/mobilebytesensei/sherpa-onnx-kws-zipformer-gigaspeech-3.3M/resolve/e8ca74a794ce66e38a100e7c60c0214189ff4100/tokens.txt"
+    },
+    {
+     "name": "bpe.model",
+     "role": "bpe",
+     "bytes": 244837,
+     "sha256": "c8a2a0129c4ab8e463164c142f82d25649661b122c8cd0b7aab5c9e80b90ad24",
+     "url": "https://huggingface.co/mobilebytesensei/sherpa-onnx-kws-zipformer-gigaspeech-3.3M/resolve/e8ca74a794ce66e38a100e7c60c0214189ff4100/bpe.model"
+    }
+   ],
+   "url_source": "k2-fsa ships this model only as kws-models/sherpa-onnx-kws-zipformer-gigaspeech-3.3M-2024-01-01.tar.bz2. The URLs pin a Hugging Face copy by commit (mobilebytesensei/sherpa-onnx-kws-zipformer-gigaspeech-3.3M, apache-2.0) whose files were checked byte-identical to that archive on 2026-10-15 (LFS sha256 and git blob ids); bytes and sha256 here are the archive's, so the phone accepts nothing else."
+  }
+ ]
+}

@@ -1,0 +1,16 @@
+[
+  {
+    "file": "app/build/app/outputs/flutter-apk/app-release.apk",
+    "version": "0.1.1",
+    "version_code": 2,
+    "bytes": 26285139,
+    "sha256": "4597b9d3576e151c56c3c70f9167e3e4f9eea7cd0a73c4e8b5f82af2a7017aec"
+  },
+  {
+    "file": "app/build/app/outputs/flutter-apk/app-debug.apk",
+    "version": "0.1.1",
+    "version_code": 2,
+    "bytes": 100170796,
+    "sha256": "f5432259b64d298925f488df879960635161a91a67e8b881b09fe32c0e7f19d6"
+  }
+]

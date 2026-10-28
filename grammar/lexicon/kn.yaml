@@ -1,0 +1,79 @@
+# Lexicon: Kannada (kn). Canonical grammar v1 (spec 4.8, 7.2).
+#
+# PROVISIONAL as a whole (spec 7.2): no native speaker has reviewed it.
+# `rules` is the edge/app/intent.py reference table (verbatim, in order); the
+# v0.2.0 Dart parser had no Kannada vocabulary, so these tables feed the CTC
+# lexicon, not the golden-parity parser. `plan.connectives` and the
+# `transcript` negators are the Dart tables' Kannada entries.
+
+language: kn
+name: Kannada
+script: {name: kannada, first: 0x0C80, last: 0x0CFF, digit_zero: 0x0CE6}
+provisional: true
+
+rules:
+  move_verbs: [ಹೋಗು, ಹಾರು, ಚಲಿಸು, ನಡೆ]
+  directions:
+    forward: [ಮುಂದೆ, ಮುಂದಕ್ಕೆ]
+    backward: [ಹಿಂದೆ, ಹಿಂದಕ್ಕೆ]
+    left: [ಎಡಕ್ಕೆ, ಎಡ]
+    right: [ಬಲಕ್ಕೆ, ಬಲ]
+    up: [ಮೇಲೆ, ಮೇಲಕ್ಕೆ]
+    down: [ಕೆಳಗೆ, ಕೆಳಕ್ಕೆ]
+  units: [ಮೀಟರ್, "ಮೀಟರ್‌ಗಳು", ಮೀ]
+  commands:
+    - {command: STOP, phrases: [ನಿಲ್ಲು, ನಿಲ್ಲಿಸು, ಸ್ಟಾಪ್]}
+    - {command: TAKEOFF, phrases: [ಟೇಕಾಫ್, ಮೇಲಕ್ಕೆ ಏರು]}
+    - {command: LAND, phrases: [ಇಳಿ, ಲ್ಯಾಂಡ್]}
+    - {command: HOVER, phrases: [ಹೋವರ್]}
+  negators: [ಬೇಡ, ಇಲ್ಲ]
+  negator_suffixes: [ಬೇಡ, ಬೇಡಿ]
+  minus_words: [ಮೈನಸ್]
+  other_units: [ಸೆಂಟಿಮೀಟರ್, ಮಿಲಿಮೀಟರ್, ಕಿಲೋಮೀಟರ್, ಸೆಂಟಿ, ಮಿಲಿ, ಕಿಲೋ, ಅಡಿ, ಇಂಚು, ಮೈಲಿ]
+  scale_words: [ಸಾವಿರ, ದಶಮಾಂಶ, ಅರ್ಧ]
+  numbers: {ಒಂದು: 1, ಎರಡು: 2, ಮೂರು: 3, ನಾಲ್ಕು: 4, ಐದು: 5, ಆರು: 6, ಏಳು: 7, ಎಂಟು: 8, ಒಂಬತ್ತು: 9, ಹತ್ತು: 10, ಹನ್ನೊಂದು: 11, ಹನ್ನೆರಡು: 12, ಹದಿಮೂರು: 13, ಹದಿನಾಲ್ಕು: 14, ಹದಿನೈದು: 15, ಹದಿನಾರು: 16, ಹದಿನೇಳು: 17, ಹದಿನೆಂಟು: 18, ಹತ್ತೊಂಬತ್ತು: 19, ಇಪ್ಪತ್ತು: 20, ಇಪ್ಪತ್ತೊಂದು: 21, ಮೂವತ್ತು: 30, ನಲವತ್ತು: 40, ಐವತ್ತು: 50, ಅರವತ್ತು: 60, ಎಪ್ಪತ್ತು: 70, ಎಂಭತ್ತು: 80, ತೊಂಬತ್ತು: 90, ನೂರು: 100}
+  tens_values: [20, 30, 40, 50, 60, 70, 80, 90]
+  units19: {ಒಂದು: 1, ಎರಡು: 2, ಮೂರು: 3, ನಾಲ್ಕು: 4, ಐದು: 5, ಆರು: 6, ಏಳು: 7, ಎಂಟು: 8, ಒಂಬತ್ತು: 9}
+
+plan:
+  connectives: [ನಂತರ, ಮತ್ತು]
+
+transcript:
+  negators: [ಇಲ್ಲ]
+  fused_negators: [ಬೇಡ]
+
+# --- v2 grammar ---------------------------------------------------------------
+
+stop_lane: [ನಿಲ್ಲು, ನಿಲ್ಲಿಸು, ಸ್ಟಾಪ್]
+
+numerals:
+  extra: {ಸೊನ್ನೆ: 0}
+  fractions: {ಅರ್ಧ: 0.5, ಒಂದೂವರೆ: 1.5, ಎರಡೂವರೆ: 2.5}
+  loans:
+    ones: {ಜೀರೋ: 0, ಒನ್: 1, ಟೂ: 2, ತ್ರೀ: 3, ಫೋರ್: 4, ಫೈವ್: 5, ಸಿಕ್ಸ್: 6, ಸೆವೆನ್: 7, ಎಯ್ಟ್: 8, ನೈನ್: 9, ಟೆನ್: 10, ಇಲೆವೆನ್: 11, ಟ್ವೆಲ್ವ್: 12, ಥರ್ಟೀನ್: 13, ಫೋರ್ಟೀನ್: 14, ಫಿಫ್ಟೀನ್: 15, ಸಿಕ್ಸ್ಟೀನ್: 16, ಸೆವೆಂಟೀನ್: 17, ಎಯ್ಟೀನ್: 18, ನೈಂಟೀನ್: 19}
+    tens: {ಟ್ವೆಂಟಿ: 20, ಥರ್ಟಿ: 30, ಫೋರ್ಟಿ: 40, ಫಿಫ್ಟಿ: 50, ಸಿಕ್ಸ್ಟಿ: 60, ಸೆವೆಂಟಿ: 70, ಎಯ್ಟಿ: 80, ನೈಂಟಿ: 90}
+    hundred: {ಹಂಡ್ರೆಡ್: 100}
+    fractions: {ಹಾಫ್: 0.5}
+
+loanwords:
+  words:
+    - {loan: ಟೇಕ್ ಆಫ್, latin: take off, class: takeoff, native: ಟೇಕಾಫ್}
+    - {loan: ಹೋಲ್ಡ್, latin: hold, class: hold, native: ಹೋವರ್}
+    - {loan: ಫಾರ್ವರ್ಡ್, latin: forward, class: dir, native: ಮುಂದೆ}
+    - {loan: ಬ್ಯಾಕ್, latin: back, class: dir, native: ಹಿಂದೆ}
+    - {loan: ಲೆಫ್ಟ್, latin: left, class: dir, native: ಎಡಕ್ಕೆ}
+    - {loan: ರೈಟ್, latin: right, class: dir, native: ಬಲಕ್ಕೆ}
+    - {loan: ಅಪ್, latin: up, class: dir, native: ಮೇಲೆ}
+    - {loan: ಡೌನ್, latin: down, class: dir, native: ಕೆಳಗೆ}
+    - {loan: ಮೂವ್, latin: move, class: verb, native: ಹೋಗು}
+    - {loan: ಗೋ, latin: go, class: verb, native: ಹೋಗು}
+    - {loan: ಮೀಟರ್ಸ್, latin: meters, class: unit, native: ಮೀಟರ್}
+    - {loan: ಸ್ಟೇಟಸ್, latin: status, class: status, native: null}
+
+templates:
+  takeoff: ["{num} {unit} {takeoff}"]
+  move: ["{num} {unit} {dir} {verb}", "{dir} {num} {unit} {verb}"]
+  hold: ["{hold}"]
+  stop: ["{stop}"]
+  land: ["{land}"]
+  status: ["{status}"]
