@@ -120,4 +120,26 @@ void main() {
           direction);
     }
   });
+
+  test('accepts the flight memory tools with the service\'s rules (2026-10-28)', () {
+    FlightCommand call(String name, [Map<String, Object?> arguments = const {}]) =>
+        FlightCommand.fromToolCalls([
+          {'name': name, 'arguments': arguments}
+        ]);
+    expect(call('return_home').description, 'Return home');
+    expect(call('go_back').description, 'Go back to the previous position');
+    expect(call('retrace').description, 'Retrace the flown path');
+    expect(call('goto_point', {'point': 2}).description, 'Go to point 2');
+    expect(call('mark_point', {'point': 9.0}).description, 'Mark point 9');
+    expect(call('retrace').isMemoryMotion, isTrue);
+    expect(call('mark_point', {'point': 1}).isMemoryMotion, isFalse);
+    expect(() => call('return_home', {'x': 1}),
+        throwsA(isA<FormatException>().having((e) => e.message, 'message', 'This tool accepts no arguments.')));
+    for (final bad in <Object?>[0, 10, 2.5, '2', null, -1]) {
+      expect(() => call('goto_point', {'point': bad}),
+          throwsA(isA<FormatException>().having((e) => e.message, 'message', 'Specify a point number 1–9.')),
+          reason: '$bad');
+    }
+    expect(() => call('mark_point'), throwsFormatException);
+  });
 }

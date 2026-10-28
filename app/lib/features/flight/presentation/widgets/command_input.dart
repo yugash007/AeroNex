@@ -106,19 +106,30 @@ class _CommandInputState extends State<CommandInput> {
     unawaited(_call(widget.session.pttUp));
   }
 
+  /// The system dialog covers STOP: never while a link is open and the drone
+  /// is armed or its arming is not known yet (a reconnect mid-flight, before
+  /// the first heartbeat). With no link there is no STOP to cover.
+  bool get _dialogMayCoverStop =>
+      widget.snapshot.link.state != LinkState.down && widget.snapshot.vehicle.armed != false;
+
   /// RECORD_AUDIO before the first push-to-talk: the reason first, and never
-  /// while the drone is armed (the system dialog covers STOP).
+  /// while the system dialog could cover a STOP that may be needed.
   Future<void> _microphone() async {
     if (_asking) return;
     _asking = true;
     try {
       final state = await widget.session.microphonePermission();
       if (state == NotificationPermission.askable) {
-        if (widget.snapshot.vehicle.armed == true) {
+        if (_dialogMayCoverStop) {
           _say(microphoneWhileArmed);
           return;
         }
         if (!mounted || !await _explain()) return;
+        // Checked again: the drone may have armed while the reason was shown.
+        if (_dialogMayCoverStop) {
+          _say(microphoneWhileArmed);
+          return;
+        }
         // Granted in the dialog: the service starts the microphone itself.
         _say(await widget.session.microphonePermission(ask: true) ==
                 NotificationPermission.granted
@@ -179,6 +190,9 @@ class _CommandInputState extends State<CommandInput> {
     final connected = widget.snapshot.link.state != LinkState.down;
     final partial = speech.partial;
     final notice = _notice;
+    // The level line already says why voice is off.
+    final speechError =
+        !speech.listening && speech.error != speech.message ? speech.error : null;
     return Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
       PttBar(
           speech: speech,
@@ -244,13 +258,14 @@ class _CommandInputState extends State<CommandInput> {
                       ? theme.colorScheme.tertiary
                       : theme.colorScheme.error)),
         ),
-      for (final message in {
-        // The level line already says why voice is off.
-        if (!speech.listening && speech.error != speech.message) speech.error,
-        notice,
-      }.whereType<String>())
+      // One card per distinct message, each with its own key (two cards with
+      // one key broke the Flight screen).
+      for (final (key, message) in [
+        if (speechError != null) (const Key('speechError'), speechError),
+        if (notice != null && notice != speechError) (const Key('speechNotice'), notice),
+      ])
         Card(
-          key: const Key('speechError'),
+          key: key,
           color: theme.colorScheme.errorContainer,
           child: Padding(
             padding: const EdgeInsets.all(12),

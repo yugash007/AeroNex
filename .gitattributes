@@ -1,0 +1,12 @@
+# LF everywhere, on every platform. gen.py --check compares generated files byte for byte, so a CRLF checkout
+# (Git for Windows' default) would report every grammar output as out of date.
+* text=auto eol=lf
+
+*.png binary
+*.jpg binary
+*.jar binary
+*.aar binary
+*.so binary
+*.a binary
+*.onnx binary
+*.wav binary

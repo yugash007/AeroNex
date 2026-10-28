@@ -44,6 +44,9 @@ class VehicleStateStore(
     private val receivedAt = HashMap<Int, Long>()
     private val samples = HashMap<Int, Long>()
 
+    /** Per-message freshness of the link's telemetry profile ([VehicleState.freshMs]); kept across [reset]. */
+    @Volatile var freshness: Map<Int, Long> = emptyMap()
+
     fun addListener(listener: (VehicleState) -> Unit) {
         listeners += listener
     }
@@ -126,7 +129,8 @@ class VehicleStateStore(
                 if (message.targetSystem != 0 && message.targetSystem != gcsSystem ||
                     message.targetComponent != 0 && message.targetComponent != gcsComponent
                 ) return false
-                fields.copy(acks = fields.acks + (message.command to Received(message, now)))
+                fields.copy(acks = fields.acks + (message.command to
+                    Received(message, now, heartbeats = samples[Heartbeat.messageId] ?: 0)))
             }
             else -> return false
         }
@@ -137,9 +141,11 @@ class VehicleStateStore(
         receivedAt[messageId].let { it != null && now - it >= 0 && now - it < VehicleState.FRESH_MS }
 
     private fun snapshotAt(now: Long): VehicleState {
-        val state = fields.copy(atMs = now, ageMs = receivedAt.mapValues { now - it.value }, samples = samples.toMap())
-        return if (state.connected) state.copy(modeOwner = ownership.owner, externalCause = ownership.cause)
-        else state.copy(modeOwner = ModeOwner.EXTERNAL, externalCause = null)
+        val state = fields.copy(atMs = now, ageMs = receivedAt.mapValues { now - it.value }, samples = samples.toMap(),
+            freshMs = freshness)
+        return if (state.connected) {
+            state.copy(modeOwner = ownership.owner, externalCause = ownership.cause, appModeAfterGap = ownership.resumedAppMode)
+        } else state.copy(modeOwner = ModeOwner.EXTERNAL, externalCause = null)
     }
 
     private fun notifyAt(now: Long) {

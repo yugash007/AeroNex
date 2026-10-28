@@ -14,6 +14,7 @@ Two paths share the same builder:
 CLI::
 
     python -m edge.app.demo_client --host 127.0.0.1 --text "move forward 10 meters" --lang en
+    AERONEX_EDGE_TOKEN=... python -m edge.app.demo_client --host 192.168.4.1 --text "land" --lang en
     python -m edge.app.demo_client --host 127.0.0.1 --text "10 మీటర్లు ముందుకు వెళ్ళు" --lang te
 """
 
@@ -71,16 +72,20 @@ def run_in_process(
 
 async def run_live(
     host: str, text: str, lang: str, port: int = 8000,
-    message_id: str | None = None,
+    message_id: str | None = None, token: str | None = None,
 ) -> dict[str, dict]:
-    """Send one typed command to a live edge server; print each hop."""
+    """Send one typed command to a live edge server; print each hop.
+
+    ``token`` is the server's AERONEX_EDGE_TOKEN (needed for a non-loopback edge).
+    """
     envelope = build_command_envelope(text, lang, message_id=message_id)
     print(f"text   : {text!r} ({lang})")
     print(f"intent : {json.dumps(envelope['payload'], ensure_ascii=False)}")
     print(f"send   : COMMAND id={envelope['message_id']}")
 
     uri = f"ws://{host}:{port}{config.WS_PATH}"
-    async with websockets.connect(uri) as ws:
+    headers = {"Authorization": f"Bearer {token}"} if token else None
+    async with websockets.connect(uri, additional_headers=headers) as ws:
         await ws.send(json.dumps(envelope))
         ack = json.loads(await ws.recv())
         print(f"recv   : ACK request_id={ack['payload'].get('request_id')}")
@@ -109,9 +114,11 @@ def main(argv: list[str] | None = None) -> dict[str, dict]:
                         help="Typed command text (stand-in for STT output)")
     parser.add_argument("--lang", default="en",
                         help="Spoken language code: en | hi | te")
+    parser.add_argument("--token", default=config.token_from_env(),
+                        help=f"Client token (default: ${config.TOKEN_ENV})")
     args = parser.parse_args(argv)
     return asyncio.run(
-        run_live(args.host, args.text, args.lang, port=args.port)
+        run_live(args.host, args.text, args.lang, port=args.port, token=args.token)
     )
 
 

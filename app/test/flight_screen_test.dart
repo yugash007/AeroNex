@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart' show SemanticsAction;
+import 'package:flutter/semantics.dart' show CustomSemanticsAction;
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:aeronex/app_shell.dart';
@@ -1559,5 +1560,195 @@ void main() {
         'Move backward 2 m');
     expect(FlightPlan.single(tap('hold', {}), source: StepSource.rules).steps.single.source,
         StepSource.rules);
+  });
+
+  group('audit fixes (2026-10-28)', () {
+    testWidgets('Disconnect while flying asks first; Stay connected keeps the link (F1)',
+        (tester) async {
+      final session = await launch(tester, initial: fixture('executing_move'));
+      await tapText(tester, 'Disconnect');
+      expect(find.byKey(const Key('disconnectConfirm')), findsOneWidget);
+      expect(stopButton(), findsOneWidget, reason: 'STOP stays reachable above the dialog');
+      await tester.tap(find.byKey(const Key('stayConnected')));
+      await tester.pumpAndSettle();
+      expect(session.methods, isNot(contains('disconnect')));
+      await tapText(tester, 'Disconnect');
+      await tester.tap(find.byKey(const Key('disconnectAnyway')));
+      await tester.pumpAndSettle();
+      expect(session.methods, contains('disconnect'));
+    });
+
+    testWidgets('on the ground, Disconnect is one tap', (tester) async {
+      final session = await launch(tester,
+          initial: fixture('connected_landed', {
+            'vehicle': {...fixture('connected_landed').raw['vehicle'] as Map<String, Object?>, 'armed': false},
+          }));
+      await tapText(tester, 'Disconnect');
+      expect(find.byKey(const Key('disconnectConfirm')), findsNothing);
+      expect(session.methods, contains('disconnect'));
+    });
+
+    testWidgets('a double tap on Connect connects once (F12)', (tester) async {
+      final session = await launch(tester);
+      session.connectGate = Completer<void>();
+      final connect = find.text('Connect');
+      await tester.tap(connect);
+      await tester.tap(connect);
+      await tester.pump();
+      session.connectGate!.complete();
+      await tester.pumpAndSettle();
+      expect(session.methods.where((m) => m == 'connect'), hasLength(1));
+    });
+
+    testWidgets('Hold on the tap pad acts while a typed command is being sent (F9)',
+        (tester) async {
+      final session = await launch(tester, initial: fixture('executing_move'));
+      session.submitGate = Completer<void>();
+      await tester.enterText(find.widgetWithText(TextField, 'Type a command'), 'land');
+      await tester.testTextInput.receiveAction(TextInputAction.go);
+      await tester.pump();
+      final hold = find.widgetWithText(OutlinedButton, 'Hold');
+      await tester.ensureVisible(hold);
+      await tester.tap(hold);
+      await tester.pump();
+      expect(session.methods, contains('submitPlan'));
+      session.submitGate!.complete();
+      await tester.pumpAndSettle();
+    });
+
+    testWidgets('a speech error and a failed press show as two cards (F7: one key broke the screen)',
+        (tester) async {
+      final session = await launch(tester, initial: fixture('connected_landed'));
+      session.pushSpeech({'heard': 'move forward 2', 'error': 'The command was not clear. Say it again.', 'utterance': 3});
+      await tester.pumpAndSettle();
+      session.pttError = PlatformException(code: 'INTERNAL', message: 'The flight supervisor did not answer.');
+      final press = await hold(tester);
+      await press.up();
+      await tester.pumpAndSettle();
+      expect(tester.takeException(), isNull);
+      expect(find.byKey(const Key('speechError')), findsOneWidget);
+      expect(find.byKey(const Key('speechNotice')), findsOneWidget);
+    });
+
+    testWidgets('STOP over a pilot mode can be chosen from the accessibility actions (F3)',
+        (tester) async {
+      final handle = tester.ensureSemantics();
+      final calls = <bool>[];
+      await tester.pumpWidget(MaterialApp(
+          home: Scaffold(
+              body: StopButton(
+                  onStop: ({required bool heldOneSecond}) => calls.add(heldOneSecond),
+                  holdToOverride: true,
+                  ownerLabel: 'Pilot mode'))));
+      final node = tester.getSemantics(find.byType(StopButton));
+      expect(node.label, contains(overrideActionLabel));
+      final action = CustomSemanticsAction.getIdentifier(const CustomSemanticsAction(label: overrideActionLabel));
+      tester.renderObject(find.byType(StopButton)).owner!.semanticsOwner!
+          .performAction(node.id, SemanticsAction.customAction, action);
+      await tester.pump();
+      expect(calls, [true]);
+      handle.dispose();
+    });
+  });
+
+
+  group('flight memory (2026-10-28)', () {
+    Finder memoryButton(String key) => find.byKey(Key(key));
+
+    Future<void> tapKey(WidgetTester tester, String key) async {
+      await tester.ensureVisible(memoryButton(key));
+      await tester.pumpAndSettle();
+      await tester.tap(memoryButton(key));
+      await tester.pumpAndSettle();
+    }
+
+    bool enabled(WidgetTester tester, String key) =>
+        tester.widget<ButtonStyleButton>(memoryButton(key)).onPressed != null;
+
+    testWidgets('shows the path, points and recent commands, and the buttons send '
+        'the voice commands\' tool calls with the Tap source', (tester) async {
+      final session = await launch(tester, initial: fixture('flight_memory'));
+      expect(find.byKey(const Key('flightMemory')), findsOneWidget);
+      expect(find.byKey(const Key('memoryMap')), findsOneWidget);
+      expect(find.text('Go back to Move forward 4 m'), findsOneWidget);
+      expect(find.text('Mark point 2'), findsOneWidget);
+      expect(find.text('Go to point 1 (4 m from home)'), findsOneWidget);
+      expect(find.text('Move right 3 m'), findsWidgets);
+      for (final (key, name, arguments) in [
+        ('memoryReturnHome', 'return_home', <String, Object?>{}),
+        ('memoryGoBack', 'go_back', <String, Object?>{}),
+        ('memoryRetrace', 'retrace', <String, Object?>{}),
+        ('memoryMark', 'mark_point', <String, Object?>{'point': 2}),
+        ('memoryPoint1', 'goto_point', <String, Object?>{'point': 1}),
+      ]) {
+        session.calls.clear();
+        await tapKey(tester, key);
+        final request = session.argumentsOf('submitPlan').single as Map;
+        expect(request['source'], 'tap', reason: key);
+        expect(request['steps'], [
+          {'name': name, 'arguments': arguments, 'source': 'rules'}
+        ], reason: key);
+        // Shown for CONFIRM like any tap-pad plan; a new one replaces it.
+        expect(planCard(), findsOneWidget);
+        session.pushFixture('flight_memory');
+        await tester.pumpAndSettle();
+      }
+    });
+
+    testWidgets('Run again asks the service to show the recorded plan again', (tester) async {
+      final session = await launch(tester, initial: fixture('flight_memory'));
+      await tapKey(tester, 'memoryRunAgain2');
+      expect(session.argumentsOf('runAgain'), [
+        {'planId': 2}
+      ]);
+      expect(planCard(), findsOneWidget);
+      // A refusal is shown as is.
+      session.runAgainResult = const RejectedResult('The drone is already flying. Remove the takeoff step.');
+      session.pushFixture('flight_memory');
+      await tester.pumpAndSettle();
+      await tapKey(tester, 'memoryRunAgain1');
+      expect(find.text('The drone is already flying. Remove the takeoff step.'), findsOneWidget);
+    });
+
+    testWidgets('Clear asks first and keeps the memory on Keep', (tester) async {
+      final session = await launch(tester, initial: fixture('flight_memory'));
+      await tapKey(tester, 'memoryClear');
+      expect(find.byKey(const Key('clearMemoryConfirm')), findsOneWidget);
+      await tester.tap(find.byKey(const Key('keepMemory')));
+      await tester.pumpAndSettle();
+      expect(session.methods, isNot(contains('clearMemory')));
+      await tapKey(tester, 'memoryClear');
+      await tester.tap(find.byKey(const Key('clearMemory')));
+      await tester.pumpAndSettle();
+      expect(session.methods, contains('clearMemory'));
+      expect(find.byKey(const Key('memoryMap')), findsNothing);
+      expect(find.text('Go back'), findsOneWidget);
+    });
+
+    testWidgets('with nothing remembered only what can fly is enabled', (tester) async {
+      await launch(tester);
+      expect(find.byKey(const Key('memoryMap')), findsNothing);
+      for (final key in ['memoryReturnHome', 'memoryGoBack', 'memoryRetrace', 'memoryMark']) {
+        expect(enabled(tester, key), isFalse, reason: key);
+      }
+      expect(tester.widget<IconButton>(find.byKey(const Key('memoryClear'))).onPressed, isNull);
+    });
+
+    testWidgets('on the ground the launch point can be saved', (tester) async {
+      await launch(tester, initial: fixture('connected_landed'));
+      // The vehicle is on the map; nothing has been flown yet.
+      expect(find.byKey(const Key('memoryMap')), findsOneWidget);
+      expect(enabled(tester, 'memoryMark'), isTrue);
+      expect(enabled(tester, 'memoryGoBack'), isFalse);
+      expect(enabled(tester, 'memoryRetrace'), isFalse);
+    });
+
+    testWidgets('fits a 5-inch phone with large text', (tester) async {
+      await launch(tester, initial: fixture('flight_memory'), size: const Size(360, 640), textScale: 1.3);
+      await tester.ensureVisible(find.byKey(const Key('flightMemory')));
+      await tester.pumpAndSettle();
+      expect(tester.takeException(), isNull);
+      expect(stopButton().hitTestable(), findsOneWidget);
+    });
   });
 }

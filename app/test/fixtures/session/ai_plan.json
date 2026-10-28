@@ -137,5 +137,19 @@
     "gloss": "forward 3 meters then land",
     "understoodAs": "move forward 3 meters, then land",
     "error": null
+  },
+  "memory": {
+    "homeKnown": false,
+    "vehicle": {
+      "northM": 1.5,
+      "eastM": 0.4,
+      "upM": 3.02
+    },
+    "trail": [],
+    "points": [],
+    "goBackTo": null,
+    "canRetrace": false,
+    "plans": [],
+    "notice": null
   }
 }

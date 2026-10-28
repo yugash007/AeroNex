@@ -9,6 +9,7 @@ import '../../session/session_api.dart';
 import '../domain/flight_command.dart';
 import '../domain/flight_plan.dart';
 import 'widgets/command_input.dart';
+import 'widgets/flight_memory_card.dart';
 import 'widgets/plan_card.dart';
 import 'widgets/status_line.dart';
 import 'widgets/stop_button.dart';
@@ -19,8 +20,9 @@ enum FlightDestination { linkSetup, models, diagnostics }
 
 enum _Menu { linkSetup, models, diagnostics, licenses }
 
-/// Home: the vehicle line, the plan waiting for CONFIRM (or running), and the
-/// ways to give a command (push-to-talk, typing, the tap pad). The giant STOP
+/// Home: the vehicle line, the plan waiting for CONFIRM (or running), the
+/// ways to give a command (push-to-talk, typing, the tap pad) and the flight
+/// memory (return home, go back, retrace, points, run again). The giant STOP
 /// sits above it, and above every other route, in the app's [StopLane]. The
 /// flight session service listens, parses, decides and executes everything;
 /// this screen sends push-to-talk edges, typed text and tap-pad plans, and
@@ -159,15 +161,23 @@ class _FlightScreenState extends State<FlightScreen> with WidgetsBindingObserver
     setState(() {
       _snap = snapshot;
       _serviceError = null;
+      // An AI answer from before this screen (an app restart) or before the
+      // latest press is not news: only newer requests show.
+      if (previous.seq == 0 || snapshot.speech.utterance != previous.speech.utterance) {
+        _aiSeen = math.max(_aiSeen, snapshot.ai.request - (snapshot.ai.thinking ? 1 : 0));
+      }
       if (pending == null) {
         _countdown?.cancel();
         _countdown = null;
+      } else if (pending.token != previous.pending?.token) {
+        // A new plan: its own countdown, ticking from its arrival, so it never
+        // runs ahead of the service with the phase of an earlier plan.
+        _remainingMs = pending.expiresInMs;
+        _countdown?.cancel();
+        _countdown = Timer.periodic(const Duration(seconds: 1), (_) => _tick());
       } else {
         // The service's time left; between snapshots it only counts down.
-        _remainingMs = pending.token == previous.pending?.token
-            ? math.min(_remainingMs, pending.expiresInMs)
-            : pending.expiresInMs;
-        _countdown ??= Timer.periodic(const Duration(seconds: 1), (_) => _tick());
+        _remainingMs = math.min(_remainingMs, pending.expiresInMs);
       }
     });
     if (pending != null && pending.token != previous.pending?.token) {
@@ -211,16 +221,18 @@ class _FlightScreenState extends State<FlightScreen> with WidgetsBindingObserver
 
   Future<void> _connect([LinkSettings? saved]) async {
     if (_connecting) return;
-    final settings = saved ?? await _load();
-    if (!mounted) return;
-    if (settings == null) {
-      await widget.open(FlightDestination.linkSetup);
-      return;
-    }
+    // Set before the settings load, so a second tap meanwhile is a no-op.
     setState(() {
       _connecting = true;
       _error = null;
     });
+    final settings = saved ?? await _load();
+    if (!mounted) return;
+    if (settings == null) {
+      setState(() => _connecting = false);
+      await widget.open(FlightDestination.linkSetup);
+      return;
+    }
     try {
       _apply(await widget.session.connect(settings.link));
       if (!settings.autoConnect) _save(settings.copyWith(autoConnect: true));
@@ -232,7 +244,39 @@ class _FlightScreenState extends State<FlightScreen> with WidgetsBindingObserver
     }
   }
 
+  /// Disconnecting ends the link, and with it STOP, voice STOP and the
+  /// heartbeat; the drone keeps its last command until its own failsafe acts.
+  /// The button sits right under STOP, so while the drone may be flying, a
+  /// plan runs or a STOP is still being sent, it asks first.
+  bool get _disconnectIsRisky {
+    final snap = _snap;
+    return snap.vehicle.connected && snap.vehicle.armed != false ||
+        snap.run?.executing == true ||
+        snap.stop?.phase == 'SENDING';
+  }
+
   Future<void> _disconnect() async {
+    if (_disconnectIsRisky) {
+      final sure = await showDialog<bool>(
+          context: context,
+          builder: (context) => AlertDialog(
+                key: const Key('disconnectConfirm'),
+                title: const Text('Disconnect while flying?'),
+                content: const Text('STOP, voice STOP and the heartbeat end with the link. The '
+                    'drone keeps its last command until its own failsafe acts. Use RC.'),
+                actions: [
+                  TextButton(
+                      key: const Key('stayConnected'),
+                      onPressed: () => Navigator.pop(context, false),
+                      child: const Text('Stay connected')),
+                  TextButton(
+                      key: const Key('disconnectAnyway'),
+                      onPressed: () => Navigator.pop(context, true),
+                      child: const Text('Disconnect')),
+                ],
+              ));
+      if (sure != true || !mounted) return;
+    }
     setState(() => _error = null);
     try {
       await widget.session.disconnect();
@@ -264,8 +308,49 @@ class _FlightScreenState extends State<FlightScreen> with WidgetsBindingObserver
     await _locked(() => _sent(() => widget.session.submitText(text, language, source)));
   }
 
-  void _tap(FlightCommand command) => _locked(() => _send(
-      FlightPlan.single(command, source: StepSource.rules), PlanSource.tap));
+  void _tap(FlightCommand command) {
+    final plan = FlightPlan.single(command, source: StepSource.rules);
+    // HOLD acts at once (it is the STOP action): never held back by the lock.
+    if (command.name == 'hold') {
+      _send(plan, PlanSource.tap);
+      return;
+    }
+    _locked(() => _send(plan, PlanSource.tap));
+  }
+
+  /// The flight memory's "Run again": the service shows the recorded plan
+  /// again, validated against the vehicle now, for CONFIRM.
+  void _runAgain(MemoryPlan plan) =>
+      _locked(() => _sent(() => widget.session.runAgain(plan.planId)));
+
+  /// Forgetting the flown path and points cannot be undone: it asks first.
+  Future<void> _clearMemory() async {
+    final sure = await showDialog<bool>(
+        context: context,
+        builder: (context) => AlertDialog(
+              key: const Key('clearMemoryConfirm'),
+              title: const Text('Clear the flight memory?'),
+              content: const Text('The flown path, the saved points and the recent commands are '
+                  'forgotten. Return home still works.'),
+              actions: [
+                TextButton(
+                    key: const Key('keepMemory'),
+                    onPressed: () => Navigator.pop(context, false),
+                    child: const Text('Keep')),
+                TextButton(
+                    key: const Key('clearMemory'),
+                    onPressed: () => Navigator.pop(context, true),
+                    child: const Text('Clear')),
+              ],
+            ));
+    if (sure != true || !mounted) return;
+    try {
+      await widget.session.clearMemory();
+    } catch (error) {
+      _showError(userErrorMessage(error));
+    }
+    await _refresh();
+  }
 
   /// Runs [work] with the inputs locked ([_busy]); one at a time.
   Future<void> _locked(Future<void> Function() work) async {
@@ -489,6 +574,13 @@ class _FlightScreenState extends State<FlightScreen> with WidgetsBindingObserver
                     onOpenModels: () => widget.open(FlightDestination.models)),
                 const SizedBox(height: 8),
                 TapPad(onCommand: _tap, enabled: !_busy),
+                const SizedBox(height: 8),
+                FlightMemoryCard(
+                    memory: snap.memory,
+                    enabled: !_busy,
+                    onCommand: _tap,
+                    onRunAgain: _runAgain,
+                    onClear: _clearMemory),
               ]),
             ),
           ),

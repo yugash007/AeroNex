@@ -42,6 +42,9 @@ object StepParser {
      * a negation or a bare distance.
      */
     fun parse(spoken: String): FlightCommand? {
+        // Spec 2026-10-28: a whole clause that is a flight-memory template ("return home", "go to point 2"); anything
+        // more ("go back 3 m", "don't go back") is the rules' as before.
+        MemoryCommands.read(spoken)?.let { return it }
         // 0.4.0: spoken decimals and halves as digits, direction verbs and comparatives as v0.2.0 words.
         val natural = NaturalPhrasing.read(spoken)
         val clause = TAKEOFF_UP_TO.replace(

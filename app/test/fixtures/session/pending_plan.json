@@ -135,5 +135,19 @@
     "gloss": null,
     "understoodAs": null,
     "error": null
+  },
+  "memory": {
+    "homeKnown": false,
+    "vehicle": {
+      "northM": 1.5,
+      "eastM": 0.4,
+      "upM": 3.02
+    },
+    "trail": [],
+    "points": [],
+    "goBackTo": null,
+    "canRetrace": false,
+    "plans": [],
+    "notice": null
   }
 }

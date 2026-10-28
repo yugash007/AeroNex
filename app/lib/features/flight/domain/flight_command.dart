@@ -28,8 +28,16 @@ class FlightCommand {
       case 'get_status':
       case 'land':
       case 'hold':
+      case 'return_home':
+      case 'go_back':
+      case 'retrace':
         if (args.isNotEmpty) {
           throw const FormatException('This tool accepts no arguments.');
+        }
+      case 'goto_point':
+      case 'mark_point':
+        if (!_keys(args, {'point'}) || !_pointNumber(args['point'])) {
+          throw const FormatException('Specify a point number 1–9.');
         }
       case 'takeoff':
         if (!_keys(args, {'altitude_m'}) ||
@@ -50,6 +58,17 @@ class FlightCommand {
     return FlightCommand._(name, Map<String, dynamic>.from(args));
   }
 
+  /// Flight-memory steps that fly to a remembered position (2026-10-28); the
+  /// service resolves them from its own memory, so none carries coordinates.
+  static const memoryMotion = {'return_home', 'go_back', 'retrace', 'goto_point'};
+
+  /// A flight-memory step that flies the vehicle.
+  bool get isMemoryMotion => memoryMotion.contains(name);
+
+  /// A whole point number 1–9.
+  static bool _pointNumber(Object? value) =>
+      value is num && value.isFinite && value % 1 == 0 && value >= 1 && value <= 9;
+
   static bool _keys(Map value, Set<String> keys) =>
       value.length == keys.length && keys.every(value.containsKey);
 
@@ -69,6 +88,11 @@ class FlightCommand {
         'hold' => 'Hold position',
         'land' => 'Land',
         'get_status' => 'Report status',
+        'return_home' => 'Return home',
+        'go_back' => 'Go back to the previous position',
+        'retrace' => 'Retrace the flown path',
+        'goto_point' => 'Go to point ${(arguments['point'] as num).toInt()}',
+        'mark_point' => 'Mark point ${(arguments['point'] as num).toInt()}',
         _ => toString(),
       };
 

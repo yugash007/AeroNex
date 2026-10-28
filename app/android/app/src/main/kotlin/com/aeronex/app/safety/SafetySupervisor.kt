@@ -1,5 +1,6 @@
 package com.aeronex.app.safety
 
+import com.aeronex.app.command.model.CommandFormatException
 import com.aeronex.app.command.model.FlightCommand
 import com.aeronex.app.command.model.FlightPlan
 import com.aeronex.app.command.model.PlanStep
@@ -7,7 +8,12 @@ import com.aeronex.app.command.model.StepSource
 import com.aeronex.app.link.LinkSession
 import com.aeronex.app.link.mavlink.CommandAck
 import com.aeronex.app.link.mavlink.ExtendedSysState
+import com.aeronex.app.link.mavlink.GlobalPositionInt
+import com.aeronex.app.link.mavlink.LocalPositionNed
 import com.aeronex.app.link.mavlink.StatusText
+import com.aeronex.app.memory.FlightJournal
+import com.aeronex.app.memory.MemoryRoutes
+import com.aeronex.app.memory.Route
 import com.aeronex.app.observability.Trace
 import com.aeronex.app.observability.TracePoint
 import com.aeronex.app.vehicle.CopterMode
@@ -22,6 +28,7 @@ import com.aeronex.app.vehicle.executor.StopAction
 import com.aeronex.app.vehicle.executor.StopLane
 import com.aeronex.app.vehicle.executor.StopProgress
 import com.aeronex.app.vehicle.executor.VehicleEvents
+import java.util.Locale
 import java.util.UUID
 import java.util.concurrent.Callable
 import java.util.concurrent.CompletableFuture
@@ -56,7 +63,12 @@ import java.util.concurrent.atomic.AtomicBoolean
  * - POSITION_TARGET_LOCAL_NED (the move echo) streams while a live plan with a move waits for confirmation or still
  *   has a move to run, so a move's echo is the stream's next sample rather than its first, which ArduCopter sends
  *   one or two intervals after the request (spec 5 M2). It stays on between moves and goes off after the last move,
- *   and on abort, STOP, invalidation, expiry, execution off and disconnect. A dry run never streams.
+ *   and on abort, STOP, invalidation, expiry, execution off and disconnect. A dry run never streams. A flight-memory
+ *   flight counts as a move.
+ * - Flight memory (spec 2026-10-28): the [journal] follows every step telemetry confirmed (where a takeoff, move or
+ *   flight-memory flight ended) and records every finished plan. A flight-memory flight is resolved from it when the
+ *   step starts, after the remaining steps were validated against it. "Mark point n" alone is saved at once, like
+ *   status; inside a plan it is saved when its turn comes. The AI path never uses the flight memory.
  *
  * Wire it as: `store.accept` for link frames (the supervisor listens to the store itself), [onLinkState] for link
  * state, [attach] after each (re)connect and [detach] before closing the link. [clock] is monotonic ms (the store's).
@@ -68,6 +80,8 @@ class SafetySupervisor(
     private val clock: () -> Long = { System.nanoTime() / 1_000_000 },
     private val pendingTtlMs: Long = PENDING_TTL_MS,
     private val tickMs: Long = TICK_MS,
+    /** Written on the supervisor thread only; anyone may read [FlightJournal.state]. */
+    val journal: FlightJournal = FlightJournal(),
 ) : AutoCloseable {
     private val actor = Executors.newSingleThreadScheduledExecutor { task ->
         Thread(task, "aeronex-supervisor").apply { isDaemon = true }
@@ -100,6 +114,8 @@ class SafetySupervisor(
     private var stopId = 0L
     private var stopOverride = false
     private var stopStatus: StopStatus? = null
+    /** The STOP state the operator acknowledged: its alarm stays silent until the STOP escalates (audit F4). */
+    private var acknowledged: Triple<Long, StopPhase, StopAction?>? = null
     private var stage = PlanStage.IDLE
     private var plan: FlightPlan? = null
     private var source: PlanSource? = null
@@ -162,6 +178,7 @@ class SafetySupervisor(
         val only = plan.steps.singleOrNull()?.command?.name
         when {
             plan.steps.any { it.source != StepSource.AI } -> SubmitResult.Rejected(AI_ONLY_IN_PROCESS)
+            plan.steps.any { it.command.name in FlightCommand.MEMORY } -> SubmitResult.Rejected(AI_NO_MEMORY)
             only == FlightCommand.HOLD || only == FlightCommand.STATUS -> SubmitResult.Rejected(AI_NO_IMMEDIATE)
             else -> doSubmit(plan, PlanSource.AI)
         }
@@ -192,9 +209,11 @@ class SafetySupervisor(
     /** E.g. the app went to the background: the confirmation no longer applies. */
     fun invalidatePending(reason: String) = post { invalidate(reason) }
 
-    /** The operator saw the STOP alarm. */
+    /** The operator saw the STOP alarm: silent until the STOP changes phase or action (a new escalation). */
     fun acknowledgeAlarm() = post {
-        stopStatus = stopStatus?.copy(alarm = false)
+        val stop = stopStatus ?: return@post
+        acknowledged = Triple(stop.id, stop.phase, stop.action)
+        stopStatus = stop.copy(alarm = false)
     }
 
     fun addListener(listener: (SupervisorState) -> Unit) {
@@ -255,10 +274,12 @@ class SafetySupervisor(
         val only = submitted.steps.singleOrNull()
         if (only?.command?.name == FlightCommand.STATUS) return SubmitResult.Immediate(status(only, vehicle, from))
         if (only?.command?.name == FlightCommand.HOLD) return SubmitResult.Immediate(hold(only, from))
+        if (only?.command?.name == FlightCommand.MARK_POINT) return SubmitResult.Immediate(markNow(only, vehicle, from))
         if (activeRun() != null) return SubmitResult.Rejected(BUSY)
         if (stopLane != null) return SubmitResult.Rejected(STOP_IN_PROGRESS)
         if (execution) ownershipBlock(vehicle)?.let { return SubmitResult.Rejected(it) }
-        validator.validate(submitted, vehicle)?.let { return SubmitResult.Rejected(it) }
+        journal.observeHome(vehicle.home)
+        validator.validate(submitted, vehicle, journal.state)?.let { return SubmitResult.Rejected(it) }
         val id = ++nextId
         trace.mark(TracePoint.PLAN_VALIDATED, id, mapOf("plan" to submitted.toString(), "source" to from))
         val shown = PendingPlan(UUID.randomUUID().toString(), submitted, from, now + pendingTtlMs)
@@ -291,7 +312,8 @@ class SafetySupervisor(
             finish(id, PlanStage.FINISHED, dry)
             return ConfirmResult.Started
         }
-        val started = PlanRun(id, confirmed, ArduPilotExecutor(live, store, timing, trace, id, watch) { streaming })
+        val started = PlanRun(id, confirmed,
+            ArduPilotExecutor(live, store, timing, trace, id, watch, { streaming }, events::heartbeatsAtArrival))
         run = started
         show(confirmed, waiting.source, PlanStage.EXECUTING, started.outcomes.toList())
         updateStreaming() // on before the first frame, if submitting did not already turn it on
@@ -305,8 +327,8 @@ class SafetySupervisor(
         val id = ++nextId
         val outcome = when {
             !execution || live == null -> StepOutcome.dryRun(step)
-            else -> when (val update = ArduPilotExecutor(live, store, timing, trace, id, watch)
-                .start(step.command, vehicle, clock())) {
+            else -> when (val update = ArduPilotExecutor(live, store, timing, trace, id, watch,
+                heartbeatsAtArrival = events::heartbeatsAtArrival).start(step.command, vehicle, clock())) {
                 is StepUpdate.Completed -> StepOutcome.completed(step, update.detail)
                 is StepUpdate.Rejected -> StepOutcome.rejected(step, update.reason)
                 else -> StepOutcome.rejected(step, ArduPilotExecutor.STALE)
@@ -317,6 +339,32 @@ class SafetySupervisor(
             finish(id, PlanStage.FINISHED, listOf(outcome), FlightPlan(listOf(step)), from)
         }
         return outcome
+    }
+
+    /** "Mark point n" alone: saved at once, like status, since it only reads telemetry (spec 2026-10-28 M4). */
+    private fun markNow(step: PlanStep, vehicle: VehicleState, from: PlanSource): StepOutcome {
+        val id = ++nextId
+        val outcome = if (!execution || link == null) StepOutcome.dryRun(step) else mark(step, vehicle)
+        traceOutcome(id, 0, outcome)
+        if (activeRun() == null && holdStep == null) {
+            finish(id, PlanStage.FINISHED, listOf(outcome), FlightPlan(listOf(step)), from)
+        }
+        return outcome
+    }
+
+    /** Saves the vehicle's position as the step's point: only a fresh, EKF-backed position with home known. */
+    private fun mark(step: PlanStep, vehicle: VehicleState): StepOutcome {
+        val position = vehicle.position?.takeIf { vehicle.connected && vehicle.fresh(LocalPositionNed.messageId) }
+            ?: return StepOutcome.rejected(step, ArduPilotExecutor.STALE)
+        if (!vehicle.positionReady) return StepOutcome.rejected(step, ArduPilotExecutor.POSITION_NOT_READY)
+        val home = vehicle.home ?: return StepOutcome.rejected(step, MARK_NEEDS_HOME)
+        journal.observeHome(home)
+        val point = step.command.point!!
+        journal.markPoint(point, position)
+        val altitude = vehicle.altitudeRelM?.takeIf { vehicle.fresh(GlobalPositionInt.messageId) }
+        val detail = "point $point saved, ${metres(position.horizontalDistanceTo(home))} m from home" +
+            (altitude?.let { ", ${metres(it)} m up" } ?: "")
+        return StepOutcome.completed(step, detail)
     }
 
     /** HOLD is the STOP action (spec 4.12). */
@@ -349,16 +397,58 @@ class SafetySupervisor(
         }
         current.index = index
         current.stepStartedAt = now
+        current.route = null
         val step = steps[index]
+        journal.observeHome(vehicle.home)
         val reason = ownershipBlock(vehicle)
-            ?: validator.validate(steps.subList(index, steps.size), vehicle)?.let { renumber(it, index) }
+            ?: validator.validate(steps.subList(index, steps.size), vehicle, journal.state)?.let { renumber(it, index) }
         if (reason != null) {
             fail(current, StepOutcome.rejected(step, reason))
             return
         }
+        if (step.command.name == FlightCommand.MARK_POINT) {
+            val marked = mark(step, vehicle)
+            if (marked.status != StepStatus.COMPLETED) return fail(current, marked)
+            record(current, index, marked)
+            startStep(current, index + 1, vehicle, now)
+            return
+        }
+        if (step.command.isMotion) {
+            vehicle.position?.takeIf { vehicle.fresh(LocalPositionNed.messageId) }?.let(journal::departing)
+        }
+        val legs = if (!step.command.isMemoryMotion) null else try {
+            route(step.command, vehicle).also { current.route = it }.legs
+        } catch (e: CommandFormatException) {
+            fail(current, StepOutcome.rejected(step, e.message ?: ArduPilotExecutor.NO_ROUTE))
+            return
+        }
         current.outcomes[index] = StepOutcome(step, StepStatus.RUNNING)
         outcomes = current.outcomes.toList()
-        apply(current, current.executor.start(step.command, vehicle, now, index + 1), vehicle, now)
+        apply(current, current.executor.start(step.command, vehicle, now, index + 1, legs), vehicle, now)
+    }
+
+    /** Where a flight-memory step flies from the vehicle's position now, as [MemoryRoutes.flyable] flies it. */
+    private fun route(command: FlightCommand, vehicle: VehicleState): Route {
+        val position = vehicle.position?.takeIf { vehicle.fresh(LocalPositionNed.messageId) }
+            ?: throw CommandFormatException(ArduPilotExecutor.STALE)
+        val altitude = vehicle.altitudeRelM?.takeIf { vehicle.fresh(GlobalPositionInt.messageId) }
+        return MemoryRoutes.flyable(MemoryRoutes.resolve(command, journal.state, position), position, altitude)
+    }
+
+    /**
+     * A step telemetry confirmed: the trail follows the vehicle (spec 2026-10-28 M1). A takeoff starts a new flight;
+     * a move or a flight to a remembered position adds where it ended (and, as it started, where it started from when
+     * that was not the newest position: [FlightJournal.departing]); go back and retrace forget what they undid.
+     */
+    private fun remember(current: PlanRun, command: FlightCommand, vehicle: VehicleState) {
+        val position = vehicle.position?.takeIf { vehicle.fresh(LocalPositionNed.messageId) }
+        val keep = current.route?.keep
+        when {
+            command.name == FlightCommand.TAKEOFF ->
+                if (position != null) journal.takeoffCompleted(position) else journal.keepTrail(0)
+            command.isMemoryMotion && keep != null -> journal.keepTrail(keep)
+            command.isMotion && position != null -> journal.arrived(position, current.route?.label ?: command.description)
+        }
     }
 
     private fun apply(current: PlanRun, update: StepUpdate, vehicle: VehicleState, now: Long) {
@@ -366,6 +456,7 @@ class SafetySupervisor(
         when (update) {
             StepUpdate.Running -> {}
             is StepUpdate.Completed -> {
+                remember(current, step.command, vehicle)
                 record(current, current.index, StepOutcome.completed(step, update.detail))
                 startStep(current, current.index + 1, vehicle, now)
             }
@@ -379,7 +470,8 @@ class SafetySupervisor(
         when {
             text != null -> abort(current, "Autopilot reported \"${text.text}\"; vehicle outcome unknown.")
             current.executor.externalModeChange(vehicle) -> abort(current, EXTERNAL_CHANGE)
-            now - current.stepStartedAt > timing.stepDeadlineMs -> abort(current, ArduPilotExecutor.NO_CONFIRMATION)
+            now - maxOf(current.stepStartedAt, current.executor.legStartedAtMs) > timing.stepDeadlineMs ->
+                abort(current, ArduPilotExecutor.NO_CONFIRMATION)
             else -> apply(current, current.executor.update(vehicle, acks, now), vehicle, now)
         }
     }
@@ -471,7 +563,7 @@ class SafetySupervisor(
                 StopPolicy.takenOverMessage(progress.mode), alarm = true, override = stopOverride)
             is StopProgress.NotConfirmed -> StopStatus(stopId, stopTrigger, StopPhase.NOT_CONFIRMED, progress.action,
                 StopPolicy.NOT_CONFIRMED, alarm = true, override = stopOverride)
-        }
+        }.let { if (it.alarm && Triple(it.id, it.phase, it.action) == acknowledged) it.copy(alarm = false) else it }
         if (lane.settled) stopLane = null
         updateHold(lane)
     }
@@ -512,6 +604,7 @@ class SafetySupervisor(
         val acks = events.drainAcks()
         val texts = events.drainTexts()
         val vehicle = store.snapshot()
+        journal.observeHome(vehicle.home)
         traceOwner(vehicle)
         stopLane?.let { onStopProgress(it, it.update(acks, vehicle, now)) }
         activeRun()?.let { advance(it, vehicle, acks, texts, now) }
@@ -620,6 +713,11 @@ class SafetySupervisor(
         outcomes = final
         result = summary(final)
         trace.mark(TracePoint.PLAN_END, id, mapOf("stage" to newStage, "result" to result))
+        val wire = from?.name?.lowercase() ?: "unknown"
+        journal.recordPlan(final.map {
+            FlightJournal.RecordedStep(it.step.command.name, it.step.command.arguments, it.step.command.description,
+                wire, it.status.name)
+        }, key = id)
     }
 
     private fun publish() {
@@ -662,12 +760,14 @@ class SafetySupervisor(
         var index = 0
         var stepStartedAt = 0L
         var active = true
+        /** The current step's flight-memory route, resolved when it started. */
+        var route: Route? = null
 
-        /** The current step or a later one is a move. */
-        fun movesLeft() = plan.steps.subList(index, plan.steps.size).any { it.command.name == FlightCommand.MOVE }
+        /** The current step or a later one is a move or a flight-memory flight. */
+        fun movesLeft() = plan.steps.subList(index, plan.steps.size).any { it.command.isMotion }
     }
 
-    private fun FlightPlan.hasMove() = steps.any { it.command.name == FlightCommand.MOVE }
+    private fun FlightPlan.hasMove() = steps.any { it.command.isMotion }
 
     companion object {
         const val PENDING_TTL_MS = 15_000L
@@ -683,6 +783,10 @@ class SafetySupervisor(
         const val AI_ONLY_IN_PROCESS = "AI plans come only from the phone's own AI planner."
         /** Spec A1: HOLD and status run at once only when the rules read them. */
         const val AI_NO_IMMEDIATE = "The AI never runs hold or status: say \"hold\" or \"status\", or press STOP."
+        /** Spec 2026-10-28 M5: flights to remembered positions come only from the rules or the tap pad. */
+        const val AI_NO_MEMORY = "The AI never uses the flight memory: say \"return home\", \"go back\" or " +
+            "\"retrace\" yourself, or use the flight memory card."
+        const val MARK_NEEDS_HOME = "Home position is unknown. Wait for GPS home before saving a point."
         const val READINESS_CHANGED = "The vehicle state changed. Say the command again."
         const val EXECUTION_CHANGED = "Execution mode changed. Say the command again."
         const val LINK_LOST = "Link lost. Say the command again."
@@ -696,6 +800,9 @@ class SafetySupervisor(
         /** Validator messages number the remaining steps; show the plan's own step number. */
         private fun renumber(message: String, offset: Int) =
             stepNumber.replace(message) { "Step ${it.groupValues[1].toInt() + offset} " }
+
+        /** Metres with one decimal, e.g. "12.3". */
+        private fun metres(value: Double) = String.format(Locale.ROOT, "%.1f", value)
 
         /** v0.2.0: one step shows its message; several show a numbered list. */
         fun summary(outcomes: List<StepOutcome>): String? = when (outcomes.size) {

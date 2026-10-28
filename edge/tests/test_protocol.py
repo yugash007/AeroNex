@@ -57,7 +57,7 @@ def test_rejects_bool_version():
 
 
 def test_rejects_float_version():
-    # 1.0 == 1 in Python; the schema's integer type and the Dart validator reject it.
+    # 1.0 == 1 in Python, and JSON Schema's integer type accepts 1.0 too; protocol.py and the Dart validator reject it.
     msg = new_envelope("PING", {})
     msg["version"] = 1.0
     assert validate_envelope(msg) == (False, "version must be 1")

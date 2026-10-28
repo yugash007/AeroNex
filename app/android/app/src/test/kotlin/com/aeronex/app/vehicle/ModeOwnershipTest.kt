@@ -126,7 +126,8 @@ class ModeOwnershipTest {
         ownership.noteCommandedMode(GUIDED)
         ownership.heartbeat(GUIDED, 1000)
         ownership.connected(GUIDED, 9000)
-        assertOwner(ModeOwner.EXTERNAL, ExternalCause.PILOT_MODE)
+        // Still EXTERNAL (plans stay blocked); labelled a link gap since the app's own mode is still in place (L2).
+        assertOwner(ModeOwner.EXTERNAL, ExternalCause.LINK_GAP)
         ownership.reset()
         assertOwner(ModeOwner.EXTERNAL, null)
     }
@@ -138,4 +139,45 @@ class ModeOwnershipTest {
         assertFalse(ModeOwnership.isFailsafeText(5, "Mission: 1 WP"))
         assertFalse(ModeOwnership.isFailsafeText(6, "Throttle armed"))
     }
+
+    /** Audit L2: a heartbeat gap that leaves the app's own mode in place is EXTERNAL, but resumable for STOP. */
+    @Test fun theAppsModeAfterAHeartbeatGapIsResumableForStopOnly() {
+        ownership.connected(LOITER, 0)
+        ownership.noteCommandedMode(GUIDED)
+        ownership.heartbeat(GUIDED, 1000)
+        assertOwner(ModeOwner.APP, null)
+        ownership.connected(GUIDED, 5000) // the first heartbeat after a 3 s gap
+        assertOwner(ModeOwner.EXTERNAL, ExternalCause.LINK_GAP)
+        assertTrue(ownership.resumedAppMode)
+        ownership.heartbeat(GUIDED, 6000)
+        assertTrue(ownership.resumedAppMode)
+        ownership.heartbeat(LOITER, 7000) // a pilot changed it: no longer the app's
+        assertFalse(ownership.resumedAppMode)
+        assertOwner(ModeOwner.EXTERNAL, ExternalCause.PILOT_MODE)
+        ownership.heartbeat(GUIDED, 8000)
+        assertFalse("never resumed again without the app", ownership.resumedAppMode)
+    }
+
+    @Test fun aGapThatChangedTheModeOrAFreshConnectionIsNotResumable() {
+        ownership.connected(LOITER, 0)
+        ownership.noteCommandedMode(GUIDED)
+        ownership.heartbeat(GUIDED, 1000)
+        ownership.connected(BRAKE, 5000)
+        assertFalse(ownership.resumedAppMode)
+        ownership.reset()
+        ownership.connected(GUIDED, 9000)
+        assertFalse(ownership.resumedAppMode)
+    }
+
+    @Test fun theAppSettingAModeEndsTheResumedState() {
+        ownership.connected(LOITER, 0)
+        ownership.noteCommandedMode(GUIDED)
+        ownership.heartbeat(GUIDED, 1000)
+        ownership.connected(GUIDED, 5000)
+        ownership.noteCommandedMode(BRAKE)
+        assertFalse(ownership.resumedAppMode)
+        ownership.heartbeat(BRAKE, 6000)
+        assertOwner(ModeOwner.APP, null)
+    }
+
 }

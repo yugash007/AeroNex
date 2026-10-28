@@ -208,6 +208,51 @@
   },
   {
    "text": "హోవర్ చేయద్దు"
+  },
+  {
+   "text": "ఇంటికి తిరిగి రా వద్దు"
+  },
+  {
+   "text": "ఇంటికి తిరిగి రా చేయకు"
+  },
+  {
+   "text": "వద్దు ఇంటికి తిరిగి రా"
+  },
+  {
+   "text": "మునుపటి చోటుకి వెళ్ళు వద్దు"
+  },
+  {
+   "text": "మునుపటి చోటుకి వెళ్ళు చేయకు"
+  },
+  {
+   "text": "వద్దు మునుపటి చోటుకి వెళ్ళు"
+  },
+  {
+   "text": "అదే దారిలో తిరిగి రా వద్దు"
+  },
+  {
+   "text": "అదే దారిలో తిరిగి రా చేయకు"
+  },
+  {
+   "text": "వద్దు అదే దారిలో తిరిగి రా"
+  },
+  {
+   "text": "పాయింట్ రెండు దగ్గరకు వెళ్ళు వద్దు"
+  },
+  {
+   "text": "పాయింట్ రెండు దగ్గరకు వెళ్ళు చేయకు"
+  },
+  {
+   "text": "పాయింట్ రెండు వద్దు దగ్గరకు వెళ్ళు"
+  },
+  {
+   "text": "పాయింట్ రెండు మార్క్ చేయి వద్దు"
+  },
+  {
+   "text": "పాయింట్ రెండు మార్క్ చేయి చేయకు"
+  },
+  {
+   "text": "పాయింట్ రెండు వద్దు మార్క్ చేయి"
   }
  ],
  "numbers": [
@@ -1719,6 +1764,140 @@
    "intent": "land",
    "text": "దిగు",
    "tool": "land"
+  },
+  {
+   "arguments": {},
+   "intent": "return_home",
+   "text": "ఇంటికి తిరిగి రా",
+   "tool": "return_home"
+  },
+  {
+   "arguments": {},
+   "intent": "return_home",
+   "text": "ఇంటికి తిరిగి వెళ్ళు",
+   "tool": "return_home"
+  },
+  {
+   "arguments": {},
+   "intent": "return_home",
+   "text": "ఇంటికి రా",
+   "tool": "return_home"
+  },
+  {
+   "arguments": {},
+   "intent": "return_home",
+   "text": "హోమ్ కి తిరిగి రా",
+   "tool": "return_home"
+  },
+  {
+   "arguments": {},
+   "intent": "return_home",
+   "text": "హోమ్ కి తిరిగి వెళ్ళు",
+   "tool": "return_home"
+  },
+  {
+   "arguments": {},
+   "intent": "return_home",
+   "text": "హోమ్ కి రా",
+   "tool": "return_home"
+  },
+  {
+   "arguments": {},
+   "intent": "go_back",
+   "text": "మునుపటి చోటుకి వెళ్ళు",
+   "tool": "go_back"
+  },
+  {
+   "arguments": {},
+   "intent": "go_back",
+   "text": "మునుపటి చోటుకి తిరిగి వెళ్ళు",
+   "tool": "go_back"
+  },
+  {
+   "arguments": {},
+   "intent": "go_back",
+   "text": "వెనకటి చోటుకి వెళ్ళు",
+   "tool": "go_back"
+  },
+  {
+   "arguments": {},
+   "intent": "retrace",
+   "text": "అదే దారిలో తిరిగి రా",
+   "tool": "retrace"
+  },
+  {
+   "arguments": {},
+   "intent": "retrace",
+   "text": "అదే దారిలో తిరిగి వెళ్ళు",
+   "tool": "retrace"
+  },
+  {
+   "arguments": {},
+   "intent": "retrace",
+   "text": "వచ్చిన దారిలో తిరిగి రా",
+   "tool": "retrace"
+  },
+  {
+   "arguments": {},
+   "intent": "retrace",
+   "text": "వచ్చిన దారిలో తిరిగి వెళ్ళు",
+   "tool": "retrace"
+  },
+  {
+   "arguments": {
+    "point": 2
+   },
+   "intent": "goto_point",
+   "text": "పాయింట్ రెండు దగ్గరకు వెళ్ళు",
+   "tool": "goto_point"
+  },
+  {
+   "arguments": {
+    "point": 2
+   },
+   "intent": "goto_point",
+   "text": "పాయింట్ రెండు దగ్గరికి వెళ్ళు",
+   "tool": "goto_point"
+  },
+  {
+   "arguments": {
+    "point": 2
+   },
+   "intent": "goto_point",
+   "text": "పాయింట్ రెండు కి వెళ్ళు",
+   "tool": "goto_point"
+  },
+  {
+   "arguments": {
+    "point": 2
+   },
+   "intent": "goto_point",
+   "text": "పాయింట్ రెండు దగ్గరకు తిరిగి వెళ్ళు",
+   "tool": "goto_point"
+  },
+  {
+   "arguments": {
+    "point": 2
+   },
+   "intent": "mark_point",
+   "text": "పాయింట్ రెండు మార్క్ చేయి",
+   "tool": "mark_point"
+  },
+  {
+   "arguments": {
+    "point": 2
+   },
+   "intent": "mark_point",
+   "text": "పాయింట్ రెండు సేవ్ చేయి",
+   "tool": "mark_point"
+  },
+  {
+   "arguments": {
+    "point": 2
+   },
+   "intent": "mark_point",
+   "text": "పాయింట్ రెండు గుర్తు పెట్టు",
+   "tool": "mark_point"
   }
  ],
  "unk": [

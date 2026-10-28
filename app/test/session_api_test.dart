@@ -47,6 +47,7 @@ void main() {
         'ai_thinking.json',
         'connected_landed.json',
         'executing_move.json',
+        'flight_memory.json',
         'idle_disconnected.json',
         'pending_plan.json',
         'ptt_listening.json',
@@ -71,6 +72,34 @@ void main() {
       // An older service without the section: no AI.
       final old = SessionSnapshot.fromMap({..._fixture('connected_landed')}..remove('ai'));
       expect(old.ai.available, isFalse);
+    });
+
+    test('reads the flight memory section (2026-10-28)', () {
+      final memory = SessionSnapshot.fromMap(_fixture('flight_memory')).memory;
+      expect(memory.homeKnown, isTrue);
+      expect(memory.vehicle!.northM, 4.0);
+      expect(memory.vehicle!.eastM, 2.97);
+      expect([for (final p in memory.trail) p.label],
+          ['Takeoff', 'Move forward 4 m', 'Move right 3 m']);
+      expect(memory.trail.first.place.upM, 2.71);
+      expect(memory.points.single.point, 1);
+      expect(memory.points.single.place.northM, 4.02);
+      expect(memory.goBackTo, 'Move forward 4 m');
+      expect(memory.canRetrace, isTrue);
+      expect([for (final p in memory.plans) p.planId], [4, 3, 2, 1]);
+      expect(memory.plans.first.summary, 'Move right 3 m');
+      expect(memory.plans.first.source, PlanSource.typed);
+      expect(memory.plans.first.completed, isTrue);
+      expect(memory.plans[1].steps.single.arguments, {'point': 1});
+      expect(memory.nextFreePoint, 2);
+      // Older services without the section, and a session that flew nothing.
+      final old = SessionSnapshot.fromMap({..._fixture('connected_landed')}..remove('memory'));
+      expect(old.memory.isEmpty, isTrue);
+      final idle = SessionSnapshot.fromMap(_fixture('idle_disconnected')).memory;
+      expect(idle.homeKnown, isFalse);
+      expect(idle.vehicle, isNull);
+      expect(idle.goBackTo, isNull);
+      expect(idle.nextFreePoint, 1);
     });
 
     test('reads the speech section (T12)', () {
@@ -382,6 +411,24 @@ void main() {
           m[1]!.toLowerCase(): m[2]
       }, {for (final s in PlanSource.values) s.wire: s.label});
       expect(schemaSource, contains('val PlanSource.wire: String get() = name.lowercase()'));
+    });
+
+    test('runAgain and clearMemory are methods SessionApi.kt answers', () async {
+      final api = ChannelSessionApi();
+      reply = (call) => switch (call.method) {
+            'runAgain' => {'error': 'That plan is no longer in the flight memory.'},
+            _ => null,
+          };
+      final again = await api.runAgain(7);
+      expect((again as RejectedResult).error, 'That plan is no longer in the flight memory.');
+      await api.clearMemory();
+      expect([for (final c in calls) c.method], ['runAgain', 'clearMemory']);
+      expect(calls.first.arguments, {'planId': 7});
+      expect(calls.last.arguments, isNull);
+      for (final call in calls) {
+        expect(kotlinMethods, contains(call.method), reason: call.method);
+      }
+      expect(apiSource, contains('argument(arguments, "planId")'));
     });
 
     test('a step without a clause or a plan without an utterance omits them',

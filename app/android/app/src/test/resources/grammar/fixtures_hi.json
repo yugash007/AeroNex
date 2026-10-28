@@ -248,6 +248,51 @@
   },
   {
    "text": "हॉवर मत करो"
+  },
+  {
+   "text": "घर वापस जाओ मत"
+  },
+  {
+   "text": "घर वापस जाओ नहीं"
+  },
+  {
+   "text": "मत घर वापस जाओ"
+  },
+  {
+   "text": "वापस जाओ मत"
+  },
+  {
+   "text": "वापस जाओ नहीं"
+  },
+  {
+   "text": "मत वापस जाओ"
+  },
+  {
+   "text": "उसी रास्ते से वापस जाओ मत"
+  },
+  {
+   "text": "उसी रास्ते से वापस जाओ नहीं"
+  },
+  {
+   "text": "मत उसी रास्ते से वापस जाओ"
+  },
+  {
+   "text": "पॉइंट दो पर जाओ मत"
+  },
+  {
+   "text": "पॉइंट दो पर जाओ नहीं"
+  },
+  {
+   "text": "पॉइंट दो मत पर जाओ"
+  },
+  {
+   "text": "पॉइंट दो मार्क करो मत"
+  },
+  {
+   "text": "पॉइंट दो मार्क करो नहीं"
+  },
+  {
+   "text": "पॉइंट दो मत मार्क करो"
   }
  ],
  "numbers": [
@@ -1855,6 +1900,174 @@
    "intent": "land",
    "text": "उतरो कर दो",
    "tool": "land"
+  },
+  {
+   "arguments": {},
+   "intent": "return_home",
+   "text": "घर वापस जाओ",
+   "tool": "return_home"
+  },
+  {
+   "arguments": {},
+   "intent": "return_home",
+   "text": "घर वापस आओ",
+   "tool": "return_home"
+  },
+  {
+   "arguments": {},
+   "intent": "return_home",
+   "text": "वापस घर आओ",
+   "tool": "return_home"
+  },
+  {
+   "arguments": {},
+   "intent": "return_home",
+   "text": "वापस घर जाओ",
+   "tool": "return_home"
+  },
+  {
+   "arguments": {},
+   "intent": "return_home",
+   "text": "होम पर वापस जाओ",
+   "tool": "return_home"
+  },
+  {
+   "arguments": {},
+   "intent": "return_home",
+   "text": "होम पर वापस आओ",
+   "tool": "return_home"
+  },
+  {
+   "arguments": {},
+   "intent": "return_home",
+   "text": "होम वापस जाओ",
+   "tool": "return_home"
+  },
+  {
+   "arguments": {},
+   "intent": "return_home",
+   "text": "होम वापस आओ",
+   "tool": "return_home"
+  },
+  {
+   "arguments": {},
+   "intent": "return_home",
+   "text": "घर जाओ",
+   "tool": "return_home"
+  },
+  {
+   "arguments": {},
+   "intent": "return_home",
+   "text": "होम जाओ",
+   "tool": "return_home"
+  },
+  {
+   "arguments": {},
+   "intent": "go_back",
+   "text": "वापस जाओ",
+   "tool": "go_back"
+  },
+  {
+   "arguments": {},
+   "intent": "go_back",
+   "text": "पिछली जगह पर जाओ",
+   "tool": "go_back"
+  },
+  {
+   "arguments": {},
+   "intent": "go_back",
+   "text": "पिछली जगह पर वापस जाओ",
+   "tool": "go_back"
+  },
+  {
+   "arguments": {},
+   "intent": "retrace",
+   "text": "उसी रास्ते से वापस जाओ",
+   "tool": "retrace"
+  },
+  {
+   "arguments": {},
+   "intent": "retrace",
+   "text": "उसी रास्ते से वापस आओ",
+   "tool": "retrace"
+  },
+  {
+   "arguments": {},
+   "intent": "retrace",
+   "text": "उसी रास्ते वापस जाओ",
+   "tool": "retrace"
+  },
+  {
+   "arguments": {
+    "point": 2
+   },
+   "intent": "goto_point",
+   "text": "पॉइंट दो पर जाओ",
+   "tool": "goto_point"
+  },
+  {
+   "arguments": {
+    "point": 2
+   },
+   "intent": "goto_point",
+   "text": "पॉइंट दो पे जाओ",
+   "tool": "goto_point"
+  },
+  {
+   "arguments": {
+    "point": 2
+   },
+   "intent": "goto_point",
+   "text": "पॉइंट दो पर वापस जाओ",
+   "tool": "goto_point"
+  },
+  {
+   "arguments": {
+    "point": 2
+   },
+   "intent": "goto_point",
+   "text": "पॉइंट दो पर वापस आओ",
+   "tool": "goto_point"
+  },
+  {
+   "arguments": {
+    "point": 2
+   },
+   "intent": "mark_point",
+   "text": "पॉइंट दो मार्क करो",
+   "tool": "mark_point"
+  },
+  {
+   "arguments": {
+    "point": 2
+   },
+   "intent": "mark_point",
+   "text": "पॉइंट दो मार्क कर दो",
+   "tool": "mark_point"
+  },
+  {
+   "arguments": {
+    "point": 2
+   },
+   "intent": "mark_point",
+   "text": "पॉइंट दो सेव करो",
+   "tool": "mark_point"
+  },
+  {
+   "arguments": {
+    "point": 2
+   },
+   "intent": "mark_point",
+   "text": "पॉइंट दो सेव कर दो",
+   "tool": "mark_point"
+  },
+  {
+   "arguments": {
+    "point": 2
+   },
+   "intent": "mark_point",
+   "text": "पॉइंट दो याद रखो",
+   "tool": "mark_point"
   }
  ],
  "unk": [

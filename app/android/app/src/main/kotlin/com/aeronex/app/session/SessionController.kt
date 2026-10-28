@@ -4,7 +4,10 @@ import com.aeronex.app.command.Normalizer
 import com.aeronex.app.command.ParseResult
 import com.aeronex.app.command.PlanParser
 import com.aeronex.app.command.model.CommandFormatException
+import com.aeronex.app.command.model.FlightCommand
 import com.aeronex.app.command.model.FlightPlan
+import com.aeronex.app.command.model.PlanStep
+import com.aeronex.app.command.model.StepSource
 import com.aeronex.app.link.LinkListener
 import com.aeronex.app.link.LinkSession
 import com.aeronex.app.link.TelemetryProfile
@@ -12,6 +15,7 @@ import com.aeronex.app.link.UdpTransport
 import com.aeronex.app.link.mavlink.MavlinkEncoder
 import com.aeronex.app.link.mavlink.MavlinkFrame
 import com.aeronex.app.link.mavlink.MavlinkParser
+import com.aeronex.app.memory.FlightJournal
 import com.aeronex.app.observability.Trace
 import com.aeronex.app.safety.PlanSource
 import com.aeronex.app.safety.PlanStage
@@ -51,7 +55,10 @@ import java.util.function.LongSupplier
  * disconnect cancel the thinking, and a plan from a cancelled request or one older than the latest STOP is never
  * shown. The AI never waits on, or holds up, the link, supervisor, STOP or speech threads.
  *
- * Thread use: [connect], [disconnect], [setExecution], [submitPlan], [submitText] and [confirm] block on the supervisor (up to a
+ * Flight memory (spec 2026-10-28): the supervisor's [journal] (saved by its store, so it survives a restart) is the
+ * snapshot's `memory` section; [runAgain] shows a recorded plan again and [clearMemory] forgets the memory.
+ *
+ * Thread use: [connect], [disconnect], [setExecution], [submitPlan], [submitText], [runAgain] and [confirm] block on the supervisor (up to a
  * few seconds while a link stops), so call them off the main thread. [stop], [cancel], [cancelAi], [acknowledgeAlarm],
  * [invalidatePending], [pttDown] and [pttUp] only post or queue and may be called from any thread, the main thread
  * included. [snapshot] and [active] are safe anywhere.
@@ -66,15 +73,18 @@ class SessionController(
     validator: PlanValidator = PlanValidator(),
     voice: VoiceConfig? = null,
     ai: AiConfig? = null,
+    /** The flight memory; [FlightJournal]'s store decides whether it outlives the process. */
+    val journal: FlightJournal = FlightJournal(),
 ) : AutoCloseable, VoiceSink {
     private class Connection(val config: SessionConfig, val lease: TransportLease, val link: LinkSession)
 
     val trace = Trace(traceClock)
     private val latency = LatencyBook().also { trace.addSink(it) }
     private val store = VehicleStateStore(clock)
-    private val supervisor = SafetySupervisor(store, validator, trace, clock)
+    private val supervisor = SafetySupervisor(store, validator, trace, clock, journal = journal)
     private val changeListeners = CopyOnWriteArrayList<() -> Unit>()
     private val seq = AtomicLong()
+    private val snapshotLock = Any()
     @Volatile private var connection: Connection? = null
     /** Orders STOPs against voice submissions (see [stops]). */
     private val stopOrder = Any()
@@ -86,7 +96,12 @@ class SessionController(
 
     /** The Models screen's AI rows; null without AI models. */
     private val aiModelSetup: AiModelSetup? = ai?.models?.let { store ->
-        AiModelSetup(store, ai.importRoot, beforeRemove = { synchronized(stopOrder) { aiRouter?.release() } },
+        // The cancel is ordered against a racing AI delivery; the native unload runs outside the lock, so a STOP never
+        // waits for it (audit S8).
+        AiModelSetup(store, ai.importRoot, beforeRemove = {
+            synchronized(stopOrder) { aiRouter?.cancel("model removed") }
+            aiRouter?.release()
+        },
             changed = { aiRouter?.modelsChanged(); notifyChanged() })
     }
 
@@ -131,6 +146,7 @@ class SessionController(
     /** Opens the link; the snapshot right after. [SessionException] when already connected or it cannot open. */
     @Synchronized fun connect(config: SessionConfig): Map<String, Any?> {
         if (connection != null) throw SessionException(SessionException.ALREADY_CONNECTED, ALREADY_CONNECTED)
+        store.freshness = config.profile.freshnessMs()
         store.reset()
         val lease = transports(config)
         val link = LinkSession(ThreadSetupTransport(lease.transport, linkThreadSetup), MavlinkEncoder(), MavlinkParser(),
@@ -229,6 +245,33 @@ class SessionController(
     }
 
     fun confirm(token: String): Map<String, Any?> = SessionSchema.confirmed(await(supervisor.confirm(token)))
+
+    /**
+     * Shows the recorded plan [planId] again (the flight memory's "run again"), validated against the vehicle and the
+     * memory now, with the Tap source: an operator's tap, never the AI. The same answers as [submitPlan].
+     */
+    fun runAgain(planId: Long): Map<String, Any?> {
+        cancelAi(AI_NEW_INPUT)
+        val records = journal.plan(planId)
+        if (records.isEmpty()) return linkedMapOf("error" to PLAN_GONE)
+        val plan = try {
+            FlightPlan(records.map {
+                PlanStep(FlightCommand.fromToolCalls(listOf(mapOf("name" to it.name, "arguments" to it.arguments))),
+                    StepSource.RULES, it.description)
+            })
+        } catch (e: CommandFormatException) {
+            return linkedMapOf("error" to e.message)
+        }
+        trace.mark(PLAN_SUBMITTED, fields = mapOf("utterance" to null, "source" to PlanSource.TAP,
+            "plan" to plan.toString(), "runAgain" to planId))
+        return SessionSchema.submitted(await(supervisor.submit(plan, PlanSource.TAP)), clock())
+    }
+
+    /** Forgets the flown path, the points and the recorded plans; home stays known. */
+    fun clearMemory() {
+        journal.clear()
+        notifyChanged()
+    }
 
     /** STOP while a plan runs (S5), else drops the pending plan; never disconnects. Ends PTT. Posts only. */
     fun cancel() = synchronized(stopOrder) {
@@ -331,8 +374,10 @@ class SessionController(
         // A cold AI planner (idle unload, onTrimMemory) loads while the operator speaks.
         aiRouter?.prewarm()
         val voice = voice ?: return
+        // The new press is counted before the pending plan is dropped: a plan of an earlier utterance submitted after
+        // this point is refused ([submit]), one submitted before is dropped by the invalidation (audit S4).
+        synchronized(stopOrder) { voice.pttDown() }
         supervisor.invalidatePending(SafetySupervisor.CANCELLED)
-        voice.pttDown()
         if (!voice.running) microphoneNeeded()
     }
 
@@ -356,8 +401,12 @@ class SessionController(
 
     override fun submit(plan: FlightPlan, transcript: String, traceId: Long, stopsAtPress: Long): Map<String, Any?> {
         val submitted = synchronized(stopOrder) {
-            if (stopCount != stopsAtPress) null else supervisor.submit(plan, PlanSource.PHONE)
-        } ?: return linkedMapOf("error" to STOPPED_WHILE_SPEAKING)
+            when {
+                stopCount != stopsAtPress -> return linkedMapOf("error" to STOPPED_WHILE_SPEAKING)
+                voice != null && voice.latestPress != traceId -> return linkedMapOf("error" to NEWER_PRESS)
+                else -> supervisor.submit(plan, PlanSource.PHONE)
+            }
+        }
         trace.mark(PLAN_SUBMITTED, traceId, mapOf("utterance" to transcript, "source" to PlanSource.PHONE,
             "plan" to plan.toString()))
         return SessionSchema.submitted(await(submitted), clock())
@@ -403,14 +452,18 @@ class SessionController(
     /** Asks for every telemetry rate and HOME_POSITION again; false when not connected or not queued. */
     fun requestTelemetry(): Boolean = connection?.link?.requestTelemetry() ?: false
 
-    /** The [SessionSchema] snapshot now. */
-    fun snapshot(): Map<String, Any?> {
+    /**
+     * The [SessionSchema] snapshot now. Built under its own lock, so a higher `seq` never carries older content when
+     * the pump and the channel build snapshots at once (audit F13); never the controller's monitor, which [connect]
+     * holds for seconds.
+     */
+    fun snapshot(): Map<String, Any?> = synchronized(snapshotLock) {
         val state: SupervisorState = supervisor.state
         val vehicle = store.snapshot()
         val speech = voice?.status()?.let { it.copy(spotterArmed = it.spotterArmed && spotterArmed(vehicle)) }
             ?: VoiceStatus.off(selectedLanguage, VoiceReason.NOT_STARTED)
-        return SessionSchema.snapshot(seq.incrementAndGet(), clock(), linkInfo(), state, vehicle, latency.summaries(), speech,
-            aiStatus())
+        SessionSchema.snapshot(seq.incrementAndGet(), clock(), linkInfo(), state, vehicle, latency.summaries(), speech,
+            aiStatus(), journal.state)
     }
 
     /** The link, the store and the supervisor as the snapshot reports them (also for the notification). */
@@ -470,6 +523,8 @@ class SessionController(
         const val ALREADY_CONNECTED = "Already connected. Disconnect first."
         const val BACKGROUNDED = "The app went to the background. Say the command again."
         const val STOPPED_WHILE_SPEAKING = "STOP was pressed: that command was discarded."
+        const val NEWER_PRESS = "A newer command replaced that one."
+        const val PLAN_GONE = "That plan is no longer in the flight memory."
         private const val AI_NEW_INPUT = "new input"
         private const val AI_NEW_PRESS = "new press"
         private const val AI_STOPPED = "STOP"

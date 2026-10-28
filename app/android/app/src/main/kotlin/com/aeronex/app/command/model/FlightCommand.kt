@@ -17,6 +17,15 @@ class FlightCommand private constructor(val name: String, arguments: Map<String,
     val direction: String? get() = arguments[DIRECTION] as? String
     val distanceM: Double? get() = (arguments[DISTANCE] as? Number)?.toDouble()
 
+    /** The saved point (1–9) of [GOTO_POINT] and [MARK_POINT]. */
+    val point: Int? get() = (arguments[POINT] as? Number)?.toInt()
+
+    /** A flight-memory step that flies to a remembered position ([MEMORY_MOTION]). */
+    val isMemoryMotion: Boolean get() = name in MEMORY_MOTION
+
+    /** The step moves the vehicle horizontally or vertically: a relative move or a flight-memory flight. */
+    val isMotion: Boolean get() = name == MOVE || isMemoryMotion
+
     /** Operator-facing wording, e.g. 'Move forward 3 m'. */
     val description: String
         get() = when (name) {
@@ -25,6 +34,11 @@ class FlightCommand private constructor(val name: String, arguments: Map<String,
             HOLD -> "Hold position"
             LAND -> "Land"
             STATUS -> "Report status"
+            RETURN_HOME -> "Return home"
+            GO_BACK -> "Go back to the previous position"
+            RETRACE -> "Retrace the flown path"
+            GOTO_POINT -> "Go to point $point"
+            MARK_POINT -> "Mark point $point"
             else -> toString()
         }
 
@@ -42,6 +56,22 @@ class FlightCommand private constructor(val name: String, arguments: Map<String,
         const val DISTANCE = "distance_m"
         val DIRECTIONS = setOf("forward", "backward", "left", "right", "up", "down")
 
+        // Flight memory (spec 2026-10-28): positions the app flew to and confirmed, resolved by the supervisor from
+        // its own journal. They carry no coordinates, so no client or AI can name a raw position.
+        const val RETURN_HOME = "return_home"
+        const val GO_BACK = "go_back"
+        const val RETRACE = "retrace"
+        const val GOTO_POINT = "goto_point"
+        const val MARK_POINT = "mark_point"
+        const val POINT = "point"
+        const val MAX_POINT = 9
+
+        /** Flight-memory steps that fly the vehicle. */
+        val MEMORY_MOTION = setOf(RETURN_HOME, GO_BACK, RETRACE, GOTO_POINT)
+
+        /** Every flight-memory tool; the AI path never proposes these (spec 2026-10-28 M5). */
+        val MEMORY = MEMORY_MOTION + MARK_POINT
+
         /** Validates exactly one `{name, arguments}` tool call, as v0.2.0 `FlightCommand.fromToolCalls`. */
         fun fromToolCalls(calls: Any?): FlightCommand {
             if (calls !is List<*> || calls.size != 1) throw CommandFormatException("Exactly one tool call is required.")
@@ -53,8 +83,12 @@ class FlightCommand private constructor(val name: String, arguments: Map<String,
             val args = call["arguments"]
             if (name !is String || args !is Map<*, *>) throw CommandFormatException("Invalid tool name or arguments.")
             when (name) {
-                STATUS, LAND, HOLD ->
+                STATUS, LAND, HOLD, RETURN_HOME, GO_BACK, RETRACE ->
                     if (args.isNotEmpty()) throw CommandFormatException("This tool accepts no arguments.")
+                GOTO_POINT, MARK_POINT ->
+                    if (!args.hasKeys(setOf(POINT)) || !pointNumber(args[POINT])) {
+                        throw CommandFormatException("Specify a point number 1–$MAX_POINT.")
+                    }
                 TAKEOFF ->
                     if (!args.hasKeys(setOf(ALTITUDE)) || !number(args[ALTITUDE], minimum = 1.0)) {
                         throw CommandFormatException("Specify a takeoff altitude of 1–10 m.")
@@ -75,6 +109,13 @@ class FlightCommand private constructor(val name: String, arguments: Map<String,
             fromToolCalls(listOf(mapOf("name" to name, "arguments" to arguments)))
 
         private fun Map<*, *>.hasKeys(keys: Set<String>) = size == keys.size && keys.all { containsKey(it) }
+
+        /** A whole point number 1–[MAX_POINT]. */
+        private fun pointNumber(value: Any?): Boolean {
+            if (value !is Number) return false
+            val v = value.toDouble()
+            return v.isFinite() && v % 1.0 == 0.0 && v >= 1 && v <= MAX_POINT
+        }
 
         // Simulator test limits only; real flight needs a separately validated profile.
         private fun number(value: Any?, minimum: Double, exclusive: Boolean = false): Boolean {

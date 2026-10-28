@@ -209,10 +209,20 @@ def test_binary_frame_gets_error():
 def test_deeply_nested_json_gets_error():
     client = TestClient(app)
     with client.websocket_connect("/ws") as ws:
-        ws.send_text("[" * 100000 + "]" * 100000)
+        ws.send_text("[" * 30000 + "]" * 30000)
         reply = _recv(ws)
         assert reply["type"] == "ERROR"
         assert reply["payload"]["reason"] == "malformed JSON"
+        _assert_still_serving(ws)
+
+
+def test_oversized_message_is_refused_before_parsing():
+    client = TestClient(app)
+    with client.websocket_connect("/ws") as ws:
+        ws.send_text("[" * 100000 + "]" * 100000)
+        reply = _recv(ws)
+        assert reply["type"] == "ERROR"
+        assert reply["payload"]["reason"] == "message too large"
         _assert_still_serving(ws)
 
 

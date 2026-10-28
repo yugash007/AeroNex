@@ -38,8 +38,12 @@ STUBBED = ()
 # selecting a vocabulary table directly.
 AUTO_HINTS = ("auto", "")
 
-# Mirrors edge.app.commands.MAX_DISTANCE_M (duplicated, not imported: pure).
-MAX_DISTANCE_M = 500
+# The grammar's numeral range (spec 7.4: whole numbers 0-100). The parser
+# reads what was said; the safety envelope (moves of at most 10 m, takeoff to
+# 1-10 m, README "Safety model") is enforced where commands run:
+# edge.app.commands here, the app's validator on the phone.
+MAX_DISTANCE_M = 100
+MAX_TAKEOFF_ALTITUDE_M = 100
 
 EXACT_CONFIDENCE = 0.9
 FALLBACK_CONFIDENCE = 0.7
@@ -901,6 +905,20 @@ def _normalize_digits(text: str) -> str:
     return "".join(_NATIVE_DIGITS.get(c, c) for c in text)
 
 
+# Apostrophe look-alikes folded to "'", so "don´t", "don`t" and "don′t" are
+# "don't". Invisible characters (zero-width space, soft hyphen, word joiner,
+# BOM) are dropped, so "no\u200bt" is "not". ZWNJ and ZWJ stay: the Indic
+# tables spell words with them.
+_APOSTROPHES = str.maketrans({c: "'" for c in "\u0060\u00b4\u02b9\u02bc\u2018\u2019\u201b\u2032\uff07"})
+_INVISIBLE = dict.fromkeys(map(ord, "\u200b\u00ad\u2060\ufeff"), None)
+
+
+def _clean(text: str) -> str:
+    """NFC (decomposed Indic text must match the NFC tables), no invisible
+    characters, apostrophe look-alikes folded."""
+    return unicodedata.normalize("NFC", text).translate(_INVISIBLE).translate(_APOSTROPHES)
+
+
 def _tokens(text: str) -> list[str]:
     """Whitespace-separated, edge-punctuation-stripped, casefolded tokens.
 
@@ -908,7 +926,7 @@ def _tokens(text: str) -> list[str]:
     dependent vowel signs stay whole; "twenty-three" style ASCII
     compounds are split into two tokens.
     """
-    text = re.sub(r"(?<=[A-Za-z])-(?=[A-Za-z])", " ", text)
+    text = re.sub(r"(?<=[A-Za-z])-(?=[A-Za-z])", " ", _clean(text))
     out = []
     for raw in text.casefold().split():
         tok = _strip_edge(raw)
@@ -957,6 +975,9 @@ def _match_number(text: str, language: str) -> tuple[int | float, list[str]] | t
         # ".5" would read as 5 and "1½" as 1: never drop part of a number.
         raise IntentError(f"unsupported number form in: {text!r}")
     digits = list(re.finditer(r"-?\d+(?:\.\d+)?", normalized))
+    if any(m.start() > 0 and unicodedata.category(normalized[m.start() - 1])[0] in "LM" for m in digits):
+        # A digit run glued after a letter ("gate A5", "x2.5") names something; never a distance.
+        raise IntentError(f"unsupported number form in: {text!r}")
     if len(digits) > 1:
         # "1,000", "1e3", "5-10", "10 then 20": never guess which part counts.
         raise IntentError(f"unsupported number form in: {text!r}")
@@ -1027,6 +1048,40 @@ def _confidence(residue: list[str], used_words: bool, unit_found: bool) -> float
 # ---------------------------------------------------------------------------
 
 
+def _names_a_quantity(transcript: str, others: list[str], vocab: dict, code: str) -> bool:
+    """A digit, numeral word, minus word or non-metre unit outside the command phrase."""
+    normalized = _normalize_digits(transcript)
+    unit_words = [re.sub(rf"^[\d.,]+[{_DASHES}]?", "", tok) for tok in _tokens(normalized)]
+    return (
+        any(re.search(r"\d", _normalize_digits(tok)) or tok in _NUMERAL_WORDS[code] for tok in others)
+        or _contains_any(others, vocab["minus"] + EN_MINUS_WORDS)
+        or _contains_any(unit_words, vocab["other_units"] + EN_OTHER_UNITS)
+        or bool(re.search(rf"(?<!\d)[{_DASHES}]\s*\d", normalized))
+    )
+
+
+def _takeoff_altitude(transcript: str, words: list[str], vocab: dict, code: str) -> int | float:
+    """The spoken takeoff height in metres (edge.app.commands holds it to 1-10 m)."""
+    if _contains_any(words, vocab["minus"] + EN_MINUS_WORDS) or re.search(
+        rf"(?<!\d)[{_DASHES}]\s*\d", _normalize_digits(transcript)
+    ):
+        raise IntentError(f"negative altitude in: {transcript!r}")
+    unit_words = [
+        re.sub(rf"^[\d.,]+[{_DASHES}]?", "", tok) for tok in _tokens(_normalize_digits(transcript))
+    ]
+    if _contains_any(unit_words, vocab["other_units"] + EN_OTHER_UNITS):
+        raise IntentError(f"unsupported altitude unit (metres only) in: {transcript!r}")
+    value, number_tokens = _match_number(transcript, code)
+    if value is None or number_tokens is None:
+        raise IntentError(f"no altitude found in: {transcript!r}")
+    leftover = _remove_subseq(words, number_tokens)
+    if any(tok in _NUMERAL_WORDS[code] for tok in (words if leftover is None else leftover)):
+        raise IntentError(f"unsupported number form in: {transcript!r}")
+    if not 0 < value <= MAX_TAKEOFF_ALTITUDE_M:
+        raise IntentError(f"altitude_m must satisfy 0 < h <= {MAX_TAKEOFF_ALTITUDE_M}, got {value!r}")
+    return int(value) if float(value).is_integer() else value
+
+
 def parse_transcript(transcript: str, language: str = "auto") -> dict:
     """Map a transcript to {"command", "parameters", "confidence"}.
 
@@ -1041,6 +1096,7 @@ def parse_transcript(transcript: str, language: str = "auto") -> dict:
     """
     if not isinstance(transcript, str) or not transcript.strip():
         raise IntentError("empty transcript")
+    transcript = _clean(transcript)
     if not isinstance(language, str):
         raise UnsupportedLanguageError(f"unsupported language: {language!r}")
     hint = language.strip().casefold()
@@ -1087,8 +1143,16 @@ def parse_transcript(transcript: str, language: str = "auto") -> dict:
         )
         if sum(move_parts) >= 2:
             raise IntentError(f"more than one command in: {transcript!r}")
+        parameters: dict = {}
+        if command != "STOP" and _names_a_quantity(transcript, others, vocab, code):
+            # Never drop a number, sign or unit silently: "take off to 500
+            # meters" or "land in 5 seconds" must not run as a bare command.
+            # STOP always runs: refusing a stop is never the safe choice.
+            if command != "TAKEOFF":
+                raise IntentError(f"{command} takes no number in: {transcript!r}")
+            parameters["altitude_m"] = _takeoff_altitude(transcript, words, vocab, code)
         conf = EXACT_CONFIDENCE if not rest else FALLBACK_CONFIDENCE
-        return {"command": command, "parameters": {}, "confidence": conf}
+        return {"command": command, "parameters": parameters, "confidence": conf}
 
     verb_tokens: list[str] | None = None
     for verb in vocab["verbs"]:

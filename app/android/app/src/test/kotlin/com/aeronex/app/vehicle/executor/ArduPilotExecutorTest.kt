@@ -164,7 +164,8 @@ class ArduPilotExecutorTest {
         assertEquals(StepUpdate.Completed(), move("forward", 2))
         val frame = vehicle.positionTargets().single()
         assertEquals(9, frame.coordinateFrame)
-        assertEquals(3576, frame.typeMask)
+        assertEquals("position and yaw (audit L1)", 2552, frame.typeMask)
+        assertEquals("relative yaw 0: hold the heading", 0f, frame.yaw)
         assertEquals(listOf(2f, 0f, 0f), listOf(frame.x, frame.y, frame.z))
         assertEquals("GUIDED is not re-sent when already GUIDED", listOf(CopterMode.GUIDED), vehicle.modeCommands())
         waitFor("streaming on, then off") { vehicle.positionTargetIntervals().takeLast(2) == listOf(200_000L, -1L) }
@@ -337,4 +338,78 @@ class ArduPilotExecutorTest {
         assertEquals(StepUpdate.Rejected(ArduPilotExecutor.STALE), takeoff())
         assertTrue(vehicle.vehicleCommands().isEmpty())
     }
+
+    /** Audit L1: moves hold the heading, so the confirmed shape is flown (ArduCopter faces its travel otherwise). */
+    @Test fun aPlanKeepsItsShapeBecauseMovesHoldTheHeading() {
+        assertEquals(StepUpdate.Completed(), takeoff())
+        assertEquals(StepUpdate.Completed(), move("right", 4))
+        assertEquals(StepUpdate.Completed(), move("forward", 4))
+        val position = vehicle.position()
+        assertEquals("north", 4.0, position[0], 0.5)
+        assertEquals("east", 4.0, position[1], 0.5)
+        assertEquals(0.0, vehicle.yaw, 1e-6)
+    }
+
+    /** The fake models the bug the heading hold fixes: a frame that ignores yaw turns the copter. */
+    @Test fun theFakeTurnsToFaceItsTravelWhenAFrameIgnoresYaw() {
+        assertEquals(StepUpdate.Completed(), takeoff())
+        rig.link.send(SetPositionTargetLocalNed(0, 1, 1, 9, 3576, 0f, 4f, 0f))
+        waitFor("turned east") { kotlin.math.abs(vehicle.yaw - PI / 2) < 1e-6 }
+    }
+
+    /**
+     * Audit L7: a pilot's mode change reported right after the app's GUIDED ACK, both handled in one turn, ends the
+     * takeoff before ARM (ArduCopter would otherwise arm and take off in the pilot's LOITER).
+     */
+    @Test fun aPilotModeRightAfterTheGuidedAckStopsTheTakeoffBeforeArming() {
+        executor = ArduPilotExecutor(rig.link, rig.store, FAST_TIMING, trace, traceId = 1,
+            heartbeatsAtArrival = rig.events::heartbeatsAtArrival)
+        vehicle.takeOverAfterModeAck = CopterMode.LOITER
+        rig.events.drainAcks()
+        var update = executor.start(FlightCommand.of(FlightCommand.TAKEOFF, mapOf(FlightCommand.ALTITUDE to 3)),
+            rig.store.snapshot(), now())
+        assertEquals(StepUpdate.Running, update)
+        waitFor("the pilot's heartbeat after the ACK") { rig.store.snapshot().mode == CopterMode.LOITER }
+        update = executor.update(rig.store.snapshot(), rig.events.drainAcks(), now()) // ACK and heartbeat: one turn
+        assertEquals(StepUpdate.Unknown(ArduPilotExecutor.MODE_TAKEN_OVER), update)
+        assertTrue("nothing after the takeover", vehicle.commands(400).isEmpty() && vehicle.commands(22).isEmpty())
+        assertFalse(vehicle.armed)
+    }
+
+    /** A heartbeat that predates the ACK (the vehicle's own new mode) is no takeover. */
+    @Test fun aHeartbeatShowingTheNewModeBeforeItsAckStillTakesOff() {
+        executor = ArduPilotExecutor(rig.link, rig.store, FAST_TIMING, trace, traceId = 1,
+            heartbeatsAtArrival = rig.events::heartbeatsAtArrival)
+        vehicle.heartbeatBeforeModeAck = true
+        assertEquals(StepUpdate.Completed(), takeoff())
+    }
+
+    /** Audit L11: a lost NAV_TAKEOFF ACK is answered by the climb; a re-sent copy's refusal is moot. */
+    @Test fun aTakeoffWhoseAckIsLostIsConfirmedByTheClimb() {
+        vehicle.loseAcks[22] = AtomicInteger(1)
+        assertEquals(StepUpdate.Completed(), takeoff())
+        assertTrue(vehicle.altitude() >= 2.6)
+    }
+
+    /** Audit L15: landing is the way out of a degraded state, so a sick sensor does not block it. */
+    @Test fun landWorksWithAnUnhealthySensor() {
+        assertEquals(StepUpdate.Completed(), takeoff())
+        vehicle.sensorsHealthy = false
+        waitFor("unhealthy") { rig.store.snapshot().healthy == false }
+        assertEquals(StepUpdate.Completed(), land())
+        assertEquals(VehicleState.LANDED_ON_GROUND, vehicle.landed)
+    }
+
+    /** Audit L14: short moves keep a usable tolerance that still never matches the previous target. */
+    @Test fun shortMovesKeepAUsableToleranceBelowTheirLength() {
+        for (d in listOf(0.05, 0.1, 0.2, 0.3, 0.5, 1.0, 2.0, 10.0)) {
+            assertTrue("echo $d", ArduPilotExecutor.echoTolerance(d) < d)
+            assertTrue("arrival $d", ArduPilotExecutor.arrivalTolerance(d) < d)
+        }
+        assertEquals(0.15, ArduPilotExecutor.echoTolerance(0.2), 1e-9)
+        assertEquals(1.0, ArduPilotExecutor.echoTolerance(2.0), 1e-9)
+        assertEquals(0.5, ArduPilotExecutor.arrivalTolerance(2.0), 1e-9)
+        assertEquals(0.25, ArduPilotExecutor.arrivalTolerance(0.5), 1e-9)
+    }
+
 }

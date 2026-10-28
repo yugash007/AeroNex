@@ -79,6 +79,8 @@ class NeedleToolCaller(
         val invalid = ToolCallResult.NoCall(ToolCallResult.INVALID_CALL, elapsedMs)
         val call = json.optJSONObject("call") ?: return invalid
         val name = call.opt("name") as? String ?: return invalid
+        // The flight memory is the operator's alone (spec 2026-10-28 M5); the supervisor refuses it from the AI too.
+        if (name in FlightCommand.MEMORY) return invalid
         val arguments = call.optJSONObject("arguments") ?: return invalid
         val values = LinkedHashMap<String, Any>()
         for (key in arguments.keys()) {

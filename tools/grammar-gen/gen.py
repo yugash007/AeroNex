@@ -139,6 +139,9 @@ SCHEMA = {
     "numerals": {"extra": NUM_MAP, "fractions": NUM_MAP, "decimal_point": WORDS, "and_half": WORDS,
                  "loans": {"ones": NUM_MAP, "tens": NUM_MAP, "hundred": NUM_MAP, "fractions": NUM_MAP}},
     "natural": {"direction_verbs": "direction_groups", "comparatives": "direction_groups"},
+    # Flight memory (spec 2026-10-28; README "Flight memory"): the phrases of the memory template classes.
+    "memory": {"home": WORDS, "goback": WORDS, "retrace": WORDS, "point": WORDS, "goto": WORDS, "mark": WORDS,
+               "markas": WORDS},
     "loanwords": "loanwords",
     "templates": "templates",
     "vosk": {"exclude": WORDS, "filler_exclude": WORDS, "near_stop": WORDS, "fillers": WORDS, "loan_numerals": "bool",
@@ -153,7 +156,17 @@ ARGUMENT_CLASSES = ("{num}", "{dir}", "{side}", "{comparative}", "{unit}")
 TOP_KEYS = {"language", "name", "script", "provisional"} | set(SCHEMA)
 # Template classes and the v0.2.0 command each command class is read from.
 COMMAND_CLASSES = {"takeoff": "TAKEOFF", "land": "LAND", "hold": "HOVER", "stop": "STOP"}
-CLASSES = ("verb", "dir", "side", "dirverb", "comparative", "unit", "num", "takeoff", "land", "hold", "stop", "status")
+# Flight-memory classes (README "Flight memory"): each is the lexicon's memory.<class> table.
+MEMORY_CLASSES = ("home", "goback", "retrace", "point", "goto", "mark", "markas")
+CLASSES = ("verb", "dir", "side", "dirverb", "comparative", "unit", "num", "takeoff", "land", "hold", "stop",
+           "status") + MEMORY_CLASSES
+# The class of each intent whose every form a fixture case spells (the others take their first form).
+OWN_CLASSES = {"takeoff": ("{takeoff}",), "land": ("{land}",), "hold": ("{hold}",), "stop": ("{stop}",),
+               "status": ("{status}",), "move": ("{dir}", "{side}", "{dirverb}", "{comparative}"),
+               "return_home": ("{home}",), "go_back": ("{goback}",), "retrace": ("{retrace}",),
+               "goto_point": ("{goto}",), "mark_point": ("{mark}", "{markas}")}
+# Flight-memory intents whose {num} is a point number (1-9), not metres.
+POINT_INTENTS = ("goto_point", "mark_point")
 SLOTS = ("num", "dir")
 # 0.4.0 classes the rule parser reads (README "Natural phrasing"): `{side}` (the left and right forms of `{dir}`),
 # `{dirverb}` and `{comparative}`. The CTC template matcher reads directions only from `{dir}`, so a CTC
@@ -441,6 +454,8 @@ class Lexicon:
             return self.table("rules.units")
         if name == "status":
             return self.table("plan.status_words")
+        if name in MEMORY_CLASSES:
+            return self.table(f"memory.{name}")
         if name in COMMAND_CLASSES:
             return [p for c, phrases in self.commands() if c == COMMAND_CLASSES[name] for p in phrases]
         raise KeyError(name)
@@ -961,10 +976,8 @@ def _instances(lex, intent, tokens, use_loans=False):
     loans = {x.loan for x in lex.loanwords()}
     numeral = _numeral_for(lex, 3 if intent == "takeoff" else 2)
     results = []
-    own = {"takeoff": "{takeoff}", "land": "{land}", "hold": "{hold}", "stop": "{stop}", "status": "{status}",
-           "move": "{dir}"}[intent]
-    if own not in tokens and intent == "move":  # 0.4.0: "to the {side}", "{dirverb}", "{comparative}"
-        own = next(t for t in ("{side}", "{dirverb}", "{comparative}") if t in tokens)
+    # 0.4.0 moves: "to the {side}", "{dirverb}", "{comparative}"; memory: "mark {point} n" or "mark this as n".
+    own = next(t for t in OWN_CLASSES[intent] if t in tokens)
 
     def forms(tok):
         if tok == "{num}":
@@ -991,6 +1004,8 @@ def _instances(lex, intent, tokens, use_loans=False):
             expect = {"tool": "move_relative", "arguments": {"direction": direction, "distance_m": 2}}
         elif intent == "takeoff":
             expect = {"tool": "takeoff", "arguments": {"altitude_m": 3}}
+        elif intent in POINT_INTENTS:
+            expect = {"tool": lex.grammar.intents[intent]["tool"], "arguments": {"point": 2}}
         else:
             expect = {"tool": lex.grammar.intents[intent]["tool"], "arguments": {}}
         results.append(({"intent": intent, "text": text, **expect}, combo))
@@ -1007,7 +1022,7 @@ def _negated(lex, firsts) -> list:
     """
     negators = vosk_negators(lex) if lex.code in lex.grammar.vosk else negation_phrases(lex)
     out = []
-    for intent in ("takeoff", "move", "land", "hold"):
+    for intent in ("takeoff", "move", "land", "hold", "return_home", "go_back", "retrace", "goto_point", "mark_point"):
         if intent not in firsts:
             continue
         tokens, combo = firsts[intent]

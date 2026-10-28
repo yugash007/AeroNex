@@ -788,4 +788,27 @@ class SafetySupervisorTest {
         assertEquals("UNKNOWN — " + StopPolicy.NOT_CONFIRMED, supervisor.state.outcomes.single().message)
         assertEquals(PlanStage.FAILED, supervisor.state.stage)
     }
+
+    /** Audit F4: "Got it" silences the alarm while the same STOP keeps re-sending; an escalation sounds it again. */
+    @Test fun anAcknowledgedAlarmStaysSilentUntilTheStopEscalates() {
+        connect(slowRetry)
+        vehicle.lose[22] = AtomicInteger(1_000) // armed on the ground: the takeoff never happens
+        confirm(token(submit(plan(takeoff()))))
+        waitFor("armed on the ground") { vehicle.armed }
+        vehicle.refuse[400] = 4 // the DISARM is refused: alarm, then BRAKE
+        vehicle.loseAcks[176] = AtomicInteger(1_000) // and BRAKE is never acknowledged, so it keeps re-sending
+        supervisor.stop(StopTrigger.BUTTON)
+        waitFor("alarm while BRAKE re-sends") {
+            supervisor.state.stop?.let { it.alarm && it.phase == StopPhase.SENDING && it.action == StopAction.BRAKE } == true
+        }
+        supervisor.acknowledgeAlarm()
+        waitFor("acknowledged") { supervisor.state.stop?.alarm == false }
+        Thread.sleep(300) // several supervisor ticks while the lane is still re-sending
+        val still = supervisor.state.stop!!
+        assertEquals(StopPhase.SENDING, still.phase)
+        assertFalse("silent while the same STOP re-sends", still.alarm)
+        waitFor("not confirmed", 4_000) { supervisor.state.stop?.phase == StopPhase.NOT_CONFIRMED }
+        assertTrue("an escalation sounds again", supervisor.state.stop!!.alarm)
+    }
+
 }

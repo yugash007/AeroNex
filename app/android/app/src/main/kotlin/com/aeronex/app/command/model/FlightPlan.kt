@@ -20,13 +20,16 @@ data class PlanStep(val command: FlightCommand, val source: StepSource, val clau
  * An ordered, structurally valid list of proposals, confirmed once as a whole.
  * Port of v0.2.0 `flight_plan.dart`: the constructor throws [CommandFormatException] with the same messages, in
  * the same order (empty, more than 5 steps, status on its own, takeoff first, land last, 1–10 m from the takeoff).
+ * A mission's steps (spec 2026-10-28, [com.aeronex.app.mission.Mission]) are one plan of up to [maxSteps].
  */
-class FlightPlan(steps: List<PlanStep>) {
+class FlightPlan(steps: List<PlanStep>, maxSteps: Int = MAX_STEPS) {
     val steps: List<PlanStep> = Collections.unmodifiableList(steps.toList())
 
     init {
         if (this.steps.isEmpty()) throw CommandFormatException("Say a command first.")
-        if (this.steps.size > MAX_STEPS) throw CommandFormatException("Say at most 5 steps at a time.")
+        if (this.steps.size > maxSteps) {
+            throw CommandFormatException(if (maxSteps == MAX_STEPS) "Say at most 5 steps at a time." else "A mission holds at most $maxSteps steps.")
+        }
         val names = this.steps.map { it.command.name }
         if (names.size > 1 && FlightCommand.STATUS in names) throw CommandFormatException("Ask for status on its own.")
         if (names.lastIndexOf(FlightCommand.TAKEOFF) > 0) {
@@ -37,10 +40,14 @@ class FlightPlan(steps: List<PlanStep>) {
         if (names.first() == FlightCommand.TAKEOFF) checkAltitude(this.steps.first().command.altitudeM!!)
     }
 
-    /** Validates the plan against the reported vehicle state, as v0.2.0 `checkVehicle`. */
+    /**
+     * Validates the plan against the reported vehicle state, as v0.2.0 `checkVehicle`. On the ground a plan starts with
+     * a takeoff, or is status alone, or (flight memory) marks a point alone: the launch point can be saved.
+     */
     fun checkVehicle(landed: Boolean, altitude: Double? = null) {
         val first = steps.first().command.name
-        if (landed && first != FlightCommand.TAKEOFF && first != FlightCommand.STATUS) {
+        val markAlone = first == FlightCommand.MARK_POINT && steps.size == 1
+        if (landed && first != FlightCommand.TAKEOFF && first != FlightCommand.STATUS && !markAlone) {
             throw CommandFormatException(
                 "The drone is on the ground. Start with a takeoff height, " +
                     "for example: take off to 3 m and fly forward 3 m."
@@ -52,10 +59,15 @@ class FlightPlan(steps: List<PlanStep>) {
         if (!landed && altitude != null) checkAltitude(altitude)
     }
 
-    /** Simulates up/down moves from [start]; the executor still re-checks each. */
+    /**
+     * Simulates up/down moves from [start]; the executor still re-checks each. A flight-memory flight ends at a
+     * remembered height this plan cannot know, so the simulation stops there; the validator projects the rest with the
+     * flight memory ([com.aeronex.app.safety.PlanValidator]).
+     */
     private fun checkAltitude(start: Double) {
         var altitude = start
         steps.forEachIndexed { i, step ->
+            if (step.command.isMemoryMotion) return
             val direction = step.command.direction
             if (direction != "up" && direction != "down") return@forEachIndexed
             val distance = step.command.distanceM!!

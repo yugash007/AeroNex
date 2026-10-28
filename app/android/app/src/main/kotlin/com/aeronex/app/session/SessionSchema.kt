@@ -15,6 +15,8 @@ import com.aeronex.app.link.mavlink.LocalPositionNed
 import com.aeronex.app.link.mavlink.PositionTargetLocalNed
 import com.aeronex.app.link.mavlink.StatusText
 import com.aeronex.app.link.mavlink.SysStatus
+import com.aeronex.app.memory.MemoryRoutes
+import com.aeronex.app.memory.MemoryState
 import com.aeronex.app.observability.LatencySummary
 import com.aeronex.app.safety.ConfirmResult
 import com.aeronex.app.safety.PendingPlan
@@ -26,6 +28,7 @@ import com.aeronex.app.safety.SubmitResult
 import com.aeronex.app.safety.SupervisorState
 import com.aeronex.app.vehicle.CopterMode
 import com.aeronex.app.vehicle.ModeOwner
+import com.aeronex.app.vehicle.Ned
 import com.aeronex.app.vehicle.VehicleState
 import kotlin.math.roundToLong
 
@@ -95,7 +98,8 @@ data class PlanRequest(val plan: FlightPlan, val source: PlanSource, val utteran
  *   - `landedState` (int?): MAV_LANDED_STATE. `landedStateName` (string?): UNDEFINED | ON_GROUND | IN_AIR |
  *     TAKEOFF | LANDING.
  *   - `modeOwner` (string?): `APP` | `EXTERNAL` (spec 4.12); null while not connected or no mode is known.
- *   - `modeOwnerLabel` (string?): while EXTERNAL after a mode change: "Autopilot failsafe" or "Pilot mode".
+ *   - `modeOwnerLabel` (string?): while EXTERNAL after a mode change: "Autopilot failsafe" or "Pilot mode"; after a
+ *     heartbeat gap with the vehicle still in the app's mode, "Link gap" (STOP works without the hold).
  *   - `altitudeRelM` (double?): metres above home (GLOBAL_POSITION_INT).
  *   - `speed` (double?): m/s, 3D, rounded to 0.01.
  *   - `batteryPercent` (int?): null when the autopilot reports it unknown.
@@ -131,10 +135,11 @@ data class PlanRequest(val plan: FlightPlan, val source: PlanSource, val utteran
  *   - `action` (string?): DISARM | BRAKE | LAND, the frame last sent; null when nothing was sent.
  *   - `message` (string): the banner, e.g. "STOP confirmed: BRAKE", "Pilot mode LOITER, use RC",
  *     "STOP NOT CONFIRMED, take RC control".
- *   - `alarm` (bool): sound the alarm until `acknowledgeAlarm`.
+ *   - `alarm` (bool): sound the alarm until `acknowledgeAlarm`; it sounds again only if the STOP escalates (a new
+ *     phase or action).
  *   - `override` (bool): sent over an EXTERNAL owner by the 1 s on-screen hold (logged).
  *   - `needsHoldForExternal` (bool): now an armed vehicle's mode is EXTERNAL: a STOP press sends nothing unless the
- *     on-screen STOP is held 1 s (spec 4.12).
+ *     on-screen STOP is held 1 s (spec 4.12). False after a heartbeat gap that left the app's own mode in place.
  *   - `modeOwnerLabel` (string?): as in `vehicle`, for the "use RC" banner.
  * - `notice` (string?): why the last pending plan went away (expired, link lost, app in background …).
  * - `latency` (map): per stage, `{p50Ms (double), p95Ms (double), maxMs (double), n (int)}` over the newest spans, or
@@ -160,6 +165,21 @@ data class PlanRequest(val plan: FlightPlan, val source: PlanSource, val utteran
  *   - `heard` (string?): what the AI was asked. `gloss` (string?): its English gloss when that differs.
  *   - `understoodAs` (string?): the planner's steps ("take off to 3 meters, then move forward 2 meters").
  *   - `error` (string?): why the AI gave no plan or its plan was refused (shown as is).
+ * - `memory` (map, 2026-10-28; added to version 1, older clients ignore it): the flight memory ([MemoryState]).
+ *   Places are `{northM, eastM, upM}` (doubles, rounded to 0.01): metres north, east and up from home, or from the
+ *   autopilot's local origin while `homeKnown` is false.
+ *   - `homeKnown` (bool): the memory has the home its places belong to.
+ *   - `vehicle` (place?): where the vehicle is now; null without a fresh position.
+ *   - `trail` (list): the path flown in this flight, oldest first (the first is where the takeoff ended): places with
+ *     `label` (string), e.g. "Takeoff", "Move forward 4 m", "Home", "Point 2", "Start".
+ *   - `points` (list): the saved points by number: places with `point` (int, 1–9), `label` and `atWallMs` (int, epoch
+ *     ms, when it was saved).
+ *   - `goBackTo` (string?): the trail label "go back" would fly to now; null when there is nothing to go back to.
+ *   - `canRetrace` (bool): "retrace" has a flown path to fly back along now.
+ *   - `plans` (list): the newest finished plans (at most [PLANS]), newest first: `{planId (int), atWallMs (int),
+ *     source (string), steps: [{name, arguments, description, outcome (StepStatus name)}]}`; `runAgain(planId)`
+ *     shows one again.
+ *   - `notice` (string?): why the trail and points were last forgotten (home moved).
  *
  * ## Requests and answers (MethodChannel `aeronex/session`)
  * - `connect({transport, host, remotePort, localPort, radioLink})` → snapshot; errors as PlatformException
@@ -171,11 +191,16 @@ data class PlanRequest(val plan: FlightPlan, val source: PlanSource, val utteran
  *   plans come only from the service's own AI path (spec A3).
  * - `submitText({text, language, source?})` → as `submitPlan`, or `{thinking: true, request}` when the AI took it.
  * - `confirm(token)` → `{accepted: true}` or `{accepted: false, error}`.
+ * - `runAgain({planId} | planId)` → as `submitPlan`: a plan from `memory.plans`, validated again (Tap source).
+ * - `clearMemory` → null: forgets the trail, the points and the plans (home stays known).
  */
 object SessionSchema {
     const val VERSION = 1
     val TOP_LEVEL_KEYS = listOf("schemaVersion", "seq", "atMs", "link", "execution", "vehicle", "pending", "run", "stop",
-        "notice", "latency", "speech", "ai")
+        "notice", "latency", "speech", "ai", "memory")
+
+    /** At most this many finished plans in `memory.plans`. */
+    const val PLANS = 20
 
     /** The refusal of a step the Dart rules did not match (its AI fallback proposed it). */
     fun aiStep(number: Int) = "Step $number was not matched by the command rules. Say it again with the supported words."
@@ -202,6 +227,7 @@ object SessionSchema {
         latency: Map<String, LatencySummary?>,
         speech: VoiceStatus,
         ai: AiStatus = AiStatus.OFF,
+        memory: MemoryState = MemoryState(),
     ): Map<String, Any?> = linkedMapOf(
         "schemaVersion" to VERSION,
         "seq" to seq,
@@ -218,6 +244,7 @@ object SessionSchema {
         },
         "speech" to speech(speech),
         "ai" to ai(ai),
+        "memory" to memory(memory, vehicle),
     )
 
     /**
@@ -345,7 +372,7 @@ object SessionSchema {
             "message" to stop.message,
             "alarm" to stop.alarm,
             "override" to stop.override,
-            "needsHoldForExternal" to (owner == ModeOwner.EXTERNAL && vehicle.armed == true),
+            "needsHoldForExternal" to (owner == ModeOwner.EXTERNAL && vehicle.armed == true && !vehicle.appModeAfterGap),
             "modeOwnerLabel" to vehicle.modeOwnerLabel.takeIf { owner != null },
         )
     }
@@ -378,6 +405,52 @@ object SessionSchema {
         "understoodAs" to ai.understoodAs,
         "error" to ai.error,
     )
+
+    private fun memory(memory: MemoryState, vehicle: VehicleState): Map<String, Any?> {
+        val home = memory.home
+        fun place(p: Ned) = linkedMapOf<String, Any?>(
+            "northM" to centimetres(p.x - (home?.x ?: 0.0)),
+            "eastM" to centimetres(p.y - (home?.y ?: 0.0)),
+            "upM" to centimetres((home?.z ?: 0.0) - p.z),
+        )
+        val position = vehicle.position?.takeIf { vehicle.connected && vehicle.fresh(LocalPositionNed.messageId) }
+        // As the supervisor would resolve them now ([com.aeronex.app.safety.SafetySupervisor]).
+        fun route(name: String) = position?.let {
+            try {
+                MemoryRoutes.resolve(FlightCommand.of(name), MemoryRoutes.departing(memory, it), it)
+            } catch (_: CommandFormatException) {
+                null
+            }
+        }
+        return linkedMapOf(
+            "homeKnown" to (home != null),
+            "vehicle" to position?.let(::place),
+            "trail" to memory.trail.map { waypoint ->
+                linkedMapOf<String, Any?>("label" to waypoint.label).apply { putAll(place(waypoint.position)) }
+            },
+            "points" to memory.points.toSortedMap().map { (number, saved) ->
+                linkedMapOf<String, Any?>("point" to number, "label" to saved.label).apply {
+                    putAll(place(saved.position))
+                    put("atWallMs", saved.atWallMs)
+                }
+            },
+            "goBackTo" to route(FlightCommand.GO_BACK)?.label,
+            "canRetrace" to (route(FlightCommand.RETRACE) != null),
+            "plans" to memory.history.groupBy { it.planId }.values.reversed().take(PLANS).map { records ->
+                val first = records.first()
+                linkedMapOf(
+                    "planId" to first.planId,
+                    "atWallMs" to first.atWallMs,
+                    "source" to first.source,
+                    "steps" to records.map {
+                        linkedMapOf("name" to it.name, "arguments" to LinkedHashMap(it.arguments),
+                            "description" to it.description, "outcome" to it.outcome)
+                    },
+                )
+            },
+            "notice" to memory.notice,
+        )
+    }
 
     private fun centimetres(value: Double): Double? = if (value.isFinite()) (value * 100).roundToLong() / 100.0 else null
 

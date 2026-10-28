@@ -170,6 +170,8 @@ def test_provisional_flags(grammar):
     assert te.is_provisional("వద్దు")  # PROVISIONAL negator
     assert all(e.provisional for e in grammar.lexicons["ta"].entries())
     assert not any(e.provisional for e in grammar.lexicons["en"].entries())
+    # Flight memory (README "Flight memory"): the hi and te phrases wait for native-speaker review.
+    assert te.is_provisional("ఇంటికి తిరిగి వెళ్ళు") and grammar.lexicons["hi"].is_provisional("पॉइंट")
 
 
 # --- numerals -----------------------------------------------------------------------------------
@@ -799,7 +801,7 @@ def _upper_keys(directions):
     return {k.upper(): v for k, v in directions.items()}
 
 
-@needs_dart
+@pytest.mark.skipif(not RULE_ENGINE.exists(), reason="v0.2.0 Dart rule engine removed")
 @pytest.mark.parametrize("lang", ["en", "hi", "te"])
 def test_rule_tables_match_dart(tables, lang):
     src = _src(RULE_ENGINE)

@@ -86,6 +86,10 @@ internal class ScriptedEngine(
     val finishes = AtomicInteger()
     @Volatile var closedOn: String? = null
     val prewarms = AtomicInteger()
+    /** finish() waits for this, when set (a slow decode). */
+    @Volatile var finishGate: java.util.concurrent.CountDownLatch? = null
+    /** accept() throws this, when set (a native failure mid-utterance). */
+    @Volatile var acceptFailure: RuntimeException? = null
     private var fired = false
 
     override val modelLoad: ModelLoad get() = modelState
@@ -102,6 +106,7 @@ internal class ScriptedEngine(
     }
 
     override fun accept(samples: ShortArray, offset: Int, count: Int): Boolean {
+        acceptFailure?.let { throw it }
         val total = heard.addAndGet(count.toLong())
         if (fired || total < stopTokenAfter) return false
         fired = true
@@ -109,6 +114,7 @@ internal class ScriptedEngine(
     }
 
     override fun finish(): SpeechResult {
+        finishGate?.await()
         finishes.incrementAndGet()
         return SpeechResult(kind, language, result, heard.get(), 2_000_000, failure)
     }
@@ -166,6 +172,11 @@ internal class ScriptedEngines(
     /** The model state of the engines opened from now on. */
     @Volatile var model = ModelLoad.READY
     @Volatile var openedOn: String? = null
+    /** open() waits for this, when set (a model load slower than VoiceSession.stop's join). */
+    @Volatile var openGate: java.util.concurrent.CountDownLatch? = null
+    /** Speech threads inside open() right now, and the most there ever were. */
+    val opening = AtomicInteger()
+    val mostOpening = AtomicInteger()
 
     val engine: ScriptedEngine get() = engines.last()
     val spotter: ScriptedSpotter get() = spotters.last()
@@ -174,6 +185,12 @@ internal class ScriptedEngines(
 
     override fun open(language: String): VoiceEngines {
         openedOn = Thread.currentThread().name
+        mostOpening.accumulateAndGet(opening.incrementAndGet(), ::maxOf)
+        try {
+            openGate?.await()
+        } finally {
+            opening.decrementAndGet()
+        }
         val stale = AtomicBoolean().also { outdated += it }
         val asked = { outdatedPolls.incrementAndGet(); stale.get() }
         reasons[language]?.let { return VoiceEngines.none(language, it, outdated = asked).also { opened += it } }

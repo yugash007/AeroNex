@@ -195,8 +195,14 @@ class FakeSessionApi implements SessionApi {
     return AwaitingConfirmation(token, 15000, plan.toString());
   }
 
+  /// pttDown() throws this, when set (the service did not answer).
+  Object? pttError;
+
   @override
-  Future<void> pttDown() async => calls.add(('pttDown', null));
+  Future<void> pttDown() async {
+    calls.add(('pttDown', null));
+    if (pttError != null) throw pttError!;
+  }
 
   @override
   Future<void> pttUp() async => calls.add(('pttUp', null));
@@ -330,6 +336,36 @@ class FakeSessionApi implements SessionApi {
   Future<bool> removeAiModel(String id) async {
     calls.add(('removeAiModel', {'id': id}));
     return true;
+  }
+
+  /// What `runAgain` answers; null shows a one-step Return home plan.
+  SubmitResult? runAgainResult;
+
+  @override
+  Future<SubmitResult> runAgain(int planId) async {
+    calls.add(('runAgain', {'planId': planId}));
+    final answer = runAgainResult;
+    if (answer != null) return answer;
+    final plan = FlightPlan.single(
+        FlightCommand.fromToolCalls([
+          {'name': 'return_home', 'arguments': <String, Object?>{}}
+        ]),
+        source: StepSource.rules);
+    final token = 'token-${++_tokens}';
+    push(pendingFor(plan, PlanSource.tap,
+        token: token, execution: current.executionEnabled));
+    return AwaitingConfirmation(token, 15000, plan.toString());
+  }
+
+  /// Like the service: the trail, points and plans go; home stays known.
+  @override
+  Future<void> clearMemory() async {
+    calls.add(('clearMemory', null));
+    push(SessionSnapshot.fromMap({
+      ...current.toMap(),
+      'seq': ++_seq,
+      'memory': FlightMemory(homeKnown: current.memory.homeKnown).toMap(),
+    }));
   }
 
   Future<void> close() => _controller.close();

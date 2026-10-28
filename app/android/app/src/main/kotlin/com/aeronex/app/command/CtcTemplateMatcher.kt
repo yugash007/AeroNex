@@ -111,6 +111,12 @@ class CtcTemplateMatcher(val code: String) {
             // A spoken stop means stop and hold (as the rule parser reads it); the voice STOP lane is separate.
             "hold", "stop" -> FlightCommand.of(FlightCommand.HOLD)
             "status" -> FlightCommand.of(FlightCommand.STATUS)
+            // Flight memory (spec 2026-10-28): the te templates; FlightCommand refuses a point outside 1–9.
+            "return_home" -> FlightCommand.of(FlightCommand.RETURN_HOME)
+            "go_back" -> FlightCommand.of(FlightCommand.GO_BACK)
+            "retrace" -> FlightCommand.of(FlightCommand.RETRACE)
+            "goto_point" -> FlightCommand.of(FlightCommand.GOTO_POINT, mapOf(FlightCommand.POINT to numbers.single()))
+            "mark_point" -> FlightCommand.of(FlightCommand.MARK_POINT, mapOf(FlightCommand.POINT to numbers.single()))
             else -> null
         }
     }
