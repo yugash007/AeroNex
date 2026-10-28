@@ -338,6 +338,36 @@ class FakeSessionApi implements SessionApi {
     return true;
   }
 
+  /// What `runAgain` answers; null shows a one-step Return home plan.
+  SubmitResult? runAgainResult;
+
+  @override
+  Future<SubmitResult> runAgain(int planId) async {
+    calls.add(('runAgain', {'planId': planId}));
+    final answer = runAgainResult;
+    if (answer != null) return answer;
+    final plan = FlightPlan.single(
+        FlightCommand.fromToolCalls([
+          {'name': 'return_home', 'arguments': <String, Object?>{}}
+        ]),
+        source: StepSource.rules);
+    final token = 'token-${++_tokens}';
+    push(pendingFor(plan, PlanSource.tap,
+        token: token, execution: current.executionEnabled));
+    return AwaitingConfirmation(token, 15000, plan.toString());
+  }
+
+  /// Like the service: the trail, spots and plans go; home stays known.
+  @override
+  Future<void> clearMemory() async {
+    calls.add(('clearMemory', null));
+    push(SessionSnapshot.fromMap({
+      ...current.toMap(),
+      'seq': ++_seq,
+      'memory': FlightMemory(homeKnown: current.memory.homeKnown).toMap(),
+    }));
+  }
+
   Future<void> close() => _controller.close();
 }
 

@@ -136,4 +136,23 @@ void main() {
     // Only up/down moves change the projected altitude.
     plan([move('forward', 3)]).checkVehicle(landed: false, altitude: 0.5);
   });
+
+  test('a spot can be marked alone on the ground; altitude stops at a memory flight (2026-10-28)', () {
+    PlanStep step(String name, [Map<String, Object?> arguments = const {}]) => PlanStep(
+        FlightCommand.fromToolCalls([
+          {'name': name, 'arguments': arguments}
+        ]),
+        source: StepSource.rules);
+    FlightPlan([step('mark_point', {'point': 1})]).checkVehicle(landed: true);
+    expect(() => FlightPlan([step('return_home')]).checkVehicle(landed: true), throwsFormatException);
+    expect(() => FlightPlan([step('mark_point', {'point': 1}), step('land')]).checkVehicle(landed: true),
+        throwsFormatException);
+    // After going to a spot the height is the spot's: the service checks the rest.
+    FlightPlan([step('goto_point', {'point': 1}), step('move_relative', {'direction': 'up', 'distance_m': 5})])
+        .checkVehicle(landed: false, altitude: 9);
+    expect(
+        () => FlightPlan([step('move_relative', {'direction': 'up', 'distance_m': 5}), step('retrace')])
+            .checkVehicle(landed: false, altitude: 9),
+        throwsFormatException);
+  });
 }

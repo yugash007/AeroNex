@@ -45,10 +45,13 @@ class FlightPlan {
           {required StepSource source, String clause = ''}) =>
       FlightPlan([PlanStep(command, source: source, clause: clause)]);
 
-  /// Validates the plan against live vehicle state before it is shown.
+  /// Validates the plan against live vehicle state before it is shown. On
+  /// the ground a plan starts with a takeoff, or is status alone, or marks a
+  /// spot alone (the launch point can be saved).
   void checkVehicle({required bool landed, num? altitude}) {
     final first = steps.first.command.name;
-    if (landed && first != 'takeoff' && first != 'get_status') {
+    final markAlone = first == 'mark_point' && steps.length == 1;
+    if (landed && first != 'takeoff' && first != 'get_status' && !markAlone) {
       throw const FormatException(
           'The drone is on the ground. Start with a takeoff height, '
           'for example: take off to 3 m and fly forward 3 m.');
@@ -61,9 +64,12 @@ class FlightPlan {
   }
 
   /// Simulates up/down moves from [start]; the executor still re-checks each.
+  /// A flight-memory flight ends at a remembered height this plan cannot
+  /// know, so the simulation stops there (the service checks the rest).
   void _checkAltitude(num start) {
     var altitude = start;
     for (var i = 0; i < steps.length; i++) {
+      if (steps[i].command.isMemoryMotion) return;
       final arguments = steps[i].command.arguments;
       final direction = arguments['direction'];
       if (direction != 'up' && direction != 'down') continue;

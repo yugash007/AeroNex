@@ -9,6 +9,7 @@ import '../../session/session_api.dart';
 import '../domain/flight_command.dart';
 import '../domain/flight_plan.dart';
 import 'widgets/command_input.dart';
+import 'widgets/flight_memory_card.dart';
 import 'widgets/plan_card.dart';
 import 'widgets/status_line.dart';
 import 'widgets/stop_button.dart';
@@ -19,8 +20,9 @@ enum FlightDestination { linkSetup, models, diagnostics }
 
 enum _Menu { linkSetup, models, diagnostics, licenses }
 
-/// Home: the vehicle line, the plan waiting for CONFIRM (or running), and the
-/// ways to give a command (push-to-talk, typing, the tap pad). The giant STOP
+/// Home: the vehicle line, the plan waiting for CONFIRM (or running), the
+/// ways to give a command (push-to-talk, typing, the tap pad) and the flight
+/// memory (return home, go back, retrace, spots, run again). The giant STOP
 /// sits above it, and above every other route, in the app's [StopLane]. The
 /// flight session service listens, parses, decides and executes everything;
 /// this screen sends push-to-talk edges, typed text and tap-pad plans, and
@@ -316,6 +318,40 @@ class _FlightScreenState extends State<FlightScreen> with WidgetsBindingObserver
     _locked(() => _send(plan, PlanSource.tap));
   }
 
+  /// The flight memory's "Run again": the service shows the recorded plan
+  /// again, validated against the vehicle now, for CONFIRM.
+  void _runAgain(MemoryPlan plan) =>
+      _locked(() => _sent(() => widget.session.runAgain(plan.planId)));
+
+  /// Forgetting the flown path and spots cannot be undone: it asks first.
+  Future<void> _clearMemory() async {
+    final sure = await showDialog<bool>(
+        context: context,
+        builder: (context) => AlertDialog(
+              key: const Key('clearMemoryConfirm'),
+              title: const Text('Clear the flight memory?'),
+              content: const Text('The flown path, the saved spots and the recent commands are '
+                  'forgotten. Return home still works.'),
+              actions: [
+                TextButton(
+                    key: const Key('keepMemory'),
+                    onPressed: () => Navigator.pop(context, false),
+                    child: const Text('Keep')),
+                TextButton(
+                    key: const Key('clearMemory'),
+                    onPressed: () => Navigator.pop(context, true),
+                    child: const Text('Clear')),
+              ],
+            ));
+    if (sure != true || !mounted) return;
+    try {
+      await widget.session.clearMemory();
+    } catch (error) {
+      _showError(userErrorMessage(error));
+    }
+    await _refresh();
+  }
+
   /// Runs [work] with the inputs locked ([_busy]); one at a time.
   Future<void> _locked(Future<void> Function() work) async {
     if (_busy) return;
@@ -538,6 +574,13 @@ class _FlightScreenState extends State<FlightScreen> with WidgetsBindingObserver
                     onOpenModels: () => widget.open(FlightDestination.models)),
                 const SizedBox(height: 8),
                 TapPad(onCommand: _tap, enabled: !_busy),
+                const SizedBox(height: 8),
+                FlightMemoryCard(
+                    memory: snap.memory,
+                    enabled: !_busy,
+                    onCommand: _tap,
+                    onRunAgain: _runAgain,
+                    onClear: _clearMemory),
               ]),
             ),
           ),

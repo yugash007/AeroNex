@@ -760,6 +760,173 @@ class LatencyStat {
       {'p50Ms': p50Ms, 'p95Ms': p95Ms, 'maxMs': maxMs, 'n': n};
 }
 
+/// A place in the flight memory: metres north, east and up from home, or
+/// from the autopilot's local origin while [FlightMemory.homeKnown] is false.
+class MemoryPlace {
+  const MemoryPlace(this.northM, this.eastM, this.upM);
+  factory MemoryPlace.fromMap(Map map) => MemoryPlace(
+      _optDouble(map, 'northM'), _optDouble(map, 'eastM'), _optDouble(map, 'upM'));
+
+  /// Null only for a value the service could not express (never finite).
+  final double? northM, eastM, upM;
+
+  Map<String, Object?> toMap() => {'northM': northM, 'eastM': eastM, 'upM': upM};
+}
+
+/// A position on the flown path; [label] says how the vehicle got there,
+/// e.g. "Takeoff", "Move forward 4 m", "Home", "Spot 2", "Start".
+class TrailPoint {
+  const TrailPoint(this.label, this.place);
+  factory TrailPoint.fromMap(Map map) =>
+      TrailPoint(_req<String>(map, 'label'), MemoryPlace.fromMap(map));
+
+  final String label;
+  final MemoryPlace place;
+
+  Map<String, Object?> toMap() => {'label': label, ...place.toMap()};
+}
+
+/// A saved spot (1–9): "go to spot n" flies back to it.
+class MemorySpot {
+  const MemorySpot(this.point, this.label, this.place, this.atWallMs);
+  factory MemorySpot.fromMap(Map map) => MemorySpot(_req<int>(map, 'point'),
+      _req<String>(map, 'label'), MemoryPlace.fromMap(map), _req<int>(map, 'atWallMs'));
+
+  final int point;
+  final String label;
+  final MemoryPlace place;
+
+  /// When it was saved, epoch ms (the phone's wall clock).
+  final int atWallMs;
+
+  Map<String, Object?> toMap() =>
+      {'point': point, 'label': label, ...place.toMap(), 'atWallMs': atWallMs};
+}
+
+/// One step of a recorded plan; [outcome] is its final step status name.
+class MemoryPlanStep {
+  const MemoryPlanStep(this.name, this.arguments, this.description, this.outcome);
+  factory MemoryPlanStep.fromMap(Map map) => MemoryPlanStep(
+      _req<String>(map, 'name'),
+      _copy(_req<Map>(map, 'arguments')),
+      _req<String>(map, 'description'),
+      _req<String>(map, 'outcome'));
+
+  final String name;
+  final Map<String, Object?> arguments;
+  final String description, outcome;
+
+  Map<String, Object?> toMap() => {
+        'name': name,
+        'arguments': {...arguments},
+        'description': description,
+        'outcome': outcome,
+      };
+}
+
+/// A finished plan the flight memory recorded: `runAgain(planId)` shows it
+/// again for CONFIRM.
+class MemoryPlan {
+  const MemoryPlan(this.planId, this.atWallMs, this.sourceWire, this.steps);
+  factory MemoryPlan.fromMap(Map map) => MemoryPlan(
+      _req<int>(map, 'planId'),
+      _req<int>(map, 'atWallMs'),
+      _req<String>(map, 'source'),
+      [for (final step in _req<List>(map, 'steps')) MemoryPlanStep.fromMap(step as Map)]);
+
+  final int planId, atWallMs;
+  final String sourceWire;
+  final List<MemoryPlanStep> steps;
+
+  PlanSource? get source => PlanSource.fromWire(sourceWire);
+
+  /// "Take off to 3 m, then Move forward 2 m".
+  String get summary => steps.map((s) => s.description).join(', then ');
+
+  /// Every step was confirmed by telemetry.
+  bool get completed => steps.every((s) => s.outcome == 'COMPLETED');
+
+  Map<String, Object?> toMap() => {
+        'planId': planId,
+        'atWallMs': atWallMs,
+        'source': sourceWire,
+        'steps': [for (final step in steps) step.toMap()],
+      };
+}
+
+/// The snapshot's `memory` section (2026-10-28): the path flown in this
+/// flight, the saved spots and the recorded plans. The service resolves and
+/// validates every flight-memory command itself; [goBackTo] and
+/// [canRetrace] only say whether one has somewhere to go now.
+class FlightMemory {
+  const FlightMemory({
+    this.homeKnown = false,
+    this.vehicle,
+    this.trail = const [],
+    this.spots = const [],
+    this.goBackTo,
+    this.canRetrace = false,
+    this.plans = const [],
+    this.notice,
+  });
+
+  factory FlightMemory.fromMap(Map map) {
+    final vehicle = _opt<Map>(map, 'vehicle');
+    return FlightMemory(
+      homeKnown: _req<bool>(map, 'homeKnown'),
+      vehicle: vehicle == null ? null : MemoryPlace.fromMap(vehicle),
+      trail: [for (final p in _req<List>(map, 'trail')) TrailPoint.fromMap(p as Map)],
+      spots: [for (final s in _req<List>(map, 'spots')) MemorySpot.fromMap(s as Map)],
+      goBackTo: _opt<String>(map, 'goBackTo'),
+      canRetrace: _req<bool>(map, 'canRetrace'),
+      plans: [for (final p in _req<List>(map, 'plans')) MemoryPlan.fromMap(p as Map)],
+      notice: _opt<String>(map, 'notice'),
+    );
+  }
+
+  /// Places are metres from home (else from the local origin).
+  final bool homeKnown;
+
+  /// Where the vehicle is now; null without a fresh position.
+  final MemoryPlace? vehicle;
+
+  /// Oldest first; the first is where the takeoff ended.
+  final List<TrailPoint> trail;
+  final List<MemorySpot> spots;
+
+  /// Where "go back" would fly now; null when there is nothing to go back to.
+  final String? goBackTo;
+  final bool canRetrace;
+
+  /// Newest first.
+  final List<MemoryPlan> plans;
+
+  /// Why the trail and spots were last forgotten (home moved).
+  final String? notice;
+
+  bool get isEmpty => trail.isEmpty && spots.isEmpty && plans.isEmpty;
+
+  /// The lowest spot number not saved yet (1 when all are, to replace it).
+  int get nextFreeSpot {
+    final used = {for (final spot in spots) spot.point};
+    for (var n = 1; n <= 9; n++) {
+      if (!used.contains(n)) return n;
+    }
+    return 1;
+  }
+
+  Map<String, Object?> toMap() => {
+        'homeKnown': homeKnown,
+        'vehicle': vehicle?.toMap(),
+        'trail': [for (final p in trail) p.toMap()],
+        'spots': [for (final s in spots) s.toMap()],
+        'goBackTo': goBackTo,
+        'canRetrace': canRetrace,
+        'plans': [for (final p in plans) p.toMap()],
+        'notice': notice,
+      };
+}
+
 /// One `aeronex/session/state` snapshot (also the `connect` and `getSnapshot`
 /// answer).
 class SessionSnapshot {
@@ -777,6 +944,7 @@ class SessionSnapshot {
     this.latency = const {},
     this.speech = const SpeechStatus(),
     this.ai = const AiStatus(),
+    this.memory = const FlightMemory(),
     this.raw = const {},
   });
 
@@ -798,6 +966,7 @@ class SessionSnapshot {
     final latency = _req<Map>(map, 'latency');
     final speech = _opt<Map>(map, 'speech');
     final ai = _opt<Map>(map, 'ai');
+    final memory = _opt<Map>(map, 'memory');
     try {
       return SessionSnapshot(
         seq: _req<int>(map, 'seq'),
@@ -817,6 +986,7 @@ class SessionSnapshot {
         },
         speech: speech == null ? const SpeechStatus() : SpeechStatus.fromMap(speech),
         ai: ai == null ? const AiStatus() : AiStatus.fromMap(ai),
+        memory: memory == null ? const FlightMemory() : FlightMemory.fromMap(memory),
         raw: _copy(map),
       );
     } on TypeError {
@@ -852,6 +1022,9 @@ class SessionSnapshot {
   /// The AI path (0.4.0; absent from older services: no AI).
   final AiStatus ai;
 
+  /// The flight memory (2026-10-28; absent from older services: empty).
+  final FlightMemory memory;
+
   /// The map as received, for diagnostics.
   final Map<String, Object?> raw;
 
@@ -871,6 +1044,7 @@ class SessionSnapshot {
         },
         'speech': speech.toMap(),
         'ai': ai.toMap(),
+        'memory': memory.toMap(),
       };
 }
 
@@ -1020,6 +1194,14 @@ abstract class SessionApi {
 
   /// Deletes an AI model (the AI stops first); whether it was there.
   Future<bool> removeAiModel(String id);
+
+  /// Shows the recorded plan [planId] ([FlightMemory.plans]) again for
+  /// CONFIRM, validated against the vehicle now (Tap source); answered like
+  /// [submitPlan].
+  Future<SubmitResult> runAgain(int planId);
+
+  /// Forgets the flown path, the spots and the recorded plans.
+  Future<void> clearMemory();
 }
 
 /// [SessionApi] over the `aeronex/session` channels (`SessionChannel.kt`).
@@ -1206,4 +1388,13 @@ class ChannelSessionApi implements SessionApi {
     final reply = await _methods.invokeMethod<Object?>('removeAiModel', {'id': id});
     return reply is Map && reply['removed'] == true;
   }
+
+  @override
+  Future<SubmitResult> runAgain(int planId) async {
+    final reply = await _methods.invokeMethod<Object?>('runAgain', {'planId': planId});
+    return SubmitResult.fromMap(reply is Map ? reply : null);
+  }
+
+  @override
+  Future<void> clearMemory() => _methods.invokeMethod<void>('clearMemory');
 }
