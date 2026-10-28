@@ -426,6 +426,21 @@ class VoiceSessionTest {
         waitFor("reopened after the utterance") { engines.opened.size == 2 }
     }
 
+    @Test fun aPressNotYetActedOnKeepsOutdatedEnginesOpenToo() {
+        // A pack finished installing just as PTT went down: the speech thread saw the outdated engines before the
+        // press and reopened them at the start of the utterance (which also made the test above flaky under load).
+        sink.ground = true
+        start(alternative("take off to 3 m"))
+        voice.pttDown()
+        engines.markOutdated()
+        waitFor("listening") { voice.status().state == VoiceState.LISTENING }
+        assertEquals(1, engines.opened.size)
+        voice.pttUp()
+        captured { mic.silence(10) }
+        waitFor("submitted") { sink.plans.isNotEmpty() }
+        waitFor("reopened after the utterance") { engines.opened.size == 2 }
+    }
+
     /** T15 follow-up: voice waiting for a pack says "Installing the voice pack", and comes up when it is in, even armed. */
     @Test fun waitingForAVoicePackSaysSoAndVoiceComesUpWhenItArrives() {
         val installing = ScriptedEngines(reasons = mapOf("ta" to VoiceReason.INSTALLING_PACK))

@@ -326,7 +326,9 @@ class VoiceSession(
      */
     private fun reopen(): Boolean {
         val current = loaded ?: return false
-        if (utterance != null) return false
+        // A press not acted on yet is an utterance too: pttDown sets [held] before it queues the press, which this
+        // pass handles only after the reopen would have run.
+        if (utterance != null || held != null || commands.isNotEmpty()) return false
         if (current.command != null && (sink.spotterArmed() || !sink.onTheGround())) return false
         return runCatching { current.outdated() }.getOrDefault(false)
     }
