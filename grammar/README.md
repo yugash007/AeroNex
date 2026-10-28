@@ -554,6 +554,52 @@ hi and te models drop Latin words, so their grammars hold only native-script
 forms. hi अप ("up") is left out on purpose: it is one vowel away from the
 filler आप ("you").
 
+## Flight memory
+
+Spec 2026-10-28 adds five commands that fly back to positions this app flew the
+vehicle to and telemetry confirmed. They name no coordinates: the service
+resolves them from its own flight memory when the step starts, and validates
+them like moves (30 m from home, 1–10 m high).
+
+| Intent | Tool | en | hi | te |
+|---|---|---|---|---|
+| return_home | return_home | return home, come back home, go home | घर वापस जाओ, होम पर वापस जाओ | ఇంటికి తిరిగి రా, హోమ్ కి తిరిగి రా |
+| go_back | go_back | go back, undo, previous position | वापस जाओ, पिछली जगह पर जाओ | మునుపటి చోటుకి వెళ్ళు |
+| retrace | retrace | retrace the path, go back the same way | उसी रास्ते से वापस जाओ | అదే దారిలో తిరిగి రా |
+| goto_point | goto_point(point) | go to point 2 | पॉइंट दो पर जाओ | పాయింట్ రెండు దగ్గరకు వెళ్ళు |
+| mark_point | mark_point(point) | mark point 2, mark this as point 2 | पॉइंट दो मार्क करो | పాయింట్ రెండు మార్క్ చేయి |
+
+- The phrases are the lexicon's `memory` tables. Each is a template class:
+  `{home}`, `{goback}`, `{retrace}`, `{point}` (the noun before a point
+  number), `{goto}`, `{mark}` and `{markas}` (en "mark this as"). hi and te put
+  the point number before the verb, as its own word ("పాయింట్ రెండు దగ్గరకు
+  వెళ్ళు"), because the CTC lexicon reads numbers only as whole words.
+- `return_home` is not ArduPilot RTL, which stays disabled in
+  `intents.v1.yaml`. It is a level GUIDED flight to home's north and east at
+  the current height, confirmed once; land is its own step.
+- "spot" is never a form. It is one sound from "stop", so in a recognizer
+  grammar it could absorb a spoken STOP. The saved positions are "points"
+  everywhere, matching the tool names.
+- The command words leave the Vosk filler lists: en "home", "this", "as",
+  "same", "way", "last", "remember", "number" and "come"; hi घर and जगह; te
+  అదే, కి, తిరిగి and వచ్చిన.
+- The rule parser (`command/MemoryCommands.kt`) reads a clause as a memory
+  command only when the whole clause is one of these templates, courtesy and
+  filler words aside. So "go back 3 m" stays a backward move, "land at home" is
+  still refused, and a negation ("don't go back") never matches and is
+  refused as before. The CTC template matcher reads the te templates like any
+  other.
+- The CTC template matcher counts a dropped fixed word as one edit, so a te
+  phrase may not be another intent's phrase minus one word: "తిరిగి వెళ్ళు"
+  (go back) is left out, since it is "ఇంటికి తిరిగి వెళ్ళు" (return home)
+  without its first word and the margin would refuse both.
+- The hi and te phrases are provisional (native-speaker review). ta, kn and ml
+  have no memory phrases yet: their speakers use the flight memory buttons.
+- No phrase has been checked against the Vosk model vocabularies here (the
+  models are not on this machine). Run `gen.py --require-vosk` with the models
+  before a release and move any missing word to `vosk.exclude` or a better
+  form.
+
 ## Kotlin
 
 `GrammarTables.kt` (package `com.aeronex.app.grammar`) has no

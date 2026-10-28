@@ -99,3 +99,26 @@ intents:
   rtl:
     enabled: false
     note: Only after a safety review (spec 4.8).
+  # Flight memory (spec 2026-10-28; README "Flight memory"): flights back to positions this app flew the vehicle
+  # to and telemetry confirmed, resolved by the service from its own memory, so no phrase names a coordinate.
+  # return_home is not ArduPilot RTL (above): a level GUIDED flight to home's north and east at the current
+  # height, validated like a move (30 m from home, 1-10 m high) and confirmed once; land is its own step.
+  return_home:
+    tool: return_home
+    confirm: true
+  go_back:
+    tool: go_back
+    confirm: true
+    note: Undo. Flies to the newest remembered position away from the vehicle and forgets the ones after it.
+  retrace:
+    tool: retrace
+    confirm: true
+  goto_point:
+    tool: goto_point
+    confirm: true
+    slots: {n: {argument: point, min: 1, max: 9}}
+  mark_point:
+    tool: mark_point
+    confirm: false
+    note: Saves the vehicle's position as point n; it sends nothing, so it runs at once like status.
+    slots: {n: {argument: point, min: 1, max: 9}}

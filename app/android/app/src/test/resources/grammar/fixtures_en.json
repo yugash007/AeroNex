@@ -37,6 +37,51 @@
   },
   {
    "text": "never hover"
+  },
+  {
+   "text": "don't return home"
+  },
+  {
+   "text": "do not return home"
+  },
+  {
+   "text": "never return home"
+  },
+  {
+   "text": "don't go back"
+  },
+  {
+   "text": "do not go back"
+  },
+  {
+   "text": "never go back"
+  },
+  {
+   "text": "don't retrace"
+  },
+  {
+   "text": "do not retrace"
+  },
+  {
+   "text": "never retrace"
+  },
+  {
+   "text": "don't go to point two"
+  },
+  {
+   "text": "do not go to point two"
+  },
+  {
+   "text": "never go to point two"
+  },
+  {
+   "text": "don't mark point two"
+  },
+  {
+   "text": "do not mark point two"
+  },
+  {
+   "text": "never mark point two"
   }
  ],
  "numbers": [
@@ -2021,6 +2066,370 @@
    "intent": "status",
    "text": "telemetry",
    "tool": "get_status"
+  },
+  {
+   "arguments": {},
+   "intent": "return_home",
+   "text": "return home",
+   "tool": "return_home"
+  },
+  {
+   "arguments": {},
+   "intent": "return_home",
+   "text": "return to home",
+   "tool": "return_home"
+  },
+  {
+   "arguments": {},
+   "intent": "return_home",
+   "text": "come back home",
+   "tool": "return_home"
+  },
+  {
+   "arguments": {},
+   "intent": "return_home",
+   "text": "come back to home",
+   "tool": "return_home"
+  },
+  {
+   "arguments": {},
+   "intent": "return_home",
+   "text": "go home",
+   "tool": "return_home"
+  },
+  {
+   "arguments": {},
+   "intent": "return_home",
+   "text": "go back home",
+   "tool": "return_home"
+  },
+  {
+   "arguments": {},
+   "intent": "return_home",
+   "text": "fly home",
+   "tool": "return_home"
+  },
+  {
+   "arguments": {},
+   "intent": "return_home",
+   "text": "fly back home",
+   "tool": "return_home"
+  },
+  {
+   "arguments": {},
+   "intent": "return_home",
+   "text": "head home",
+   "tool": "return_home"
+  },
+  {
+   "arguments": {},
+   "intent": "return_home",
+   "text": "return to base",
+   "tool": "return_home"
+  },
+  {
+   "arguments": {},
+   "intent": "go_back",
+   "text": "go back",
+   "tool": "go_back"
+  },
+  {
+   "arguments": {},
+   "intent": "go_back",
+   "text": "undo",
+   "tool": "go_back"
+  },
+  {
+   "arguments": {},
+   "intent": "go_back",
+   "text": "undo that",
+   "tool": "go_back"
+  },
+  {
+   "arguments": {},
+   "intent": "go_back",
+   "text": "undo the last move",
+   "tool": "go_back"
+  },
+  {
+   "arguments": {},
+   "intent": "go_back",
+   "text": "go to the previous position",
+   "tool": "go_back"
+  },
+  {
+   "arguments": {},
+   "intent": "go_back",
+   "text": "go back to the previous position",
+   "tool": "go_back"
+  },
+  {
+   "arguments": {},
+   "intent": "go_back",
+   "text": "return to the previous position",
+   "tool": "go_back"
+  },
+  {
+   "arguments": {},
+   "intent": "go_back",
+   "text": "previous position",
+   "tool": "go_back"
+  },
+  {
+   "arguments": {},
+   "intent": "retrace",
+   "text": "retrace",
+   "tool": "retrace"
+  },
+  {
+   "arguments": {},
+   "intent": "retrace",
+   "text": "retrace the path",
+   "tool": "retrace"
+  },
+  {
+   "arguments": {},
+   "intent": "retrace",
+   "text": "retrace your path",
+   "tool": "retrace"
+  },
+  {
+   "arguments": {},
+   "intent": "retrace",
+   "text": "retrace the route",
+   "tool": "retrace"
+  },
+  {
+   "arguments": {},
+   "intent": "retrace",
+   "text": "retrace the flight",
+   "tool": "retrace"
+  },
+  {
+   "arguments": {},
+   "intent": "retrace",
+   "text": "fly back the same way",
+   "tool": "retrace"
+  },
+  {
+   "arguments": {},
+   "intent": "retrace",
+   "text": "go back the same way",
+   "tool": "retrace"
+  },
+  {
+   "arguments": {},
+   "intent": "retrace",
+   "text": "come back the same way",
+   "tool": "retrace"
+  },
+  {
+   "arguments": {
+    "point": 2
+   },
+   "intent": "goto_point",
+   "text": "go to point two",
+   "tool": "goto_point"
+  },
+  {
+   "arguments": {
+    "point": 2
+   },
+   "intent": "goto_point",
+   "text": "fly to point two",
+   "tool": "goto_point"
+  },
+  {
+   "arguments": {
+    "point": 2
+   },
+   "intent": "goto_point",
+   "text": "return to point two",
+   "tool": "goto_point"
+  },
+  {
+   "arguments": {
+    "point": 2
+   },
+   "intent": "goto_point",
+   "text": "go back to point two",
+   "tool": "goto_point"
+  },
+  {
+   "arguments": {
+    "point": 2
+   },
+   "intent": "goto_point",
+   "text": "come back to point two",
+   "tool": "goto_point"
+  },
+  {
+   "arguments": {
+    "point": 2
+   },
+   "intent": "goto_point",
+   "text": "head to point two",
+   "tool": "goto_point"
+  },
+  {
+   "arguments": {
+    "point": 2
+   },
+   "intent": "goto_point",
+   "text": "move to point two",
+   "tool": "goto_point"
+  },
+  {
+   "arguments": {
+    "point": 2
+   },
+   "intent": "mark_point",
+   "text": "mark point two",
+   "tool": "mark_point"
+  },
+  {
+   "arguments": {
+    "point": 2
+   },
+   "intent": "mark_point",
+   "text": "save point two",
+   "tool": "mark_point"
+  },
+  {
+   "arguments": {
+    "point": 2
+   },
+   "intent": "mark_point",
+   "text": "remember point two",
+   "tool": "mark_point"
+  },
+  {
+   "arguments": {
+    "point": 2
+   },
+   "intent": "mark_point",
+   "text": "mark this as point two",
+   "tool": "mark_point"
+  },
+  {
+   "arguments": {
+    "point": 2
+   },
+   "intent": "mark_point",
+   "text": "save this as point two",
+   "tool": "mark_point"
+  },
+  {
+   "arguments": {
+    "point": 2
+   },
+   "intent": "mark_point",
+   "text": "mark this position as point two",
+   "tool": "mark_point"
+  },
+  {
+   "arguments": {
+    "point": 2
+   },
+   "intent": "mark_point",
+   "text": "save this position as point two",
+   "tool": "mark_point"
+  },
+  {
+   "arguments": {
+    "point": 2
+   },
+   "intent": "mark_point",
+   "text": "mark this point as point two",
+   "tool": "mark_point"
+  },
+  {
+   "arguments": {
+    "point": 2
+   },
+   "intent": "mark_point",
+   "text": "save this point as point two",
+   "tool": "mark_point"
+  },
+  {
+   "arguments": {
+    "point": 2
+   },
+   "intent": "mark_point",
+   "text": "mark here as point two",
+   "tool": "mark_point"
+  },
+  {
+   "arguments": {
+    "point": 2
+   },
+   "intent": "mark_point",
+   "text": "save here as point two",
+   "tool": "mark_point"
+  },
+  {
+   "arguments": {
+    "point": 2
+   },
+   "intent": "mark_point",
+   "text": "mark this as two",
+   "tool": "mark_point"
+  },
+  {
+   "arguments": {
+    "point": 2
+   },
+   "intent": "mark_point",
+   "text": "save this as two",
+   "tool": "mark_point"
+  },
+  {
+   "arguments": {
+    "point": 2
+   },
+   "intent": "mark_point",
+   "text": "mark this position as two",
+   "tool": "mark_point"
+  },
+  {
+   "arguments": {
+    "point": 2
+   },
+   "intent": "mark_point",
+   "text": "save this position as two",
+   "tool": "mark_point"
+  },
+  {
+   "arguments": {
+    "point": 2
+   },
+   "intent": "mark_point",
+   "text": "mark this point as two",
+   "tool": "mark_point"
+  },
+  {
+   "arguments": {
+    "point": 2
+   },
+   "intent": "mark_point",
+   "text": "save this point as two",
+   "tool": "mark_point"
+  },
+  {
+   "arguments": {
+    "point": 2
+   },
+   "intent": "mark_point",
+   "text": "mark here as two",
+   "tool": "mark_point"
+  },
+  {
+   "arguments": {
+    "point": 2
+   },
+   "intent": "mark_point",
+   "text": "save here as two",
+   "tool": "mark_point"
   }
  ],
  "unk": [

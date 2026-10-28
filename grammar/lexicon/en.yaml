@@ -120,6 +120,17 @@ natural:
     up: [higher]
     down: [lower]
 
+# Flight memory (spec 2026-10-28; README "Flight memory"): return home, go back (undo), retrace, go to point n,
+# mark point n. "spot" is never a form: it is one sound from "stop", so a spoken STOP could decode as it.
+memory:
+  home: [return home, return to home, come back home, come back to home, go home, go back home, fly home, fly back home, head home, return to base]
+  goback: [go back, undo, undo that, undo the last move, go to the previous position, go back to the previous position, return to the previous position, previous position]
+  retrace: [retrace, retrace the path, retrace your path, retrace the route, retrace the flight, fly back the same way, go back the same way, come back the same way]
+  point: [point, position, waypoint, point number, position number, waypoint number]
+  goto: [go to, fly to, return to, go back to, come back to, head to, move to]
+  mark: [mark, save, remember]
+  markas: [mark this as, save this as, mark this position as, save this position as, mark this point as, save this point as, mark here as, save here as]
+
 templates:
   takeoff: ["{takeoff} to {num} {unit}", "{takeoff} {num} {unit}"]
   # The last seven are 0.4.0 (README "Natural phrasing"): "go up by 2 m", "move 3 m to the left", "go towards
@@ -129,6 +140,11 @@ templates:
   stop: ["{stop}"]
   land: ["{land}"]
   status: ["{status}"]
+  return_home: ["{home}"]
+  go_back: ["{goback}"]
+  retrace: ["{retrace}"]
+  goto_point: ["{goto} {point} {num}"]
+  mark_point: ["{mark} {point} {num}", "{markas} {point} {num}", "{markas} {num}"]
 
 vosk:
   # Lexicon forms the en-in model cannot emit (missing from its Gr.fst; gen.py
@@ -146,4 +162,4 @@ vosk:
   # The negations placed right before and after every command word (README
   # "Negation in the grammar"); the rest are single-word phrases only.
   negators: ["don't", do not, never, not, "no", cannot, "can't", "won't"]
-  fillers: [is, for, but, know, was, have, they, "on", be, it's, with, are, this, he, my, we, as, what, at, i'm, all, think, there, from, me, people, get, out, that's, said, had, well, really, has, oh, because, how, them, she, been, some, who, their, his, were, good, than, her, see, much, other, you're, got, even, too, only, want, did, him, something, very, where, way, which, lot, say, years, any, new, our, into, ah, i've, they're, year, thing, work, things, those, us, most, why, these, there's, need, being, little, kind, many, day, come, same, last, he's, look, sure, money, doing, pretty, always, guess, dollars, life, long, better, probably, every, we're, world, does, anything, maybe, school, great, find, though, made, big, feel, through, cause, game, put, use, different, home, may, might, used, am, thought, best, since, man, love, own, getting, few, bad, give, part, percent, live, family, i'll, tell, ever, gonna, went, someone, help, i'd, keep, everything, try, play, hard, done, enough, trying, end, away, its, far, talk, both, real, says, country, kids, least, person, bit, such, exactly, what's, told, nothing, friends, believe, let, call, having, able, show, else, watch, ago, job, nice, once, house, government, problem, looking, change, children, each, without, days, found, "true", saying, between, less, week, she's, seen, already, makes, guy, course, care, name, came, pay, talking, making, seems, either, idea, read, yet, definitely, team, working, city, mr, wanted, remember, huh, fact, night, business, months, state, number, against, called, public, understand, everyone, whatever, er, run, friend, case, took, sometimes, today, must, god, important, wrong, heard, couple, set, reason, question, system, together, car, games, women, war, hope, states, happened, guys, coming, sort, small, fun, hear, york, under, let's, quite, agree, free, wow, buy, close, past, food, anyone, you've, saw, side, news, kinda, myself, cool, mind, thinking, company, deal, whether, comes, happen]
+  fillers: [is, for, but, know, was, have, they, "on", be, it's, with, are, he, my, we, what, at, i'm, all, think, there, from, me, people, get, out, that's, said, had, well, really, has, oh, because, how, them, she, been, some, who, their, his, were, good, than, her, see, much, other, you're, got, even, too, only, want, did, him, something, very, where, which, lot, say, years, any, new, our, into, ah, i've, they're, year, thing, work, things, those, us, most, why, these, there's, need, being, little, kind, many, day, he's, look, sure, money, doing, pretty, always, guess, dollars, life, long, better, probably, every, we're, world, does, anything, maybe, school, great, find, though, made, big, feel, through, cause, game, put, use, different, may, might, used, am, thought, best, since, man, love, own, getting, few, bad, give, part, percent, live, family, i'll, tell, ever, gonna, went, someone, help, i'd, keep, everything, try, play, hard, done, enough, trying, end, away, its, far, talk, both, real, says, country, kids, least, person, bit, such, exactly, what's, told, nothing, friends, believe, let, call, having, able, show, else, watch, ago, job, nice, once, house, government, problem, looking, change, children, each, without, days, found, "true", saying, between, less, week, she's, seen, already, makes, guy, course, care, name, came, pay, talking, making, seems, either, idea, read, yet, definitely, team, working, city, mr, wanted, huh, fact, night, business, months, state, against, called, public, understand, everyone, whatever, er, run, friend, case, took, sometimes, today, must, god, important, wrong, heard, couple, set, reason, question, system, together, car, games, women, war, hope, states, happened, guys, coming, sort, small, fun, hear, york, under, let's, quite, agree, free, wow, buy, close, past, food, anyone, you've, saw, side, news, kinda, myself, cool, mind, thinking, company, deal, whether, comes, happen]
