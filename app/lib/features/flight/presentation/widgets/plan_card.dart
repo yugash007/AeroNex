@@ -33,6 +33,18 @@ Widget _sourceChip(PlanSource? source) => source == null
         materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
         label: Text(source.label));
 
+/// "Stage n" above the first step of each stage of a mission (2026-10-28).
+Widget? _stageHeader(List<int>? stageOfStep, int step, ThemeData theme) {
+  if (stageOfStep == null || step >= stageOfStep.length) return null;
+  if (step > 0 && stageOfStep[step] == stageOfStep[step - 1]) return null;
+  return Padding(
+    key: Key('stageHeader${stageOfStep[step]}'),
+    padding: const EdgeInsets.only(top: 8),
+    child: Text('Stage ${stageOfStep[step] + 1}',
+        style: theme.textTheme.labelLarge?.copyWith(color: theme.colorScheme.primary)),
+  );
+}
+
 /// What the operator said and what the AI understood (0.4.0, an AI plan):
 /// shown with the plan so the one CONFIRM covers both.
 class AiUnderstanding extends StatelessWidget {
@@ -59,7 +71,9 @@ class AiUnderstanding extends StatelessWidget {
 
 /// The plan waiting for CONFIRM: numbered steps, where it came from, the
 /// time left, one large CONFIRM and Cancel. A plan of the AI path also says
-/// what was heard and what the AI understood ([ai]).
+/// what was heard and what the AI understood ([ai]). A mission (2026-10-28)
+/// shows its stages; a plan can instead become a mission's stage
+/// ([onAddToMission]).
 class PendingPlanCard extends StatelessWidget {
   const PendingPlanCard({
     super.key,
@@ -72,7 +86,11 @@ class PendingPlanCard extends StatelessWidget {
     this.confirmRowKey,
     this.ai,
     this.showAiHeard = true,
+    this.onAddToMission,
   });
+
+  /// Makes the plan the next stage of a mission instead of running it.
+  final VoidCallback? onAddToMission;
 
   final PendingPlan pending;
 
@@ -95,7 +113,9 @@ class PendingPlanCard extends StatelessWidget {
         padding: const EdgeInsets.all(12),
         child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
           Row(children: [
-            Expanded(child: Text('Confirm this plan', style: theme.textTheme.titleMedium)),
+            Expanded(
+                child: Text(pending.isMission ? 'Confirm this mission' : 'Confirm this plan',
+                    style: theme.textTheme.titleMedium)),
             _sourceChip(pending.source),
           ]),
           if (pending.source == PlanSource.ai && ai != null)
@@ -103,7 +123,8 @@ class PendingPlanCard extends StatelessWidget {
               padding: const EdgeInsets.symmetric(vertical: 4),
               child: AiUnderstanding(ai: ai!, showHeard: showAiHeard),
             ),
-          for (final (i, step) in pending.steps.indexed)
+          for (final (i, step) in pending.steps.indexed) ...[
+            if (_stageHeader(pending.stageOfStep, i, theme) case final header?) header,
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 4),
               child: Row(children: [
@@ -113,6 +134,7 @@ class PendingPlanCard extends StatelessWidget {
                 if (step.source == 'fixture') const Text('Test'),
               ]),
             ),
+          ],
           if (pending.steps.any((s) => s.name == 'takeoff'))
             const Text('Takeoff arms the motors.'),
           const SizedBox(height: 4),
@@ -133,6 +155,12 @@ class PendingPlanCard extends StatelessWidget {
                           fontSize: 22, fontWeight: FontWeight.bold))),
             ),
             TextButton(onPressed: onCancel, child: const Text('Cancel')),
+            if (onAddToMission != null && !pending.isMission)
+              TextButton.icon(
+                  key: const Key('addToMission'),
+                  onPressed: onAddToMission,
+                  icon: const Icon(Icons.playlist_add),
+                  label: const Text('Add to mission instead')),
           ]),
         ]),
       ),
@@ -141,14 +169,24 @@ class PendingPlanCard extends StatelessWidget {
 }
 
 /// The plan running or last run: one row per step with its outcome, and
-/// while it runs, its progress and Cancel (which is STOP).
+/// while it runs, its progress and Cancel (which is STOP). A mission
+/// (2026-10-28) shows its stages, and at a checkpoint the Continue button.
 class RunCard extends StatelessWidget {
   const RunCard(
-      {super.key, required this.run, required this.onCancel, this.cancelRowKey});
+      {super.key,
+      required this.run,
+      required this.onCancel,
+      this.cancelRowKey,
+      this.checkpoint,
+      this.onContinue});
 
   final PlanRun run;
   final VoidCallback onCancel;
   final Key? cancelRowKey;
+
+  /// The mission holds between stages until [onContinue].
+  final MissionCheckpoint? checkpoint;
+  final VoidCallback? onContinue;
 
   @override
   Widget build(BuildContext context) {
@@ -160,12 +198,29 @@ class RunCard extends StatelessWidget {
         child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
           Row(children: [
             Expanded(
-                child: Text(run.executing ? 'Running' : 'Last plan',
+                child: Text(run.executing ? 'Running' : (run.isMission ? 'Last mission' : 'Last plan'),
                     style: theme.textTheme.titleMedium)),
             _sourceChip(run.source),
           ]),
+          if (run.executing && checkpoint != null) ...[
+            Text('Stage ${checkpoint!.stage} of ${checkpoint!.stageCount} done. The drone holds here; STOP still works.',
+                key: const Key('checkpointText')),
+            const SizedBox(height: 8),
+            SizedBox(
+              height: 64,
+              child: FilledButton(
+                  key: const Key('continueMission'),
+                  onPressed: onContinue,
+                  child: Text('Continue to stage ${checkpoint!.stage + 1}',
+                      style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold))),
+            ),
+            const SizedBox(height: 8),
+          ],
           if (run.executing) ...[
-            Text('Step ${math.min(run.stepIndex + 1, count)} of ${run.stepCount}'),
+            Text(run.isMission && run.stageOfStep!.isNotEmpty
+                ? 'Stage ${run.stageOfStep![math.min(run.stepIndex, run.stageOfStep!.length - 1)] + 1} of '
+                    '${run.stageOfStep!.last + 1} · step ${math.min(run.stepIndex + 1, count)} of ${run.stepCount}'
+                : 'Step ${math.min(run.stepIndex + 1, count)} of ${run.stepCount}'),
             const SizedBox(height: 4),
             LinearProgressIndicator(value: run.stepIndex / count),
             const SizedBox(height: 8),
@@ -182,8 +237,10 @@ class RunCard extends StatelessWidget {
                   label: const Text('Cancel')),
             ),
           ],
-          for (final (i, result) in run.outcomes.indexed)
+          for (final (i, result) in run.outcomes.indexed) ...[
+            if (_stageHeader(run.stageOfStep, i, theme) case final header?) header,
             _StepRow(index: i, result: result),
+          ],
         ]),
       ),
     );

@@ -10,6 +10,7 @@ import '../domain/flight_command.dart';
 import '../domain/flight_plan.dart';
 import 'widgets/command_input.dart';
 import 'widgets/flight_memory_card.dart';
+import 'widgets/mission_card.dart';
 import 'widgets/plan_card.dart';
 import 'widgets/status_line.dart';
 import 'widgets/stop_button.dart';
@@ -318,6 +319,42 @@ class _FlightScreenState extends State<FlightScreen> with WidgetsBindingObserver
     _locked(() => _send(plan, PlanSource.tap));
   }
 
+  // --- missions (2026-10-28) ---
+
+  /// A failed mission call is shown like a failed command.
+  Future<void> _missionCall(Future<void> Function() call) async {
+    try {
+      await call();
+    } catch (error) {
+      _showError(userErrorMessage(error));
+    }
+    await _refresh();
+  }
+
+  void _setBuilding(bool on) => _missionCall(() => widget.session.setMissionBuilding(on));
+  void _setCheckpoints(bool on) => _missionCall(() => widget.session.setMissionCheckpoints(on));
+  void _removeStage(int index) => _missionCall(() => widget.session.removeStage(index));
+  void _clearMission() => _missionCall(widget.session.clearMission);
+
+  /// The shown plan becomes the next stage instead of running.
+  void _addToMission(String token) => _locked(() => _sent(() => widget.session.addStage(token)));
+
+  void _startMission() => _locked(() => _sent(widget.session.startMission));
+
+  void _resumeMission({required bool skip}) =>
+      _locked(() => _sent(() => widget.session.resumeMission(skipInterrupted: skip)));
+
+  /// At a checkpoint: the next stage, checked again from the drone's state.
+  Future<void> _continueMission(String token) async {
+    try {
+      final result = await widget.session.continueMission(token);
+      if (!result.accepted) _showError(result.error ?? 'The mission did not continue.');
+      await _refresh();
+    } catch (error) {
+      _showError(userErrorMessage(error));
+    }
+  }
+
   /// The flight memory's "Run again": the service shows the recorded plan
   /// again, validated against the vehicle now, for CONFIRM.
   void _runAgain(MemoryPlan plan) =>
@@ -499,12 +536,20 @@ class _FlightScreenState extends State<FlightScreen> with WidgetsBindingObserver
                         onCancel: _cancelPlan,
                         confirmRowKey: _confirmRow,
                         ai: ai,
-                        showAiHeard: ai.heard != snap.speech.heard),
+                        showAiHeard: ai.heard != snap.speech.heard,
+                        onAddToMission: _busy ? null : () => _addToMission(pending.token)),
                   )
                 else if (run != null)
                   KeyedSubtree(
                     key: const Key('planCard'),
-                    child: RunCard(run: run, onCancel: _cancelPlan, cancelRowKey: _cancelRow),
+                    child: RunCard(
+                        run: run,
+                        onCancel: _cancelPlan,
+                        cancelRowKey: _cancelRow,
+                        checkpoint: snap.mission.checkpoint,
+                        onContinue: snap.mission.checkpoint == null
+                            ? null
+                            : () => _continueMission(snap.mission.checkpoint!.token)),
                   ),
                 if (ai.thinking)
                   Card(
@@ -574,6 +619,17 @@ class _FlightScreenState extends State<FlightScreen> with WidgetsBindingObserver
                     onOpenModels: () => widget.open(FlightDestination.models)),
                 const SizedBox(height: 8),
                 TapPad(onCommand: _tap, enabled: !_busy),
+                const SizedBox(height: 8),
+                MissionCard(
+                    mission: snap.mission,
+                    enabled: !_busy,
+                    running: run?.executing == true,
+                    onBuilding: _setBuilding,
+                    onCheckpoints: _setCheckpoints,
+                    onRemoveStage: _removeStage,
+                    onStart: _startMission,
+                    onClear: _clearMission,
+                    onResume: _resumeMission),
                 const SizedBox(height: 8),
                 FlightMemoryCard(
                     memory: snap.memory,

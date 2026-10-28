@@ -1751,4 +1751,97 @@ void main() {
       expect(stopButton().hitTestable(), findsOneWidget);
     });
   });
+
+  group('missions (2026-10-28)', () {
+    Future<void> tapKey(WidgetTester tester, String key) async {
+      await tester.ensureVisible(find.byKey(Key(key)));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byKey(Key(key)));
+      await tester.pumpAndSettle();
+    }
+
+    testWidgets('Build a mission is the service\'s switch', (tester) async {
+      final session = await launch(tester, initial: fixture('connected_landed'));
+      expect(find.byKey(const Key('missionCard')), findsOneWidget);
+      expect(find.byKey(const Key('startMission')), findsNothing, reason: 'nothing built yet');
+      await tapKey(tester, 'missionBuilding');
+      expect(session.argumentsOf('missionBuilding'), [
+        {'enabled': true}
+      ]);
+      expect(find.textContaining('it is added here instead of running'), findsOneWidget);
+    });
+
+    testWidgets('the stages are listed, one can go, and Start shows the whole mission with its stages',
+        (tester) async {
+      final session = await launch(tester, initial: fixture('mission_building'));
+      expect(find.text('Take off to 3 m, then Move forward 4 m'), findsOneWidget);
+      expect(find.byKey(const Key('missionStage1')), findsOneWidget);
+      await tapKey(tester, 'removeStage1');
+      expect(session.argumentsOf('removeStage'), [
+        {'index': 1}
+      ]);
+      expect(find.byKey(const Key('missionStage1')), findsNothing);
+      await tapKey(tester, 'missionCheckpoints');
+      expect(session.argumentsOf('missionCheckpoints'), [
+        {'enabled': true}
+      ]);
+      await tapKey(tester, 'startMission');
+      expect(session.methods, contains('startMission'));
+      expect(inPlan(find.text('Confirm this mission')), findsOneWidget);
+      expect(inPlan(find.byKey(const Key('stageHeader0'))), findsOneWidget);
+      expect(inPlan(find.byKey(const Key('addToMission'))), findsNothing, reason: 'a mission is no stage');
+      await tester.tap(inPlan(find.textContaining('CONFIRM')));
+      await tester.pumpAndSettle();
+      expect(session.argumentsOf('confirm').single, {'token': session.current.pending!.token});
+    });
+
+    testWidgets('a shown plan can become a stage instead of running', (tester) async {
+      final session = await launch(tester, initial: fixture('connected_landed'));
+      await type(tester, 'land');
+      expect(planCard(), findsOneWidget);
+      final token = session.current.pending!.token;
+      await tapKey(tester, 'addToMission');
+      expect(session.argumentsOf('addStage'), [
+        {'token': token}
+      ]);
+      expect(planCard(), findsNothing);
+      expect(find.byKey(const Key('missionStage0')), findsOneWidget);
+      expect(find.text('Added as stage 1 of the mission.'), findsOneWidget);
+    });
+
+    testWidgets('at a checkpoint Continue starts the next stage', (tester) async {
+      final session = await launch(tester, initial: fixture('mission_checkpoint'));
+      expect(inPlan(find.byKey(const Key('checkpointText'))), findsOneWidget);
+      expect(inPlan(find.byKey(const Key('stageHeader1'))), findsOneWidget);
+      expect(inPlan(find.text('Continue to stage 2')), findsOneWidget);
+      await tester.tap(inPlan(find.byKey(const Key('continueMission'))));
+      await tester.pumpAndSettle();
+      expect(session.argumentsOf('continueMission'), [
+        {'token': '5d3c9a1e-2b7f-4e6a-9c8d-1f2e3a4b5c6d'}
+      ]);
+      // STOP stays pinned above everything while the mission holds.
+      expect(stopButton().hitTestable(), findsOneWidget);
+    });
+
+    testWidgets('a mission that ended early resumes from its step or the next', (tester) async {
+      final session = await launch(tester, initial: fixture('mission_building'));
+      expect(find.text('The last mission ended at step 4; 2 steps are left.'), findsOneWidget);
+      await tapKey(tester, 'resumeMission');
+      await tapKey(tester, 'resumeMissionSkip');
+      expect(session.argumentsOf('resumeMission'), [
+        {'skipInterrupted': false},
+        {'skipInterrupted': true},
+      ]);
+      // The service's refusal is shown as is.
+      expect(find.text('There is no mission to resume.'), findsOneWidget);
+    });
+
+    testWidgets('fits a 5-inch phone with large text', (tester) async {
+      await launch(tester, initial: fixture('mission_building'), size: const Size(360, 640), textScale: 1.3);
+      await tester.ensureVisible(find.byKey(const Key('startMission')));
+      await tester.pumpAndSettle();
+      expect(tester.takeException(), isNull);
+      expect(stopButton().hitTestable(), findsOneWidget);
+    });
+  });
 }
