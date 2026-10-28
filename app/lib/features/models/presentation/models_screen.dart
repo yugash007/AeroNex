@@ -236,6 +236,17 @@ class _ModelsScreenState extends State<ModelsScreen> with WidgetsBindingObserver
     };
   }
 
+  /// The file picker covers STOP: only with no link, or a drone known to be
+  /// disarmed (audit F2). A state that cannot be read refuses it.
+  Future<bool> _pickerAllowed() async {
+    try {
+      final snap = await widget.session.getSnapshot();
+      return snap.link.state == LinkState.down || snap.vehicle.armed == false;
+    } catch (_) {
+      return false;
+    }
+  }
+
   /// The v0.2.0 setup sheet for one pack; it cannot be dismissed while busy.
   Future<void> _setUp(String profile) async {
     await showModalBottomSheet<void>(
@@ -243,7 +254,7 @@ class _ModelsScreenState extends State<ModelsScreen> with WidgetsBindingObserver
         isScrollControlled: true,
         isDismissible: false,
         enableDrag: false,
-        builder: (_) => ModelSetupSheet(profiles: [profile]));
+        builder: (_) => ModelSetupSheet(profiles: [profile], pickerAllowed: _pickerAllowed));
     if (!mounted) return;
     // A check started before the sheet closed may hold the old states.
     await _checking;

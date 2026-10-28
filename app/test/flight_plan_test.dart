@@ -53,9 +53,9 @@ void main() {
   });
 
   test('wraps a single command', () {
-    final single = FlightPlan.single(tool('hold'));
+    final single = FlightPlan.single(tool('hold'), source: StepSource.rules);
     expect(single.steps.single.command.name, 'hold');
-    expect(single.steps.single.source, StepSource.ai);
+    expect(single.steps.single.source, StepSource.rules);
     expect(single.steps.single.clause, '');
     final fixture = FlightPlan.single(tool('land'),
         source: StepSource.fixture, clause: 'land');

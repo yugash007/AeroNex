@@ -5,9 +5,18 @@ import '../../../core/local_inference.dart';
 import '../../../core/local_models.dart';
 import '../../../core/user_errors.dart';
 
+/// Import opens Android's full-screen file picker, which covers STOP (and
+/// Volume-Down STOP only works with the app in front).
+const importWhileArmed =
+    'Importing opens a file picker that covers STOP. Land and disarm the drone first, or use Download.';
+
 class ModelSetupSheet extends StatefulWidget {
   final List<String> profiles;
-  const ModelSetupSheet({super.key, required this.profiles});
+
+  /// Whether the file picker may open now (no link, or a disarmed drone);
+  /// null allows it (no flight session).
+  final Future<bool> Function()? pickerAllowed;
+  const ModelSetupSheet({super.key, required this.profiles, this.pickerAllowed});
   @override
   State<ModelSetupSheet> createState() => _ModelSetupSheetState();
 }
@@ -46,6 +55,12 @@ class _ModelSetupSheetState extends State<ModelSetupSheet> {
 
   Future<void> _install(String id, {required bool download}) async {
     if (_busy) return;
+    final allowed = widget.pickerAllowed;
+    if (!download && allowed != null && !await allowed()) {
+      if (mounted) setState(() => _error = importWhileArmed);
+      return;
+    }
+    if (!mounted) return;
     setState(() {
       _busy = true;
       _active = id;

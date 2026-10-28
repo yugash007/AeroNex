@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart' show SemanticsAction;
+import 'package:flutter/semantics.dart' show CustomSemanticsAction;
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:aeronex/app_shell.dart';
@@ -1560,4 +1561,94 @@ void main() {
     expect(FlightPlan.single(tap('hold', {}), source: StepSource.rules).steps.single.source,
         StepSource.rules);
   });
+
+  group('audit fixes (2026-10-28)', () {
+    testWidgets('Disconnect while flying asks first; Stay connected keeps the link (F1)',
+        (tester) async {
+      final session = await launch(tester, initial: fixture('executing_move'));
+      await tapText(tester, 'Disconnect');
+      expect(find.byKey(const Key('disconnectConfirm')), findsOneWidget);
+      expect(stopButton(), findsOneWidget, reason: 'STOP stays reachable above the dialog');
+      await tester.tap(find.byKey(const Key('stayConnected')));
+      await tester.pumpAndSettle();
+      expect(session.methods, isNot(contains('disconnect')));
+      await tapText(tester, 'Disconnect');
+      await tester.tap(find.byKey(const Key('disconnectAnyway')));
+      await tester.pumpAndSettle();
+      expect(session.methods, contains('disconnect'));
+    });
+
+    testWidgets('on the ground, Disconnect is one tap', (tester) async {
+      final session = await launch(tester,
+          initial: fixture('connected_landed', {
+            'vehicle': {...fixture('connected_landed').raw['vehicle'] as Map<String, Object?>, 'armed': false},
+          }));
+      await tapText(tester, 'Disconnect');
+      expect(find.byKey(const Key('disconnectConfirm')), findsNothing);
+      expect(session.methods, contains('disconnect'));
+    });
+
+    testWidgets('a double tap on Connect connects once (F12)', (tester) async {
+      final session = await launch(tester);
+      session.connectGate = Completer<void>();
+      final connect = find.text('Connect');
+      await tester.tap(connect);
+      await tester.tap(connect);
+      await tester.pump();
+      session.connectGate!.complete();
+      await tester.pumpAndSettle();
+      expect(session.methods.where((m) => m == 'connect'), hasLength(1));
+    });
+
+    testWidgets('Hold on the tap pad acts while a typed command is being sent (F9)',
+        (tester) async {
+      final session = await launch(tester, initial: fixture('executing_move'));
+      session.submitGate = Completer<void>();
+      await tester.enterText(find.widgetWithText(TextField, 'Type a command'), 'land');
+      await tester.testTextInput.receiveAction(TextInputAction.go);
+      await tester.pump();
+      final hold = find.widgetWithText(OutlinedButton, 'Hold');
+      await tester.ensureVisible(hold);
+      await tester.tap(hold);
+      await tester.pump();
+      expect(session.methods, contains('submitPlan'));
+      session.submitGate!.complete();
+      await tester.pumpAndSettle();
+    });
+
+    testWidgets('a speech error and a failed press show as two cards (F7: one key broke the screen)',
+        (tester) async {
+      final session = await launch(tester, initial: fixture('connected_landed'));
+      session.pushSpeech({'heard': 'move forward 2', 'error': 'The command was not clear. Say it again.', 'utterance': 3});
+      await tester.pumpAndSettle();
+      session.pttError = PlatformException(code: 'INTERNAL', message: 'The flight supervisor did not answer.');
+      final press = await hold(tester);
+      await press.up();
+      await tester.pumpAndSettle();
+      expect(tester.takeException(), isNull);
+      expect(find.byKey(const Key('speechError')), findsOneWidget);
+      expect(find.byKey(const Key('speechNotice')), findsOneWidget);
+    });
+
+    testWidgets('STOP over a pilot mode can be chosen from the accessibility actions (F3)',
+        (tester) async {
+      final handle = tester.ensureSemantics();
+      final calls = <bool>[];
+      await tester.pumpWidget(MaterialApp(
+          home: Scaffold(
+              body: StopButton(
+                  onStop: ({required bool heldOneSecond}) => calls.add(heldOneSecond),
+                  holdToOverride: true,
+                  ownerLabel: 'Pilot mode'))));
+      final node = tester.getSemantics(find.byType(StopButton));
+      expect(node.label, contains(overrideActionLabel));
+      final action = CustomSemanticsAction.getIdentifier(const CustomSemanticsAction(label: overrideActionLabel));
+      tester.renderObject(find.byType(StopButton)).owner!.semanticsOwner!
+          .performAction(node.id, SemanticsAction.customAction, action);
+      await tester.pump();
+      expect(calls, [true]);
+      handle.dispose();
+    });
+  });
+
 }

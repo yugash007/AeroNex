@@ -1,12 +1,21 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/semantics.dart' show CustomSemanticsAction;
 import 'package:flutter/services.dart';
 
 import '../../../session/session_api.dart';
 
 /// Shown when a STOP call itself fails (the service is not answering).
 const stopUnreachable = 'STOP did not reach the flight service. Use RC.';
+
+/// The alarm's "Got it" did not reach the service (the STOP itself may have).
+const acknowledgeUnreachable =
+    'The alarm could not be silenced: the flight service did not answer.';
+
+/// The accessibility action that sends STOP over a pilot or failsafe mode,
+/// as the deliberate 1 s hold does (TalkBack and switch access cannot hold).
+const overrideActionLabel = 'Override and stop';
 
 /// The giant, always-enabled STOP. It calls [onStop] the moment a finger
 /// touches it (no release, no confirmation); the service decides what to
@@ -34,6 +43,10 @@ class StopButton extends StatefulWidget {
       ownerLabel == 'Autopilot failsafe'
           ? 'Autopilot failsafe active — hold 1 s to override'
           : 'Pilot has control — hold 1 s to override';
+
+  /// The spoken label: the hold, or the actions menu's [overrideActionLabel].
+  static String semanticsHint(String? ownerLabel) =>
+      '${holdHint(ownerLabel)}, or choose "$overrideActionLabel" from the actions menu';
 
   @override
   State<StopButton> createState() => _StopButtonState();
@@ -85,10 +98,17 @@ class _StopButtonState extends State<StopButton>
     return Semantics(
       container: true,
       button: true,
-      label: widget.holdToOverride ? 'STOP. $hint' : 'STOP',
-      // The override is only the deliberate 1 s hold of a real press, never
-      // an instant accessibility long-press action.
+      label: widget.holdToOverride ? 'STOP. ${StopButton.semanticsHint(widget.ownerLabel)}' : 'STOP',
+      // The override is the deliberate 1 s hold of a real press, or, for
+      // TalkBack and switch access (which cannot hold), a named action picked
+      // from the actions menu: never an instant long-press (audit F3).
       onTap: () => widget.onStop(heldOneSecond: false),
+      customSemanticsActions: widget.holdToOverride
+          ? {
+              const CustomSemanticsAction(label: overrideActionLabel): () =>
+                  widget.onStop(heldOneSecond: true),
+            }
+          : null,
       excludeSemantics: true,
       child: Listener(
         key: const Key('stopButton'),
@@ -202,7 +222,13 @@ class _StopLaneState extends State<StopLane> with WidgetsBindingObserver {
   SessionSnapshot _snap = SessionSnapshot.none;
   StreamSubscription<SessionSnapshot>? _snapshots;
   String? _stopError;
-  int? _stopId, _seenAlarmId;
+  /// The STOP id when [_stopError] was raised: a later STOP that reached the
+  /// service (a new id) clears it (audit F6).
+  int? _stopErrorAt;
+  int? _stopId;
+  /// The alarm the operator acknowledged: its STOP id, phase and action. An
+  /// escalation of the same STOP (another phase or action) alarms again (F4).
+  String? _seenAlarm;
   bool _stopRecent = false;
   Timer? _stopFade, _buzz;
 
@@ -240,6 +266,10 @@ class _StopLaneState extends State<StopLane> with WidgetsBindingObserver {
     final stop = snapshot.stop;
     setState(() {
       _snap = snapshot;
+      if (_stopError != null && stop != null && stop.id != _stopErrorAt) {
+        _stopError = null;
+        _stopErrorAt = null;
+      }
       if (stop != null && stop.id != _stopId) {
         _stopId = stop.id;
         _stopRecent = true;
@@ -249,8 +279,10 @@ class _StopLaneState extends State<StopLane> with WidgetsBindingObserver {
         });
       }
     });
-    _alarm(stop != null && stop.alarm && stop.id != _seenAlarmId);
+    _alarm(stop != null && stop.alarm && _alarmKey(stop) != _seenAlarm);
   }
+
+  static String _alarmKey(StopStatus stop) => '${stop.id}/${stop.phase}/${stop.action}';
 
   /// The alarm is loud (spec 4.0): a vibration every second until the
   /// operator taps Got it or the service clears it. The service's own tone,
@@ -270,15 +302,26 @@ class _StopLaneState extends State<StopLane> with WidgetsBindingObserver {
   void _stop({required bool heldOneSecond}) {
     if (_stopError != null) setState(() => _stopError = null);
     widget.session.stop(heldOneSecond: heldOneSecond).catchError((Object _) {
-      if (mounted) setState(() => _stopError = stopUnreachable);
+      if (mounted) {
+        setState(() {
+          _stopError = stopUnreachable;
+          _stopErrorAt = _snap.stop?.id;
+        });
+      }
     });
   }
 
   void _acknowledge() {
-    _seenAlarmId = _snap.stop?.id;
+    final stop = _snap.stop;
+    _seenAlarm = stop == null ? null : _alarmKey(stop);
     _alarm(false);
     widget.session.acknowledgeAlarm().catchError((Object _) {
-      if (mounted) setState(() => _stopError = stopUnreachable);
+      if (mounted) {
+        setState(() {
+          _stopError = acknowledgeUnreachable;
+          _stopErrorAt = _snap.stop?.id;
+        });
+      }
     });
   }
 

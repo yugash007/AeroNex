@@ -3,7 +3,8 @@ import 'package:flutter/material.dart';
 import '../../domain/flight_command.dart';
 
 /// Commands without speech: the same tool calls the parser produces. Motion
-/// still waits for CONFIRM in the service; HOLD runs at once.
+/// still waits for CONFIRM in the service; HOLD runs at once and stays
+/// enabled while another command is being sent.
 class TapPad extends StatefulWidget {
   const TapPad({super.key, required this.onCommand, this.enabled = true});
 
@@ -38,13 +39,13 @@ class _TapPadState extends State<TapPad> {
     if (height != null && mounted) _send(_call('takeoff', {'altitude_m': height}));
   }
 
-  Widget _button(String label, IconData icon, VoidCallback onPressed) => Padding(
+  Widget _button(String label, IconData icon, VoidCallback onPressed, {bool always = false}) => Padding(
         padding: const EdgeInsets.all(3),
         child: OutlinedButton(
           style: OutlinedButton.styleFrom(
               padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 4),
               minimumSize: const Size(0, 56)),
-          onPressed: widget.enabled ? onPressed : null,
+          onPressed: widget.enabled || always ? onPressed : null,
           child: FittedBox(
             fit: BoxFit.scaleDown,
             child: Column(mainAxisSize: MainAxisSize.min, children: [
@@ -69,7 +70,8 @@ class _TapPadState extends State<TapPad> {
           Row(children: [
             Expanded(child: _button('Take off', Icons.flight_takeoff, _takeOff)),
             Expanded(
-                child: _button('Hold', Icons.pause_circle_outline, () => _send(_call('hold')))),
+                child: _button('Hold', Icons.pause_circle_outline, () => _send(_call('hold')),
+                    always: true)),
             Expanded(child: _button('Land', Icons.flight_land, () => _send(_call('land')))),
           ]),
           _Stepper(

@@ -195,8 +195,14 @@ class FakeSessionApi implements SessionApi {
     return AwaitingConfirmation(token, 15000, plan.toString());
   }
 
+  /// pttDown() throws this, when set (the service did not answer).
+  Object? pttError;
+
   @override
-  Future<void> pttDown() async => calls.add(('pttDown', null));
+  Future<void> pttDown() async {
+    calls.add(('pttDown', null));
+    if (pttError != null) throw pttError!;
+  }
 
   @override
   Future<void> pttUp() async => calls.add(('pttUp', null));

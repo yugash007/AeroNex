@@ -38,8 +38,11 @@ class FlightPlan {
     }
   }
 
+  /// One step. [source] has no default: the service refuses `ai` steps from
+  /// the channel (only its own AI path makes them), so every caller says
+  /// where the step came from.
   factory FlightPlan.single(FlightCommand command,
-          {StepSource source = StepSource.ai, String clause = ''}) =>
+          {required StepSource source, String clause = ''}) =>
       FlightPlan([PlanStep(command, source: source, clause: clause)]);
 
   /// Validates the plan against live vehicle state before it is shown.
