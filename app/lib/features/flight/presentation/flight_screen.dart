@@ -389,6 +389,11 @@ class _FlightScreenState extends State<FlightScreen> with WidgetsBindingObserver
     await _refresh();
   }
 
+  /// A one-step tool call from a button, like the tap pad's.
+  void _tapCall(String name) => _tap(FlightCommand.fromToolCalls([
+        {'name': name, 'arguments': <String, Object?>{}}
+      ]));
+
   /// Runs [work] with the inputs locked ([_busy]); one at a time.
   Future<void> _locked(Future<void> Function() work) async {
     if (_busy) return;
@@ -523,6 +528,39 @@ class _FlightScreenState extends State<FlightScreen> with WidgetsBindingObserver
                     child: Text(_serviceMessage(serviceError),
                         key: const Key('serviceError'),
                         style: TextStyle(color: theme.colorScheme.error)),
+                  ),
+                if (snap.vehicle.connected && snap.vehicle.lowBattery)
+                  Card(
+                    key: const Key('lowBattery'),
+                    color: theme.colorScheme.errorContainer,
+                    child: Padding(
+                      padding: const EdgeInsets.all(12),
+                      child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+                        Row(children: [
+                          Icon(Icons.battery_alert, color: theme.colorScheme.onErrorContainer),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: Text(
+                                'Battery ${snap.vehicle.batteryPercent ?? '?'} %: plans may only head back toward home.',
+                                style: TextStyle(color: theme.colorScheme.onErrorContainer)),
+                          ),
+                        ]),
+                        if (snap.vehicle.landedStateName == 'IN_AIR')
+                          Wrap(spacing: 8, children: [
+                            if (snap.memory.homeKnown)
+                              FilledButton.icon(
+                                  key: const Key('lowBatteryReturnHome'),
+                                  onPressed: _busy ? null : () => _tapCall('return_home'),
+                                  icon: const Icon(Icons.home_outlined),
+                                  label: const Text('Return home')),
+                            OutlinedButton.icon(
+                                key: const Key('lowBatteryLand'),
+                                onPressed: _busy ? null : () => _tapCall('land'),
+                                icon: const Icon(Icons.flight_land),
+                                label: const Text('Land here')),
+                          ]),
+                      ]),
+                    ),
                   ),
                 if (pending != null)
                   KeyedSubtree(

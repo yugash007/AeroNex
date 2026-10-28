@@ -128,4 +128,30 @@ class PlanValidatorMemoryTest {
         val noHome = MemoryState()
         assertNull(sitl.validate(plan(returnHome), vehicle(position = Ned(5.0, 5.0, -3.0)), noHome))
     }
+
+    /** As [vehicle], with a fresh SYS_STATUS battery level. */
+    private fun withBattery(percent: Int, position: Ned = Ned(10.0, 0.0, -3.0), sysStatusAge: Long = 0) = vehicle(position = position)
+        .let { it.copy(batteryPercent = percent, ageMs = it.ageMs + (1 to sysStatusAge)) }
+
+    @Test fun belowTheBatteryReserveOnlyFlightsBackTowardHomeAreAllowed() {
+        val low = withBattery(22)
+        val away = "Step 1 flies away from home with the battery at 22 %. Below 30 % only flights back toward home " +
+            "are allowed: say \"return home\" or \"land\"."
+        assertEquals(away, sitl.validate(plan(move("forward", 2)), low, flown))
+        assertEquals(away.replace("Step 1", "Step 2"), sitl.validate(plan(move("backward", 4), move("right", 9)), low, flown))
+        // Toward home, sideways within the arrival slack, home itself, holding and landing: allowed.
+        assertNull(sitl.validate(plan(move("backward", 4)), low, flown))
+        assertNull(sitl.validate(plan(returnHome, tool(FlightCommand.LAND)), low, flown))
+        assertNull(sitl.validate(plan(move("up", 1), tool(FlightCommand.HOLD)), low, flown))
+        // A remembered point farther out is refused too; one closer in is fine.
+        assertEquals(away, sitl.validate(plan(numbered(FlightCommand.GOTO_POINT, 7)), low,
+            flown.copy(points = mapOf(7 to waypoint(20.0, 0.0)))))
+        assertNull(sitl.validate(plan(numbered(FlightCommand.GOTO_POINT, 1)), low, flown))
+        // At the reserve, or with a stale or unknown level, there is no restriction.
+        assertNull(sitl.validate(plan(move("forward", 2)), withBattery(30), flown))
+        assertNull(sitl.validate(plan(move("forward", 2)), withBattery(5, sysStatusAge = 9_000), flown))
+        assertNull(sitl.validate(plan(move("forward", 2)), vehicle(position = Ned(10.0, 0.0, -3.0)), flown))
+        // The reserve is configurable.
+        assertNull(PlanValidator(lowBatteryPercent = 20).validate(plan(move("forward", 2)), low, flown))
+    }
 }

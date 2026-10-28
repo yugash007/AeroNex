@@ -1844,4 +1844,27 @@ void main() {
       expect(stopButton().hitTestable(), findsOneWidget);
     });
   });
+
+  group('battery reserve (2026-10-28)', () {
+    testWidgets('below the reserve the screen says so and offers Return home and Land', (tester) async {
+      final session = await launch(tester,
+          initial: fixture('flight_memory', {
+            'vehicle': {'batteryPercent': 22, 'lowBattery': true}
+          }));
+      expect(find.text('Battery 22 %: plans may only head back toward home.'), findsOneWidget);
+      await tester.tap(find.byKey(const Key('lowBatteryReturnHome')));
+      await tester.pumpAndSettle();
+      final request = session.argumentsOf('submitPlan').single as Map;
+      expect(request['source'], 'tap');
+      expect(request['steps'], [
+        {'name': 'return_home', 'arguments': <String, Object?>{}, 'source': 'rules'}
+      ]);
+      expect(planCard(), findsOneWidget);
+    });
+
+    testWidgets('on the ground, or with a healthy battery, nothing is shown', (tester) async {
+      await launch(tester, initial: fixture('flight_memory'));
+      expect(find.byKey(const Key('lowBattery')), findsNothing);
+    });
+  });
 }

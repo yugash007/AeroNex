@@ -32,6 +32,7 @@
     "positionReady": true,
     "homeKnown": true,
     "homeDistanceM": 2.63,
+    "lowBattery": false,
     "lastStatusText": null,
     "ages": {
       "heartbeat": 310,

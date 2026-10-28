@@ -71,7 +71,7 @@ class SessionController(
     /** Runs once on each link thread before its first I/O, e.g. to raise its priority. */
     private val linkThreadSetup: () -> Unit = {},
     private val timingFor: (TelemetryProfile) -> ExecutorTiming = ExecutorTiming::forProfile,
-    validator: PlanValidator = PlanValidator(),
+    private val validator: PlanValidator = PlanValidator(),
     voice: VoiceConfig? = null,
     ai: AiConfig? = null,
     /** The flight memory; [FlightJournal]'s store decides whether it outlives the process. */
@@ -518,7 +518,7 @@ class SessionController(
         val speech = voice?.status()?.let { it.copy(spotterArmed = it.spotterArmed && spotterArmed(vehicle)) }
             ?: VoiceStatus.off(selectedLanguage, VoiceReason.NOT_STARTED)
         SessionSchema.snapshot(seq.incrementAndGet(), clock(), linkInfo(), state, vehicle, latency.summaries(), speech,
-            aiStatus(), journal.state)
+            aiStatus(), journal.state, validator.lowBatteryPercent)
     }
 
     /** The link, the store and the supervisor as the snapshot reports them (also for the notification). */

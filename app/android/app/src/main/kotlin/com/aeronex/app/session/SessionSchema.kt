@@ -22,6 +22,7 @@ import com.aeronex.app.mission.Mission
 import com.aeronex.app.safety.ConfirmResult
 import com.aeronex.app.safety.MissionStatus
 import com.aeronex.app.safety.PendingPlan
+import com.aeronex.app.safety.PlanValidator
 import com.aeronex.app.safety.PlanSource
 import com.aeronex.app.safety.PlanStage
 import com.aeronex.app.safety.StepStatus
@@ -109,6 +110,8 @@ data class PlanRequest(val plan: FlightPlan, val source: PlanSource, val utteran
  *   - `positionReady` (bool): fresh EKF solution with absolute position (the takeoff/move precondition).
  *   - `homeKnown` (bool): HOME_POSITION received. `homeDistanceM` (double?): horizontal metres from home, rounded to
  *     0.01; null without home or position (the plan limit is 30 m, S13).
+ *   - `lowBattery` (bool, 2026-10-28): a fresh battery level below the reserve (30 %): plans may only head back toward
+ *     home.
  *   - `lastStatusText` (map?): `{severity (int, MAV_SEVERITY, 0 = emergency), text (string), ageMs (int)}`.
  *   - `ages` (map): per message, ms since it was last received, null if never: `heartbeat`, `sysStatus`,
  *     `attitude`, `localPosition`, `globalPosition`, `extendedSysState`, `ekfStatus`, `home`, `positionTarget`,
@@ -249,13 +252,14 @@ object SessionSchema {
         speech: VoiceStatus,
         ai: AiStatus = AiStatus.OFF,
         memory: MemoryState = MemoryState(),
+        lowBatteryPercent: Int = PlanValidator.LOW_BATTERY_PERCENT,
     ): Map<String, Any?> = linkedMapOf(
         "schemaVersion" to VERSION,
         "seq" to seq,
         "atMs" to atMs,
         "link" to link(link),
         "execution" to linkedMapOf("enabled" to supervisor.execution),
-        "vehicle" to vehicle(vehicle),
+        "vehicle" to vehicle(vehicle, lowBatteryPercent),
         "pending" to supervisor.pending?.let { pending(it, atMs) },
         "run" to run(supervisor),
         "stop" to supervisor.stop?.let { stop(it, vehicle) },
@@ -330,7 +334,7 @@ object SessionSchema {
 
     private fun owner(vehicle: VehicleState): ModeOwner? = vehicle.modeOwner.takeIf { vehicle.connected && vehicle.mode != null }
 
-    private fun vehicle(vehicle: VehicleState): Map<String, Any?> {
+    private fun vehicle(vehicle: VehicleState, lowBatteryPercent: Int): Map<String, Any?> {
         val owner = owner(vehicle)
         val home = vehicle.home
         val position = vehicle.position
@@ -350,6 +354,7 @@ object SessionSchema {
             "positionReady" to vehicle.positionReady,
             "homeKnown" to (home != null),
             "homeDistanceM" to if (home != null && position != null) centimetres(position.horizontalDistanceTo(home)) else null,
+            "lowBattery" to (vehicle.batteryPercent.let { it != null && it < lowBatteryPercent } && vehicle.fresh(SysStatus.messageId)),
             "lastStatusText" to vehicle.lastStatusText?.let {
                 linkedMapOf("severity" to it.message.severity, "text" to it.message.text, "ageMs" to vehicle.atMs - it.atMs)
             },

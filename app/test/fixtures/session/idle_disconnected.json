@@ -32,6 +32,7 @@
     "positionReady": false,
     "homeKnown": false,
     "homeDistanceM": null,
+    "lowBattery": false,
     "lastStatusText": null,
     "ages": {
       "heartbeat": null,

@@ -240,6 +240,7 @@ class VehicleSnapshot {
     this.positionReady = false,
     this.homeKnown = false,
     this.homeDistanceM,
+    this.lowBattery = false,
     this.lastStatusText,
     this.ages = const {},
   });
@@ -263,6 +264,7 @@ class VehicleSnapshot {
       positionReady: _req<bool>(map, 'positionReady'),
       homeKnown: _req<bool>(map, 'homeKnown'),
       homeDistanceM: _optDouble(map, 'homeDistanceM'),
+      lowBattery: _opt<bool>(map, 'lowBattery') ?? false,
       lastStatusText: text == null ? null : StatusText.fromMap(text),
       ages: {for (final key in ages.keys) '$key': _opt<int>(ages, '$key')},
     );
@@ -290,6 +292,10 @@ class VehicleSnapshot {
   final bool? healthy;
   final bool positionReady, homeKnown;
   final double? homeDistanceM;
+
+  /// A fresh battery level below the service's reserve (2026-10-28): plans may
+  /// only head back toward home.
+  final bool lowBattery;
   final StatusText? lastStatusText;
 
   /// Per message, ms since it was last received; null if never.
@@ -314,6 +320,7 @@ class VehicleSnapshot {
         'positionReady': positionReady,
         'homeKnown': homeKnown,
         'homeDistanceM': homeDistanceM,
+        'lowBattery': lowBattery,
         'lastStatusText': lastStatusText?.toMap(),
         'ages': {...ages},
       };

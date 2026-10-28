@@ -8,6 +8,7 @@ import com.aeronex.app.link.mavlink.Attitude
 import com.aeronex.app.link.mavlink.ExtendedSysState
 import com.aeronex.app.link.mavlink.GlobalPositionInt
 import com.aeronex.app.link.mavlink.LocalPositionNed
+import com.aeronex.app.link.mavlink.SysStatus
 import com.aeronex.app.memory.MemoryRoutes
 import com.aeronex.app.memory.MemoryState
 import com.aeronex.app.vehicle.Ned
@@ -29,11 +30,18 @@ import kotlin.math.sin
  *    step 4) and flown as [MemoryRoutes.flyable] flies them; every leg must stay within [maxHomeDistanceM] of home,
  *    and an up or down move after such a flight within 1–10 m while the altitude is known. Without home or a
  *    position (a dry run with no vehicle) only what the memory alone refuses is checked.
+ * 5. battery reserve (2026-10-28): while a fresh SYS_STATUS reports less than [lowBatteryPercent], no step may end
+ *    farther from home than the vehicle is now, so the battery left goes to coming back. Land, hold, status, return
+ *    home and any flight toward home stay allowed.
  *
  * Every message is operator-facing. The projection assumes the heading does not change between steps; ArduCopter
  * may yaw toward its target (WP_YAW_BEHAVIOR), so re-validate each step against a fresh state before sending it.
  */
-class PlanValidator(val maxHomeDistanceM: Double = 30.0, val realHardwareProfile: Boolean = false) {
+class PlanValidator(
+    val maxHomeDistanceM: Double = 30.0,
+    val realHardwareProfile: Boolean = false,
+    val lowBatteryPercent: Int = LOW_BATTERY_PERCENT,
+) {
 
     /**
      * Builds the plan from [steps] (a mission's: up to [maxSteps]) and validates it: null when it may be shown, else
@@ -74,6 +82,10 @@ class PlanValidator(val maxHomeDistanceM: Double = 30.0, val realHardwareProfile
         var north = position.x
         var east = position.y
         var down = position.z
+        // Below the reserve, nothing may end farther from home than the vehicle is now (with rounding slack).
+        val battery = vehicle.batteryPercent?.takeIf { vehicle.fresh(SysStatus.messageId) && it < lowBatteryPercent }
+        val reach = hypot(north - home.x, east - home.y) + RESERVE_SLACK_M
+        fun outward(n: Double, e: Double) = battery != null && hypot(n - home.x, e - home.y) > reach
         // Above home, while known: FlightPlan checks up and down moves until a flight-memory flight, this the rest.
         var altitude = vehicle.altitudeRelM?.takeIf { vehicle.fresh(GlobalPositionInt.messageId) }
         var afterMemory = false
@@ -94,6 +106,7 @@ class PlanValidator(val maxHomeDistanceM: Double = 30.0, val realHardwareProfile
                     }
                     // Tolerate float rounding, as the altitude range does.
                     if (hypot(north - home.x, east - home.y) > maxHomeDistanceM + 1e-9) return tooFar(i)
+                    if (outward(north, east)) return lowBattery(i, battery!!)
                     val height = altitude
                     if (afterMemory && height != null && (height < 1 - 1e-9 || height > 10 + 1e-9)) {
                         return "Step ${i + 1} would leave the 1–10 m altitude range."
@@ -110,6 +123,7 @@ class PlanValidator(val maxHomeDistanceM: Double = 30.0, val realHardwareProfile
                     }
                     for (leg in route.legs) {
                         if (hypot(leg.x - home.x, leg.y - home.y) > maxHomeDistanceM + 1e-9) return tooFar(i)
+                        if (outward(leg.x, leg.y)) return lowBattery(i, battery!!)
                     }
                     route.legs.lastOrNull()?.let {
                         altitude = altitude?.plus(down - it.z)
@@ -131,6 +145,10 @@ class PlanValidator(val maxHomeDistanceM: Double = 30.0, val realHardwareProfile
         }
         return null
     }
+
+    private fun lowBattery(index: Int, percent: Int) =
+        "Step ${index + 1} flies away from home with the battery at $percent %. Below $lowBatteryPercent % only " +
+            "flights back toward home are allowed: say \"return home\" or \"land\"."
 
     private fun tooFar(index: Int) = "Step ${index + 1} would go more than ${FlightCommand.metres(maxHomeDistanceM)} m from home."
 
@@ -164,6 +182,12 @@ class PlanValidator(val maxHomeDistanceM: Double = 30.0, val realHardwareProfile
     companion object {
         const val HOME_UNKNOWN = "Home position is unknown. Wait for GPS home before moving."
         const val POSITION_UNKNOWN = "Position or heading is unavailable. Wait for fresh telemetry before moving."
+
+        /** The battery reserve: below it a plan may only head back toward home (2026-10-28). */
+        const val LOW_BATTERY_PERCENT = 30
+
+        /** A step may end this much farther from home than the start under the reserve (arrival tolerance). */
+        private const val RESERVE_SLACK_M = 0.5
         private val LANDED_STATES = setOf(
             VehicleState.LANDED_ON_GROUND, VehicleState.LANDED_IN_AIR,
             VehicleState.LANDED_TAKEOFF, VehicleState.LANDED_LANDING,

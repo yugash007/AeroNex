@@ -32,6 +32,7 @@
     "positionReady": true,
     "homeKnown": true,
     "homeDistanceM": 0.22,
+    "lowBattery": false,
     "lastStatusText": {
       "severity": 6,
       "text": "EKF3 IMU0 is using GPS",
