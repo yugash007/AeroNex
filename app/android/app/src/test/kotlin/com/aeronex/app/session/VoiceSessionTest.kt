@@ -132,6 +132,8 @@ class VoiceSessionTest {
     @Test fun theSpotterStopsEvenWhilePttIsHeldAndTheUtteranceIsDiscarded() {
         start(alternative("take off to 3 m"))
         sink.armed = true
+        // The gate listens from when the speech thread sees it armed; speech captured before then is not its.
+        waitFor("spotter armed") { voice.status().spotterArmed }
         voice.pttDown()
         captured { mic.speech(30) }
         waitFor("voice STOP") { sink.stopped.isNotEmpty() }
