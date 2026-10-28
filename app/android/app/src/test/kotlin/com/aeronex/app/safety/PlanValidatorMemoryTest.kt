@@ -23,7 +23,7 @@ class PlanValidatorMemoryTest {
     private fun move(direction: String, distance: Number) =
         tool(FlightCommand.MOVE, mapOf("direction" to direction, "distance_m" to distance))
 
-    private fun spot(name: String, n: Int) = tool(name, mapOf(FlightCommand.POINT to n))
+    private fun numbered(name: String, n: Int) = tool(name, mapOf(FlightCommand.POINT to n))
     private val returnHome = tool(FlightCommand.RETURN_HOME)
     private val goBack = tool(FlightCommand.GO_BACK)
     private val retrace = tool(FlightCommand.RETRACE)
@@ -44,24 +44,24 @@ class PlanValidatorMemoryTest {
 
     private val home = Ned(0.0, 0.0, 0.0)
     private val flown = MemoryState(home = home, trail = listOf(waypoint(0.0, 0.0, label = "Takeoff"),
-        waypoint(10.0, 0.0), waypoint(10.0, 10.0)), points = mapOf(1 to waypoint(-5.0, 0.0, -6.0, "Spot 1")))
+        waypoint(10.0, 0.0), waypoint(10.0, 10.0)), points = mapOf(1 to waypoint(-5.0, 0.0, -6.0, "Point 1")))
 
     @Test fun flightMemoryStepsResolveFromTheMemory() {
         val there = vehicle(position = Ned(10.0, 10.0, -3.0))
         assertNull(sitl.validate(plan(returnHome), there, flown))
         assertNull(sitl.validate(plan(goBack, goBack), there, flown))
         assertNull(sitl.validate(plan(retrace), there, flown))
-        assertNull(sitl.validate(plan(spot(FlightCommand.GOTO_POINT, 1)), there, flown))
+        assertNull(sitl.validate(plan(numbered(FlightCommand.GOTO_POINT, 1)), there, flown))
         // Go back walks the trail: a third go back from the takeoff position has nowhere to go.
         assertEquals("Step 3 — ${MemoryRoutes.NOTHING_TO_GO_BACK}", sitl.validate(plan(goBack, goBack, goBack), there, flown))
-        assertEquals("Step 1 — ${MemoryRoutes.noSpot(4)}", sitl.validate(plan(spot(FlightCommand.GOTO_POINT, 4)), there, flown))
+        assertEquals("Step 1 — ${MemoryRoutes.noPoint(4)}", sitl.validate(plan(numbered(FlightCommand.GOTO_POINT, 4)), there, flown))
     }
 
-    @Test fun aSpotMarkedEarlierInThePlanIsThereForALaterStep() {
+    @Test fun aPointMarkedEarlierInThePlanIsThereForALaterStep() {
         val empty = MemoryState(home = home)
-        val gotoTwo = spot(FlightCommand.GOTO_POINT, 2)
-        assertEquals("Step 2 — ${MemoryRoutes.noSpot(2)}", sitl.validate(plan(move("forward", 3), gotoTwo), vehicle(), empty))
-        assertNull(sitl.validate(plan(spot(FlightCommand.MARK_POINT, 2), move("forward", 3), gotoTwo), vehicle(), empty))
+        val gotoTwo = numbered(FlightCommand.GOTO_POINT, 2)
+        assertEquals("Step 2 — ${MemoryRoutes.noPoint(2)}", sitl.validate(plan(move("forward", 3), gotoTwo), vehicle(), empty))
+        assertNull(sitl.validate(plan(numbered(FlightCommand.MARK_POINT, 2), move("forward", 3), gotoTwo), vehicle(), empty))
         // A move earlier in the plan is a position to go back to.
         assertNull(sitl.validate(plan(move("forward", 3), goBack), vehicle(), empty))
         assertEquals("Step 1 — ${MemoryRoutes.NOTHING_TO_GO_BACK}", sitl.validate(plan(goBack), vehicle(), empty))
@@ -70,21 +70,21 @@ class PlanValidatorMemoryTest {
     @Test fun everyLegStaysWithinTheHomeDistance() {
         val far = MemoryState(home = home, points = mapOf(3 to waypoint(35.0, 0.0)))
         assertEquals("Step 2 would go more than 30 m from home.",
-            sitl.validate(plan(move("forward", 1), spot(FlightCommand.GOTO_POINT, 3)), vehicle(), far))
+            sitl.validate(plan(move("forward", 1), numbered(FlightCommand.GOTO_POINT, 3)), vehicle(), far))
         // Return home ends at home whatever the distance: it is the way back in.
         assertNull(sitl.validate(plan(returnHome), vehicle(position = Ned(0.0, 31.0, -3.0)), flown))
     }
 
     @Test fun movesAfterAMemoryFlightKeepTheAltitudeRange() {
-        // Spot 1 is at 6 m; up 5 from there would be 11 m.
+        // Point 1 is at 6 m; up 5 from there would be 11 m.
         assertEquals("Step 2 would leave the 1–10 m altitude range.",
-            sitl.validate(plan(spot(FlightCommand.GOTO_POINT, 1), move("up", 5)), vehicle(), flown))
-        assertNull(sitl.validate(plan(spot(FlightCommand.GOTO_POINT, 1), move("up", 4)), vehicle(), flown))
-        assertNull(sitl.validate(plan(spot(FlightCommand.GOTO_POINT, 1), move("down", 5)), vehicle(), flown))
+            sitl.validate(plan(numbered(FlightCommand.GOTO_POINT, 1), move("up", 5)), vehicle(), flown))
+        assertNull(sitl.validate(plan(numbered(FlightCommand.GOTO_POINT, 1), move("up", 4)), vehicle(), flown))
+        assertNull(sitl.validate(plan(numbered(FlightCommand.GOTO_POINT, 1), move("down", 5)), vehicle(), flown))
         assertEquals("Step 2 would leave the 1–10 m altitude range.",
-            sitl.validate(plan(spot(FlightCommand.GOTO_POINT, 1), move("down", 5.5)), vehicle(), flown))
+            sitl.validate(plan(numbered(FlightCommand.GOTO_POINT, 1), move("down", 5.5)), vehicle(), flown))
         // Unknown altitude: left to the executor.
-        assertNull(sitl.validate(plan(spot(FlightCommand.GOTO_POINT, 1), move("up", 5)), vehicle(altitude = null), flown))
+        assertNull(sitl.validate(plan(numbered(FlightCommand.GOTO_POINT, 1), move("up", 5)), vehicle(altitude = null), flown))
     }
 
     @Test fun aRememberedPositionJustOutsideTheRangeIsFlownInsideIt() {
@@ -94,19 +94,19 @@ class PlanValidatorMemoryTest {
     }
 
     @Test fun markingAloneIsAllowedOnTheGround() {
-        assertNull(sitl.validate(plan(spot(FlightCommand.MARK_POINT, 1)), vehicle(landed = true, altitude = 0.0)))
+        assertNull(sitl.validate(plan(numbered(FlightCommand.MARK_POINT, 1)), vehicle(landed = true, altitude = 0.0)))
         assertEquals("The drone is on the ground. Start with a takeoff height, for example: take off to 3 m and fly forward 3 m.",
             sitl.validate(plan(returnHome), vehicle(landed = true, altitude = 0.0), flown))
         assertEquals("The drone is on the ground. Start with a takeoff height, for example: take off to 3 m and fly forward 3 m.",
-            sitl.validate(plan(spot(FlightCommand.MARK_POINT, 1), move("up", 1)), vehicle(landed = true)))
+            sitl.validate(plan(numbered(FlightCommand.MARK_POINT, 1), move("up", 1)), vehicle(landed = true)))
     }
 
-    @Test fun aTakeoffStartsANewTrailButKeepsTheSpots() {
+    @Test fun aTakeoffStartsANewTrailButKeepsThePoints() {
         val ground = vehicle(landed = true, altitude = 0.0, position = Ned(0.0, 0.0, 0.0))
         val takeoff = tool(FlightCommand.TAKEOFF, mapOf("altitude_m" to 3))
         // The old trail is gone after the takeoff: nothing to go back to but the takeoff position itself.
         assertEquals("Step 2 — ${MemoryRoutes.NOTHING_TO_GO_BACK}", sitl.validate(plan(takeoff, goBack), ground, flown))
-        assertNull(sitl.validate(plan(takeoff, spot(FlightCommand.GOTO_POINT, 1), returnHome), ground, flown))
+        assertNull(sitl.validate(plan(takeoff, numbered(FlightCommand.GOTO_POINT, 1), returnHome), ground, flown))
     }
 
     @Test fun withoutHomeOnlyTheMemoryAloneIsChecked() {
@@ -114,8 +114,8 @@ class PlanValidatorMemoryTest {
         assertNull(sitl.validate(plan(goBack), vehicle(home = null), noHome))
         assertNull(sitl.validate(plan(goBack), null, noHome))
         assertEquals("Step 1 — ${MemoryRoutes.NOTHING_TO_RETRACE}", sitl.validate(plan(retrace), null, MemoryState()))
-        assertEquals("Step 1 — ${MemoryRoutes.noSpot(1)}", sitl.validate(plan(spot(FlightCommand.GOTO_POINT, 1)), null))
-        assertNull(sitl.validate(plan(spot(FlightCommand.MARK_POINT, 1), spot(FlightCommand.GOTO_POINT, 1)), null))
+        assertEquals("Step 1 — ${MemoryRoutes.noPoint(1)}", sitl.validate(plan(numbered(FlightCommand.GOTO_POINT, 1)), null))
+        assertNull(sitl.validate(plan(numbered(FlightCommand.MARK_POINT, 1), numbered(FlightCommand.GOTO_POINT, 1)), null))
         // The real hardware profile flies nothing without home.
         assertEquals(PlanValidator.HOME_UNKNOWN, hardware.validate(plan(goBack), vehicle(home = null), noHome))
     }

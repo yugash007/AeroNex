@@ -47,7 +47,7 @@ class FlightPlan {
 
   /// Validates the plan against live vehicle state before it is shown. On
   /// the ground a plan starts with a takeoff, or is status alone, or marks a
-  /// spot alone (the launch point can be saved).
+  /// point alone (the launch point can be saved).
   void checkVehicle({required bool landed, num? altitude}) {
     final first = steps.first.command.name;
     final markAlone = first == 'mark_point' && steps.length == 1;

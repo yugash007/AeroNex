@@ -15,13 +15,13 @@ class MemoryCodecTest {
     private val state = MemoryState(
         home = Ned(0.0, -0.5, 0.25),
         trail = listOf(Waypoint(Ned(0.0, 0.0, -3.0), "Takeoff", 1_730_000_000_000), Waypoint(Ned(2.5, 1.0, -3.0), "Move \"left\"\n2 m", 7)),
-        points = mapOf(3 to Waypoint(Ned(-1.0, 2.0, -4.0), "Spot 3", 9), 1 to Waypoint(Ned(1.0, 1.0, -2.0), "Spot 1", 8)),
+        points = mapOf(3 to Waypoint(Ned(-1.0, 2.0, -4.0), "Point 3", 9), 1 to Waypoint(Ned(1.0, 1.0, -2.0), "Point 1", 8)),
         history = listOf(
             CommandRecord(1, 1, 5, "move_relative", mapOf("direction" to "left", "distance_m" to 2.5), "Move left 2.5 m", "typed", "COMPLETED"),
             CommandRecord(2, 2, 6, "takeoff", mapOf("altitude_m" to 3), "Take off to 3 m", "phone", "NOT_SENT"),
         ),
         nextId = 3,
-        notice = "Home moved, so the flown path and saved spots were forgotten.",
+        notice = "Home moved, so the flown path and saved points were forgotten.",
     )
 
     @Test fun aMemoryRoundTripsExactly() {

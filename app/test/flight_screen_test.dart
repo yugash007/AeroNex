@@ -1665,21 +1665,21 @@ void main() {
     bool enabled(WidgetTester tester, String key) =>
         tester.widget<ButtonStyleButton>(memoryButton(key)).onPressed != null;
 
-    testWidgets('shows the path, spots and recent commands, and the buttons send '
+    testWidgets('shows the path, points and recent commands, and the buttons send '
         'the voice commands\' tool calls with the Tap source', (tester) async {
       final session = await launch(tester, initial: fixture('flight_memory'));
       expect(find.byKey(const Key('flightMemory')), findsOneWidget);
       expect(find.byKey(const Key('memoryMap')), findsOneWidget);
       expect(find.text('Go back to Move forward 4 m'), findsOneWidget);
-      expect(find.text('Mark spot 2'), findsOneWidget);
-      expect(find.text('Go to spot 1 (4 m from home)'), findsOneWidget);
+      expect(find.text('Mark point 2'), findsOneWidget);
+      expect(find.text('Go to point 1 (4 m from home)'), findsOneWidget);
       expect(find.text('Move right 3 m'), findsWidgets);
       for (final (key, name, arguments) in [
         ('memoryReturnHome', 'return_home', <String, Object?>{}),
         ('memoryGoBack', 'go_back', <String, Object?>{}),
         ('memoryRetrace', 'retrace', <String, Object?>{}),
         ('memoryMark', 'mark_point', <String, Object?>{'point': 2}),
-        ('memorySpot1', 'goto_point', <String, Object?>{'point': 1}),
+        ('memoryPoint1', 'goto_point', <String, Object?>{'point': 1}),
       ]) {
         session.calls.clear();
         await tapKey(tester, key);

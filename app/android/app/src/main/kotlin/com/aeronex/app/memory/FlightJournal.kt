@@ -24,29 +24,29 @@ data class CommandRecord(
 
 /** An immutable view of the flight memory (spec 2026-10-28 M1). */
 data class MemoryState(
-    /** HOME_POSITION the trail and spots belong to; null until home is known. */
+    /** HOME_POSITION the trail and points belong to; null until home is known. */
     val home: Ned? = null,
     /** The current flight's confirmed positions, oldest first: the first is where the takeoff ended. */
     val trail: List<Waypoint> = emptyList(),
-    /** Saved spots by number (1–9). */
+    /** Saved points by number (1–9). */
     val points: Map<Int, Waypoint> = emptyMap(),
     /** Finished steps, oldest first, at most [FlightJournal.HISTORY_LIMIT]. */
     val history: List<CommandRecord> = emptyList(),
     /** The next [CommandRecord.id] and plan id. */
     val nextId: Long = 1,
-    /** Why the trail and spots were last forgotten, for the UI; null when nothing was. */
+    /** Why the trail and points were last forgotten, for the UI; null when nothing was. */
     val notice: String? = null,
 )
 
 /**
  * The flight memory (spec 2026-10-28 M1): the trail of positions the app flew the vehicle to in this flight, the
- * spots the operator saved, home, and the commands of finished plans. The supervisor writes it on its thread and
+ * points the operator saved, home, and the commands of finished plans. The supervisor writes it on its thread and
  * anyone may read [state]. Every change goes to [store] (which saves off the caller's thread), so the memory
  * survives an app or service restart.
  *
  * Positions are the autopilot's local NED frame and only mean something while home stays put: when HOME_POSITION
  * moves more than [HOME_TOLERANCE_M] from the remembered home (another vehicle, a reboot, a new EKF origin), the
- * trail and the spots are forgotten, with [HOME_MOVED] as the notice. A restored memory without a home keeps its
+ * trail and the points are forgotten, with [HOME_MOVED] as the notice. A restored memory without a home keeps its
  * history only, since its positions cannot be checked.
  */
 class FlightJournal(
@@ -100,9 +100,9 @@ class FlightJournal(
     /** go_back or retrace ended: only the first [count] positions of the trail remain (undo). */
     fun keepTrail(count: Int) = update { s -> if (count >= s.trail.size) s else s.copy(trail = s.trail.take(maxOf(count, 0))) }
 
-    /** Saves [position] as spot [point]; an older spot of that number is replaced. */
+    /** Saves [position] as point [point]; an older point of that number is replaced. */
     fun markPoint(point: Int, position: Ned) = update { s ->
-        s.copy(points = s.points + (point to waypoint(position, "Spot $point")))
+        s.copy(points = s.points + (point to waypoint(position, "Point $point")))
     }
 
     /**
@@ -128,7 +128,7 @@ class FlightJournal(
     /** The steps of the plan [planId] in the history, in order; empty when it is no longer there. */
     fun plan(planId: Long): List<CommandRecord> = state.history.filter { it.planId == planId }
 
-    /** The operator cleared the memory: trail, spots, history and notice; home stays known. */
+    /** The operator cleared the memory: trail, points, history and notice; home stays known. */
     fun clear() = update { s -> MemoryState(home = s.home, nextId = s.nextId) }
 
     private fun waypoint(position: Ned, label: String) = Waypoint(position, label, wallClock())
@@ -162,7 +162,7 @@ class FlightJournal(
         const val TRAIL_LIMIT = 64
         const val HISTORY_LIMIT = 60
         const val TAKEOFF_LABEL = "Takeoff"
-        const val HOME_MOVED = "Home moved, so the flown path and saved spots were forgotten."
+        const val HOME_MOVED = "Home moved, so the flown path and saved points were forgotten."
 
         /** A restored memory keeps positions only with the home they belong to. */
         private fun restore(saved: MemoryState?): MemoryState = when {

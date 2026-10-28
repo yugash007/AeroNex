@@ -774,7 +774,7 @@ class MemoryPlace {
 }
 
 /// A position on the flown path; [label] says how the vehicle got there,
-/// e.g. "Takeoff", "Move forward 4 m", "Home", "Spot 2", "Start".
+/// e.g. "Takeoff", "Move forward 4 m", "Home", "Point 2", "Start".
 class TrailPoint {
   const TrailPoint(this.label, this.place);
   factory TrailPoint.fromMap(Map map) =>
@@ -786,10 +786,10 @@ class TrailPoint {
   Map<String, Object?> toMap() => {'label': label, ...place.toMap()};
 }
 
-/// A saved spot (1–9): "go to spot n" flies back to it.
-class MemorySpot {
-  const MemorySpot(this.point, this.label, this.place, this.atWallMs);
-  factory MemorySpot.fromMap(Map map) => MemorySpot(_req<int>(map, 'point'),
+/// A saved point (1–9): "go to point n" flies back to it.
+class MemoryPoint {
+  const MemoryPoint(this.point, this.label, this.place, this.atWallMs);
+  factory MemoryPoint.fromMap(Map map) => MemoryPoint(_req<int>(map, 'point'),
       _req<String>(map, 'label'), MemoryPlace.fromMap(map), _req<int>(map, 'atWallMs'));
 
   final int point;
@@ -855,7 +855,7 @@ class MemoryPlan {
 }
 
 /// The snapshot's `memory` section (2026-10-28): the path flown in this
-/// flight, the saved spots and the recorded plans. The service resolves and
+/// flight, the saved points and the recorded plans. The service resolves and
 /// validates every flight-memory command itself; [goBackTo] and
 /// [canRetrace] only say whether one has somewhere to go now.
 class FlightMemory {
@@ -863,7 +863,7 @@ class FlightMemory {
     this.homeKnown = false,
     this.vehicle,
     this.trail = const [],
-    this.spots = const [],
+    this.points = const [],
     this.goBackTo,
     this.canRetrace = false,
     this.plans = const [],
@@ -876,7 +876,7 @@ class FlightMemory {
       homeKnown: _req<bool>(map, 'homeKnown'),
       vehicle: vehicle == null ? null : MemoryPlace.fromMap(vehicle),
       trail: [for (final p in _req<List>(map, 'trail')) TrailPoint.fromMap(p as Map)],
-      spots: [for (final s in _req<List>(map, 'spots')) MemorySpot.fromMap(s as Map)],
+      points: [for (final s in _req<List>(map, 'points')) MemoryPoint.fromMap(s as Map)],
       goBackTo: _opt<String>(map, 'goBackTo'),
       canRetrace: _req<bool>(map, 'canRetrace'),
       plans: [for (final p in _req<List>(map, 'plans')) MemoryPlan.fromMap(p as Map)],
@@ -892,7 +892,7 @@ class FlightMemory {
 
   /// Oldest first; the first is where the takeoff ended.
   final List<TrailPoint> trail;
-  final List<MemorySpot> spots;
+  final List<MemoryPoint> points;
 
   /// Where "go back" would fly now; null when there is nothing to go back to.
   final String? goBackTo;
@@ -901,14 +901,14 @@ class FlightMemory {
   /// Newest first.
   final List<MemoryPlan> plans;
 
-  /// Why the trail and spots were last forgotten (home moved).
+  /// Why the trail and points were last forgotten (home moved).
   final String? notice;
 
-  bool get isEmpty => trail.isEmpty && spots.isEmpty && plans.isEmpty;
+  bool get isEmpty => trail.isEmpty && points.isEmpty && plans.isEmpty;
 
-  /// The lowest spot number not saved yet (1 when all are, to replace it).
-  int get nextFreeSpot {
-    final used = {for (final spot in spots) spot.point};
+  /// The lowest point number not saved yet (1 when all are, to replace it).
+  int get nextFreePoint {
+    final used = {for (final point in points) point.point};
     for (var n = 1; n <= 9; n++) {
       if (!used.contains(n)) return n;
     }
@@ -919,7 +919,7 @@ class FlightMemory {
         'homeKnown': homeKnown,
         'vehicle': vehicle?.toMap(),
         'trail': [for (final p in trail) p.toMap()],
-        'spots': [for (final s in spots) s.toMap()],
+        'points': [for (final s in points) s.toMap()],
         'goBackTo': goBackTo,
         'canRetrace': canRetrace,
         'plans': [for (final p in plans) p.toMap()],
@@ -1200,7 +1200,7 @@ abstract class SessionApi {
   /// [submitPlan].
   Future<SubmitResult> runAgain(int planId);
 
-  /// Forgets the flown path, the spots and the recorded plans.
+  /// Forgets the flown path, the points and the recorded plans.
   Future<void> clearMemory();
 }
 

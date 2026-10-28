@@ -39,7 +39,7 @@ class FlightPlan(steps: List<PlanStep>) {
 
     /**
      * Validates the plan against the reported vehicle state, as v0.2.0 `checkVehicle`. On the ground a plan starts with
-     * a takeoff, or is status alone, or (flight memory) marks a spot alone: the launch point can be saved.
+     * a takeoff, or is status alone, or (flight memory) marks a point alone: the launch point can be saved.
      */
     fun checkVehicle(landed: Boolean, altitude: Double? = null) {
         val first = steps.first().command.name

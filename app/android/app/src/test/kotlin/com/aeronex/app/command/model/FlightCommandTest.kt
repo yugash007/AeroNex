@@ -92,7 +92,7 @@ class FlightCommandTest {
             FlightCommand.of("move_relative", mapOf("direction" to "up", "distance_m" to 2.5)).toString())
     }
 
-    /** Spec 2026-10-28: the flight-memory tools carry no coordinates; spots are whole numbers 1–9. */
+    /** Spec 2026-10-28: the flight-memory tools carry no coordinates; points are whole numbers 1–9. */
     @Test fun allowsFlightMemoryToolsWithoutCoordinates() {
         for (name in listOf("return_home", "go_back", "retrace")) {
             val command = FlightCommand.of(name)
@@ -105,16 +105,16 @@ class FlightCommandTest {
         assertTrue(FlightCommand.of("move_relative", mapOf("direction" to "up", "distance_m" to 1)).isMotion)
         assertFalse(FlightCommand.of("move_relative", mapOf("direction" to "up", "distance_m" to 1)).isMemoryMotion)
         for (point in listOf<Any?>(0, 10, 2.5, -1, "2", null, Double.NaN)) {
-            rejects("Specify a spot number 1–9.", listOf(call("goto_point", mapOf("point" to point))))
-            rejects("Specify a spot number 1–9.", listOf(call("mark_point", mapOf("point" to point))))
+            rejects("Specify a point number 1–9.", listOf(call("goto_point", mapOf("point" to point))))
+            rejects("Specify a point number 1–9.", listOf(call("mark_point", mapOf("point" to point))))
         }
-        rejects("Specify a spot number 1–9.", listOf(call("goto_point", emptyMap<String, Any>())))
-        rejects("Specify a spot number 1–9.", listOf(call("goto_point", mapOf("point" to 1, "north" to 2.0))))
+        rejects("Specify a point number 1–9.", listOf(call("goto_point", emptyMap<String, Any>())))
+        rejects("Specify a point number 1–9.", listOf(call("goto_point", mapOf("point" to 1, "north" to 2.0))))
         assertEquals("Return home", FlightCommand.of("return_home").description)
         assertEquals("Go back to the previous position", FlightCommand.of("go_back").description)
         assertEquals("Retrace the flown path", FlightCommand.of("retrace").description)
-        assertEquals("Go to spot 3", FlightCommand.of("goto_point", mapOf("point" to 3)).description)
-        assertEquals("Mark spot 3", FlightCommand.of("mark_point", mapOf("point" to 3)).description)
+        assertEquals("Go to point 3", FlightCommand.of("goto_point", mapOf("point" to 3)).description)
+        assertEquals("Mark point 3", FlightCommand.of("mark_point", mapOf("point" to 3)).description)
         assertEquals(FlightCommand.MEMORY_MOTION + "mark_point", FlightCommand.MEMORY)
     }
 }

@@ -112,10 +112,10 @@ class SessionFlightMemoryTest {
         val marked = controller.submitPlan(mapOf("steps" to listOf(step("mark_point", mapOf("point" to 4))), "source" to "tap"))
         assertEquals(true, marked["immediate"])
         assertEquals("COMPLETED", marked["outcome"])
-        assertEquals(listOf(4L), (memory()["spots"] as List<Map<String, Any?>>).map { (it["point"] as Number).toLong() })
+        assertEquals(listOf(4L), (memory()["points"] as List<Map<String, Any?>>).map { (it["point"] as Number).toLong() })
     }
 
-    @Test fun clearMemoryForgetsTheTrailSpotsAndPlans() {
+    @Test fun clearMemoryForgetsTheTrailPointsAndPlans() {
         takeoffAndForward()
         assertEquals(SessionApi.Reply.Ok(null), api.call("clearMemory", null))
         val memory = memory()

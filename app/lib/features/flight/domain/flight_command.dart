@@ -36,8 +36,8 @@ class FlightCommand {
         }
       case 'goto_point':
       case 'mark_point':
-        if (!_keys(args, {'point'}) || !_spot(args['point'])) {
-          throw const FormatException('Specify a spot number 1–9.');
+        if (!_keys(args, {'point'}) || !_pointNumber(args['point'])) {
+          throw const FormatException('Specify a point number 1–9.');
         }
       case 'takeoff':
         if (!_keys(args, {'altitude_m'}) ||
@@ -65,8 +65,8 @@ class FlightCommand {
   /// A flight-memory step that flies the vehicle.
   bool get isMemoryMotion => memoryMotion.contains(name);
 
-  /// A whole spot number 1–9.
-  static bool _spot(Object? value) =>
+  /// A whole point number 1–9.
+  static bool _pointNumber(Object? value) =>
       value is num && value.isFinite && value % 1 == 0 && value >= 1 && value <= 9;
 
   static bool _keys(Map value, Set<String> keys) =>
@@ -91,8 +91,8 @@ class FlightCommand {
         'return_home' => 'Return home',
         'go_back' => 'Go back to the previous position',
         'retrace' => 'Retrace the flown path',
-        'goto_point' => 'Go to spot ${(arguments['point'] as num).toInt()}',
-        'mark_point' => 'Mark spot ${(arguments['point'] as num).toInt()}',
+        'goto_point' => 'Go to point ${(arguments['point'] as num).toInt()}',
+        'mark_point' => 'Mark point ${(arguments['point'] as num).toInt()}',
         _ => toString(),
       };
 

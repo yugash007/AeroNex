@@ -24,8 +24,8 @@ import kotlin.math.sin
  * 3. the home distance: each move's horizontal end point, projected in the body frame from the current position
  *    and yaw, must stay within [maxHomeDistanceM] of home. On the [realHardwareProfile], any move is rejected
  *    while home is unknown.
- * 4. flight memory (spec 2026-10-28 M3): return home, go back, retrace and go to spot are resolved with
- *    [MemoryRoutes] from the memory as the earlier steps of the plan leave it (a spot marked in step 2 is there for
+ * 4. flight memory (spec 2026-10-28 M3): return home, go back, retrace and go to point are resolved with
+ *    [MemoryRoutes] from the memory as the earlier steps of the plan leave it (a point marked in step 2 is there for
  *    step 4) and flown as [MemoryRoutes.flyable] flies them; every leg must stay within [maxHomeDistanceM] of home,
  *    and an up or down move after such a flight within 1–10 m while the altitude is known. Without home or a
  *    position (a dry run with no vehicle) only what the memory alone refuses is checked.
@@ -131,7 +131,7 @@ class PlanValidator(val maxHomeDistanceM: Double = 30.0, val realHardwareProfile
 
     /**
      * No home or position to project from (a dry run with no vehicle): only what the memory alone refuses, counting
-     * the spots and positions the plan's own earlier steps make.
+     * the points and positions the plan's own earlier steps make.
      */
     private fun memoryAlone(plan: FlightPlan, memory: MemoryState): String? {
         plan.steps.forEachIndexed { i, step ->
@@ -142,7 +142,7 @@ class PlanValidator(val maxHomeDistanceM: Double = 30.0, val realHardwareProfile
                 FlightCommand.GOTO_POINT -> {
                     val point = command.point!!
                     val marked = point in memory.points || earlier.any { it.name == FlightCommand.MARK_POINT && it.point == point }
-                    if (marked) null else MemoryRoutes.noSpot(point)
+                    if (marked) null else MemoryRoutes.noPoint(point)
                 }
                 FlightCommand.GO_BACK -> if (flown) null else MemoryRoutes.NOTHING_TO_GO_BACK
                 FlightCommand.RETRACE -> if (flown) null else MemoryRoutes.NOTHING_TO_RETRACE

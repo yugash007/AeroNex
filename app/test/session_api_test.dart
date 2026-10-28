@@ -82,8 +82,8 @@ void main() {
       expect([for (final p in memory.trail) p.label],
           ['Takeoff', 'Move forward 4 m', 'Move right 3 m']);
       expect(memory.trail.first.place.upM, 2.71);
-      expect(memory.spots.single.point, 1);
-      expect(memory.spots.single.place.northM, 4.02);
+      expect(memory.points.single.point, 1);
+      expect(memory.points.single.place.northM, 4.02);
       expect(memory.goBackTo, 'Move forward 4 m');
       expect(memory.canRetrace, isTrue);
       expect([for (final p in memory.plans) p.planId], [4, 3, 2, 1]);
@@ -91,7 +91,7 @@ void main() {
       expect(memory.plans.first.source, PlanSource.typed);
       expect(memory.plans.first.completed, isTrue);
       expect(memory.plans[1].steps.single.arguments, {'point': 1});
-      expect(memory.nextFreeSpot, 2);
+      expect(memory.nextFreePoint, 2);
       // Older services without the section, and a session that flew nothing.
       final old = SessionSnapshot.fromMap({..._fixture('connected_landed')}..remove('memory'));
       expect(old.memory.isEmpty, isTrue);
@@ -99,7 +99,7 @@ void main() {
       expect(idle.homeKnown, isFalse);
       expect(idle.vehicle, isNull);
       expect(idle.goBackTo, isNull);
-      expect(idle.nextFreeSpot, 1);
+      expect(idle.nextFreePoint, 1);
     });
 
     test('reads the speech section (T12)', () {

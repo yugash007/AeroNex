@@ -10,7 +10,7 @@ import com.aeronex.app.vehicle.Ned
  * ```
  * {"version":1,"nextId":7,"notice":null,"home":{"x":0.0,"y":0.0,"z":0.0},
  *  "trail":[{"x":..,"y":..,"z":..,"label":"Takeoff","at":1730000000000}],
- *  "points":{"1":{"x":..,"y":..,"z":..,"label":"Spot 1","at":..}},
+ *  "points":{"1":{"x":..,"y":..,"z":..,"label":"Point 1","at":..}},
  *  "history":[{"id":1,"plan":1,"at":..,"name":"move_relative","arguments":{"direction":"left","distance_m":2},
  *              "description":"Move left 2 m","source":"typed","outcome":"COMPLETED"}]}
  * ```
@@ -40,8 +40,8 @@ object MemoryCodec {
             trail = root.list("trail").map { readWaypoint(it.obj("trail")) },
             points = root.obj("points", "points").entries.associate { (key, value) ->
                 val n = key.toIntOrNull()
-                require(n != null && n in 1..9) { "Bad spot $key" }
-                n to readWaypoint(value.obj("spot"))
+                require(n != null && n in 1..9) { "Bad point $key" }
+                n to readWaypoint(value.obj("point"))
             },
             history = root.list("history").map { item ->
                 val r = item.obj("history")

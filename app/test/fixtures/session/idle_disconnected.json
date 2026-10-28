@@ -100,7 +100,7 @@
     "homeKnown": false,
     "vehicle": null,
     "trail": [],
-    "spots": [],
+    "points": [],
     "goBackTo": null,
     "canRetrace": false,
     "plans": [],

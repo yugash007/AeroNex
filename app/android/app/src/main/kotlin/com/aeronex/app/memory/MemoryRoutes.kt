@@ -21,7 +21,7 @@ data class Route(val legs: List<Ned>, val label: String, val keep: Int? = null)
  *   saying it again walks further back. After a STOP mid-move that is where the move started.
  * - retrace: every trail position newest first, back to where the takeoff ended: the path already flown, which
  *   was clear of obstacles at its heights.
- * - go to spot n: the saved spot, at its saved height.
+ * - go to point n: the saved point, at its saved height.
  */
 object MemoryRoutes {
     /** Closer than this is "already there". */
@@ -37,7 +37,7 @@ object MemoryRoutes {
     const val FLOOR_M = 1.0
     const val CEILING_M = 10.0
 
-    fun noSpot(point: Int) = "Spot $point is not saved. Say \"mark spot $point\" there first."
+    fun noPoint(point: Int) = "Point $point is not saved. Say \"mark point $point\" there first."
 
     /**
      * [route] as it is flown from [position]: each leg at a height within [FLOOR_M]–[CEILING_M] above home, counted
@@ -80,9 +80,9 @@ object MemoryRoutes {
             Route(memory.trail.subList(0, end).asReversed().map { it.position }, memory.trail.first().label, keep = 1)
         }
         FlightCommand.GOTO_POINT -> {
-            val point = command.point!!
-            val spot = memory.points[point] ?: throw CommandFormatException(noSpot(point))
-            Route(if (spot.position.distanceTo(position) < ARRIVED_M) emptyList() else listOf(spot.position), spot.label)
+            val number = command.point!!
+            val saved = memory.points[number] ?: throw CommandFormatException(noPoint(number))
+            Route(if (saved.position.distanceTo(position) < ARRIVED_M) emptyList() else listOf(saved.position), saved.label)
         }
         else -> throw IllegalArgumentException("${command.name} is not a flight-memory flight")
     }
@@ -105,7 +105,7 @@ object MemoryRoutes {
     fun after(memory: MemoryState, command: FlightCommand, route: Route?, position: Ned, wallMs: Long = 0): MemoryState =
         when {
             command.name == FlightCommand.MARK_POINT ->
-                memory.copy(points = memory.points + (command.point!! to Waypoint(position, "Spot ${command.point}", wallMs)))
+                memory.copy(points = memory.points + (command.point!! to Waypoint(position, "Point ${command.point}", wallMs)))
             command.name == FlightCommand.TAKEOFF ->
                 memory.copy(trail = listOf(Waypoint(position, FlightJournal.TAKEOFF_LABEL, wallMs)))
             route?.keep != null -> memory.copy(trail = memory.trail.take(route.keep))

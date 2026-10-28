@@ -51,7 +51,7 @@ sealed interface StepUpdate {
  *   echo of the target within [ExecutorTiming.echoTimeoutMs], then arrival within
  *   min(0.5 m, d/2) of the target computed from the position at send time, at < 0.3 m/s, on position samples newer
  *   than the echo.
- * - Flight memory (return home, go back, retrace, go to spot; spec 2026-10-28 M2): the supervisor resolves the step
+ * - Flight memory (return home, go back, retrace, go to point; spec 2026-10-28 M2): the supervisor resolves the step
  *   to absolute legs; each is one SET_POSITION_TARGET_LOCAL_NED in LOCAL_NED (1), **sent exactly once**, with the
  *   heading of the step's start held, and confirmed like a move (echo, then arrival) before the next leg is sent.
  * - Land: DO_SET_MODE LAND by ACK, then ON_GROUND. Hold (a plan step): DO_SET_MODE BRAKE by ACK, then < 0.3 m/s.

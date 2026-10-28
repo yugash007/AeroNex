@@ -214,7 +214,7 @@ class SessionSchemaFixtureTest {
             understoodAs = null, error = null),
     ))
 
-    /** 2026-10-28: the flight memory after "take off", "forward 4, right 3" and "mark spot 1" at the first corner. */
+    /** 2026-10-28: the flight memory after "take off", "forward 4, right 3" and "mark point 1" at the first corner. */
     @Test fun flightMemory() {
         val wall = 1_761_650_000_000L
         val takeoff = mapOf<String, Any>(FlightCommand.ALTITUDE to 3)
@@ -223,13 +223,13 @@ class SessionSchemaFixtureTest {
             trail = listOf(Waypoint(Ned(0.0, 0.0, -2.71), "Takeoff", wall + 9_000),
                 Waypoint(Ned(4.02, -0.03, -3.0), "Move forward 4 m", wall + 31_000),
                 Waypoint(Ned(4.0, 2.97, -3.01), "Move right 3 m", wall + 34_000)),
-            points = mapOf(1 to Waypoint(Ned(4.02, -0.03, -3.0), "Spot 1", wall + 32_500)),
+            points = mapOf(1 to Waypoint(Ned(4.02, -0.03, -3.0), "Point 1", wall + 32_500)),
             history = listOf(
                 CommandRecord(1, 1, wall + 9_000, FlightCommand.TAKEOFF, takeoff, "Take off to 3 m", "phone", "COMPLETED"),
                 CommandRecord(2, 2, wall + 31_000, FlightCommand.MOVE, move("forward", 4).command.arguments,
                     "Move forward 4 m", "phone", "COMPLETED"),
                 CommandRecord(3, 3, wall + 32_500, FlightCommand.MARK_POINT, mapOf(FlightCommand.POINT to 1),
-                    "Mark spot 1", "tap", "COMPLETED"),
+                    "Mark point 1", "tap", "COMPLETED"),
                 CommandRecord(4, 4, wall + 34_000, FlightCommand.MOVE, move("right", 3).command.arguments,
                     "Move right 3 m", "typed", "COMPLETED"),
             ),

@@ -129,15 +129,15 @@ void main() {
     expect(call('return_home').description, 'Return home');
     expect(call('go_back').description, 'Go back to the previous position');
     expect(call('retrace').description, 'Retrace the flown path');
-    expect(call('goto_point', {'point': 2}).description, 'Go to spot 2');
-    expect(call('mark_point', {'point': 9.0}).description, 'Mark spot 9');
+    expect(call('goto_point', {'point': 2}).description, 'Go to point 2');
+    expect(call('mark_point', {'point': 9.0}).description, 'Mark point 9');
     expect(call('retrace').isMemoryMotion, isTrue);
     expect(call('mark_point', {'point': 1}).isMemoryMotion, isFalse);
     expect(() => call('return_home', {'x': 1}),
         throwsA(isA<FormatException>().having((e) => e.message, 'message', 'This tool accepts no arguments.')));
     for (final bad in <Object?>[0, 10, 2.5, '2', null, -1]) {
       expect(() => call('goto_point', {'point': bad}),
-          throwsA(isA<FormatException>().having((e) => e.message, 'message', 'Specify a spot number 1–9.')),
+          throwsA(isA<FormatException>().having((e) => e.message, 'message', 'Specify a point number 1–9.')),
           reason: '$bad');
     }
     expect(() => call('mark_point'), throwsFormatException);

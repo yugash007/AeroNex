@@ -123,10 +123,10 @@
         "upM": 3.01
       }
     ],
-    "spots": [
+    "points": [
       {
         "point": 1,
-        "label": "Spot 1",
+        "label": "Point 1",
         "northM": 4.02,
         "eastM": -0.03,
         "upM": 3.0,
@@ -162,7 +162,7 @@
             "arguments": {
               "point": 1
             },
-            "description": "Mark spot 1",
+            "description": "Mark point 1",
             "outcome": "COMPLETED"
           }
         ]

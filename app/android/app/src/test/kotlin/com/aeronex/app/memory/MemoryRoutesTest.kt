@@ -6,19 +6,19 @@ import com.aeronex.app.vehicle.Ned
 import org.junit.Assert.*
 import org.junit.Test
 
-/** Spec 2026-10-28 M2: where return home, go back, retrace and go to spot fly. */
+/** Spec 2026-10-28 M2: where return home, go back, retrace and go to point fly. */
 class MemoryRoutesTest {
     private fun ned(x: Double, y: Double, z: Double = -3.0) = Ned(x, y, z)
     private fun waypoint(p: Ned, label: String = "w") = Waypoint(p, label, 0)
     private val returnHome = FlightCommand.of(FlightCommand.RETURN_HOME)
     private val goBack = FlightCommand.of(FlightCommand.GO_BACK)
     private val retrace = FlightCommand.of(FlightCommand.RETRACE)
-    private fun gotoSpot(n: Int) = FlightCommand.of(FlightCommand.GOTO_POINT, mapOf(FlightCommand.POINT to n))
+    private fun gotoPoint(n: Int) = FlightCommand.of(FlightCommand.GOTO_POINT, mapOf(FlightCommand.POINT to n))
 
     private val trail = listOf(waypoint(ned(0.0, 0.0), "Takeoff"), waypoint(ned(4.0, 0.0, -5.0), "a"),
         waypoint(ned(4.0, 3.0), "b"))
     private val memory = MemoryState(home = ned(0.2, 0.1, 0.0), trail = trail,
-        points = mapOf(2 to waypoint(ned(-2.0, 5.0, -4.0), "Spot 2")))
+        points = mapOf(2 to waypoint(ned(-2.0, 5.0, -4.0), "Point 2")))
 
     private fun refused(message: String, command: FlightCommand, state: MemoryState = memory, at: Ned = ned(4.0, 3.0)) {
         val error = assertThrows(CommandFormatException::class.java) { MemoryRoutes.resolve(command, state, at) }
@@ -62,10 +62,10 @@ class MemoryRoutesTest {
         refused(MemoryRoutes.NOTHING_TO_RETRACE, retrace, memory.copy(trail = trail.take(1)), ned(0.0, 0.2))
     }
 
-    @Test fun goToSpotFliesToTheSavedSpotAtItsHeight() {
-        assertEquals(listOf(ned(-2.0, 5.0, -4.0)), MemoryRoutes.resolve(gotoSpot(2), memory, ned(4.0, 3.0)).legs)
-        assertTrue(MemoryRoutes.resolve(gotoSpot(2), memory, ned(-2.0, 5.2, -4.0)).legs.isEmpty())
-        refused(MemoryRoutes.noSpot(3), gotoSpot(3))
+    @Test fun goToPointFliesToTheSavedPointAtItsHeight() {
+        assertEquals(listOf(ned(-2.0, 5.0, -4.0)), MemoryRoutes.resolve(gotoPoint(2), memory, ned(4.0, 3.0)).legs)
+        assertTrue(MemoryRoutes.resolve(gotoPoint(2), memory, ned(-2.0, 5.2, -4.0)).legs.isEmpty())
+        refused(MemoryRoutes.noPoint(3), gotoPoint(3))
     }
 
     @Test fun flyableKeepsEveryLegWithinTheHeightRange() {

@@ -42,7 +42,7 @@ class SupervisorFlightMemoryTest {
     private fun plan(vararg commands: FlightCommand) = FlightPlan(commands.map { PlanStep(it, StepSource.RULES) })
     private fun move(direction: String, m: Number) =
         FlightCommand.of(FlightCommand.MOVE, mapOf(FlightCommand.DIRECTION to direction, FlightCommand.DISTANCE to m))
-    private fun spot(name: String, n: Int) = FlightCommand.of(name, mapOf(FlightCommand.POINT to n))
+    private fun numbered(name: String, n: Int) = FlightCommand.of(name, mapOf(FlightCommand.POINT to n))
     private val takeoff = FlightCommand.of(FlightCommand.TAKEOFF, mapOf(FlightCommand.ALTITUDE to 3))
     private val returnHome = FlightCommand.of(FlightCommand.RETURN_HOME)
     private val goBack = FlightCommand.of(FlightCommand.GO_BACK)
@@ -122,25 +122,25 @@ class SupervisorFlightMemoryTest {
         assertEquals(listOf(FlightJournal.TAKEOFF_LABEL), trail())
     }
 
-    @Test fun aSpotMarkedAloneIsSavedAtOnceAndGoToSpotFliesBack() {
+    @Test fun aPointMarkedAloneIsSavedAtOnceAndGoToPointFliesBack() {
         connect()
         airborne()
         flies(plan(move("forward", 4)))
-        val marked = (submit(plan(spot(FlightCommand.MARK_POINT, 1))) as SubmitResult.Immediate).outcome
+        val marked = (submit(plan(numbered(FlightCommand.MARK_POINT, 1))) as SubmitResult.Immediate).outcome
         assertEquals(StepStatus.COMPLETED, marked.status)
-        assertTrue(marked.message, marked.message!!.startsWith("COMPLETED — spot 1 saved, 4.0 m from home, 3."))
+        assertTrue(marked.message, marked.message!!.startsWith("COMPLETED — point 1 saved, 4.0 m from home, 3."))
         assertEquals(PlanStage.FINISHED, supervisor.state.stage)
         assertEquals(setOf(1), journal.state.points.keys)
         flies(plan(move("right", 3), move("up", 1)))
-        flies(plan(spot(FlightCommand.GOTO_POINT, 1)))
+        flies(plan(numbered(FlightCommand.GOTO_POINT, 1)))
         assertAt(4.0, 0.0)
-        assertEquals("Spot 1", trail().last())
+        assertEquals("Point 1", trail().last())
     }
 
-    @Test fun aSpotMarkedInAPlanIsThereForALaterStep() {
+    @Test fun aPointMarkedInAPlanIsThereForALaterStep() {
         connect()
         airborne()
-        val state = fly(plan(spot(FlightCommand.MARK_POINT, 2), move("forward", 3), spot(FlightCommand.GOTO_POINT, 2)))
+        val state = fly(plan(numbered(FlightCommand.MARK_POINT, 2), move("forward", 3), numbered(FlightCommand.GOTO_POINT, 2)))
         assertEquals(state.result, listOf(StepStatus.COMPLETED, StepStatus.COMPLETED, StepStatus.COMPLETED),
             state.outcomes.map { it.status })
         waitFor("still") { vehicle.speedNow() < 0.05 }
@@ -149,14 +149,14 @@ class SupervisorFlightMemoryTest {
 
     @Test fun theLaunchPointCanBeMarkedOnTheGround() {
         connect()
-        val marked = (submit(plan(spot(FlightCommand.MARK_POINT, 9))) as SubmitResult.Immediate).outcome
+        val marked = (submit(plan(numbered(FlightCommand.MARK_POINT, 9))) as SubmitResult.Immediate).outcome
         assertEquals(marked.message, StepStatus.COMPLETED, marked.status)
         assertEquals(Ned(0.0, 0.0, 0.0), journal.state.points.getValue(9).position)
     }
 
     @Test fun aDryRunMarksNothing() {
         connect(execution = false)
-        val outcome = (submit(plan(spot(FlightCommand.MARK_POINT, 1))) as SubmitResult.Immediate).outcome
+        val outcome = (submit(plan(numbered(FlightCommand.MARK_POINT, 1))) as SubmitResult.Immediate).outcome
         assertEquals(StepStatus.NOT_SENT, outcome.status)
         assertTrue(journal.state.points.isEmpty())
     }
@@ -183,23 +183,23 @@ class SupervisorFlightMemoryTest {
         assertEquals(mapOf<String, Any>(FlightCommand.DIRECTION to "forward", FlightCommand.DISTANCE to 2), history.last().arguments)
     }
 
-    @Test fun aSpotForgottenAfterThePlanWasShownFailsItBeforeAnythingFlies() {
+    @Test fun aPointForgottenAfterThePlanWasShownFailsItBeforeAnythingFlies() {
         connect()
         airborne()
         journal.markPoint(3, Ned(2.0, 0.0, -3.0))
-        val pending = (submit(plan(move("forward", 2), spot(FlightCommand.GOTO_POINT, 3))) as SubmitResult.AwaitingConfirmation).pending
+        val pending = (submit(plan(move("forward", 2), numbered(FlightCommand.GOTO_POINT, 3))) as SubmitResult.AwaitingConfirmation).pending
         journal.clear() // e.g. the operator cleared the memory while the plan was shown
         val frames = vehicle.positionTargets().size
         assertEquals(ConfirmResult.Started, supervisor.confirm(pending.token).get(2, TimeUnit.SECONDS))
         waitFor("plan end", 10_000) { supervisor.state.stage == PlanStage.FAILED }
         // Every step start checks the rest of the plan again, so the move never flies.
         assertEquals(listOf(StepStatus.REJECTED, StepStatus.SKIPPED), supervisor.state.outcomes.map { it.status })
-        assertEquals("REJECTED — nothing sent: Step 2 — ${MemoryRoutes.noSpot(3)}", supervisor.state.outcomes[0].message)
+        assertEquals("REJECTED — nothing sent: Step 2 — ${MemoryRoutes.noPoint(3)}", supervisor.state.outcomes[0].message)
         assertEquals(frames, vehicle.positionTargets().size)
     }
 
     @Test fun theAiNeverUsesTheFlightMemory() {
-        for (command in listOf(returnHome, goBack, retrace, spot(FlightCommand.GOTO_POINT, 1), spot(FlightCommand.MARK_POINT, 1))) {
+        for (command in listOf(returnHome, goBack, retrace, numbered(FlightCommand.GOTO_POINT, 1), numbered(FlightCommand.MARK_POINT, 1))) {
             val plan = FlightPlan(listOf(PlanStep(command, StepSource.AI)))
             assertEquals(SubmitResult.Rejected(SafetySupervisor.AI_NO_MEMORY),
                 supervisor.submitAi(plan).get(2, TimeUnit.SECONDS))

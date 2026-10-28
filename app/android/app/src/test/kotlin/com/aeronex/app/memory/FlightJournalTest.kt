@@ -4,7 +4,7 @@ import com.aeronex.app.vehicle.Ned
 import org.junit.Assert.*
 import org.junit.Test
 
-/** Spec 2026-10-28 M1: the trail, spots, history and home guard of the flight memory. */
+/** Spec 2026-10-28 M1: the trail, points, history and home guard of the flight memory. */
 class FlightJournalTest {
     private class RecordingStore(private val initial: MemoryState? = null) : JournalStore {
         val saved = mutableListOf<MemoryState>()
@@ -60,16 +60,16 @@ class FlightJournalTest {
         assertEquals(2, journal.state.trail.size)
     }
 
-    @Test fun spotsAreSavedByNumberAndReplaced() {
+    @Test fun pointsAreSavedByNumberAndReplaced() {
         journal.markPoint(2, ned(1.0, 1.0))
         journal.markPoint(2, ned(4.0, 4.0))
         journal.markPoint(1, ned(2.0, 0.0))
         assertEquals(ned(4.0, 4.0), journal.state.points.getValue(2).position)
-        assertEquals("Spot 2", journal.state.points.getValue(2).label)
+        assertEquals("Point 2", journal.state.points.getValue(2).label)
         assertEquals(setOf(1, 2), journal.state.points.keys)
     }
 
-    @Test fun aMovedHomeForgetsTheTrailAndSpotsButKeepsTheHistory() {
+    @Test fun aMovedHomeForgetsTheTrailAndPointsButKeepsTheHistory() {
         journal.observeHome(ned(0.0, 0.0, 0.0))
         journal.takeoffCompleted(ned(0.0, 0.0))
         journal.markPoint(1, ned(2.0, 2.0))
@@ -135,7 +135,7 @@ class FlightJournalTest {
 
     @Test fun aRestoredMemoryWithoutAHomeKeepsOnlyItsHistory() {
         val saved = MemoryState(trail = listOf(Waypoint(ned(1.0, 1.0), "a", 0)),
-            points = mapOf(1 to Waypoint(ned(2.0, 2.0), "Spot 1", 0)),
+            points = mapOf(1 to Waypoint(ned(2.0, 2.0), "Point 1", 0)),
             history = listOf(CommandRecord(4, 4, 0, "land", emptyMap(), "Land", "typed", "COMPLETED")), nextId = 5)
         val restored = FlightJournal(RecordingStore(saved)).state
         assertTrue(restored.trail.isEmpty() && restored.points.isEmpty())

@@ -357,7 +357,7 @@ class FakeSessionApi implements SessionApi {
     return AwaitingConfirmation(token, 15000, plan.toString());
   }
 
-  /// Like the service: the trail, spots and plans go; home stays known.
+  /// Like the service: the trail, points and plans go; home stays known.
   @override
   Future<void> clearMemory() async {
     calls.add(('clearMemory', null));

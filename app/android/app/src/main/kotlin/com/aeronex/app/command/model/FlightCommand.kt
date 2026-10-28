@@ -17,7 +17,7 @@ class FlightCommand private constructor(val name: String, arguments: Map<String,
     val direction: String? get() = arguments[DIRECTION] as? String
     val distanceM: Double? get() = (arguments[DISTANCE] as? Number)?.toDouble()
 
-    /** The saved spot (1–9) of [GOTO_POINT] and [MARK_POINT]. */
+    /** The saved point (1–9) of [GOTO_POINT] and [MARK_POINT]. */
     val point: Int? get() = (arguments[POINT] as? Number)?.toInt()
 
     /** A flight-memory step that flies to a remembered position ([MEMORY_MOTION]). */
@@ -37,8 +37,8 @@ class FlightCommand private constructor(val name: String, arguments: Map<String,
             RETURN_HOME -> "Return home"
             GO_BACK -> "Go back to the previous position"
             RETRACE -> "Retrace the flown path"
-            GOTO_POINT -> "Go to spot $point"
-            MARK_POINT -> "Mark spot $point"
+            GOTO_POINT -> "Go to point $point"
+            MARK_POINT -> "Mark point $point"
             else -> toString()
         }
 
@@ -86,8 +86,8 @@ class FlightCommand private constructor(val name: String, arguments: Map<String,
                 STATUS, LAND, HOLD, RETURN_HOME, GO_BACK, RETRACE ->
                     if (args.isNotEmpty()) throw CommandFormatException("This tool accepts no arguments.")
                 GOTO_POINT, MARK_POINT ->
-                    if (!args.hasKeys(setOf(POINT)) || !spot(args[POINT])) {
-                        throw CommandFormatException("Specify a spot number 1–$MAX_POINT.")
+                    if (!args.hasKeys(setOf(POINT)) || !pointNumber(args[POINT])) {
+                        throw CommandFormatException("Specify a point number 1–$MAX_POINT.")
                     }
                 TAKEOFF ->
                     if (!args.hasKeys(setOf(ALTITUDE)) || !number(args[ALTITUDE], minimum = 1.0)) {
@@ -110,8 +110,8 @@ class FlightCommand private constructor(val name: String, arguments: Map<String,
 
         private fun Map<*, *>.hasKeys(keys: Set<String>) = size == keys.size && keys.all { containsKey(it) }
 
-        /** A whole spot number 1–[MAX_POINT]. */
-        private fun spot(value: Any?): Boolean {
+        /** A whole point number 1–[MAX_POINT]. */
+        private fun pointNumber(value: Any?): Boolean {
             if (value !is Number) return false
             val v = value.toDouble()
             return v.isFinite() && v % 1.0 == 0.0 && v >= 1 && v <= MAX_POINT

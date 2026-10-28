@@ -22,7 +22,7 @@ enum _Menu { linkSetup, models, diagnostics, licenses }
 
 /// Home: the vehicle line, the plan waiting for CONFIRM (or running), the
 /// ways to give a command (push-to-talk, typing, the tap pad) and the flight
-/// memory (return home, go back, retrace, spots, run again). The giant STOP
+/// memory (return home, go back, retrace, points, run again). The giant STOP
 /// sits above it, and above every other route, in the app's [StopLane]. The
 /// flight session service listens, parses, decides and executes everything;
 /// this screen sends push-to-talk edges, typed text and tap-pad plans, and
@@ -323,14 +323,14 @@ class _FlightScreenState extends State<FlightScreen> with WidgetsBindingObserver
   void _runAgain(MemoryPlan plan) =>
       _locked(() => _sent(() => widget.session.runAgain(plan.planId)));
 
-  /// Forgetting the flown path and spots cannot be undone: it asks first.
+  /// Forgetting the flown path and points cannot be undone: it asks first.
   Future<void> _clearMemory() async {
     final sure = await showDialog<bool>(
         context: context,
         builder: (context) => AlertDialog(
               key: const Key('clearMemoryConfirm'),
               title: const Text('Clear the flight memory?'),
-              content: const Text('The flown path, the saved spots and the recent commands are '
+              content: const Text('The flown path, the saved points and the recent commands are '
                   'forgotten. Return home still works.'),
               actions: [
                 TextButton(

@@ -267,7 +267,7 @@ class SessionController(
         return SessionSchema.submitted(await(supervisor.submit(plan, PlanSource.TAP)), clock())
     }
 
-    /** Forgets the flown path, the spots and the recorded plans; home stays known. */
+    /** Forgets the flown path, the points and the recorded plans; home stays known. */
     fun clearMemory() {
         journal.clear()
         notifyChanged()

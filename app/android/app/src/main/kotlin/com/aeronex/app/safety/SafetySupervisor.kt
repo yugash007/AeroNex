@@ -67,7 +67,7 @@ import java.util.concurrent.atomic.AtomicBoolean
  *   flight counts as a move.
  * - Flight memory (spec 2026-10-28): the [journal] follows every step telemetry confirmed (where a takeoff, move or
  *   flight-memory flight ended) and records every finished plan. A flight-memory flight is resolved from it when the
- *   step starts, after the remaining steps were validated against it. "Mark spot n" alone is saved at once, like
+ *   step starts, after the remaining steps were validated against it. "Mark point n" alone is saved at once, like
  *   status; inside a plan it is saved when its turn comes. The AI path never uses the flight memory.
  *
  * Wire it as: `store.accept` for link frames (the supervisor listens to the store itself), [onLinkState] for link
@@ -341,7 +341,7 @@ class SafetySupervisor(
         return outcome
     }
 
-    /** "Mark spot n" alone: saved at once, like status, since it only reads telemetry (spec 2026-10-28 M4). */
+    /** "Mark point n" alone: saved at once, like status, since it only reads telemetry (spec 2026-10-28 M4). */
     private fun markNow(step: PlanStep, vehicle: VehicleState, from: PlanSource): StepOutcome {
         val id = ++nextId
         val outcome = if (!execution || link == null) StepOutcome.dryRun(step) else mark(step, vehicle)
@@ -352,7 +352,7 @@ class SafetySupervisor(
         return outcome
     }
 
-    /** Saves the vehicle's position as the step's spot: only a fresh, EKF-backed position with home known. */
+    /** Saves the vehicle's position as the step's point: only a fresh, EKF-backed position with home known. */
     private fun mark(step: PlanStep, vehicle: VehicleState): StepOutcome {
         val position = vehicle.position?.takeIf { vehicle.connected && vehicle.fresh(LocalPositionNed.messageId) }
             ?: return StepOutcome.rejected(step, ArduPilotExecutor.STALE)
@@ -362,7 +362,7 @@ class SafetySupervisor(
         val point = step.command.point!!
         journal.markPoint(point, position)
         val altitude = vehicle.altitudeRelM?.takeIf { vehicle.fresh(GlobalPositionInt.messageId) }
-        val detail = "spot $point saved, ${metres(position.horizontalDistanceTo(home))} m from home" +
+        val detail = "point $point saved, ${metres(position.horizontalDistanceTo(home))} m from home" +
             (altitude?.let { ", ${metres(it)} m up" } ?: "")
         return StepOutcome.completed(step, detail)
     }
@@ -786,7 +786,7 @@ class SafetySupervisor(
         /** Spec 2026-10-28 M5: flights to remembered positions come only from the rules or the tap pad. */
         const val AI_NO_MEMORY = "The AI never uses the flight memory: say \"return home\", \"go back\" or " +
             "\"retrace\" yourself, or use the flight memory card."
-        const val MARK_NEEDS_HOME = "Home position is unknown. Wait for GPS home before saving a spot."
+        const val MARK_NEEDS_HOME = "Home position is unknown. Wait for GPS home before saving a point."
         const val READINESS_CHANGED = "The vehicle state changed. Say the command again."
         const val EXECUTION_CHANGED = "Execution mode changed. Say the command again."
         const val LINK_LOST = "Link lost. Say the command again."

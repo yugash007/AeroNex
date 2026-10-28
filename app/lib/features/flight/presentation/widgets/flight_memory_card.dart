@@ -14,10 +14,10 @@ FlightCommand _call(String name, [Map<String, Object> arguments = const {}]) =>
     ]);
 
 /// The flight memory (2026-10-28): the path flown in this flight on a small
-/// map, the saved spots and the recent plans. Every button sends the tool
+/// map, the saved points and the recent plans. Every button sends the tool
 /// call the matching voice command makes ("return home", "go back",
-/// "retrace", "go to spot n", "mark spot n"); the service resolves it from
-/// its own memory, validates it and shows it for CONFIRM (a spot is saved at
+/// "retrace", "go to point n", "mark point n"); the service resolves it from
+/// its own memory, validates it and shows it for CONFIRM (a point is saved at
 /// once). "Run again" shows a recorded plan again, also for CONFIRM.
 class FlightMemoryCard extends StatelessWidget {
   const FlightMemoryCard({
@@ -42,8 +42,8 @@ class FlightMemoryCard extends StatelessWidget {
     final theme = Theme.of(context);
     final memory = this.memory;
     final goBackTo = memory.goBackTo;
-    final mark = memory.nextFreeSpot;
-    final hasMap = memory.trail.isNotEmpty || memory.spots.isNotEmpty || memory.vehicle != null;
+    final mark = memory.nextFreePoint;
+    final hasMap = memory.trail.isNotEmpty || memory.points.isNotEmpty || memory.vehicle != null;
     return Card(
       key: const Key('flightMemory'),
       child: Padding(
@@ -67,7 +67,7 @@ class FlightMemoryCard extends StatelessWidget {
           if (hasMap)
             Semantics(
               label: 'Map of this flight: ${memory.trail.length} positions flown, '
-                  '${memory.spots.length} spots saved',
+                  '${memory.points.length} points saved',
               child: SizedBox(
                 key: const Key('memoryMap'),
                 height: 160,
@@ -100,17 +100,17 @@ class FlightMemoryCard extends StatelessWidget {
                     ? () => onCommand(_call('mark_point', {'point': mark}))
                     : null,
                 icon: const Icon(Icons.add_location_alt_outlined),
-                label: Text('Mark spot $mark')),
+                label: Text('Mark point $mark')),
           ]),
-          if (memory.spots.isNotEmpty) ...[
+          if (memory.points.isNotEmpty) ...[
             const SizedBox(height: 8),
             Wrap(spacing: 8, runSpacing: 4, children: [
-              for (final spot in memory.spots)
+              for (final point in memory.points)
                 ActionChip(
-                  key: Key('memorySpot${spot.point}'),
-                  avatar: CircleAvatar(child: Text('${spot.point}')),
-                  label: Text('Go to spot ${spot.point}${_distance(spot.place)}'),
-                  onPressed: enabled ? () => onCommand(_call('goto_point', {'point': spot.point})) : null,
+                  key: Key('memoryPoint${point.point}'),
+                  avatar: CircleAvatar(child: Text('${point.point}')),
+                  label: Text('Go to point ${point.point}${_distance(point.place)}'),
+                  onPressed: enabled ? () => onCommand(_call('goto_point', {'point': point.point})) : null,
                 ),
             ]),
           ],
@@ -121,7 +121,7 @@ class FlightMemoryCard extends StatelessWidget {
               _PlanRow(plan: plan, enabled: enabled, onRunAgain: () => onRunAgain(plan)),
           ],
           if (memory.isEmpty && memory.vehicle == null)
-            const Text('Fly a command and the path, your saved spots and the commands you gave appear '
+            const Text('Fly a command and the path, your saved points and the commands you gave appear '
                 'here. Say "return home", "go back" or "retrace" to fly back.'),
         ]),
       ),
@@ -186,7 +186,7 @@ class MemoryMapColors {
   const MemoryMapColors({
     required this.path,
     required this.home,
-    required this.spot,
+    required this.point,
     required this.vehicle,
     required this.grid,
     required this.label,
@@ -197,18 +197,18 @@ class MemoryMapColors {
     return MemoryMapColors(
       path: scheme.primary,
       home: scheme.secondary,
-      spot: scheme.tertiary,
+      point: scheme.tertiary,
       vehicle: scheme.error,
       grid: scheme.outlineVariant,
       label: scheme.onSurface,
     );
   }
 
-  final Color path, home, spot, vehicle, grid, label;
+  final Color path, home, point, vehicle, grid, label;
 }
 
 /// North up, east right, scaled to fit: home, the flown path (oldest to
-/// newest), the saved spots and the vehicle. At least [minSpanM] across, so a
+/// newest), the saved points and the vehicle. At least [minSpanM] across, so a
 /// short flight is not drawn as if it were large.
 class MemoryMapPainter extends CustomPainter {
   MemoryMapPainter(this.memory, this.colors);
@@ -228,7 +228,7 @@ class MemoryMapPainter extends CustomPainter {
     final points = <Offset>[
       if (memory.homeKnown) Offset.zero,
       ...trail,
-      for (final s in memory.spots)
+      for (final s in memory.points)
         if (_offset(s.place) case final offset?) offset,
       if (vehicle != null) vehicle,
     ];
@@ -267,11 +267,11 @@ class MemoryMapPainter extends CustomPainter {
       canvas.drawRect(Rect.fromCenter(center: home, width: 12, height: 12), Paint()..color = colors.home);
       _text(canvas, 'H', home + const Offset(0, -14));
     }
-    for (final spot in memory.spots) {
-      final offset = _offset(spot.place);
+    for (final point in memory.points) {
+      final offset = _offset(point.place);
       if (offset == null) continue;
-      canvas.drawCircle(at(offset), 8, Paint()..color = colors.spot);
-      _text(canvas, '${spot.point}', at(offset), color: Colors.white);
+      canvas.drawCircle(at(offset), 8, Paint()..color = colors.point);
+      _text(canvas, '${point.point}', at(offset), color: Colors.white);
     }
     if (vehicle != null) {
       final centre = at(vehicle);

@@ -171,15 +171,15 @@ data class PlanRequest(val plan: FlightPlan, val source: PlanSource, val utteran
  *   - `homeKnown` (bool): the memory has the home its places belong to.
  *   - `vehicle` (place?): where the vehicle is now; null without a fresh position.
  *   - `trail` (list): the path flown in this flight, oldest first (the first is where the takeoff ended): places with
- *     `label` (string), e.g. "Takeoff", "Move forward 4 m", "Home", "Spot 2", "Start".
- *   - `spots` (list): the saved spots by number: places with `point` (int, 1–9), `label` and `atWallMs` (int, epoch
+ *     `label` (string), e.g. "Takeoff", "Move forward 4 m", "Home", "Point 2", "Start".
+ *   - `points` (list): the saved points by number: places with `point` (int, 1–9), `label` and `atWallMs` (int, epoch
  *     ms, when it was saved).
  *   - `goBackTo` (string?): the trail label "go back" would fly to now; null when there is nothing to go back to.
  *   - `canRetrace` (bool): "retrace" has a flown path to fly back along now.
  *   - `plans` (list): the newest finished plans (at most [PLANS]), newest first: `{planId (int), atWallMs (int),
  *     source (string), steps: [{name, arguments, description, outcome (StepStatus name)}]}`; `runAgain(planId)`
  *     shows one again.
- *   - `notice` (string?): why the trail and spots were last forgotten (home moved).
+ *   - `notice` (string?): why the trail and points were last forgotten (home moved).
  *
  * ## Requests and answers (MethodChannel `aeronex/session`)
  * - `connect({transport, host, remotePort, localPort, radioLink})` → snapshot; errors as PlatformException
@@ -192,7 +192,7 @@ data class PlanRequest(val plan: FlightPlan, val source: PlanSource, val utteran
  * - `submitText({text, language, source?})` → as `submitPlan`, or `{thinking: true, request}` when the AI took it.
  * - `confirm(token)` → `{accepted: true}` or `{accepted: false, error}`.
  * - `runAgain({planId} | planId)` → as `submitPlan`: a plan from `memory.plans`, validated again (Tap source).
- * - `clearMemory` → null: forgets the trail, the spots and the plans (home stays known).
+ * - `clearMemory` → null: forgets the trail, the points and the plans (home stays known).
  */
 object SessionSchema {
     const val VERSION = 1
@@ -428,10 +428,10 @@ object SessionSchema {
             "trail" to memory.trail.map { waypoint ->
                 linkedMapOf<String, Any?>("label" to waypoint.label).apply { putAll(place(waypoint.position)) }
             },
-            "spots" to memory.points.toSortedMap().map { (point, spot) ->
-                linkedMapOf<String, Any?>("point" to point, "label" to spot.label).apply {
-                    putAll(place(spot.position))
-                    put("atWallMs", spot.atWallMs)
+            "points" to memory.points.toSortedMap().map { (number, saved) ->
+                linkedMapOf<String, Any?>("point" to number, "label" to saved.label).apply {
+                    putAll(place(saved.position))
+                    put("atWallMs", saved.atWallMs)
                 }
             },
             "goBackTo" to route(FlightCommand.GO_BACK)?.label,
