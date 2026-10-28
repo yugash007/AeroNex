@@ -277,6 +277,7 @@ class LinkSession(
     private fun receiveLoop() {
         val buffer = ByteArray(RX_BUFFER_BYTES)
         val datagrams = transport.kind == TransportKind.UDP
+        var connection = transport.connections
         try {
             while (running) {
                 val count = transport.read(buffer, RX_POLL_MS)
@@ -284,6 +285,10 @@ class LinkSession(
                 val now = clock.asLong
                 if (count > 0) {
                     rxBytes += count
+                    if (transport.connections != connection) {
+                        connection = transport.connections
+                        parser.reset() // the old connection's half frame must not swallow the new one's first frames
+                    }
                     val frames = parser.parse(buffer, 0, count)
                     if (datagrams) parser.reset() // a partial frame never waits for the next datagram
                     badCrc = parser.badCrc

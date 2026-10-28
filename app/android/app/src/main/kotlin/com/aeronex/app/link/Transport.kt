@@ -24,6 +24,13 @@ interface Transport {
     /** Reads into [buffer]: the byte count, 0 if nothing was accepted within about [timeoutMs], -1 once closed. */
     fun read(buffer: ByteArray, timeoutMs: Int): Int
 
+    /**
+     * For a transport that reconnects by itself ([TcpTransport]): how many connections it has made so far. Bytes
+     * from two connections never belong to one frame, so the link drops a half frame when this changes. Read on the
+     * RX thread after [read], it counts the connection the bytes just read came from. 0 for the other transports.
+     */
+    val connections: Long get() = 0
+
     /** Idempotent. */
     fun close()
 }

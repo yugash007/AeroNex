@@ -4,6 +4,7 @@ import com.aeronex.app.link.mavlink.MavlinkEncoder
 import com.aeronex.app.link.mavlink.MavlinkParser
 import com.aeronex.app.link.mavlink.ParamRequestRead
 import com.aeronex.app.link.mavlink.SetupSigning
+import com.aeronex.app.link.mavlink.StatusText
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
@@ -45,7 +46,25 @@ class LinkSessionTcpTest {
         waitFor("link up again") { listener.states == listOf(true, false, true) }
         waitFor("profile re-requested on the new connection") { profileRequests() == wifi }
         waitFor("home re-requested") { vehicle.commands(512).any { it.param1 == 242f } }
-        assertEquals(2L, transport.connects)
+        assertEquals(2L, transport.connections)
+    }
+
+    @Test fun aNewConnectionDropsTheHalfFrameTheOldOneEndedWith() {
+        // Audit L9: kept, the old connection's 30 bytes would wait for the 63-byte frame they began, take the new
+        // connection's first HEARTBEATs into it and fail its CRC.
+        vehicle.heartbeats = false
+        link.start()
+        val half = MavlinkEncoder(1, 1).encode(StatusText(4, "x".repeat(50))).copyOf(30)
+        waitFor("half a frame sent") { vehicle.writeRaw(half) }
+        waitFor("half a frame read") { link.stats.rxBytes == 30L }
+        vehicle.dropConnection()
+        waitFor("redialled") { vehicle.accepted.get() == 2 }
+
+        vehicle.heartbeats = true
+        waitFor("link up on the new connection") { listener.states == listOf(true) }
+        assertEquals(0L, link.stats.badCrc)
+        assertEquals(0L, link.stats.unknownMessages)
+        assertEquals(2L, transport.connections)
     }
 
     @Test fun setupSigningIsNeverSentOverTcp() {
