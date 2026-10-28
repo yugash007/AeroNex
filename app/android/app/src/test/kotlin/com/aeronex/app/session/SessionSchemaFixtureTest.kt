@@ -5,6 +5,9 @@ import com.aeronex.app.command.model.FlightPlan
 import com.aeronex.app.command.model.PlanStep
 import com.aeronex.app.command.model.StepSource
 import com.aeronex.app.link.mavlink.StatusText
+import com.aeronex.app.memory.CommandRecord
+import com.aeronex.app.memory.MemoryState
+import com.aeronex.app.memory.Waypoint
 import com.aeronex.app.observability.LatencySummary
 import com.aeronex.app.safety.MiniJson
 import com.aeronex.app.safety.PendingPlan
@@ -42,7 +45,7 @@ class SessionSchemaFixtureTest {
         private val update = System.getenv("AERONEX_UPDATE_FIXTURES") == "1" || System.getProperty("aeronex.updateFixtures") == "1"
         private const val AT_MS = 120_000L
         val NAMES = listOf("idle_disconnected", "connected_landed", "pending_plan", "executing_move", "stop_not_confirmed",
-            "ptt_listening", "voice_unavailable", "ai_plan", "ai_thinking")
+            "ptt_listening", "voice_unavailable", "ai_plan", "ai_thinking", "flight_memory")
 
         /** app/test/fixtures/session, found from the Gradle test working directory (app/android/app) upwards. */
         fun fixtureDir(): File {
@@ -210,6 +213,34 @@ class SessionSchemaFixtureTest {
         ai = AiStatus(true, null, AiState.THINKING, 3, heard = "go up a bit higher, by two and a half metres", gloss = null,
             understoodAs = null, error = null),
     ))
+
+    /** 2026-10-28: the flight memory after "take off", "forward 4, right 3" and "mark spot 1" at the first corner. */
+    @Test fun flightMemory() {
+        val wall = 1_761_650_000_000L
+        val takeoff = mapOf<String, Any>(FlightCommand.ALTITUDE to 3)
+        val memory = MemoryState(
+            home = Ned(0.0, 0.0, 0.0),
+            trail = listOf(Waypoint(Ned(0.0, 0.0, -2.71), "Takeoff", wall + 9_000),
+                Waypoint(Ned(4.02, -0.03, -3.0), "Move forward 4 m", wall + 31_000),
+                Waypoint(Ned(4.0, 2.97, -3.01), "Move right 3 m", wall + 34_000)),
+            points = mapOf(1 to Waypoint(Ned(4.02, -0.03, -3.0), "Spot 1", wall + 32_500)),
+            history = listOf(
+                CommandRecord(1, 1, wall + 9_000, FlightCommand.TAKEOFF, takeoff, "Take off to 3 m", "phone", "COMPLETED"),
+                CommandRecord(2, 2, wall + 31_000, FlightCommand.MOVE, move("forward", 4).command.arguments,
+                    "Move forward 4 m", "phone", "COMPLETED"),
+                CommandRecord(3, 3, wall + 32_500, FlightCommand.MARK_POINT, mapOf(FlightCommand.POINT to 1),
+                    "Mark spot 1", "tap", "COMPLETED"),
+                CommandRecord(4, 4, wall + 34_000, FlightCommand.MOVE, move("right", 3).command.arguments,
+                    "Move right 3 m", "typed", "COMPLETED"),
+            ),
+            nextId = 5,
+        )
+        check("flight_memory", SessionSchema.snapshot(
+            seq = 512, atMs = AT_MS, link = wifiUp, supervisor = SupervisorState(linked = true, execution = true),
+            vehicle = hovering.copy(position = Ned(4.0, 2.97, -3.01), altitudeRelM = 3.01),
+            latency = latency(), speech = voiceReady.copy(spotterArmed = true, utterance = 9), memory = memory,
+        ))
+    }
 
     @Test fun theFixtureDirectoryHoldsExactlyTheseValidJsonSnapshots() {
         if (update) return

@@ -38,7 +38,7 @@ class FlightCommand private constructor(val name: String, arguments: Map<String,
             GO_BACK -> "Go back to the previous position"
             RETRACE -> "Retrace the flown path"
             GOTO_POINT -> "Go to spot $point"
-            MARK_POINT -> "Mark this spot as $point"
+            MARK_POINT -> "Mark spot $point"
             else -> toString()
         }
 

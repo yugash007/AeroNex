@@ -22,6 +22,7 @@ import com.aeronex.app.session.SessionSchema.wire
  * - `setLanguage({language} | language)` → `{language: code}`: the speech language (saved; reloads the engines).
  * - `flightScreen({visible} | bool)` → null: whether the Flight screen is in front (Volume-Up is PTT only then).
  * - `microphonePermission({ask})` and `notificationPermission({ask})`: answered by the activity ([SessionChannel]).
+ * - Flight memory (2026-10-28): `runAgain({planId} | planId)` → as `submitPlan`; `clearMemory` → null.
  * - 0.4.0 AI: `cancelAi` → null (the "Thinking…" Cancel). `aiModels` → `{available, reason, models: [{id, file, bytes,
  *   state, importPath}], transfer?, error?}`; `downloadAiModel({id})`, `importAiModel({id})` → `{started: true}` (the
  *   progress and outcome show in `aiModels`); `cancelAiModel` → null; `removeAiModel({id})` → `{removed}`.
@@ -56,6 +57,9 @@ class SessionApi(private val controller: SessionController) {
                     ?: throw bad("flightScreen needs true or false.")
             }
             "getSnapshot" -> Reply.Ok(controller.snapshot())
+            "runAgain" -> Reply.Ok(controller.runAgain((argument(arguments, "planId") as? Number)?.toLong()
+                ?: throw bad("runAgain needs the plan id.")))
+            "clearMemory" -> done { controller.clearMemory() }
             "cancelAi" -> done { controller.cancelAi() }
             "aiModels" -> Reply.Ok(controller.aiModels())
             "downloadAiModel" -> started { controller.downloadAiModel(modelId(arguments)) }

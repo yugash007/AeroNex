@@ -12,6 +12,8 @@ import com.aeronex.app.ai.NativeAiEngine
 import com.aeronex.app.ai.NeedleToolCaller
 import com.aeronex.app.link.TcpTransport
 import com.aeronex.app.link.UdpTransport
+import com.aeronex.app.memory.FileJournalStore
+import com.aeronex.app.memory.FlightJournal
 import com.aeronex.app.speech.DeviceFacts
 import com.aeronex.app.speech.EnginePolicy
 import java.io.File
@@ -52,6 +54,8 @@ object SessionHub {
                 speechThreadSetup = AndroidVoiceEngines::speechThreadSetup,
             ),
             ai = phoneAi(context),
+            // The flight memory survives an app or service restart (spec 2026-10-28 M1).
+            journal = FlightJournal(FileJournalStore(File(context.filesDir, MEMORY_FILE))),
         ).also { controller ->
             // Push-to-talk with voice off: the (running) service adds the microphone type and starts voice.
             controller.microphoneNeeded = { FlightSessionService.addMicrophone(context) }
@@ -84,6 +88,7 @@ object SessionHub {
 
     private const val PREFERENCES = "aeronex_session"
     private const val LANGUAGE = "speechLanguage"
+    private const val MEMORY_FILE = "flight_memory.json"
 
     private fun transport(config: SessionConfig, wifi: WifiNetworkBinder): TransportLease = when (config.type) {
         LinkType.UDP -> {

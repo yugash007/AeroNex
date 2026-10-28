@@ -114,7 +114,7 @@ class FlightCommandTest {
         assertEquals("Go back to the previous position", FlightCommand.of("go_back").description)
         assertEquals("Retrace the flown path", FlightCommand.of("retrace").description)
         assertEquals("Go to spot 3", FlightCommand.of("goto_point", mapOf("point" to 3)).description)
-        assertEquals("Mark this spot as 3", FlightCommand.of("mark_point", mapOf("point" to 3)).description)
+        assertEquals("Mark spot 3", FlightCommand.of("mark_point", mapOf("point" to 3)).description)
         assertEquals(FlightCommand.MEMORY_MOTION + "mark_point", FlightCommand.MEMORY)
     }
 }

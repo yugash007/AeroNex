@@ -1,0 +1,204 @@
+{
+  "schemaVersion": 1,
+  "seq": 512,
+  "atMs": 120000,
+  "link": {
+    "state": "up",
+    "transport": "udp",
+    "description": "UDP 192.168.0.5:14550 local *:14551",
+    "profile": "wifi",
+    "unsigned": true,
+    "heartbeatAgeMs": 310,
+    "txErrors": 0,
+    "droppedDatagrams": 0,
+    "foregroundService": true
+  },
+  "execution": {
+    "enabled": true
+  },
+  "vehicle": {
+    "connected": true,
+    "mode": 4,
+    "modeName": "GUIDED",
+    "armed": true,
+    "landedState": 2,
+    "landedStateName": "IN_AIR",
+    "modeOwner": "APP",
+    "modeOwnerLabel": null,
+    "altitudeRelM": 3.01,
+    "speed": 0.0,
+    "batteryPercent": 87,
+    "healthy": true,
+    "positionReady": true,
+    "homeKnown": true,
+    "homeDistanceM": 4.98,
+    "lastStatusText": null,
+    "ages": {
+      "heartbeat": 310,
+      "sysStatus": 420,
+      "attitude": 60,
+      "localPosition": 60,
+      "globalPosition": 60,
+      "extendedSysState": 180,
+      "ekfStatus": 520,
+      "home": 9800,
+      "positionTarget": null,
+      "statusText": null
+    }
+  },
+  "pending": null,
+  "run": null,
+  "stop": null,
+  "notice": null,
+  "latency": {
+    "pttUpToDrained": null,
+    "drainedToFinal": null,
+    "pttUpToFinal": null,
+    "finalToPlan": null,
+    "pttUpToPlan": null,
+    "confirmToFrame": null,
+    "confirmToTx": null,
+    "confirmToAck": null,
+    "confirmToMoveTx": null,
+    "moveTxToEcho": null,
+    "confirmToInAir": null,
+    "stopToTx": null,
+    "stopToAck": null,
+    "aiGloss": null,
+    "aiPlan": null,
+    "aiTools": null,
+    "aiTotal": null
+  },
+  "speech": {
+    "language": "en",
+    "state": "READY",
+    "level": "OK",
+    "reason": null,
+    "message": null,
+    "engine": "VOSK_GRAMMAR",
+    "spotter": "VOSK_STOP_GRAMMAR",
+    "nativeVoiceStop": true,
+    "partialStop": true,
+    "spotterArmed": true,
+    "pttHeld": false,
+    "utterance": 9,
+    "partial": null,
+    "heard": null,
+    "error": null
+  },
+  "ai": {
+    "available": false,
+    "reason": null,
+    "state": "IDLE",
+    "request": 0,
+    "heard": null,
+    "gloss": null,
+    "understoodAs": null,
+    "error": null
+  },
+  "memory": {
+    "homeKnown": true,
+    "vehicle": {
+      "northM": 4.0,
+      "eastM": 2.97,
+      "upM": 3.01
+    },
+    "trail": [
+      {
+        "label": "Takeoff",
+        "northM": 0.0,
+        "eastM": 0.0,
+        "upM": 2.71
+      },
+      {
+        "label": "Move forward 4 m",
+        "northM": 4.02,
+        "eastM": -0.03,
+        "upM": 3.0
+      },
+      {
+        "label": "Move right 3 m",
+        "northM": 4.0,
+        "eastM": 2.97,
+        "upM": 3.01
+      }
+    ],
+    "spots": [
+      {
+        "point": 1,
+        "label": "Spot 1",
+        "northM": 4.02,
+        "eastM": -0.03,
+        "upM": 3.0,
+        "atWallMs": 1761650032500
+      }
+    ],
+    "goBackTo": "Move forward 4 m",
+    "canRetrace": true,
+    "plans": [
+      {
+        "planId": 4,
+        "atWallMs": 1761650034000,
+        "source": "typed",
+        "steps": [
+          {
+            "name": "move_relative",
+            "arguments": {
+              "direction": "right",
+              "distance_m": 3
+            },
+            "description": "Move right 3 m",
+            "outcome": "COMPLETED"
+          }
+        ]
+      },
+      {
+        "planId": 3,
+        "atWallMs": 1761650032500,
+        "source": "tap",
+        "steps": [
+          {
+            "name": "mark_point",
+            "arguments": {
+              "point": 1
+            },
+            "description": "Mark spot 1",
+            "outcome": "COMPLETED"
+          }
+        ]
+      },
+      {
+        "planId": 2,
+        "atWallMs": 1761650031000,
+        "source": "phone",
+        "steps": [
+          {
+            "name": "move_relative",
+            "arguments": {
+              "direction": "forward",
+              "distance_m": 4
+            },
+            "description": "Move forward 4 m",
+            "outcome": "COMPLETED"
+          }
+        ]
+      },
+      {
+        "planId": 1,
+        "atWallMs": 1761650009000,
+        "source": "phone",
+        "steps": [
+          {
+            "name": "takeoff",
+            "arguments": {
+              "altitude_m": 3
+            },
+            "description": "Take off to 3 m",
+            "outcome": "COMPLETED"
+          }
+        ]
+      }
+    ],
+    "notice": null
+  }
+}
