@@ -99,4 +99,23 @@ class PttUtteranceTest {
         assertEquals(PttUtterance.Status.ENDED, utterance.poll())
         assertEquals("200 ms of pre-roll (all there was) + 60 ms", 3200L + 960, engine.heard)
     }
+
+    /** Audit S5: a press handled after its own moment left the ring is an overrun, never a decode of the remainder. */
+    @Test fun aPressWhoseMomentLeftTheRingIsAnOverrun() {
+        write(10, false)
+        val pressedAt = ring.writePosition
+        write(AudioRing().readableFrames + 20, true) // the speech thread was busy (a slow model load) meanwhile
+        utterance.press(pressedAt)
+        assertEquals(PttUtterance.Status.OVERRUN, utterance.poll())
+        assertEquals("nothing decoded", 0L, engine.heard)
+    }
+
+    @Test fun aPressStillInTheRingLosesAtMostItsPreRoll() {
+        write(10, false)
+        val pressedAt = ring.writePosition
+        utterance.press(pressedAt)
+        write(5, true)
+        assertEquals(PttUtterance.Status.LISTENING, utterance.poll())
+    }
+
 }

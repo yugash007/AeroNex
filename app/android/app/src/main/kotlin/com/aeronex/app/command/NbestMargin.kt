@@ -12,6 +12,10 @@ import com.aeronex.app.grammar.GrammarTables
  * alternative within the margin either parses to the same steps, or fails to parse without contradicting the top's
  * slots. An alternative within the margin that holds a negation, names another number or direction, or parses to
  * other steps rejects the utterance ("say again"): those are the W1 failures (negation dropped, 9 heard for 2).
+ *
+ * A top the rules reject keeps its own message, but only when no alternative within the margin is negated or names
+ * other numbers or directions: a "not understood" top goes on to the AI path (0.4.0), so "take off to three meters
+ * then step forward" must not be planned while "don't take off ..." scored just below it (audit S2).
  */
 object NbestMargin {
     /**
@@ -34,8 +38,10 @@ object NbestMargin {
         val top = ranked.firstOrNull()?.takeIf { DartText.trim(it.text).isNotEmpty() }
             ?: return ParseResult.Rejected(NOTHING_HEARD)
         val parsed = PlanParser.parse(top.text, language)
-        val best = parsed as? ParseResult.Accepted ?: return parsed
         val slots = Slots.of(top.text)
+        val best = parsed as? ParseResult.Accepted ?: return if (contradicted(ranked, top, slots, marginScore)) {
+            ParseResult.Rejected(UNSURE)
+        } else parsed
         for (other in ranked.drop(1)) {
             if (top.confidence - other.confidence > marginScore) break // sorted: the rest are further away
             if (TranscriptInspector.negated(other.text)) return ParseResult.Rejected(UNSURE)
@@ -46,6 +52,15 @@ object NbestMargin {
             if (!agrees) return ParseResult.Rejected(UNSURE)
         }
         return best
+    }
+
+    /** An alternative within the margin of a rejected top is negated or names other numbers or directions. */
+    private fun contradicted(ranked: List<Alternative>, top: Alternative, slots: Slots, marginScore: Double): Boolean {
+        for (other in ranked.drop(1)) {
+            if (top.confidence - other.confidence > marginScore) break
+            if (TranscriptInspector.negated(other.text) || !Slots.of(other.text).agreesWith(slots)) return true
+        }
+        return false
     }
 
     private fun sameSteps(a: FlightPlan, b: FlightPlan) = a.steps.size == b.steps.size &&

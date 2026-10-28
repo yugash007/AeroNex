@@ -27,12 +27,19 @@ class PttUtterance(
 
     private val chunk = ShortArray(AudioRing.FRAME_SAMPLES)
     private var position = NONE
+    /** The press moment had already left the ring when the press was handled. */
+    private var lostStart = false
     private var nextTailFrame = NONE
     private var end = TailEndpointer.NOT_YET
 
-    /** PTT down at capture position [at]. */
+    /**
+     * PTT down at capture position [at]. Pressed so long ago (a slow model load before the press was handled) that the
+     * moment itself left the ring: the start of what was said is gone, so the utterance is an [Status.OVERRUN] rather
+     * than a decode of its remainder, which could read as a shorter command (audit S5). The pre-roll alone may be cut.
+     */
     fun press(at: Long = ring.writePosition) {
         engine.begin()
+        lostStart = at < ring.oldestReadable()
         position = ring.preRollStart(at)
         nextTailFrame = NONE
         end = TailEndpointer.NOT_YET
@@ -48,6 +55,7 @@ class PttUtterance(
     /** Feeds everything captured since the last call, up to the tail end once it is known. */
     fun poll(): Status {
         check(position != NONE) { "press() first" }
+        if (lostStart) return Status.OVERRUN
         if (end != TailEndpointer.NOT_YET && position >= end) return Status.ENDED
         while (nextTailFrame != NONE && end == TailEndpointer.NOT_YET && nextTailFrame < ring.framesWritten) {
             val speech = ring.speechAt(nextTailFrame) ?: return Status.OVERRUN

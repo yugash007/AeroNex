@@ -55,6 +55,8 @@ class VoiceSession(
     private val speechThreadSetup: () -> Unit = {},
     private val saveLanguage: (String) -> Unit = {},
     private val parserWarmUp: (String) -> Unit = { PlanParser.parseText(WARM_UP_TEXT, it) },
+    /** How long [stop] waits for the speech thread (shorter in tests). */
+    private val joinMs: Long = JOIN_MS,
 ) : AutoCloseable {
     private sealed interface Command {
         data class Down(val id: Long, val at: Long?, val stops: Long) : Command
@@ -64,6 +66,8 @@ class VoiceSession(
 
     private inner class Run(val capture: AudioCapture) {
         @Volatile var active = true
+        /** The thread has run its last line ([handover] guards it). */
+        var finished = false
         val thread = Thread(::loop, "aeronex-speech").apply { isDaemon = true }
 
         private fun loop() {
@@ -76,15 +80,32 @@ class VoiceSession(
             try {
                 while (active) {
                     val seen = ring.framesWritten
-                    step(ring)
+                    try {
+                        step(ring)
+                    } catch (failure: Exception) {
+                        // A supervisor timeout, a malformed engine result, a JNI exception: this utterance is lost,
+                        // never the process (and with it the link, heartbeat and STOP lanes; audit S3).
+                        stepFailed(failure)
+                    }
                     if (active) ring.awaitFrames(seen + 1, WAIT_NANOS)
                 }
             } finally {
                 discard("voice stopped")
                 unload()
+                ended(this)
             }
         }
     }
+
+    /**
+     * A run whose thread outlived [stop]'s join (a model load or a decode longer than [JOIN_MS]): no new run starts
+     * until that thread has unloaded its engines, so two threads never share them (audit S1: a double close, or
+     * recognizers fed after they were freed). A [start] meanwhile is remembered and made by that thread on its way out.
+     * Guarded by [handover], never the session monitor, which [stop] holds while it joins.
+     */
+    private var ending: Run? = null
+    private var startWhenEnded = false
+    private val handover = Any()
 
     private val commands = ConcurrentLinkedQueue<Command>()
     private val ids = AtomicLong()
@@ -142,6 +163,12 @@ class VoiceSession(
     /** Opens the microphone and the speech thread (idempotent). A press still held is carried over. */
     @Synchronized fun start() {
         if (run != null) return
+        synchronized(handover) {
+            if (ending != null) {
+                startWhenEnded = true // the last run's thread starts this one once it has unloaded
+                return
+            }
+        }
         commands.clear()
         silenced = false
         captureFailed = false
@@ -157,12 +184,14 @@ class VoiceSession(
 
     /** Ends the utterance, closes the engines on the speech thread and the microphone. */
     @Synchronized fun stop() {
+        synchronized(handover) { startWhenEnded = false }
         val current = run ?: return
         run = null
         held = null
         current.active = false
-        current.thread.join(JOIN_MS)
+        current.thread.join(joinMs)
         current.capture.stop()
+        synchronized(handover) { if (!current.finished) ending = current }
         commands.clear()
         state = VoiceState.OFF
         partial = null
@@ -170,6 +199,30 @@ class VoiceSession(
     }
 
     override fun close() = stop()
+
+    /** The last line of a run's thread: a [start] that waited for it happens now. */
+    private fun ended(finished: Run) {
+        val restart = synchronized(handover) {
+            finished.finished = true
+            if (ending !== finished) return
+            ending = null
+            startWhenEnded.also { startWhenEnded = false }
+        }
+        if (restart) start()
+    }
+
+    /** A step threw: the utterance in progress is discarded and the operator told; the thread keeps running. */
+    private fun stepFailed(failure: Exception) {
+        trace.mark(STEP_FAILED, utteranceId, mapOf("error" to failure.javaClass.simpleName))
+        try {
+            discard("error")
+        } catch (_: Exception) {
+            utterance = null
+        }
+        error = ENGINE_ERROR
+        if (loaded != null) state = VoiceState.READY
+        sink.changed()
+    }
 
     /** The selected language ("te-IN" or "te", already checked); the engines reload on the speech thread. */
     fun setLanguage(language: String) {
@@ -395,6 +448,9 @@ class VoiceSession(
         sink.changed()
     }
 
+    /** The trace id of the newest press: an utterance whose id differs was replaced by it (audit S4). */
+    val latestPress: Long get() = TRACE_ID_BASE + ids.get()
+
     private fun finish(current: PttUtterance) {
         val id = utteranceId
         utterance = null
@@ -408,6 +464,14 @@ class VoiceSession(
         trace.mark(VoiceTrace.ASR_FINAL, id, mapOf("engine" to result.engine, "text" to result.text,
             "alternatives" to result.alternatives.size, "audioMs" to result.audioSamples / SAMPLES_PER_MS,
             "finishMs" to result.finishNanos / 1e6, "failure" to result.failure))
+        if (id != latestPress) {
+            // The operator pressed again while this was decoding: its plan, or its AI request, would turn up during
+            // or after the new command (audit S4). The new press owns the screen.
+            trace.mark(VoiceTrace.PTT_CANCELLED, id, mapOf("reason" to "new press"))
+            state = VoiceState.READY
+            sink.changed()
+            return
+        }
         heard = result.text.takeIf { it.isNotBlank() }
         partial = null
         val parsed = interpret(result)
@@ -417,15 +481,24 @@ class VoiceSession(
             parsed is ParseResult.Accepted -> 0
             else -> unsure
         }
-        error = when (parsed) {
-            // Only a transcript the rules did not understand may go to the AI path (0.4.0); it never blocks here.
-            is ParseResult.Rejected ->
-                if (result.text.isBlank()) parsed.message else sink.notUnderstood(result.text, parsed.message, utteranceStops)
-            is ParseResult.Accepted -> {
-                val answer = sink.submit(parsed.plan, result.text, id, utteranceStops)
-                if (answer["error"] == null) trace.mark(TracePoint.PLAN_VALIDATED, id) else trace.mark(VoiceTrace.PLAN_REJECTED, id)
-                answer["error"] as String?
+        // The text the margin judged (the highest score), not merely the first alternative (audit S2).
+        val text = judgedText(result)
+        error = try {
+            when (parsed) {
+                // Only a transcript the rules did not understand may go to the AI path (0.4.0); it never blocks here.
+                is ParseResult.Rejected ->
+                    if (text.isBlank() || parsed.message == NbestMargin.UNSURE) parsed.message
+                    else sink.notUnderstood(text, parsed.message, utteranceStops)
+                is ParseResult.Accepted -> {
+                    val answer = sink.submit(parsed.plan, text, id, utteranceStops)
+                    if (answer["error"] == null) trace.mark(TracePoint.PLAN_VALIDATED, id) else trace.mark(VoiceTrace.PLAN_REJECTED, id)
+                    answer["error"] as String?
+                }
             }
+        } catch (failure: Exception) {
+            // The supervisor did not answer in time, or refused the call: shown, never thrown (audit S3).
+            trace.mark(STEP_FAILED, id, mapOf("error" to failure.javaClass.simpleName))
+            failure.message ?: ENGINE_ERROR
         }
         state = VoiceState.READY
         sink.changed()
@@ -467,6 +540,7 @@ class VoiceSession(
         private const val REFRACTORY_FRAMES = 1_000L / AudioRing.FRAME_MS
         private const val NOT_WAITING = -1L
         const val CAPTURE_FAILED = "capture_failed"
+        const val STEP_FAILED = "speech_step_failed"
         const val OVERRUN = "Some of the audio was lost. Say the command again."
         const val NO_MODEL = "No speech model is loaded. Use the tap pad or typed commands."
         const val TOO_LONG = "The command was too long. Say it in under 10 seconds, or split it."
@@ -481,6 +555,15 @@ class VoiceSession(
         private const val SAMPLES_PER_MS = AudioRing.SAMPLE_RATE / 1000
 
         private fun code(language: String) = Normalizer.languageCode(language) ?: language
+
+        /** The alternative [interpret] judged: the highest Vosk score, else the first. */
+        internal fun judgedText(result: SpeechResult): String {
+            val alternatives = result.alternatives
+            if (result.engine != EngineKind.VOSK_GRAMMAR || alternatives.isEmpty() || alternatives.any { it.score == null }) {
+                return result.text
+            }
+            return alternatives.maxByOrNull { it.score!! }!!.text
+        }
 
         /** The final result → a plan or the reason there is none (no AI, spec 4.9). */
         fun interpret(result: SpeechResult): ParseResult {

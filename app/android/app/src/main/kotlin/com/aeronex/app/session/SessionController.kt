@@ -87,7 +87,12 @@ class SessionController(
 
     /** The Models screen's AI rows; null without AI models. */
     private val aiModelSetup: AiModelSetup? = ai?.models?.let { store ->
-        AiModelSetup(store, ai.importRoot, beforeRemove = { synchronized(stopOrder) { aiRouter?.release() } },
+        // The cancel is ordered against a racing AI delivery; the native unload runs outside the lock, so a STOP never
+        // waits for it (audit S8).
+        AiModelSetup(store, ai.importRoot, beforeRemove = {
+            synchronized(stopOrder) { aiRouter?.cancel("model removed") }
+            aiRouter?.release()
+        },
             changed = { aiRouter?.modelsChanged(); notifyChanged() })
     }
 
@@ -333,8 +338,10 @@ class SessionController(
         // A cold AI planner (idle unload, onTrimMemory) loads while the operator speaks.
         aiRouter?.prewarm()
         val voice = voice ?: return
+        // The new press is counted before the pending plan is dropped: a plan of an earlier utterance submitted after
+        // this point is refused ([submit]), one submitted before is dropped by the invalidation (audit S4).
+        synchronized(stopOrder) { voice.pttDown() }
         supervisor.invalidatePending(SafetySupervisor.CANCELLED)
-        voice.pttDown()
         if (!voice.running) microphoneNeeded()
     }
 
@@ -358,8 +365,12 @@ class SessionController(
 
     override fun submit(plan: FlightPlan, transcript: String, traceId: Long, stopsAtPress: Long): Map<String, Any?> {
         val submitted = synchronized(stopOrder) {
-            if (stopCount != stopsAtPress) null else supervisor.submit(plan, PlanSource.PHONE)
-        } ?: return linkedMapOf("error" to STOPPED_WHILE_SPEAKING)
+            when {
+                stopCount != stopsAtPress -> return linkedMapOf("error" to STOPPED_WHILE_SPEAKING)
+                voice != null && voice.latestPress != traceId -> return linkedMapOf("error" to NEWER_PRESS)
+                else -> supervisor.submit(plan, PlanSource.PHONE)
+            }
+        }
         trace.mark(PLAN_SUBMITTED, traceId, mapOf("utterance" to transcript, "source" to PlanSource.PHONE,
             "plan" to plan.toString()))
         return SessionSchema.submitted(await(submitted), clock())
@@ -476,6 +487,7 @@ class SessionController(
         const val ALREADY_CONNECTED = "Already connected. Disconnect first."
         const val BACKGROUNDED = "The app went to the background. Say the command again."
         const val STOPPED_WHILE_SPEAKING = "STOP was pressed: that command was discarded."
+        const val NEWER_PRESS = "A newer command replaced that one."
         private const val AI_NEW_INPUT = "new input"
         private const val AI_NEW_PRESS = "new press"
         private const val AI_STOPPED = "STOP"

@@ -30,8 +30,11 @@ class VoiceSessionTest {
         val plans = CopyOnWriteArrayList<Pair<String, String>>()
         val stopped = CopyOnWriteArrayList<StopTrigger>()
         @Volatile var answer: Map<String, Any?> = mapOf("token" to "t-1", "expiresInMs" to 15_000L, "summary" to "")
+        /** submit() throws this, when set (the supervisor did not answer). */
+        @Volatile var failure: Exception? = null
 
         override fun submit(plan: FlightPlan, transcript: String, traceId: Long, stopsAtPress: Long): Map<String, Any?> {
+            failure?.let { throw it }
             if (stops != stopsAtPress) return mapOf("error" to "stopped")
             plans += plan.toString() to transcript
             return answer
@@ -464,4 +467,98 @@ class VoiceSessionTest {
         assertEquals(VoiceReason.NO_MICROPHONE, voice.status().reason)
         assertEquals("en", voice.status().language)
     }
+
+    /** Audit S3: a supervisor that does not answer is an error on screen; the speech thread lives on. */
+    @Test fun aSupervisorFailureIsShownAndTheSpeechThreadLivesOn() {
+        start(alternative("take off to 3 m"))
+        sink.failure = SessionException(SessionController.INTERNAL, "The flight supervisor did not answer.")
+        say()
+        assertEquals("The flight supervisor did not answer.", outcome())
+        sink.failure = null
+        say()
+        waitFor("the next utterance still works") { sink.plans.isNotEmpty() }
+    }
+
+    /** Audit S3: an engine failure mid-utterance discards it; the next one works. */
+    @Test fun anEngineFailureMidUtteranceDiscardsItAndTheNextWorks() {
+        start(alternative("take off to 3 m"))
+        engines.engine.acceptFailure = IllegalStateException("native")
+        say()
+        assertEquals(VoiceSession.ENGINE_ERROR, outcome())
+        engines.engine.acceptFailure = null
+        say()
+        waitFor("the next utterance still works") { sink.plans.isNotEmpty() }
+    }
+
+    /** Audit S4: a press made while the last utterance decodes replaces it; the old one is never submitted. */
+    @Test fun anUtteranceReplacedByANewerPressIsNeverSubmitted() {
+        start(alternative("take off to 3 m"))
+        val decode = java.util.concurrent.CountDownLatch(1)
+        engines.engine.finishGate = decode
+        say()
+        waitFor("decoding") { voice.status().state == VoiceState.DECODING }
+        voice.pttDown() // the operator speaks again while the first one decodes
+        decode.countDown()
+        engines.engine.finishGate = null
+        captured { mic.speech(40) }
+        voice.pttUp()
+        captured { mic.silence(10) }
+        waitFor("the second utterance") { sink.plans.isNotEmpty() }
+        assertEquals("only the newer press", 1, sink.plans.size)
+        assertEquals(2, engines.engine.finishes.get())
+    }
+}
+
+class VoiceSessionRestartTest {
+    private class QuietSink : VoiceSink {
+        override val stops = 0L
+        override fun submit(plan: FlightPlan, transcript: String, traceId: Long, stopsAtPress: Long) = emptyMap<String, Any?>()
+        override fun voiceStop(trigger: StopTrigger) {}
+        override fun spotterArmed() = false
+        override fun onTheGround() = true
+        override fun changed() {}
+    }
+
+    /**
+     * Audit S1: a stop whose join gave up (a model load slower than it) and a start right after never run two speech
+     * threads over the same engines: the new one starts only once the old one has closed what it opened.
+     */
+    @Test fun aStartAfterAStopThatOutwaitedItsJoinWaitsForTheOldThread() {
+        val engines = ScriptedEngines()
+        val voice = VoiceSession(QueueCaptures(), engines, QuietSink(), Trace(), "en", joinMs = 100)
+        val load = java.util.concurrent.CountDownLatch(1)
+        engines.openGate = load
+        voice.start()
+        waitFor("loading") { engines.opening.get() == 1 }
+        voice.stop() // gives up after 100 ms: the thread is still inside open()
+        voice.start() // must wait for that thread
+        assertFalse(voice.running)
+        Thread.sleep(200)
+        assertEquals("no second thread meanwhile", 1, engines.mostOpening.get())
+        engines.openGate = null
+        load.countDown()
+        waitFor("the deferred start ran") { voice.running && voice.status().state == VoiceState.READY }
+        assertEquals("never two loads at once", 1, engines.mostOpening.get())
+        assertEquals(2, engines.opened.size)
+        assertTrue("the old thread closed what it opened", engines.engines.first().closedOn != null)
+        voice.stop()
+    }
+
+    /** A stop cancels a start that was waiting for the old thread. */
+    @Test fun aStopCancelsAWaitingStart() {
+        val engines = ScriptedEngines()
+        val voice = VoiceSession(QueueCaptures(), engines, QuietSink(), Trace(), "en", joinMs = 50)
+        val load = java.util.concurrent.CountDownLatch(1)
+        engines.openGate = load
+        voice.start()
+        waitFor("loading") { engines.opening.get() == 1 }
+        voice.stop()
+        voice.start()
+        voice.stop()
+        load.countDown()
+        Thread.sleep(300)
+        assertFalse(voice.running)
+        assertEquals(1, engines.opened.size)
+    }
+
 }

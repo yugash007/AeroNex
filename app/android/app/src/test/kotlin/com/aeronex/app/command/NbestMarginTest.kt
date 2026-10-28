@@ -166,4 +166,22 @@ class NbestMarginTest {
             error("$path not found above ${System.getProperty("user.dir")}")
         }
     }
+
+    /**
+     * Audit S2: a top the rules cannot read goes on to the AI, so the margin still guards it: a negated or
+     * contradicting alternative just below makes it "not clear" instead.
+     */
+    @Test fun aRejectedTopIsStillGuardedByTheMargin() {
+        val top = "take off to three meters then step forward two meters"
+        val alone = decide("en-IN", top to 140.0)
+        assertTrue(alone is ParseResult.Rejected && (alone as ParseResult.Rejected).message != NbestMargin.UNSURE)
+        rejected(decide("en-IN", top to 140.0, "don't take off to three meters then step forward two meters" to 139.7))
+        rejected(decide("en-IN", top to 140.0, "take off to nine meters then step forward two meters" to 138.0))
+        // Outside the margin, or naming the same slots: the top's own message stands.
+        val far = decide("en-IN", top to 140.0, "don't take off to three meters then step forward two meters" to 130.0)
+        assertEquals((alone as ParseResult.Rejected).message, (far as ParseResult.Rejected).message)
+        val same = decide("en-IN", top to 140.0, "take off to three meters then stepped forward two meters" to 139.0)
+        assertEquals(alone.message, (same as ParseResult.Rejected).message)
+    }
+
 }
