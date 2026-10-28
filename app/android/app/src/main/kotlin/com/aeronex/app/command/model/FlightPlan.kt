@@ -20,13 +20,16 @@ data class PlanStep(val command: FlightCommand, val source: StepSource, val clau
  * An ordered, structurally valid list of proposals, confirmed once as a whole.
  * Port of v0.2.0 `flight_plan.dart`: the constructor throws [CommandFormatException] with the same messages, in
  * the same order (empty, more than 5 steps, status on its own, takeoff first, land last, 1–10 m from the takeoff).
+ * A mission's steps (spec 2026-10-28, [com.aeronex.app.mission.Mission]) are one plan of up to [maxSteps].
  */
-class FlightPlan(steps: List<PlanStep>) {
+class FlightPlan(steps: List<PlanStep>, maxSteps: Int = MAX_STEPS) {
     val steps: List<PlanStep> = Collections.unmodifiableList(steps.toList())
 
     init {
         if (this.steps.isEmpty()) throw CommandFormatException("Say a command first.")
-        if (this.steps.size > MAX_STEPS) throw CommandFormatException("Say at most 5 steps at a time.")
+        if (this.steps.size > maxSteps) {
+            throw CommandFormatException(if (maxSteps == MAX_STEPS) "Say at most 5 steps at a time." else "A mission holds at most $maxSteps steps.")
+        }
         val names = this.steps.map { it.command.name }
         if (names.size > 1 && FlightCommand.STATUS in names) throw CommandFormatException("Ask for status on its own.")
         if (names.lastIndexOf(FlightCommand.TAKEOFF) > 0) {

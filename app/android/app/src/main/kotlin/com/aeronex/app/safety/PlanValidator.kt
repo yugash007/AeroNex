@@ -35,9 +35,17 @@ import kotlin.math.sin
  */
 class PlanValidator(val maxHomeDistanceM: Double = 30.0, val realHardwareProfile: Boolean = false) {
 
-    /** Builds the plan from [steps] and validates it: null when it may be shown, else the rejection message. */
-    fun validate(steps: List<PlanStep>, vehicle: VehicleState?, memory: MemoryState = MemoryState()): String? = try {
-        validate(FlightPlan(steps), vehicle, memory)
+    /**
+     * Builds the plan from [steps] (a mission's: up to [maxSteps]) and validates it: null when it may be shown, else
+     * the rejection message.
+     */
+    fun validate(
+        steps: List<PlanStep>,
+        vehicle: VehicleState?,
+        memory: MemoryState = MemoryState(),
+        maxSteps: Int = FlightPlan.MAX_STEPS,
+    ): String? = try {
+        validate(FlightPlan(steps, maxSteps), vehicle, memory)
     } catch (e: CommandFormatException) {
         e.message
     }
