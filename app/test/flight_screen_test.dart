@@ -1393,6 +1393,24 @@ void main() {
       await tester.pumpAndSettle();
       expect(session.argumentsOf('flightScreen').last, {'visible': true});
     });
+
+    testWidgets('a failed "in front" call is sent again until the service has '
+        'it (F15)', (tester) async {
+      final session = FakeSessionApi(fixture('connected_landed'))
+        ..flightScreenFailures = 2;
+      await launch(tester, session: session);
+      expect(session.argumentsOf('flightScreen'), [
+        {'visible': true}
+      ]);
+      await tester.pump(const Duration(seconds: 1));
+      await tester.pump(const Duration(seconds: 1));
+      expect(session.argumentsOf('flightScreen'), [
+        for (var i = 0; i < 3; i++) {'visible': true}
+      ]);
+      await tester.pump(const Duration(seconds: 5));
+      expect(session.argumentsOf('flightScreen'), hasLength(3),
+          reason: 'the third call went through: nothing more to send');
+    });
   });
 
   group('app shell', () {

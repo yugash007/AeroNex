@@ -58,6 +58,9 @@ class FakeSessionApi implements SessionApi {
   SessionSnapshot? connectResult;
   Object? connectError, stopError, submitError, snapshotError, acknowledgeError;
 
+  /// How many `setFlightScreenVisible` calls fail (recorded all the same).
+  int flightScreenFailures = 0;
+
   /// Pending `connect` until completed, to observe the connecting state.
   Completer<void>? connectGate;
 
@@ -216,8 +219,13 @@ class FakeSessionApi implements SessionApi {
   }
 
   @override
-  Future<void> setFlightScreenVisible(bool visible) async =>
-      calls.add(('flightScreen', {'visible': visible}));
+  Future<void> setFlightScreenVisible(bool visible) async {
+    calls.add(('flightScreen', {'visible': visible}));
+    if (flightScreenFailures > 0) {
+      flightScreenFailures--;
+      throw StateError('flight service not answering');
+    }
+  }
 
   @override
   Future<NotificationPermission> microphonePermission({bool ask = false}) async {

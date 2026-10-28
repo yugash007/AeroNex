@@ -105,6 +105,11 @@ class _FlightScreenState extends State<FlightScreen> with WidgetsBindingObserver
   /// Whether this screen is the route in front, as last told to the service.
   bool? _inFront;
 
+  /// Sends [_inFront] again after a failed `setFlightScreenVisible` (audit
+  /// F15): until the service knows, Volume-Up is push-to-talk in the wrong
+  /// place, or nowhere.
+  Timer? _inFrontRetry;
+
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
@@ -116,7 +121,19 @@ class _FlightScreenState extends State<FlightScreen> with WidgetsBindingObserver
   void _setInFront(bool inFront) {
     if (_inFront == inFront) return;
     _inFront = inFront;
-    widget.session.setFlightScreenVisible(inFront).catchError((Object _) {});
+    _sendInFront();
+  }
+
+  void _sendInFront() {
+    final inFront = _inFront;
+    _inFrontRetry?.cancel();
+    if (inFront == null) return;
+    widget.session.setFlightScreenVisible(inFront).catchError((Object _) {
+      // Only the latest state is sent again, and only while this screen is up.
+      if (mounted && _inFront == inFront) {
+        _inFrontRetry = Timer(const Duration(seconds: 1), _sendInFront);
+      }
+    });
   }
 
   @override
@@ -125,6 +142,7 @@ class _FlightScreenState extends State<FlightScreen> with WidgetsBindingObserver
     _snapshots?.cancel();
     _countdown?.cancel();
     _staleTimer?.cancel();
+    _inFrontRetry?.cancel();
     if (_inFront == true) {
       widget.session.setFlightScreenVisible(false).catchError((Object _) {});
     }
