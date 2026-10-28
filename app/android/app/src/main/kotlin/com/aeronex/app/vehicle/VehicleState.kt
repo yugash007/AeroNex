@@ -20,10 +20,15 @@ enum class ModeOwner { APP, EXTERNAL }
 enum class ExternalCause(val label: String) {
     AUTOPILOT_FAILSAFE("Autopilot failsafe"),
     PILOT_MODE("Pilot mode"),
+    /** The link stalled; the vehicle still shows the app's mode ([VehicleState.appModeAfterGap]). */
+    LINK_GAP("Link gap"),
 }
 
-/** A message and the store clock time it arrived at. */
-data class Received<out T>(val message: T, val atMs: Long)
+/**
+ * A message and the store clock time it arrived at. [heartbeats] is the vehicle HEARTBEAT count when it arrived
+ * (COMMAND_ACKs), so a mode ACK can be ordered against the heartbeats around it.
+ */
+data class Received<out T>(val message: T, val atMs: Long, val heartbeats: Long = 0)
 
 /**
  * An immutable snapshot of the target vehicle (sys/comp 1/1), taken at [atMs] on the store's monotonic clock.
@@ -42,6 +47,11 @@ data class VehicleState(
     val modeOwner: ModeOwner = ModeOwner.EXTERNAL,
     /** Set while connected and EXTERNAL. */
     val externalCause: ExternalCause? = null,
+    /**
+     * EXTERNAL only because of a heartbeat gap, the vehicle still in the app's mode: STOP sends without the override
+     * hold; new plans stay blocked until the app sets a mode again (audit L2).
+     */
+    val appModeAfterGap: Boolean = false,
     /** GLOBAL_POSITION_INT relative_alt, metres above home. */
     val altitudeRelM: Double? = null,
     /** LOCAL_POSITION_NED position. */
@@ -66,6 +76,11 @@ data class VehicleState(
     val ageMs: Map<Int, Long> = emptyMap(),
     /** Count of accepted messages per id; never reset, so "a later sample" comparisons survive a reset. */
     val samples: Map<Int, Long> = emptyMap(),
+    /**
+     * Per message id, how long it stays fresh when longer than [FRESH_MS]: a slow stream's interval allowance
+     * ([com.aeronex.app.link.TelemetryProfile.freshnessMs]). Empty means [FRESH_MS] for every message.
+     */
+    val freshMs: Map<Int, Long> = emptyMap(),
 ) {
     val heartbeatAgeMs: Long? get() = ageMs[Heartbeat.messageId]
     val connected: Boolean get() = fresh(Heartbeat.messageId)
@@ -78,7 +93,8 @@ data class VehicleState(
         get() = fresh(EkfStatusReport.messageId) &&
             ekfFlags.let { it != null && (it and 51) == 51 && (it and (128 or 1024)) == 0 }
 
-    fun fresh(messageId: Int): Boolean = ageMs[messageId].let { it != null && it >= 0 && it < FRESH_MS }
+    fun fresh(messageId: Int): Boolean =
+        ageMs[messageId].let { it != null && it >= 0 && it < (freshMs[messageId] ?: FRESH_MS) }
 
     companion object {
         const val FRESH_MS = 3000L

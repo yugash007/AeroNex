@@ -5,6 +5,7 @@ import com.aeronex.app.link.mavlink.StatusText
 import com.aeronex.app.vehicle.Received
 import com.aeronex.app.vehicle.VehicleState
 import com.aeronex.app.vehicle.VehicleStateStore
+import java.util.IdentityHashMap
 import java.util.concurrent.ConcurrentLinkedQueue
 
 /**
@@ -16,12 +17,14 @@ import java.util.concurrent.ConcurrentLinkedQueue
 class VehicleEvents {
     private var lastAcks: Map<Int, Received<CommandAck>> = emptyMap()
     private var lastText: Received<StatusText>? = null
-    private val acks = ConcurrentLinkedQueue<CommandAck>()
+    private val acks = ConcurrentLinkedQueue<Received<CommandAck>>()
     private val texts = ConcurrentLinkedQueue<StatusText>()
+    /** The heartbeat count at arrival of each ACK of the last drain (supervisor thread). */
+    private var drained = IdentityHashMap<CommandAck, Long>()
 
     fun onState(state: VehicleState) {
         if (state.acks !== lastAcks) {
-            for ((command, received) in state.acks) if (lastAcks[command] !== received) acks.add(received.message)
+            for ((command, received) in state.acks) if (lastAcks[command] !== received) acks.add(received)
             lastAcks = state.acks
         }
         val text = state.lastStatusText
@@ -29,7 +32,17 @@ class VehicleEvents {
         lastText = text
     }
 
-    fun drainAcks(): List<CommandAck> = drain(acks)
+    fun drainAcks(): List<CommandAck> {
+        val received = drain(acks)
+        drained = IdentityHashMap<CommandAck, Long>(received.size).apply { for (r in received) put(r.message, r.heartbeats) }
+        return received.map { it.message }
+    }
+
+    /**
+     * The vehicle heartbeat count when [ack] (of the last [drainAcks]) arrived, or null for another ACK. A heartbeat
+     * counted after it was sent after the ACK, even when both are handled in one supervisor turn.
+     */
+    fun heartbeatsAtArrival(ack: CommandAck): Long? = drained[ack]
 
     fun drainTexts(): List<StatusText> = drain(texts)
 

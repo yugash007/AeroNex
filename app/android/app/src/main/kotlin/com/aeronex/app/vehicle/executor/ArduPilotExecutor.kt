@@ -20,6 +20,7 @@ import com.aeronex.app.vehicle.VehicleState
 import com.aeronex.app.vehicle.VehicleStateStore
 import java.util.Locale
 import kotlin.math.cos
+import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.sin
 import kotlin.math.sqrt
@@ -62,7 +63,7 @@ sealed interface StepUpdate {
  */
 class ArduPilotExecutor(
     private val link: LinkSession,
-    store: VehicleStateStore,
+    private val store: VehicleStateStore,
     private val timing: ExecutorTiming,
     private val trace: Trace = Trace(),
     private val traceId: Long = 0,
@@ -73,8 +74,12 @@ class ArduPilotExecutor(
      * nor stops the stream. Otherwise each move streams it itself from its start to its end (the fallback).
      */
     private val planStreamsPositionTarget: () -> Boolean = { false },
+    /** The vehicle heartbeat count when an ACK arrived ([VehicleEvents.heartbeatsAtArrival]); null if unknown. */
+    private val heartbeatsAtArrival: (CommandAck) -> Long? = { null },
 ) {
     private var step: Step? = null
+    /** The last ACCEPTED COMMAND_ACK [outcome] saw (its arrival orders a mode change against heartbeats). */
+    private var lastAccepted: CommandAck? = null
     /** The plan's step number (1-based), for the trace. */
     private var stepNumber = 1
 
@@ -134,12 +139,20 @@ class ArduPilotExecutor(
     }
 
     private fun modeAccepted(mode: Long, state: VehicleState) {
-        watch.accepted(mode)
+        watch.accepted(mode, lastAccepted?.let(heartbeatsAtArrival))
         modeInFlight = false
         owned = true
         unobservedMode = mode
         heartbeatsAtModeAck = ModeWatch.heartbeats(state)
     }
+
+    /**
+     * After a mode ACK, before the step sends what depends on that mode (ARM and NAV_TAKEOFF, a move frame): a
+     * heartbeat that arrived after the ACK and shows another mode means a pilot or failsafe chose it, so nothing more
+     * is sent (audit L7: ArduCopter would otherwise arm and take off in the pilot's LOITER). Null when the app owns it.
+     */
+    private fun takenOver(): StepUpdate? =
+        if (watch.ownsMode(store.snapshot())) null else StepUpdate.Unknown(MODE_TAKEN_OVER)
 
     private fun observeMode(state: VehicleState) {
         val mode = unobservedMode ?: return
@@ -188,6 +201,7 @@ class ArduPilotExecutor(
         CommandExchange.Result.Waiting -> StepUpdate.Running
         is CommandExchange.Result.Accepted -> {
             traceAck(result.ack)
+            lastAccepted = result.ack
             null
         }
         is CommandExchange.Result.Refused -> {
@@ -225,6 +239,14 @@ class ArduPilotExecutor(
         }
 
         override fun update(state: VehicleState, acks: List<CommandAck>, nowMs: Long): StepUpdate {
+            // The vehicle leaving the ground answers NAV_TAKEOFF: no re-send, and a late refusal of a re-sent copy
+            // ("already flying") is moot (audit L11).
+            if (phase == Phase.TAKEOFF && state.fresh(ExtendedSysState.messageId) &&
+                (state.landedState == VehicleState.LANDED_TAKEOFF || state.landedState == VehicleState.LANDED_IN_AIR)
+            ) {
+                pending = null
+                phase = Phase.CLIMB
+            }
             pending?.let { exchange ->
                 outcome(exchange, acks, nowMs) { refused ->
                     when {
@@ -232,11 +254,13 @@ class ArduPilotExecutor(
                         refused -> watch.armRefused()
                         else -> watch.armUnanswered()
                     }
+                    pending = null // answered or given up: end() must not count the ARM again
                 }?.let { return it }
                 pending = null
                 when (phase) {
                     Phase.GUIDED -> {
                         modeAccepted(CopterMode.GUIDED, state)
+                        takenOver()?.let { return it }
                         phase = Phase.ARM
                         return send(CommandLong(link.targetSystem, link.targetComponent, MAV_CMD_COMPONENT_ARM_DISARM,
                             param1 = 1f), nowMs)
@@ -266,6 +290,14 @@ class ArduPilotExecutor(
             pending = it
             begin(it, nowMs)
         }
+
+        /**
+         * Cancelled in the ARM round trip (a deadline, an external change, link loss): the ARM may still arm the
+         * vehicle, so it counts until a later heartbeat shows the vehicle's state, not forever (audit L12).
+         */
+        override fun end() {
+            if (phase == Phase.ARM && pending != null) watch.armUnanswered()
+        }
     }
 
     /** Land (LAND, then on the ground) and Hold (BRAKE, then slow). */
@@ -274,7 +306,9 @@ class ArduPilotExecutor(
 
         override fun start(state: VehicleState, nowMs: Long): StepUpdate {
             if (mode == CopterMode.LAND) {
-                common(state, needsPosition = false)?.let { return StepUpdate.Rejected(it) }
+                // Landing is the way out of a degraded state: a sick sensor or a late SYS_STATUS must not block it
+                // (audit L15). Its completion is read from EXTENDED_SYS_STATE, so that must be current.
+                if (!state.connected || !state.fresh(ExtendedSysState.messageId)) return StepUpdate.Rejected(STALE)
                 if (state.armed != true) return StepUpdate.Rejected("Vehicle is not armed.")
             } else {
                 common(state, needsPosition = true)?.let { return StepUpdate.Rejected(it) }
@@ -339,6 +373,7 @@ class ArduPilotExecutor(
                 outcome(exchange, acks, nowMs)?.let { return it }
                 guided = null
                 modeAccepted(CopterMode.GUIDED, state)
+                takenOver()?.let { return it }
                 return sendFrame(state, nowMs)
             }
             if (!fresh(state, Attitude.messageId, LocalPositionNed.messageId)) return StepUpdate.Unknown(LOST)
@@ -355,7 +390,7 @@ class ArduPilotExecutor(
             }
             val newer = (state.samples[LocalPositionNed.messageId] ?: 0) > echoedAt
             val position = state.position!!
-            val arrived = distance(position, goal) < min(ARRIVAL_TOLERANCE_M, distance / 2) &&
+            val arrived = distance(position, goal) < arrivalTolerance(distance) &&
                 (state.speed ?: Double.MAX_VALUE) < STILL_SPEED
             if (newer && arrived) {
                 trace.mark(TracePoint.ARRIVED, traceId)
@@ -369,7 +404,12 @@ class ArduPilotExecutor(
             streaming = false
         }
 
-        /** The one and only move frame: never retried or duplicated (S9). */
+        /**
+         * The one and only move frame: never retried or duplicated (S9). The yaw is sent, as 0 relative to the
+         * current heading (BODY_OFFSET_NED yaw is relative in ArduCopter): with yaw ignored, ArduCopter turns to face
+         * its direction of travel (WP_YAW_BEHAVIOR), so the next body-frame step would fly on a new heading and a
+         * confirmed "right 5 m, then forward 5 m" would fly a straight line instead of an L (audit L1).
+         */
         private fun sendFrame(state: VehicleState, nowMs: Long): StepUpdate {
             if (!fresh(state, Attitude.messageId, LocalPositionNed.messageId)) {
                 return if (sentInStep) StepUpdate.Unknown(LOST) else StepUpdate.Rejected(STALE)
@@ -379,7 +419,7 @@ class ArduPilotExecutor(
             sentAtMs = nowMs
             val (x, y, z) = bodyOffset()
             val frame = SetPositionTargetLocalNed(0, link.targetSystem, link.targetComponent, MAV_FRAME_BODY_OFFSET_NED,
-                TYPE_MASK_POSITION_ONLY, x, y, z)
+                TYPE_MASK_POSITION_AND_YAW, x, y, z, yaw = 0f)
             if (!link.send(frame)) return if (sentInStep) StepUpdate.Unknown(NOT_QUEUED_AFTER_SEND) else StepUpdate.Rejected(NOT_QUEUED)
             sentInStep = true
             trace.mark(TracePoint.MOVE_TX, traceId, mapOf("direction" to direction, "distance_m" to distance, "step" to stepNumber))
@@ -408,7 +448,7 @@ class ArduPilotExecutor(
 
         /** The echo is this move's target, not the previous one (which is [distance] away). */
         private fun PositionTargetLocalNed.matches(goal: Ned) =
-            distance(Ned(x.toDouble(), y.toDouble(), z.toDouble()), goal) < min(ECHO_TOLERANCE_M, distance / 2)
+            distance(Ned(x.toDouble(), y.toDouble(), z.toDouble()), goal) < echoTolerance(distance)
     }
 
     companion object {
@@ -426,15 +466,25 @@ class ArduPilotExecutor(
         const val MAV_CMD_COMPONENT_ARM_DISARM = 400
         const val MAV_CMD_NAV_TAKEOFF = 22
         const val MAV_MODE_FLAG_CUSTOM_MODE_ENABLED = 1f
+        const val MAV_FRAME_LOCAL_NED = 1
         const val MAV_FRAME_BODY_OFFSET_NED = 9
-        /** Position only: velocity, acceleration, yaw and yaw rate ignored. */
-        const val TYPE_MASK_POSITION_ONLY = 3576
+        /** Position and yaw: velocity, acceleration and yaw rate ignored (audit L1: the heading is held). */
+        const val TYPE_MASK_POSITION_AND_YAW = 2552
+        const val MODE_TAKEN_OVER = "the flight mode changed outside this app right after the app set it; " +
+            "nothing more was sent. Check the simulator before sending another command."
 
         private const val MIN_TAKEOFF_BATTERY = 20
         private const val ALTITUDE_TOLERANCE_M = 0.4
         private const val ARRIVAL_TOLERANCE_M = 0.5
         private const val ECHO_TOLERANCE_M = 1.0
         private const val STILL_SPEED = 0.3
+
+        /** Short moves keep a usable tolerance (audit L14), always below [d] so the previous target never matches. */
+        private const val SHORT_MOVE_FLOOR_M = 0.15
+
+        internal fun echoTolerance(d: Double) = min(ECHO_TOLERANCE_M, max(d / 2, min(SHORT_MOVE_FLOOR_M, d * 0.75)))
+
+        internal fun arrivalTolerance(d: Double) = min(ARRIVAL_TOLERANCE_M, max(d / 2, min(SHORT_MOVE_FLOOR_M, d * 0.75)))
 
         private fun fresh(state: VehicleState, vararg ids: Int) = ids.all(state::fresh)
 

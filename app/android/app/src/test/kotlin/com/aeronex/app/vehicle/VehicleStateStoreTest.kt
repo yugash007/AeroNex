@@ -253,6 +253,38 @@ class VehicleStateStoreTest {
         receive(heartbeat(GUIDED, armed = true))
         val state = store.snapshot()
         assertEquals(ModeOwner.EXTERNAL, state.modeOwner)
-        assertEquals("Pilot mode", state.modeOwnerLabel)
+        // Audit L2: the app's own mode survived the gap, so STOP may send without the hold; plans stay blocked.
+        assertEquals("Link gap", state.modeOwnerLabel)
+        assertTrue(state.appModeAfterGap)
+        receive(heartbeat(LOITER, armed = true))
+        assertEquals("Pilot mode", store.snapshot().modeOwnerLabel)
+        assertFalse(store.snapshot().appModeAfterGap)
     }
+
+    /** Audit L5: a slow stream's message stays fresh for its own allowance; others keep 3 s. */
+    @Test fun perMessageFreshnessFollowsTheProfile() {
+        store.freshness = mapOf(GlobalPositionInt.messageId to 5_000L)
+        receive(heartbeat(GUIDED))
+        receive(GlobalPositionInt(0, 0, 0, 0, 3000, 0, 0, 0, 0))
+        now += 4_000
+        receive(heartbeat(GUIDED))
+        val state = store.snapshot()
+        assertTrue(state.fresh(GlobalPositionInt.messageId))
+        now += 1_000
+        assertFalse(store.snapshot().fresh(GlobalPositionInt.messageId))
+        store.reset()
+        assertEquals("kept across a reset", mapOf(GlobalPositionInt.messageId to 5_000L), store.freshness)
+    }
+
+    /** Audit L7: an ACK carries the heartbeat count at its arrival, so it can be ordered against heartbeats. */
+    @Test fun anAckRecordsTheHeartbeatCountAtItsArrival() {
+        receive(heartbeat(GUIDED))
+        receive(heartbeat(GUIDED))
+        receive(CommandAck(176, 0, targetSystem = 255, targetComponent = 190))
+        receive(heartbeat(LOITER))
+        val state = store.snapshot()
+        assertEquals("two heartbeats came before the ACK", 2L, state.acks.getValue(176).heartbeats)
+        assertEquals(3L, state.samples[Heartbeat.messageId])
+    }
+
 }

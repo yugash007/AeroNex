@@ -31,6 +31,7 @@ import java.util.concurrent.LinkedBlockingQueue
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicInteger
 import kotlin.concurrent.thread
+import kotlin.math.atan2
 import kotlin.math.cos
 import kotlin.math.sin
 import kotlin.math.sqrt
@@ -42,8 +43,10 @@ internal class Sent(val atNanos: Long, val sysId: Int, val compId: Int, val mess
  * A scripted stand-in for ArduCopter 4.6 (sysid 1/1) behind an in-memory transport. It follows the real behaviours
  * the executor relies on: DO_SET_MODE ACKs (BRAKE/GUIDED refused without a position estimate when armed, the same
  * mode accepted at once), arming only on the ground, a non-forced disarm refused unless landed, NAV_TAKEOFF only
- * when armed in GUIDED on the ground, BODY_OFFSET_NED targets rotated by yaw, POSITION_TARGET_LOCAL_NED only in
- * GUIDED and only while requested, LAND then auto-disarm. Fast kinematics keep tests short.
+ * when armed in GUIDED on the ground, BODY_OFFSET_NED targets rotated by yaw and LOCAL_NED targets as given, the yaw
+ * of a target (relative in BODY_OFFSET_NED, absolute in LOCAL_NED) or, when the frame ignores yaw, a turn to face the
+ * direction of travel (WP_YAW_BEHAVIOR 2), POSITION_TARGET_LOCAL_NED only in GUIDED and only while requested, LAND
+ * then auto-disarm. Fast kinematics keep tests short.
  *
  * Every COMMAND_LONG is ACKed to its sender unless a script ([lose], [loseAcks], [refuse]) says otherwise.
  */
@@ -88,6 +91,8 @@ internal class FakeArduCopter(private val tickMs: Long = 20) : AutoCloseable {
     @Volatile var climbRate = 6.0
     @Volatile var landRate = 6.0
     @Volatile var battery = 90
+    /** SYS_STATUS reports every enabled sensor healthy. */
+    @Volatile var sensorsHealthy = true
     /** Copies of a command (by id) that are lost on the way: no effect, no ACK. */
     val lose = ConcurrentHashMap<Int, AtomicInteger>()
     /** ACKs (by command id) lost on the way back; the command still takes effect. */
@@ -102,6 +107,11 @@ internal class FakeArduCopter(private val tickMs: Long = 20) : AutoCloseable {
     val ignoreModes: MutableSet<Long> = ConcurrentHashMap.newKeySet()
     /** Runs after a COMMAND_LONG was executed or refused and before its ACK is sent (not for a lost copy). */
     @Volatile var beforeAck: (CommandLong) -> Unit = {}
+    /**
+     * A pilot flips the mode switch to this mode right after an ACCEPTED DO_SET_MODE, reported by a heartbeat that
+     * follows the ACK at once (so the app sees both in one turn).
+     */
+    @Volatile var takeOverAfterModeAck: Long? = null
 
     private val physics = thread(name = "fake-arducopter", isDaemon = true) {
         while (running) {
@@ -179,10 +189,25 @@ internal class FakeArduCopter(private val tickMs: Long = 20) : AutoCloseable {
             is CommandLong -> if (message.targetSystem == 1 && message.targetComponent == 1) command(frame, message)
             is SetPositionTargetLocalNed -> synchronized(lock) {
                 if (mode != CopterMode.GUIDED || !armed || landed != VehicleState.LANDED_IN_AIR) return
-                if (message.coordinateFrame != FRAME_BODY_OFFSET_NED || message.typeMask != TYPE_MASK_POSITION) return
-                val c = cos(yaw)
-                val s = sin(yaw)
-                target = doubleArrayOf(n + c * message.x - s * message.y, e + s * message.x + c * message.y, d + message.z)
+                if (message.typeMask != TYPE_MASK_POSITION && message.typeMask != TYPE_MASK_POSITION_YAW) return
+                val goal = when (message.coordinateFrame) {
+                    FRAME_BODY_OFFSET_NED -> {
+                        val c = cos(yaw)
+                        val s = sin(yaw)
+                        doubleArrayOf(n + c * message.x - s * message.y, e + s * message.x + c * message.y, d + message.z)
+                    }
+                    FRAME_LOCAL_NED -> doubleArrayOf(message.x.toDouble(), message.y.toDouble(), message.z.toDouble())
+                    else -> return
+                }
+                yaw = when {
+                    message.typeMask == TYPE_MASK_POSITION_YAW && message.coordinateFrame == FRAME_BODY_OFFSET_NED ->
+                        yaw + message.yaw
+                    message.typeMask == TYPE_MASK_POSITION_YAW -> message.yaw.toDouble()
+                    // Yaw ignored: face the direction of travel, as ArduCopter's default WP_YAW_BEHAVIOR does.
+                    sqrt((goal[0] - n) * (goal[0] - n) + (goal[1] - e) * (goal[1] - e)) > 0.1 -> atan2(goal[1] - e, goal[0] - n)
+                    else -> yaw
+                }
+                target = goal
                 takeoffAltitude = null
             }
             else -> {}
@@ -198,6 +223,11 @@ internal class FakeArduCopter(private val tickMs: Long = 20) : AutoCloseable {
         beforeAck(command)
         if (loseAcks[command.command]?.let { it.getAndDecrement() > 0 } == true) return
         emit(CommandAck(command.command, result, targetSystem = frame.sysId, targetComponent = frame.compId))
+        val pilotMode = takeOverAfterModeAck
+        if (pilotMode != null && command.command == MAV_CMD_DO_SET_MODE && result == ACCEPTED) {
+            takeOverAfterModeAck = null
+            externalMode(pilotMode, heartbeatNow = true)
+        }
     }
 
     /** Runs under lock; the MAV_RESULT. */
@@ -274,7 +304,7 @@ internal class FakeArduCopter(private val tickMs: Long = 20) : AutoCloseable {
                 outgoing += Attitude(0, 0f, 0f, yaw.toFloat(), 0f, 0f, 0f)
                 if (every100ms) {
                     outgoing += ExtendedSysState(0, landed)
-                    outgoing += SysStatus(0, 1, 1, 0, 0, 0, battery)
+                    outgoing += SysStatus(0, 1, if (sensorsHealthy) 1 else 0, 0, 0, 0, battery)
                     outgoing += EkfStatusReport(if (gpsDenied) 0x0F else 0x37F, 0f, 0f, 0f, 0f, 0f)
                 }
             }
@@ -387,8 +417,10 @@ internal class FakeArduCopter(private val tickMs: Long = 20) : AutoCloseable {
         const val ACCEPTED = 0
         const val FAILED = 4
         const val UNSUPPORTED = 3
+        const val FRAME_LOCAL_NED = 1
         const val FRAME_BODY_OFFSET_NED = 9
         const val TYPE_MASK_POSITION = 3576
+        const val TYPE_MASK_POSITION_YAW = 2552
         const val FORCE_MAGIC = 21196f
         val POSITION_MODES = setOf(CopterMode.GUIDED, CopterMode.BRAKE, CopterMode.LOITER, CopterMode.POSHOLD, CopterMode.RTL)
     }

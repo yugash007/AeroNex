@@ -92,4 +92,15 @@ class StopPolicyTest {
         val pilot = vehicle(owner = ModeOwner.EXTERNAL, cause = ExternalCause.PILOT_MODE, mode = CopterMode.LOITER)
         assertEquals(StopDecision.NothingSent(StopPolicy.DRY_RUN), decide(pilot, held = true, execution = false))
     }
+
+    /** Audit L2: after a link gap that left the app's mode in place, STOP sends without the 1 s hold. */
+    @Test fun aLinkGapWithTheAppsModeStillInPlaceStopsWithoutTheHold() {
+        val gap = vehicle(owner = ModeOwner.EXTERNAL, cause = ExternalCause.LINK_GAP).copy(appModeAfterGap = true)
+        assertEquals(send(StopAction.BRAKE), decide(gap, StopTrigger.VOICE, owns = false))
+        assertEquals(send(StopAction.BRAKE), decide(gap, StopTrigger.VOLUME_DOWN, owns = false))
+        val pilot = vehicle(owner = ModeOwner.EXTERNAL, cause = ExternalCause.PILOT_MODE)
+        assertEquals(StopDecision.NothingSent("Pilot mode GUIDED, use RC"), decide(pilot, StopTrigger.VOICE, owns = false))
+        assertEquals(StopPolicy.LINK_GAP, StopPolicy.externalBanner(gap))
+    }
+
 }

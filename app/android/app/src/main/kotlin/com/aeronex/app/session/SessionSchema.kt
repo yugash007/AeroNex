@@ -95,7 +95,8 @@ data class PlanRequest(val plan: FlightPlan, val source: PlanSource, val utteran
  *   - `landedState` (int?): MAV_LANDED_STATE. `landedStateName` (string?): UNDEFINED | ON_GROUND | IN_AIR |
  *     TAKEOFF | LANDING.
  *   - `modeOwner` (string?): `APP` | `EXTERNAL` (spec 4.12); null while not connected or no mode is known.
- *   - `modeOwnerLabel` (string?): while EXTERNAL after a mode change: "Autopilot failsafe" or "Pilot mode".
+ *   - `modeOwnerLabel` (string?): while EXTERNAL after a mode change: "Autopilot failsafe" or "Pilot mode"; after a
+ *     heartbeat gap with the vehicle still in the app's mode, "Link gap" (STOP works without the hold).
  *   - `altitudeRelM` (double?): metres above home (GLOBAL_POSITION_INT).
  *   - `speed` (double?): m/s, 3D, rounded to 0.01.
  *   - `batteryPercent` (int?): null when the autopilot reports it unknown.
@@ -131,10 +132,11 @@ data class PlanRequest(val plan: FlightPlan, val source: PlanSource, val utteran
  *   - `action` (string?): DISARM | BRAKE | LAND, the frame last sent; null when nothing was sent.
  *   - `message` (string): the banner, e.g. "STOP confirmed: BRAKE", "Pilot mode LOITER, use RC",
  *     "STOP NOT CONFIRMED, take RC control".
- *   - `alarm` (bool): sound the alarm until `acknowledgeAlarm`.
+ *   - `alarm` (bool): sound the alarm until `acknowledgeAlarm`; it sounds again only if the STOP escalates (a new
+ *     phase or action).
  *   - `override` (bool): sent over an EXTERNAL owner by the 1 s on-screen hold (logged).
  *   - `needsHoldForExternal` (bool): now an armed vehicle's mode is EXTERNAL: a STOP press sends nothing unless the
- *     on-screen STOP is held 1 s (spec 4.12).
+ *     on-screen STOP is held 1 s (spec 4.12). False after a heartbeat gap that left the app's own mode in place.
  *   - `modeOwnerLabel` (string?): as in `vehicle`, for the "use RC" banner.
  * - `notice` (string?): why the last pending plan went away (expired, link lost, app in background …).
  * - `latency` (map): per stage, `{p50Ms (double), p95Ms (double), maxMs (double), n (int)}` over the newest spans, or
@@ -345,7 +347,7 @@ object SessionSchema {
             "message" to stop.message,
             "alarm" to stop.alarm,
             "override" to stop.override,
-            "needsHoldForExternal" to (owner == ModeOwner.EXTERNAL && vehicle.armed == true),
+            "needsHoldForExternal" to (owner == ModeOwner.EXTERNAL && vehicle.armed == true && !vehicle.appModeAfterGap),
             "modeOwnerLabel" to vehicle.modeOwnerLabel.takeIf { owner != null },
         )
     }

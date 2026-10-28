@@ -75,6 +75,7 @@ class SessionController(
     private val supervisor = SafetySupervisor(store, validator, trace, clock)
     private val changeListeners = CopyOnWriteArrayList<() -> Unit>()
     private val seq = AtomicLong()
+    private val snapshotLock = Any()
     @Volatile private var connection: Connection? = null
     /** Orders STOPs against voice submissions (see [stops]). */
     private val stopOrder = Any()
@@ -131,6 +132,7 @@ class SessionController(
     /** Opens the link; the snapshot right after. [SessionException] when already connected or it cannot open. */
     @Synchronized fun connect(config: SessionConfig): Map<String, Any?> {
         if (connection != null) throw SessionException(SessionException.ALREADY_CONNECTED, ALREADY_CONNECTED)
+        store.freshness = config.profile.freshnessMs()
         store.reset()
         val lease = transports(config)
         val link = LinkSession(ThreadSetupTransport(lease.transport, linkThreadSetup), MavlinkEncoder(), MavlinkParser(),
@@ -403,13 +405,17 @@ class SessionController(
     /** Asks for every telemetry rate and HOME_POSITION again; false when not connected or not queued. */
     fun requestTelemetry(): Boolean = connection?.link?.requestTelemetry() ?: false
 
-    /** The [SessionSchema] snapshot now. */
-    fun snapshot(): Map<String, Any?> {
+    /**
+     * The [SessionSchema] snapshot now. Built under its own lock, so a higher `seq` never carries older content when
+     * the pump and the channel build snapshots at once (audit F13); never the controller's monitor, which [connect]
+     * holds for seconds.
+     */
+    fun snapshot(): Map<String, Any?> = synchronized(snapshotLock) {
         val state: SupervisorState = supervisor.state
         val vehicle = store.snapshot()
         val speech = voice?.status()?.let { it.copy(spotterArmed = it.spotterArmed && spotterArmed(vehicle)) }
             ?: VoiceStatus.off(selectedLanguage, VoiceReason.NOT_STARTED)
-        return SessionSchema.snapshot(seq.incrementAndGet(), clock(), linkInfo(), state, vehicle, latency.summaries(), speech,
+        SessionSchema.snapshot(seq.incrementAndGet(), clock(), linkInfo(), state, vehicle, latency.summaries(), speech,
             aiStatus())
     }
 

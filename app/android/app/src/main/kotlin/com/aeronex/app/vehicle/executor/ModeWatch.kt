@@ -40,11 +40,13 @@ class ModeWatch(private val store: VehicleStateStore) {
      * The app's DO_SET_MODE to [mode] was ACCEPTED (spec 4.12 mode ownership): a plan step's on its ACK, a STOP's only
      * once a heartbeat shows the mode (a COMMAND_ACK names only the command, so the STOP's could be another's).
      */
-    fun accepted(mode: Long) {
+    fun accepted(mode: Long, heartbeatsAtArrival: Long? = null) {
         store.noteCommandedMode(mode)
         requestedMode = null
         appMode = mode
-        heartbeatsAtAck = heartbeats(store.snapshot())
+        // From the ACK's arrival when known: a heartbeat that came after the ACK but in the same supervisor turn must
+        // end the wait, or a pilot's mode change right after the app's could pass for the app's own (audit L7).
+        heartbeatsAtAck = heartbeatsAtArrival ?: heartbeats(store.snapshot())
     }
 
     /** An ARM was queued and has no answer yet: it may arm the vehicle at any moment. */

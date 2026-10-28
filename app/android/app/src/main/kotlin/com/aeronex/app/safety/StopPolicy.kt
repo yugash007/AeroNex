@@ -17,12 +17,15 @@ object StopPolicy {
     const val DISARMED = "Disarmed: nothing sent"
     const val DRY_RUN = "Dry run: nothing sent, use RC"
     const val NOT_CONFIRMED = "STOP NOT CONFIRMED, take RC control"
+    const val LINK_GAP = "The link stalled, so the app is not sure it still owns the flight mode. " +
+        "Press STOP or say hold, then say the command again."
 
     /**
      * [appOwnsMode] and [armed] include a mode change or ARM the app just got accepted that no heartbeat shows yet
      * (ModeWatch).
      * - Not connected or disarmed: nothing.
-     * - Another owner (autopilot failsafe, pilot): nothing, unless the on-screen button was held 1 s.
+     * - Another owner (autopilot failsafe, pilot): nothing, unless the on-screen button was held 1 s. A heartbeat gap
+     *   with the vehicle still in the app's mode ([VehicleState.appModeAfterGap]) counts as the app's (audit L2).
      * - Dry run: only a mode the app itself set (execution was on earlier in this connection) is stopped.
      * - Armed and ON_GROUND (fresh): non-forced DISARM; anything else (airborne, landing, unknown): BRAKE.
      */
@@ -36,17 +39,20 @@ object StopPolicy {
     ): StopDecision {
         if (state == null || !state.connected) return StopDecision.NothingSent(NOT_CONNECTED)
         if (!armed) return StopDecision.NothingSent(DISARMED)
-        val override = !appOwnsMode && heldOneSecond && trigger.canOverride
-        if (!appOwnsMode && !override) return StopDecision.NothingSent(externalBanner(state))
+        val owns = appOwnsMode || state.appModeAfterGap
+        val override = !owns && heldOneSecond && trigger.canOverride
+        if (!owns && !override) return StopDecision.NothingSent(externalBanner(state))
         if (override && !execution) return StopDecision.NothingSent(DRY_RUN)
         val onGround = state.fresh(ExtendedSysState.messageId) && state.landedState == VehicleState.LANDED_ON_GROUND
         return StopDecision.Send(if (onGround) StopAction.DISARM else StopAction.BRAKE, override)
     }
 
-    /** "Autopilot failsafe active, use RC" or "Pilot mode MODE, use RC". */
-    fun externalBanner(state: VehicleState): String =
-        if (state.externalCause == ExternalCause.AUTOPILOT_FAILSAFE) "Autopilot failsafe active, use RC"
-        else "Pilot mode ${state.mode?.let(CopterMode::name) ?: "unknown"}, use RC"
+    /** "Autopilot failsafe active, use RC", "Pilot mode MODE, use RC", or after a link gap how to resume. */
+    fun externalBanner(state: VehicleState): String = when (state.externalCause) {
+        ExternalCause.AUTOPILOT_FAILSAFE -> "Autopilot failsafe active, use RC"
+        ExternalCause.LINK_GAP -> LINK_GAP
+        else -> "Pilot mode ${state.mode?.let(CopterMode::name) ?: "unknown"}, use RC"
+    }
 
     fun sendingMessage(action: StopAction, previous: StopAction?): String = when {
         previous == StopAction.DISARM -> "Disarm refused, ${label(action)} sent"

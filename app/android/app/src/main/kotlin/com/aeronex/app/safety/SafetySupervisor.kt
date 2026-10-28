@@ -100,6 +100,8 @@ class SafetySupervisor(
     private var stopId = 0L
     private var stopOverride = false
     private var stopStatus: StopStatus? = null
+    /** The STOP state the operator acknowledged: its alarm stays silent until the STOP escalates (audit F4). */
+    private var acknowledged: Triple<Long, StopPhase, StopAction?>? = null
     private var stage = PlanStage.IDLE
     private var plan: FlightPlan? = null
     private var source: PlanSource? = null
@@ -192,9 +194,11 @@ class SafetySupervisor(
     /** E.g. the app went to the background: the confirmation no longer applies. */
     fun invalidatePending(reason: String) = post { invalidate(reason) }
 
-    /** The operator saw the STOP alarm. */
+    /** The operator saw the STOP alarm: silent until the STOP changes phase or action (a new escalation). */
     fun acknowledgeAlarm() = post {
-        stopStatus = stopStatus?.copy(alarm = false)
+        val stop = stopStatus ?: return@post
+        acknowledged = Triple(stop.id, stop.phase, stop.action)
+        stopStatus = stop.copy(alarm = false)
     }
 
     fun addListener(listener: (SupervisorState) -> Unit) {
@@ -291,7 +295,8 @@ class SafetySupervisor(
             finish(id, PlanStage.FINISHED, dry)
             return ConfirmResult.Started
         }
-        val started = PlanRun(id, confirmed, ArduPilotExecutor(live, store, timing, trace, id, watch) { streaming })
+        val started = PlanRun(id, confirmed,
+            ArduPilotExecutor(live, store, timing, trace, id, watch, { streaming }, events::heartbeatsAtArrival))
         run = started
         show(confirmed, waiting.source, PlanStage.EXECUTING, started.outcomes.toList())
         updateStreaming() // on before the first frame, if submitting did not already turn it on
@@ -305,8 +310,8 @@ class SafetySupervisor(
         val id = ++nextId
         val outcome = when {
             !execution || live == null -> StepOutcome.dryRun(step)
-            else -> when (val update = ArduPilotExecutor(live, store, timing, trace, id, watch)
-                .start(step.command, vehicle, clock())) {
+            else -> when (val update = ArduPilotExecutor(live, store, timing, trace, id, watch,
+                heartbeatsAtArrival = events::heartbeatsAtArrival).start(step.command, vehicle, clock())) {
                 is StepUpdate.Completed -> StepOutcome.completed(step, update.detail)
                 is StepUpdate.Rejected -> StepOutcome.rejected(step, update.reason)
                 else -> StepOutcome.rejected(step, ArduPilotExecutor.STALE)
@@ -471,7 +476,7 @@ class SafetySupervisor(
                 StopPolicy.takenOverMessage(progress.mode), alarm = true, override = stopOverride)
             is StopProgress.NotConfirmed -> StopStatus(stopId, stopTrigger, StopPhase.NOT_CONFIRMED, progress.action,
                 StopPolicy.NOT_CONFIRMED, alarm = true, override = stopOverride)
-        }
+        }.let { if (it.alarm && Triple(it.id, it.phase, it.action) == acknowledged) it.copy(alarm = false) else it }
         if (lane.settled) stopLane = null
         updateHold(lane)
     }
