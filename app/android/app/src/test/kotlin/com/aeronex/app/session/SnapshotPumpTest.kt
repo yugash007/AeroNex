@@ -66,6 +66,15 @@ class SnapshotPumpTest {
         waitFor("still delivering") { delivered.size >= 3 }
     }
 
+    @Test fun anErrorBuildingASnapshotDoesNotStopThePump() {
+        val calls = AtomicInteger()
+        pump = SnapshotPump(30, {
+            if (calls.incrementAndGet() == 2) throw StackOverflowError()
+            mapOf("seq" to calls.get())
+        }, { delivered += it }).also { it.start() }
+        waitFor("still delivering after the Error") { delivered.size >= 3 }
+    }
+
     @Test fun latestOnlyKeepsAtMostOnePostQueuedAndDeliversTheNewestValue() {
         val posted = CopyOnWriteArrayList<Runnable>()
         val seen = CopyOnWriteArrayList<Int>()

@@ -43,6 +43,9 @@ class FlightScreen extends StatefulWidget {
   /// Opens another screen; completes when it closes.
   final Future<void> Function(FlightDestination destination) open;
 
+  /// Without a snapshot for this long the screen warns that it may be old.
+  static const staleAfter = Duration(seconds: 3);
+
   @override
   State<FlightScreen> createState() => _FlightScreenState();
 }
@@ -53,6 +56,11 @@ class _FlightScreenState extends State<FlightScreen> with WidgetsBindingObserver
 
   /// The service could not be read (no answer, or another schema version).
   Object? _serviceError;
+
+  /// No snapshot for [staleAfter] (audit F14): the service sends 5–10 a
+  /// second while this screen listens, so what it shows may be old.
+  bool _stale = false;
+  Timer? _staleTimer;
 
   /// Why the last command or connect did not go through, shown as is.
   String? _error;
@@ -82,7 +90,16 @@ class _FlightScreenState extends State<FlightScreen> with WidgetsBindingObserver
         onError: (Object error) {
       if (mounted) setState(() => _serviceError = error);
     });
+    _watchForStale();
     _start();
+  }
+
+  /// Starts or restarts the [staleAfter] count to the stale warning.
+  void _watchForStale() {
+    _staleTimer?.cancel();
+    _staleTimer = Timer(FlightScreen.staleAfter, () {
+      if (mounted) setState(() => _stale = true);
+    });
   }
 
   /// Whether this screen is the route in front, as last told to the service.
@@ -107,6 +124,7 @@ class _FlightScreenState extends State<FlightScreen> with WidgetsBindingObserver
     WidgetsBinding.instance.removeObserver(this);
     _snapshots?.cancel();
     _countdown?.cancel();
+    _staleTimer?.cancel();
     if (_inFront == true) {
       widget.session.setFlightScreenVisible(false).catchError((Object _) {});
     }
@@ -115,8 +133,14 @@ class _FlightScreenState extends State<FlightScreen> with WidgetsBindingObserver
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    // The service kept running; show where it is now.
-    if (state == AppLifecycleState.resumed) _refresh();
+    if (state == AppLifecycleState.resumed) {
+      // The service kept running; show where it is now.
+      _refresh();
+      _watchForStale();
+    } else if (state != AppLifecycleState.inactive) {
+      // Off screen: nobody to warn. Resuming starts the count again.
+      _staleTimer?.cancel();
+    }
   }
 
   /// The session may still be running in the service from before (S7):
@@ -159,9 +183,11 @@ class _FlightScreenState extends State<FlightScreen> with WidgetsBindingObserver
     if (!mounted || snapshot.seq < _snap.seq) return;
     final previous = _snap;
     final pending = snapshot.pending;
+    _watchForStale();
     setState(() {
       _snap = snapshot;
       _serviceError = null;
+      _stale = false;
       // An AI answer from before this screen (an app restart) or before the
       // latest press is not news: only newer requests show.
       if (previous.seq == 0 || snapshot.speech.utterance != previous.speech.utterance) {
@@ -527,6 +553,16 @@ class _FlightScreenState extends State<FlightScreen> with WidgetsBindingObserver
                     padding: const EdgeInsets.only(bottom: 8),
                     child: Text(_serviceMessage(serviceError),
                         key: const Key('serviceError'),
+                        style: TextStyle(color: theme.colorScheme.error)),
+                  )
+                else if (_stale)
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 8),
+                    child: Text(
+                        'No update from the flight service for '
+                        '${FlightScreen.staleAfter.inSeconds} s: what this screen '
+                        'shows may be old. Use RC if the drone is flying.',
+                        key: const Key('serviceStale'),
                         style: TextStyle(color: theme.colorScheme.error)),
                   ),
                 if (snap.vehicle.connected && snap.vehicle.lowBattery)

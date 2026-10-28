@@ -1649,6 +1649,37 @@ void main() {
       expect(calls, [true]);
       handle.dispose();
     });
+
+    testWidgets('snapshots that stop coming are shown as such until the next '
+        'one, and only while the app is on screen (F14)', (tester) async {
+      final session = await launch(tester, initial: fixture('executing_move'));
+      final stale = find.byKey(const Key('serviceStale'));
+      await tester.pump(const Duration(seconds: 2));
+      session.pushFixture('executing_move');
+      await tester.pump(const Duration(seconds: 2));
+      expect(stale, findsNothing, reason: 'a snapshot 2 s ago is fresh');
+      await tester.pump(const Duration(milliseconds: 1100));
+      expect(stale, findsOneWidget);
+      expect(find.text('No update from the flight service for 3 s: what this '
+          'screen shows may be old. Use RC if the drone is flying.'), findsOneWidget);
+      session.pushFixture('executing_move');
+      await tester.pump();
+      expect(stale, findsNothing);
+
+      // In the background nobody is warned; back on screen the count restarts.
+      tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.inactive);
+      tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.hidden);
+      tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.paused);
+      await tester.pump(const Duration(seconds: 10));
+      expect(stale, findsNothing);
+      tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.hidden);
+      tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.inactive);
+      tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.resumed);
+      await tester.pump(const Duration(seconds: 2));
+      expect(stale, findsNothing);
+      await tester.pump(const Duration(milliseconds: 1100));
+      expect(stale, findsOneWidget);
+    });
   });
 
 

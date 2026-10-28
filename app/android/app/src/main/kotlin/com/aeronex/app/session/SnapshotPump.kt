@@ -48,8 +48,9 @@ class SnapshotPump(
     private fun emit() {
         try {
             deliver(snapshot())
-        } catch (_: Exception) {
-            // The next period tries again.
+        } catch (_: Throwable) {
+            // The next period tries again. Not only Exceptions: a periodic task that throws never runs again, and
+            // the Flight screen would show a frozen state.
         }
     }
 }
