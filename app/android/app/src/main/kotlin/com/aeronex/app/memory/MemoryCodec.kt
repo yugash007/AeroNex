@@ -14,7 +14,9 @@ import com.aeronex.app.vehicle.Ned
  *  "trail":[{"x":..,"y":..,"z":..,"label":"Takeoff","at":1730000000000}],
  *  "points":{"1":{"x":..,"y":..,"z":..,"label":"Point 1","at":..}},
  *  "history":[{"id":1,"plan":1,"at":..,"name":"move_relative","arguments":{"direction":"left","distance_m":2},
- *              "description":"Move left 2 m","source":"typed","outcome":"COMPLETED","stage":0}]}
+ *              "description":"Move left 2 m","source":"typed","outcome":"COMPLETED","stage":0}],
+ *  "missions":[{"name":"Perimeter","at":..,"stages":[{"source":"typed","steps":[{"name":"takeoff",
+ *              "arguments":{"altitude_m":3},"description":"Take off to 3 m"}]}]}]}
  * ```
  */
 object MemoryCodec {
@@ -31,6 +33,13 @@ object MemoryCodec {
         "history" to state.history.map { r ->
             linkedMapOf("id" to r.id, "plan" to r.planId, "at" to r.atWallMs, "name" to r.name, "arguments" to r.arguments,
                 "description" to r.description, "source" to r.source, "outcome" to r.outcome, "stage" to r.stage)
+        },
+        "missions" to state.missions.map { m ->
+            linkedMapOf("name" to m.name, "at" to m.atWallMs, "stages" to m.stages.map { stage ->
+                linkedMapOf("source" to stage.source, "steps" to stage.steps.map { step ->
+                    linkedMapOf("name" to step.name, "arguments" to step.arguments, "description" to step.description)
+                })
+            })
         },
     ))
 
@@ -52,13 +61,7 @@ object MemoryCodec {
                 val r = item.obj("history")
                 CommandRecord(
                     id = r.long("id"), planId = r.long("plan"), atWallMs = r.long("at"), name = r.string("name"),
-                    arguments = r.obj("arguments", "arguments").mapValues { (key, value) ->
-                        when (value) {
-                            is Long -> if (value in Int.MIN_VALUE..Int.MAX_VALUE) value.toInt() else value.toDouble()
-                            is Double, is String -> value
-                            else -> throw IllegalArgumentException("Bad argument $key")
-                        }
-                    },
+                    arguments = arguments(r),
                     description = r.string("description"), source = r.string("source"), outcome = r.string("outcome"),
                     // Missions (2026-10-28) added the stage; a record without one is a plain plan's step.
                     stage = r["stage"]?.let { it as? Long ?: throw IllegalArgumentException("stage is not an integer") }?.toInt() ?: 0,
@@ -66,7 +69,27 @@ object MemoryCodec {
             },
             nextId = root.long("nextId"),
             notice = root["notice"]?.let { it as? String ?: throw IllegalArgumentException("Bad notice") },
+            // Saved missions came on 2026-10-28 too; a memory without them has none.
+            missions = (root["missions"]?.let { root.list("missions") } ?: emptyList()).map { item ->
+                val m = item.obj("mission")
+                SavedMission(m.string("name"), m.list("stages").map { s ->
+                    val stage = s.obj("stage")
+                    SavedStage(stage.string("source"), stage.list("steps").map { st ->
+                        val step = st.obj("step")
+                        SavedStep(step.string("name"), arguments(step), step.string("description"))
+                    })
+                }, m.long("at"))
+            },
         )
+    }
+
+    /** Tool-call arguments: integers as Int (Double when too large), other numbers Double, strings as they are. */
+    private fun arguments(m: Map<String, Any?>): Map<String, Any> = m.obj("arguments", "arguments").mapValues { (key, value) ->
+        when (value) {
+            is Long -> if (value in Int.MIN_VALUE..Int.MAX_VALUE) value.toInt() else value.toDouble()
+            is Double, is String -> value
+            else -> throw IllegalArgumentException("Bad argument $key")
+        }
     }
 
     private fun ned(p: Ned) = linkedMapOf("x" to p.x, "y" to p.y, "z" to p.z)

@@ -14,6 +14,9 @@ import com.aeronex.app.link.mavlink.StatusText
 import com.aeronex.app.memory.FlightJournal
 import com.aeronex.app.memory.MemoryRoutes
 import com.aeronex.app.memory.Route
+import com.aeronex.app.memory.SavedMission
+import com.aeronex.app.memory.SavedStage
+import com.aeronex.app.memory.SavedStep
 import com.aeronex.app.mission.Mission
 import com.aeronex.app.observability.Trace
 import com.aeronex.app.observability.TracePoint
@@ -220,6 +223,47 @@ class SafetySupervisor(
 
     fun removeStage(index: Int): Future<Unit> = call {
         if (index in draft.indices) draft = draft.filterIndexed { i, _ -> i != index }
+    }
+
+    /**
+     * Saves the stages built so far in the flight memory as [name] (spec 2026-10-28 "Saved missions"), replacing a
+     * mission of that name. Null when saved, else why not. Only the commands are kept, never positions.
+     */
+    fun saveMission(name: String): Future<String?> = call {
+        val stages = draft
+        if (stages.isEmpty()) return@call NOTHING_TO_SAVE
+        val label = FlightJournal.missionName(name) ?: return@call BAD_MISSION_NAME
+        val saved = SavedMission(label, stages.map { stage ->
+            SavedStage(stage.source.name.lowercase(), stage.plan.steps.map {
+                SavedStep(it.command.name, it.command.arguments, it.command.description)
+            })
+        })
+        if (!journal.saveMission(saved)) return@call MISSIONS_FULL
+        notice = missionSaved(label)
+        null
+    }
+
+    /**
+     * The saved mission [name] becomes the stages being built, replacing them. Checked against the mission rules
+     * only: Start checks it against the vehicle and shows it for one CONFIRM, as for a mission built by hand. Null
+     * when loaded, else why not.
+     */
+    fun loadMission(name: String): Future<String?> = call {
+        val saved = journal.mission(name) ?: return@call noSavedMission(name.trim())
+        val stages = try {
+            saved.stages.map { stage ->
+                val steps = stage.steps.map {
+                    PlanStep(FlightCommand.fromToolCalls(listOf(mapOf("name" to it.name, "arguments" to it.arguments))),
+                        StepSource.RULES, it.description)
+                }
+                DraftStage(FlightPlan(steps), PlanSource.fromChannel.firstOrNull { it.name.lowercase() == stage.source } ?: PlanSource.TAP)
+            }.also { Mission(it.map { stage -> stage.plan.steps }, checkpoints) }
+        } catch (e: CommandFormatException) {
+            return@call "\"${saved.name}\" can no longer be flown: ${e.message}"
+        }
+        draft = stages
+        notice = missionLoaded(saved.name, stages.size)
+        null
     }
 
     /** Forgets the stages built so far and the mission to resume; building ends. */
@@ -1004,6 +1048,13 @@ class SafetySupervisor(
         const val NOTHING_LEFT = "Nothing of that mission is left to fly."
         const val NOTHING_INTERRUPTED = "The mission stopped between stages, so no step was interrupted: resume it " +
             "from its next stage."
+        const val NOTHING_TO_SAVE = "Build a mission first: there are no stages to save."
+        const val BAD_MISSION_NAME = "Give the mission a name of 1 to ${FlightJournal.MISSION_NAME_MAX} characters."
+        const val MISSIONS_FULL = "${FlightJournal.MISSIONS_LIMIT} missions are saved already: delete one first."
+        fun noSavedMission(name: String) = "There is no saved mission called \"$name\"."
+        fun missionSaved(name: String) = "Saved the mission as \"$name\"."
+        fun missionLoaded(name: String, stages: Int) =
+            "Loaded \"$name\": ${if (stages == 1) "1 stage" else "$stages stages"}. Start checks it and shows it for CONFIRM."
 
         fun stageAdded(stage: Int) = "Added as stage $stage of the mission."
         const val READINESS_CHANGED = "The vehicle state changed. Say the command again."

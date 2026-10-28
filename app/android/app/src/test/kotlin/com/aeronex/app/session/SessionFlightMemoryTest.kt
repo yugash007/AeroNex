@@ -1,5 +1,6 @@
 package com.aeronex.app.session
 
+import com.aeronex.app.safety.SafetySupervisor
 import com.aeronex.app.memory.FileJournalStore
 import com.aeronex.app.memory.FlightJournal
 import com.aeronex.app.vehicle.executor.FAST_TIMING
@@ -133,6 +134,27 @@ class SessionFlightMemoryTest {
         controller = newController(journal())
         assertEquals(before, controller.journal.state)
         assertEquals(listOf("Takeoff", "Move forward 3 m"), labels())
+    }
+
+    @Test fun missionsAreSavedLoadedAndDeletedThroughTheChannel() {
+        connect()
+        api.call("missionBuilding", mapOf("enabled" to true))
+        controller.submitPlan(mapOf("steps" to listOf(step("move_relative", mapOf("direction" to "left", "distance_m" to 2))),
+            "source" to "typed"))
+        assertEquals(SessionApi.Reply.Ok(mapOf("saved" to "Left loop")), api.call("saveMission", mapOf("name" to " Left  loop")))
+        val saved = (controller.snapshot().obj("mission")["saved"] as List<Map<String, Any?>>).single()
+        assertEquals("Left loop", saved["name"])
+        assertEquals(1, saved["stageCount"])
+        assertEquals(1, saved["stepCount"])
+        assertEquals("Move left 2 m", saved["summary"])
+        api.call("clearMission", null)
+        assertEquals(SessionApi.Reply.Ok(mapOf("loaded" to "Left loop")), api.call("loadMission", mapOf("name" to "left loop")))
+        assertEquals(1, (controller.snapshot().obj("mission")["stages"] as List<*>).size)
+        assertEquals(mapOf("error" to SafetySupervisor.noSavedMission("Nope")),
+            (api.call("loadMission", mapOf("name" to "Nope")) as SessionApi.Reply.Ok).value)
+        assertEquals(SessionApi.Reply.Ok(null), api.call("deleteMission", mapOf("name" to "LEFT LOOP")))
+        assertTrue((controller.snapshot().obj("mission")["saved"] as List<*>).isEmpty())
+        assertEquals(SessionException.BAD_ARGS, (api.call("saveMission", null) as SessionApi.Reply.Failed).code)
     }
 
     @Test fun aMissionIsBuiltThroughTheChannelAndARecordedOneRunsAgainAsAMission() {

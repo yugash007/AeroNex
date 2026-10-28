@@ -121,6 +121,9 @@ void main() {
       expect(building.stages.last.steps.single.arguments, {'point': 1});
       expect(building.resume!.fromStep, 3);
       expect(building.resume!.stepCount, 2);
+      final saved = building.saved.single;
+      expect([saved.name, saved.stageCount, saved.stepCount], ['Perimeter', 2, 3]);
+      expect(saved.summary, 'Take off to 3 m, then Move forward 4 m, then Land');
       // A plan, an older service, and the submit answer of a plan that became a stage.
       final plain = SessionSnapshot.fromMap(_fixture('pending_plan'));
       expect(plain.pending!.isMission, isFalse);

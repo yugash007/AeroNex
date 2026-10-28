@@ -303,6 +303,16 @@ class SessionController(
         await(supervisor.clearMission())
     }
 
+    /** The stages built, saved as [name]: `{saved: name}`, or `{error}` with the reason. */
+    fun saveMission(name: String): Map<String, Any?> =
+        await(supervisor.saveMission(name))?.let { mapOf("error" to it) } ?: mapOf("saved" to FlightJournal.missionName(name))
+
+    /** The saved mission [name] becomes the stages being built: `{loaded: name}`, or `{error}`. */
+    fun loadMission(name: String): Map<String, Any?> =
+        await(supervisor.loadMission(name))?.let { mapOf("error" to it) } ?: mapOf("loaded" to journal.mission(name)?.name)
+
+    fun deleteMission(name: String) = journal.deleteMission(name)
+
     fun setMissionCheckpoints(enabled: Boolean) {
         await(supervisor.setCheckpoints(enabled))
     }

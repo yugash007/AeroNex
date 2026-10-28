@@ -25,6 +25,15 @@ data class CommandRecord(
     val stage: Int = 0,
 )
 
+/** One step of a saved mission: the tool call, as the history keeps it. */
+data class SavedStep(val name: String, val arguments: Map<String, Any>, val description: String)
+
+/** One stage of a saved mission, with the plan source it was built from (wire name: phone, typed, tap, ai). */
+data class SavedStage(val source: String, val steps: List<SavedStep>)
+
+/** A mission the operator saved by name (spec 2026-10-28 "Saved missions"): commands only, never positions. */
+data class SavedMission(val name: String, val stages: List<SavedStage>, val atWallMs: Long = 0)
+
 /** An immutable view of the flight memory (spec 2026-10-28 M1). */
 data class MemoryState(
     /** HOME_POSITION as last seen; null until home is known. It moves where the vehicle arms. */
@@ -41,6 +50,8 @@ data class MemoryState(
     val nextId: Long = 1,
     /** Why the trail and points were last forgotten, for the UI; null when nothing was. */
     val notice: String? = null,
+    /** Saved missions, newest first, at most [FlightJournal.MISSIONS_LIMIT]. Kept by clear and a new frame. */
+    val missions: List<SavedMission> = emptyList(),
 )
 
 /**
@@ -78,7 +89,7 @@ class FlightJournal(
                 s.home == null -> s.copy(home = home, origin = origin)
                 sameFrame(s, home, origin) -> s.copy(home = home, origin = origin ?: s.origin)
                 else -> MemoryState(home = home, origin = origin, history = s.history, nextId = s.nextId,
-                    notice = if (s.trail.isEmpty() && s.points.isEmpty()) null else FRAME_CHANGED)
+                    notice = if (s.trail.isEmpty() && s.points.isEmpty()) null else FRAME_CHANGED, missions = s.missions)
             }
         }
     }
@@ -131,8 +142,35 @@ class FlightJournal(
     /** The steps of the plan [planId] in the history, in order; empty when it is no longer there. */
     fun plan(planId: Long): List<CommandRecord> = state.history.filter { it.planId == planId }
 
-    /** The operator cleared the memory: trail, points, history and notice; home and its frame stay known. */
-    fun clear() = update { s -> MemoryState(home = s.home, origin = s.origin, nextId = s.nextId) }
+    /**
+     * The operator cleared the memory: trail, points, history and notice. Home and its frame stay known, and the saved
+     * missions stay: they are the operator's own, deleted one by one.
+     */
+    fun clear() = update { s -> MemoryState(home = s.home, origin = s.origin, nextId = s.nextId, missions = s.missions) }
+
+    /**
+     * Saves [mission], replacing one of the same name (any case), as the newest. False when [MISSIONS_LIMIT] others are
+     * saved already: one must be deleted first, never dropped unasked.
+     */
+    fun saveMission(mission: SavedMission): Boolean {
+        var saved = false
+        update { s ->
+            val others = s.missions.filterNot { it.name.equals(mission.name, ignoreCase = true) }
+            if (others.size >= MISSIONS_LIMIT) s
+            else {
+                saved = true
+                s.copy(missions = listOf(mission.copy(atWallMs = wallClock())) + others)
+            }
+        }
+        return saved
+    }
+
+    /** The saved mission called [name] (any case), if there is one. */
+    fun mission(name: String): SavedMission? = state.missions.firstOrNull { it.name.equals(name.trim(), ignoreCase = true) }
+
+    fun deleteMission(name: String) = update { s ->
+        s.copy(missions = s.missions.filterNot { it.name.equals(name.trim(), ignoreCase = true) })
+    }
 
     private inline fun update(change: (MemoryState) -> MemoryState) {
         synchronized(lock) {
@@ -162,6 +200,14 @@ class FlightJournal(
         const val MIN_SPACING_M = 0.5
         const val TRAIL_LIMIT = 64
         const val HISTORY_LIMIT = 60
+        const val MISSIONS_LIMIT = 10
+        const val MISSION_NAME_MAX = 32
+
+        /** [raw] as a mission name: trimmed, inner spaces collapsed, 1–[MISSION_NAME_MAX] printable characters. */
+        fun missionName(raw: String): String? {
+            val name = raw.trim().replace(Regex("\\s+"), " ")
+            return name.takeIf { it.length in 1..MISSION_NAME_MAX && it.none(Char::isISOControl) }
+        }
         const val TAKEOFF_LABEL = "Takeoff"
         const val FRAME_CHANGED = "The drone's position frame changed (a reboot or another drone), so the flown " +
             "path and saved points were forgotten."
@@ -183,7 +229,8 @@ class FlightJournal(
         /** A restored memory keeps positions only with the home and frame they belong to. */
         private fun restore(saved: MemoryState?): MemoryState = when {
             saved == null -> MemoryState()
-            saved.home == null || saved.origin == null -> MemoryState(history = bounded(saved.history), nextId = saved.nextId)
+            saved.home == null || saved.origin == null ->
+                MemoryState(history = bounded(saved.history), nextId = saved.nextId, missions = saved.missions)
             else -> saved.copy(history = bounded(saved.history))
         }
     }

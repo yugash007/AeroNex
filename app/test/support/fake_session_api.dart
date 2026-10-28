@@ -475,6 +475,51 @@ class FakeSessionApi implements SessionApi {
     return AwaitingConfirmation(token, 30000, summary);
   }
 
+  /// What `saveMission` and `loadMission` answer: null does it, like the
+  /// service; a string is the refusal.
+  String? saveError, loadError;
+
+  /// The stages of each saved mission, as `DraftStage.toMap` gives them.
+  final savedStages = <String, List<Object?>>{};
+
+  @override
+  Future<String?> saveMission(String name) async {
+    calls.add(('saveMission', {'name': name}));
+    if (saveError != null) return saveError;
+    final stages = current.mission.stages;
+    savedStages[name] = [for (final s in stages) s.toMap()];
+    final steps = [for (final s in stages) ...s.steps];
+    pushMission({
+      'saved': [
+        SavedMission(name, stages.length, steps.length, [for (final s in steps) s.description].join(', then '), 0)
+            .toMap(),
+        for (final m in current.mission.saved)
+          if (m.name.toLowerCase() != name.toLowerCase()) m.toMap()
+      ]
+    });
+    return null;
+  }
+
+  @override
+  Future<String?> loadMission(String name) async {
+    calls.add(('loadMission', {'name': name}));
+    if (loadError != null) return loadError;
+    final stages = savedStages[name];
+    if (stages != null) pushMission({'stages': stages});
+    return null;
+  }
+
+  @override
+  Future<void> deleteMission(String name) async {
+    calls.add(('deleteMission', {'name': name}));
+    pushMission({
+      'saved': [
+        for (final m in current.mission.saved)
+          if (m.name != name) m.toMap()
+      ]
+    });
+  }
+
   @override
   Future<ConfirmResult> continueMission(String token) async {
     calls.add(('continueMission', {'token': token}));

@@ -1041,6 +1041,30 @@ class MissionResume {
 /// one holding at a checkpoint and the one to resume. While [building], every
 /// new plan becomes the next stage instead of waiting for CONFIRM; STOP, HOLD
 /// and status still run at once.
+/// A mission the operator saved by name (2026-10-28): its commands only,
+/// kept by the service across restarts. Loading it fills the stages being
+/// built; Start still checks it and shows it for CONFIRM.
+class SavedMission {
+  const SavedMission(this.name, this.stageCount, this.stepCount, this.summary, this.atWallMs);
+  factory SavedMission.fromMap(Map map) => SavedMission(_req<String>(map, 'name'), _req<int>(map, 'stageCount'),
+      _req<int>(map, 'stepCount'), _req<String>(map, 'summary'), _req<int>(map, 'atWallMs'));
+
+  final String name;
+  final int stageCount, stepCount;
+
+  /// Every step, ", then " between them.
+  final String summary;
+  final int atWallMs;
+
+  Map<String, Object?> toMap() => {
+        'name': name,
+        'stageCount': stageCount,
+        'stepCount': stepCount,
+        'summary': summary,
+        'atWallMs': atWallMs,
+      };
+}
+
 class MissionStatus {
   const MissionStatus({
     this.building = false,
@@ -1049,6 +1073,7 @@ class MissionStatus {
     this.stages = const [],
     this.checkpoint,
     this.resume,
+    this.saved = const [],
   });
 
   factory MissionStatus.fromMap(Map map) {
@@ -1061,6 +1086,7 @@ class MissionStatus {
       stages: [for (final stage in _req<List>(map, 'stages')) DraftStage.fromMap(stage as Map)],
       checkpoint: checkpoint == null ? null : MissionCheckpoint.fromMap(checkpoint),
       resume: resume == null ? null : MissionResume.fromMap(resume),
+      saved: [for (final m in _opt<List>(map, 'saved') ?? const []) SavedMission.fromMap(m as Map)],
     );
   }
 
@@ -1070,6 +1096,9 @@ class MissionStatus {
   final MissionCheckpoint? checkpoint;
   final MissionResume? resume;
 
+  /// Saved missions, newest first.
+  final List<SavedMission> saved;
+
   Map<String, Object?> toMap() => {
         'building': building,
         'checkpoints': checkpoints,
@@ -1077,6 +1106,7 @@ class MissionStatus {
         'stages': [for (final stage in stages) stage.toMap()],
         'checkpoint': checkpoint?.toMap(),
         'resume': resume?.toMap(),
+        'saved': [for (final m in saved) m.toMap()],
       };
 }
 
@@ -1390,6 +1420,16 @@ abstract class SessionApi {
   /// The stages built as one mission, validated and shown for one CONFIRM.
   Future<SubmitResult> startMission();
 
+  /// Saves the stages built as [name], replacing a mission of that name;
+  /// null when saved, else the service's reason.
+  Future<String?> saveMission(String name);
+
+  /// The saved mission [name] becomes the stages being built; null when
+  /// loaded, else the service's reason.
+  Future<String?> loadMission(String name);
+
+  Future<void> deleteMission(String name);
+
   /// At a checkpoint: the next stage starts.
   Future<ConfirmResult> continueMission(String token);
 
@@ -1617,6 +1657,22 @@ class ChannelSessionApi implements SessionApi {
     final reply = await _methods.invokeMethod<Object?>('startMission');
     return SubmitResult.fromMap(reply is Map ? reply : null);
   }
+
+  @override
+  Future<String?> saveMission(String name) => _named('saveMission', name);
+
+  @override
+  Future<String?> loadMission(String name) => _named('loadMission', name);
+
+  /// `{saved|loaded: name}`, or `{error}` with the reason.
+  Future<String?> _named(String method, String name) async {
+    final reply = await _methods.invokeMethod<Object?>(method, {'name': name});
+    if (reply is! Map) throw _bad(method);
+    return _opt<String>(reply, 'error');
+  }
+
+  @override
+  Future<void> deleteMission(String name) => _methods.invokeMethod<void>('deleteMission', {'name': name});
 
   @override
   Future<ConfirmResult> continueMission(String token) async {

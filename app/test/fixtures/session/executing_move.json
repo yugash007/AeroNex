@@ -162,6 +162,7 @@
     "maxStages": 5,
     "stages": [],
     "checkpoint": null,
-    "resume": null
+    "resume": null,
+    "saved": []
   }
 }

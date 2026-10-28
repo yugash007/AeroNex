@@ -5,6 +5,9 @@ import com.aeronex.app.command.model.FlightPlan
 import com.aeronex.app.command.model.PlanStep
 import com.aeronex.app.command.model.StepSource
 import com.aeronex.app.memory.FlightJournal
+import com.aeronex.app.memory.SavedStep
+import com.aeronex.app.memory.SavedStage
+import com.aeronex.app.memory.SavedMission
 import com.aeronex.app.mission.Mission
 import com.aeronex.app.vehicle.executor.FAST_TIMING
 import com.aeronex.app.vehicle.executor.Rig
@@ -211,6 +214,34 @@ class SupervisorMissionTest {
         await(supervisor.setCheckpoints(false))
         val again = (await(supervisor.submitMission(recorded.withCheckpoints(true))) as SubmitResult.AwaitingConfirmation).pending
         assertTrue(!again.mission!!.checkpoints)
+    }
+
+    @Test fun aSavedMissionLoadsIntoTheStagesAndStartsLikeOneBuiltByHand() {
+        connect(execution = false)
+        assertEquals(SafetySupervisor.NOTHING_TO_SAVE, await(supervisor.saveMission("Perimeter")))
+        build(plan(takeoff(), move("forward", 2)), plan(land))
+        assertEquals(SafetySupervisor.BAD_MISSION_NAME, await(supervisor.saveMission("   ")))
+        assertNull(await(supervisor.saveMission("  Perimeter ")))
+        assertEquals(SafetySupervisor.missionSaved("Perimeter"), supervisor.state.notice)
+        assertEquals(listOf("typed", "typed"), journal.mission("perimeter")!!.stages.map { it.source })
+        await(supervisor.clearMission())
+        assertTrue(mission().stages.isEmpty())
+        assertEquals(SafetySupervisor.noSavedMission("Survey"), await(supervisor.loadMission(" Survey")))
+        assertNull(await(supervisor.loadMission("PERIMETER")))
+        assertEquals(SafetySupervisor.missionLoaded("Perimeter", 2), supervisor.state.notice)
+        assertEquals(listOf(listOf("Take off to 3 m", "Move forward 2 m"), listOf("Land")),
+            mission().stages.map { stage -> stage.plan.steps.map { it.command.description } })
+        assertEquals(listOf(PlanSource.TYPED, PlanSource.TYPED), mission().stages.map { it.source })
+        val shown = (await(supervisor.startMission()) as SubmitResult.AwaitingConfirmation).pending
+        assertEquals(listOf(0, 0, 1), shown.mission!!.stageOfStep)
+    }
+
+    @Test fun aSavedMissionThatNoLongerParsesIsRefusedWithItsReason() {
+        connect(execution = false)
+        journal.saveMission(SavedMission("Old", listOf(SavedStage("typed", listOf(SavedStep("barrel_roll", emptyMap(), "Barrel roll"))))))
+        val refused = await(supervisor.loadMission("old"))!!
+        assertTrue(refused, refused.startsWith("\"Old\" can no longer be flown: "))
+        assertTrue(mission().stages.isEmpty())
     }
 
     @Test fun aDryRunMissionReportsEveryStepNotSent() {

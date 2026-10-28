@@ -8,7 +8,8 @@ import '../../../session/session_api.dart';
 /// status still act at once. Start shows the whole mission, checked from the
 /// drone's state now, for one CONFIRM. With checkpoints every mission (built,
 /// run again from the flight memory, or resumed) holds after each stage until
-/// Continue. A mission that ended early can be resumed.
+/// Continue. A mission that ended early can be resumed. A built mission can
+/// be saved by name, and a saved one loaded again later, even after a restart.
 class MissionCard extends StatelessWidget {
   const MissionCard({
     super.key,
@@ -19,6 +20,9 @@ class MissionCard extends StatelessWidget {
     required this.onStart,
     required this.onClear,
     required this.onResume,
+    required this.onSave,
+    required this.onLoad,
+    required this.onDelete,
     this.enabled = true,
     this.running = false,
   });
@@ -30,6 +34,9 @@ class MissionCard extends StatelessWidget {
 
   /// Resume from the step the mission ended at, or ([skip]) the one after.
   final void Function({required bool skip}) onResume;
+
+  /// Save the stages built under a name; load or delete a saved mission.
+  final ValueChanged<String> onSave, onLoad, onDelete;
 
   /// False while another command is being sent.
   final bool enabled;
@@ -107,6 +114,10 @@ class MissionCard extends StatelessWidget {
                     label: const Text('Start mission')),
               ),
               const SizedBox(width: 8),
+              TextButton(
+                  key: const Key('saveMission'),
+                  onPressed: enabled ? () => _save(context) : null,
+                  child: const Text('Save')),
               TextButton(key: const Key('clearMission'), onPressed: enabled ? onClear : null, child: const Text('Clear')),
             ]),
           ],
@@ -130,8 +141,83 @@ class MissionCard extends StatelessWidget {
               Text('A move that was interrupted runs again in full from where the drone is now.',
                   style: theme.textTheme.bodySmall),
           ],
+          if (mission.saved.isNotEmpty) ...[
+            const Divider(),
+            Text('Saved missions', style: theme.textTheme.titleSmall),
+            for (final saved in mission.saved)
+              Padding(
+                key: Key('savedMission${saved.name}'),
+                padding: const EdgeInsets.symmetric(vertical: 2),
+                child: Row(children: [
+                  Expanded(
+                    child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                      Text(saved.name),
+                      Text(
+                          '${saved.stageCount == 1 ? '1 stage' : '${saved.stageCount} stages'} · '
+                          '${saved.stepCount == 1 ? '1 step' : '${saved.stepCount} steps'}: ${saved.summary}',
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          style: theme.textTheme.bodySmall),
+                    ]),
+                  ),
+                  TextButton(
+                      key: Key('loadMission${saved.name}'),
+                      onPressed: enabled && !running ? () => onLoad(saved.name) : null,
+                      child: const Text('Load')),
+                  IconButton(
+                      key: Key('deleteMission${saved.name}'),
+                      tooltip: 'Delete ${saved.name}',
+                      onPressed: enabled ? () => onDelete(saved.name) : null,
+                      icon: const Icon(Icons.delete_outline)),
+                ]),
+              ),
+          ],
         ]),
       ),
     );
   }
+
+  Future<void> _save(BuildContext context) async {
+    final name = await showDialog<String>(context: context, builder: (_) => const _MissionNameDialog());
+    if (name != null && name.trim().isNotEmpty) onSave(name.trim());
+  }
+}
+
+/// Asks for a saved mission's name; pops it, or null for Cancel.
+class _MissionNameDialog extends StatefulWidget {
+  const _MissionNameDialog();
+
+  @override
+  State<_MissionNameDialog> createState() => _MissionNameDialogState();
+}
+
+class _MissionNameDialogState extends State<_MissionNameDialog> {
+  final _name = TextEditingController();
+
+  @override
+  void dispose() {
+    _name.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) => AlertDialog(
+        key: const Key('saveMissionDialog'),
+        title: const Text('Save this mission'),
+        content: TextField(
+          key: const Key('saveMissionName'),
+          controller: _name,
+          autofocus: true,
+          maxLength: 32,
+          decoration: const InputDecoration(labelText: 'Name', hintText: 'e.g. Perimeter check'),
+          onSubmitted: (name) => Navigator.pop(context, name),
+        ),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancel')),
+          TextButton(
+              key: const Key('saveMissionConfirm'),
+              onPressed: () => Navigator.pop(context, _name.text),
+              child: const Text('Save')),
+        ],
+      );
 }

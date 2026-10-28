@@ -17,6 +17,7 @@ import com.aeronex.app.link.mavlink.StatusText
 import com.aeronex.app.link.mavlink.SysStatus
 import com.aeronex.app.memory.MemoryRoutes
 import com.aeronex.app.memory.MemoryState
+import com.aeronex.app.memory.SavedMission
 import com.aeronex.app.observability.LatencySummary
 import com.aeronex.app.mission.Mission
 import com.aeronex.app.safety.ConfirmResult
@@ -270,7 +271,7 @@ object SessionSchema {
         "speech" to speech(speech),
         "ai" to ai(ai),
         "memory" to memory(memory, vehicle),
-        "mission" to mission(supervisor.mission),
+        "mission" to mission(supervisor.mission, memory.missions),
     )
 
     /**
@@ -483,7 +484,7 @@ object SessionSchema {
         )
     }
 
-    private fun mission(mission: MissionStatus) = linkedMapOf(
+    private fun mission(mission: MissionStatus, saved: List<SavedMission>) = linkedMapOf(
         "building" to mission.building,
         "checkpoints" to mission.checkpoints,
         "maxStages" to Mission.MAX_STAGES,
@@ -502,6 +503,12 @@ object SessionSchema {
         },
         "resume" to mission.resume?.let {
             linkedMapOf("fromStep" to it.fromStep, "stepCount" to it.stepCount, "atCheckpoint" to it.atCheckpoint)
+        },
+        // Saved missions (2026-10-28), newest first: what the mission card lists to load or delete.
+        "saved" to saved.map { m ->
+            val steps = m.stages.flatMap { it.steps }
+            linkedMapOf("name" to m.name, "stageCount" to m.stages.size, "stepCount" to steps.size,
+                "summary" to steps.joinToString(", then ") { it.description }, "atWallMs" to m.atWallMs)
         },
     )
 

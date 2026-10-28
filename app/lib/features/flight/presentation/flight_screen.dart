@@ -394,6 +394,56 @@ class _FlightScreenState extends State<FlightScreen> with WidgetsBindingObserver
   void _resumeMission({required bool skip}) =>
       _locked(() => _sent(() => widget.session.resumeMission(skipInterrupted: skip)));
 
+  /// Saved missions (2026-10-28): the service keeps them across restarts.
+  void _saveMission(String name) => _missionCall(() async {
+        if (await widget.session.saveMission(name) case final refused?) _showError(refused);
+      });
+
+  /// Loading replaces the stages being built, so it asks first when there
+  /// are some.
+  Future<void> _loadMission(String name) async {
+    final built = _snap.mission.stages.length;
+    if (built > 0) {
+      final sure = await showDialog<bool>(
+          context: context,
+          builder: (context) => AlertDialog(
+                key: const Key('loadMissionConfirm'),
+                title: Text('Load "$name"?'),
+                content: Text('It replaces the ${built == 1 ? 'stage' : '$built stages'} built so far.'),
+                actions: [
+                  TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Keep')),
+                  TextButton(
+                      key: const Key('loadMissionReplace'),
+                      onPressed: () => Navigator.pop(context, true),
+                      child: const Text('Replace')),
+                ],
+              ));
+      if (sure != true || !mounted) return;
+    }
+    await _missionCall(() async {
+      if (await widget.session.loadMission(name) case final refused?) _showError(refused);
+    });
+  }
+
+  Future<void> _deleteMission(String name) async {
+    final sure = await showDialog<bool>(
+        context: context,
+        builder: (context) => AlertDialog(
+              key: const Key('deleteMissionConfirm'),
+              title: Text('Delete "$name"?'),
+              content: const Text('The saved mission is gone for good.'),
+              actions: [
+                TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Keep')),
+                TextButton(
+                    key: const Key('deleteMissionYes'),
+                    onPressed: () => Navigator.pop(context, true),
+                    child: const Text('Delete')),
+              ],
+            ));
+    if (sure != true || !mounted) return;
+    await _missionCall(() => widget.session.deleteMission(name));
+  }
+
   /// At a checkpoint: the next stage, checked again from the drone's state.
   /// Once per checkpoint: a second tap would only be refused, as if the
   /// mission had not gone on. A refusal lets the operator try again.
@@ -738,7 +788,10 @@ class _FlightScreenState extends State<FlightScreen> with WidgetsBindingObserver
                     onRemoveStage: _removeStage,
                     onStart: _startMission,
                     onClear: _clearMission,
-                    onResume: _resumeMission),
+                    onResume: _resumeMission,
+                    onSave: _saveMission,
+                    onLoad: _loadMission,
+                    onDelete: _deleteMission),
                 const SizedBox(height: 8),
                 FlightMemoryCard(
                     memory: snap.memory,

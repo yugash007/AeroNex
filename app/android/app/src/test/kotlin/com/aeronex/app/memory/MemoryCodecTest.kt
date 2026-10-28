@@ -92,6 +92,10 @@ class MemoryCodecTest {
         journal.observeHome(Ned(0.0, 0.0, 0.0), FrameOrigin(-353632621.0, 1491652374.0, 584.0))
         journal.takeoffCompleted(Ned(0.0, 0.0, -3.0))
         journal.markPoint(4, Ned(2.0, 2.0, -3.0))
+        journal.saveMission(SavedMission("Perimeter", listOf(
+            SavedStage("typed", listOf(SavedStep("takeoff", mapOf("altitude_m" to 3), "Take off to 3 m"),
+                SavedStep("move_relative", mapOf("direction" to "forward", "distance_m" to 2.5), "Move forward 2.5 m"))),
+            SavedStage("tap", listOf(SavedStep("land", emptyMap(), "Land"))))))
         val restored = FlightJournal(FileJournalStore(file, Executor { it.run() }))
         assertEquals(journal.state, restored.state)
     }

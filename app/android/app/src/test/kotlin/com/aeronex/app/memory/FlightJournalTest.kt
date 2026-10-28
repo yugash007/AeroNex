@@ -183,6 +183,39 @@ class FlightJournalTest {
         assertEquals(racing.state, saved.last())
     }
 
+    @Test fun missionsAreSavedByNameNewestFirstAndOnlyDeletedWhenAsked() {
+        val perimeter = SavedMission("Perimeter", listOf(SavedStage("typed", listOf(SavedStep("land", emptyMap(), "Land")))))
+        assertTrue(journal.saveMission(perimeter))
+        assertTrue(journal.saveMission(perimeter.copy(name = "Survey")))
+        assertEquals(listOf("Survey", "Perimeter"), journal.state.missions.map { it.name })
+        // The same name in another case replaces it, as the newest.
+        assertTrue(journal.saveMission(perimeter.copy(name = "PERIMETER")))
+        assertEquals(listOf("PERIMETER", "Survey"), journal.state.missions.map { it.name })
+        assertEquals(1_000L, journal.state.missions.first().atWallMs)
+        assertEquals("Survey", journal.mission(" survey ")!!.name)
+        // Full: a new name is refused; an old mission is never dropped unasked. Replacing still works.
+        repeat(FlightJournal.MISSIONS_LIMIT - 2) { journal.saveMission(perimeter.copy(name = "m$it")) }
+        assertFalse(journal.saveMission(perimeter.copy(name = "one more")))
+        assertEquals(FlightJournal.MISSIONS_LIMIT, journal.state.missions.size)
+        assertTrue(journal.saveMission(perimeter.copy(name = "survey")))
+        // Commands, not positions: clearing the memory and a new frame keep them.
+        journal.clear()
+        journal.observeHome(ned(0.0, 0.0, 0.0), origin())
+        journal.markPoint(1, ned(1.0, 1.0))
+        journal.observeHome(ned(0.0, 0.0, 0.0), origin(north = 50.0))
+        assertEquals(FlightJournal.MISSIONS_LIMIT, journal.state.missions.size)
+        journal.deleteMission("SURVEY")
+        assertNull(journal.mission("survey"))
+        assertEquals(FlightJournal.MISSIONS_LIMIT - 1, journal.state.missions.size)
+    }
+
+    @Test fun missionNamesAreTrimmedAndBounded() {
+        assertEquals("North field", FlightJournal.missionName("  North   field "))
+        assertNull(FlightJournal.missionName("   "))
+        assertNull(FlightJournal.missionName("x".repeat(FlightJournal.MISSION_NAME_MAX + 1)))
+        assertNull(FlightJournal.missionName("a\u0000b"))
+    }
+
     @Test fun aPlanFinishingAgainUnderItsKeyReplacesItsRecords() {
         journal.recordPlan(listOf(step("hold", "COMPLETED")), key = 7)
         journal.recordPlan(listOf(step("hold", "UNKNOWN")), key = 7) // its STOP check failed after the ACK

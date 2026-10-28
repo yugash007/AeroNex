@@ -156,6 +156,15 @@
       "fromStep": 3,
       "stepCount": 2,
       "atCheckpoint": false
-    }
+    },
+    "saved": [
+      {
+        "name": "Perimeter",
+        "stageCount": 2,
+        "stepCount": 3,
+        "summary": "Take off to 3 m, then Move forward 4 m, then Land",
+        "atWallMs": 1761600000000
+      }
+    ]
   }
 }

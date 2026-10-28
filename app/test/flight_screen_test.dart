@@ -2020,6 +2020,49 @@ void main() {
       expect(find.text('There is no mission to resume.'), findsOneWidget);
     });
 
+    testWidgets('a built mission is saved by name; a saved one loads (asking before it replaces) or goes',
+        (tester) async {
+      final session = await launch(tester, initial: fixture('mission_building'));
+      expect(find.byKey(const Key('savedMissionPerimeter')), findsOneWidget);
+      expect(find.text('2 stages · 3 steps: Take off to 3 m, then Move forward 4 m, then Land'), findsOneWidget);
+      await tapKey(tester, 'saveMission');
+      await tester.enterText(find.byKey(const Key('saveMissionName')), '  North loop ');
+      await tester.tap(find.byKey(const Key('saveMissionConfirm')));
+      await tester.pumpAndSettle();
+      expect(session.argumentsOf('saveMission'), [
+        {'name': 'North loop'}
+      ]);
+      expect(find.byKey(const Key('savedMissionNorth loop')), findsOneWidget);
+      await tapKey(tester, 'loadMissionPerimeter');
+      expect(find.byKey(const Key('loadMissionConfirm')), findsOneWidget, reason: 'stages are built: it asks first');
+      await tester.tap(find.byKey(const Key('loadMissionReplace')));
+      await tester.pumpAndSettle();
+      expect(session.argumentsOf('loadMission'), [
+        {'name': 'Perimeter'}
+      ]);
+      await tapKey(tester, 'deleteMissionPerimeter');
+      await tester.tap(find.byKey(const Key('deleteMissionYes')));
+      await tester.pumpAndSettle();
+      expect(session.argumentsOf('deleteMission'), [
+        {'name': 'Perimeter'}
+      ]);
+      expect(find.byKey(const Key('savedMissionPerimeter')), findsNothing);
+    });
+
+    testWidgets('a refused save says why; Cancel saves nothing', (tester) async {
+      final session = await launch(tester, initial: fixture('mission_building'));
+      await tapKey(tester, 'saveMission');
+      await tester.tap(find.text('Cancel'));
+      await tester.pumpAndSettle();
+      expect(session.methods, isNot(contains('saveMission')));
+      session.saveError = '10 missions are saved already: delete one first.';
+      await tapKey(tester, 'saveMission');
+      await tester.enterText(find.byKey(const Key('saveMissionName')), 'One more');
+      await tester.tap(find.byKey(const Key('saveMissionConfirm')));
+      await tester.pumpAndSettle();
+      expect(find.text('10 missions are saved already: delete one first.'), findsOneWidget);
+    });
+
     testWidgets('fits a 5-inch phone with large text', (tester) async {
       await launch(tester, initial: fixture('mission_building'), size: const Size(360, 640), textScale: 1.3);
       await tester.ensureVisible(find.byKey(const Key('startMission')));

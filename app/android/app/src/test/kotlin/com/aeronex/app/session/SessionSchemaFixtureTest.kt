@@ -7,6 +7,9 @@ import com.aeronex.app.command.model.StepSource
 import com.aeronex.app.link.mavlink.StatusText
 import com.aeronex.app.memory.CommandRecord
 import com.aeronex.app.memory.MemoryState
+import com.aeronex.app.memory.SavedStep
+import com.aeronex.app.memory.SavedStage
+import com.aeronex.app.memory.SavedMission
 import com.aeronex.app.memory.Waypoint
 import com.aeronex.app.mission.Mission
 import com.aeronex.app.safety.Checkpoint
@@ -283,6 +286,11 @@ class SessionSchemaFixtureTest {
                 modeOwner = ModeOwner.APP, altitudeRelM = 0.0, position = Ned(0.0, 0.0, 0.0), velocity = Ned(0.0, 0.0, 0.0),
                 yaw = 0.0, batteryPercent = 95, healthy = true, ekfFlags = 0x37F, home = Ned(0.0, 0.0, 0.0), ageMs = freshAges),
             latency = latency(), speech = voiceReady.copy(utterance = 12, heard = "mark point one"),
+            memory = MemoryState(missions = listOf(SavedMission("Perimeter", listOf(
+                SavedStage("typed", listOf(SavedStep(FlightCommand.TAKEOFF, mapOf(FlightCommand.ALTITUDE to 3), "Take off to 3 m"),
+                    SavedStep(FlightCommand.MOVE, mapOf(FlightCommand.DIRECTION to "forward", FlightCommand.DISTANCE to 4),
+                        "Move forward 4 m"))),
+                SavedStage("tap", listOf(SavedStep(FlightCommand.LAND, emptyMap(), "Land")))), atWallMs = 1_761_600_000_000L))),
         ))
     }
 

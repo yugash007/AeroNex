@@ -131,6 +131,21 @@ delayed. The AI never invents a position.
   no step to skip.
 - The history records each step's stage, so "Run again" shows a recorded mission as a mission again.
 
+### Saved missions
+
+- **Save** keeps the stages built under a name of 1–32 characters, in the flight-memory file, so they survive a
+  restart.
+  - Saving a name again, in any case, replaces that mission.
+  - At most 10 are kept. An 11th is refused until one is deleted; a saved mission is never dropped unasked.
+- Only commands are kept, never positions, so clearing the flight memory or a new frame keeps them. "Go to point 2" in
+  a saved mission flies to point 2 as it is saved when the mission runs.
+- **Load** puts a saved mission's stages in place of those being built, and asks first when there are some.
+  - Each stage is checked against the mission rules. A mission that no longer parses (an older app's command) is
+    refused with the reason.
+  - Nothing flies on load: Start checks the mission against the vehicle and shows it for one CONFIRM, like any mission.
+- The snapshot's `mission.saved` lists them, newest first, with their stage and step counts and a summary. The channel
+  methods are `saveMission`, `loadMission` and `deleteMission`, each with `{name}`.
+
 ## Tests
 
 | Area | Tests |

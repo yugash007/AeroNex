@@ -50,7 +50,7 @@ AeroNex is an Android app that lets anyone command an ArduPilot drone by **speak
 | 🧠 | **Rules first, AI second** | A strict grammar parser handles known phrasings in < 10 ms. Only phrasings it can't read go to the on-device AI: an **LFM2.5** planner splits the request into steps, and **Cactus Needle** turns each step into one tool call. |
 | 🔢 | **Natural numbers & phrasing** | "two point five", "two and a half", "half a metre", "climb", "descend", "back up", "to the left", filler words like "um" or "basically". |
 | 🧩 | **Multi-step plans** | Up to 5 steps per command ("take off to 3 m then go forward 5 m and right 3 m"), shown as a plan card with **one CONFIRM**. |
-| 🗺️ | **Missions** | Build up to 5 stages (each a plan you said, typed or tapped), check the whole mission from the drone's state, fly it after **one CONFIRM**. Optional hold after each stage until you tap Continue, and **resume** after a STOP. |
+| 🗺️ | **Missions** | Build up to 5 stages (each a plan you said, typed or tapped), check the whole mission from the drone's state, fly it after **one CONFIRM**. Optional hold after each stage until you tap Continue, and **resume** after a STOP. **Save** a mission by name and load it again later, even after a restart. |
 | 🏠 | **Flight memory** | The app remembers where it flew the drone and what you asked: **"return home"**, **"go back"** (undo), **"retrace the path"**, **"mark point 2"** / **"go to point 2"**, a live mini-map, and recent commands with **Run again**. Saved across restarts; never offered to the AI. |
 | 🛑 | **Always-on emergency STOP** | Giant on-screen button, **Volume-Down**, notification action and spoken "stop". BRAKE in the air (LAND if BRAKE is refused), never a forced disarm, and re-sent until the autopilot confirms. |
 | 🛡️ | **Safety supervisor** | Negations ("don't take off") are refused, as are out-of-range or negative distances, unit mix-ups, plans more than 30 m from home and stale telemetry. AI output can't invent numbers or directions you didn't say. |
@@ -122,7 +122,7 @@ Models are downloaded inside the app (Menu → Models) and verified with SHA-256
 
 | Area | Result |
 |---|---|
-| Automated tests | **915** Kotlin/JVM · **292** Flutter · **416** Python — all passing (2026-10-28) |
+| Automated tests | **920** Kotlin/JVM · **294** Flutter · **416** Python — all passing (2026-10-28) |
 | Parser correctness | **3,431 / 3,431** golden command vectors match |
 | Simulator (ArduPilot SITL + Gazebo) | **13 / 13** integration tests pass |
 | Move command → drone acknowledges | **p95 209 ms** (target ≤ 300 ms) |
@@ -171,7 +171,7 @@ Full reports: [2026-10-28 audit](docs/testing/2026-10-28-audit.md) · [flight me
 ```bash
 cd app
 flutter test && dart analyze lib test            # Flutter UI tests
-cd android && ./gradlew testDebugUnitTest        # 915 Kotlin tests (safety, link, parser, speech, AI, memory, missions)
+cd android && ./gradlew testDebugUnitTest        # 920 Kotlin tests (safety, link, parser, speech, AI, memory, missions)
 cd ../.. && python -m pytest edge/tests tools    # Python tooling tests
 python tools/grammar-gen/gen.py --check          # grammar tables are up to date
 ```

@@ -78,6 +78,9 @@ class SessionApi(private val controller: SessionController) {
                     ?: throw bad("missionCheckpoints needs true or false."))
             }
             "startMission" -> Reply.Ok(controller.startMission())
+            "saveMission" -> Reply.Ok(controller.saveMission(missionName(arguments)))
+            "loadMission" -> Reply.Ok(controller.loadMission(missionName(arguments)))
+            "deleteMission" -> done { controller.deleteMission(missionName(arguments)) }
             "continueMission" -> Reply.Ok(controller.continueMission(argument(arguments, "token") as? String
                 ?: throw bad("continueMission needs the checkpoint token.")))
             "resumeMission" -> Reply.Ok(controller.resumeMission(argument(arguments, "skipInterrupted") == true))
@@ -94,6 +97,9 @@ class SessionApi(private val controller: SessionController) {
     } catch (e: IllegalArgumentException) {
         Reply.Failed(SessionException.BAD_ARGS, e.message ?: "Bad arguments.")
     }
+
+    private fun missionName(arguments: Any?): String =
+        argument(arguments, "name") as? String ?: throw bad("Saved missions are named: {name}.")
 
     private fun submitText(arguments: Any?): Map<String, Any?> {
         val map = arguments as? Map<*, *> ?: throw bad("submitText needs {text, language}.")
