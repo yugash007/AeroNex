@@ -356,7 +356,7 @@ class SafetySupervisor(
         if (activeRun() != null) return SubmitResult.Rejected(BUSY)
         if (stopLane != null) return SubmitResult.Rejected(STOP_IN_PROGRESS)
         if (execution) ownershipBlock(vehicle)?.let { return SubmitResult.Rejected(it) }
-        journal.observeHome(vehicle.home)
+        journal.observeHome(vehicle.home, vehicle.origin)
         validator.validate(submitted, vehicle, journal.state)?.let { return SubmitResult.Rejected(it) }
         val id = ++nextId
         trace.mark(TracePoint.PLAN_VALIDATED, id, mapOf("plan" to submitted.toString(), "source" to from))
@@ -406,7 +406,7 @@ class SafetySupervisor(
         if (activeRun() != null) return SubmitResult.Rejected(BUSY)
         if (stopLane != null) return SubmitResult.Rejected(STOP_IN_PROGRESS)
         if (execution) ownershipBlock(vehicle)?.let { return SubmitResult.Rejected(it) }
-        journal.observeHome(vehicle.home)
+        journal.observeHome(vehicle.home, vehicle.origin)
         validator.validate(mission.plan, vehicle, journal.state)?.let { return SubmitResult.Rejected(it) }
         val id = ++nextId
         trace.mark(TracePoint.PLAN_VALIDATED, id, mapOf("plan" to mission.plan.toString(), "source" to PlanSource.MISSION,
@@ -507,7 +507,7 @@ class SafetySupervisor(
             ?: return StepOutcome.rejected(step, ArduPilotExecutor.STALE)
         if (!vehicle.positionReady) return StepOutcome.rejected(step, ArduPilotExecutor.POSITION_NOT_READY)
         val home = vehicle.home ?: return StepOutcome.rejected(step, MARK_NEEDS_HOME)
-        journal.observeHome(home)
+        journal.observeHome(home, vehicle.origin)
         val point = step.command.point!!
         journal.markPoint(point, position)
         val altitude = vehicle.altitudeRelM?.takeIf { vehicle.fresh(GlobalPositionInt.messageId) }
@@ -556,7 +556,7 @@ class SafetySupervisor(
             outcomes = current.outcomes.toList()
             return
         }
-        journal.observeHome(vehicle.home)
+        journal.observeHome(vehicle.home, vehicle.origin)
         val reason = ownershipBlock(vehicle) ?: validator.validate(steps.subList(index, steps.size), vehicle, journal.state,
             maxSteps = Mission.MAX_STEPS)?.let { renumber(it, index) }
         if (reason != null) {
@@ -584,8 +584,12 @@ class SafetySupervisor(
         apply(current, current.executor.start(step.command, vehicle, now, index + 1, legs), vehicle, now)
     }
 
-    /** Where a flight-memory step flies from the vehicle's position now, as [MemoryRoutes.flyable] flies it. */
+    /**
+     * Where a flight-memory step flies from the vehicle's position now, as [MemoryRoutes.flyable] flies it. Only with
+     * the vehicle's home known: the journal checks its positions' frame against it ([FlightJournal.observeHome]).
+     */
     private fun route(command: FlightCommand, vehicle: VehicleState): Route {
+        if (vehicle.home == null) throw CommandFormatException(PlanValidator.MEMORY_NEEDS_HOME)
         val position = vehicle.position?.takeIf { vehicle.fresh(LocalPositionNed.messageId) }
             ?: throw CommandFormatException(ArduPilotExecutor.STALE)
         val altitude = vehicle.altitudeRelM?.takeIf { vehicle.fresh(GlobalPositionInt.messageId) }
@@ -768,7 +772,7 @@ class SafetySupervisor(
         val acks = events.drainAcks()
         val texts = events.drainTexts()
         val vehicle = store.snapshot()
-        journal.observeHome(vehicle.home)
+        journal.observeHome(vehicle.home, vehicle.origin)
         traceOwner(vehicle)
         stopLane?.let { onStopProgress(it, it.update(acks, vehicle, now)) }
         activeRun()?.let { advance(it, vehicle, acks, texts, now) }

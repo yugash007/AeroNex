@@ -57,6 +57,17 @@ class PlanValidatorMemoryTest {
         assertEquals("Step 1 — ${MemoryRoutes.noPoint(4)}", sitl.validate(plan(numbered(FlightCommand.GOTO_POINT, 4)), there, flown))
     }
 
+    @Test fun aConnectedVehicleMustReportHomeBeforeAMemoryFlight() {
+        // Review R1: on the simulator profile a missing home fell back to the memory alone, so a memory restored from
+        // another flight was flown with no home-distance check.
+        val noHome = vehicle(home = null)
+        for (step in listOf(returnHome, goBack, retrace, numbered(FlightCommand.GOTO_POINT, 1))) {
+            assertEquals(PlanValidator.MEMORY_NEEDS_HOME, sitl.validate(plan(step), noHome, flown))
+        }
+        assertNull("a plain move needs no home in the simulator", sitl.validate(plan(move("forward", 3)), noHome, flown))
+        assertNull("a dry run checks the memory alone", sitl.validate(plan(goBack), null, flown))
+    }
+
     @Test fun aPointMarkedEarlierInThePlanIsThereForALaterStep() {
         val empty = MemoryState(home = home)
         val gotoTwo = numbered(FlightCommand.GOTO_POINT, 2)
@@ -109,9 +120,10 @@ class PlanValidatorMemoryTest {
         assertNull(sitl.validate(plan(takeoff, numbered(FlightCommand.GOTO_POINT, 1), returnHome), ground, flown))
     }
 
-    @Test fun withoutHomeOnlyTheMemoryAloneIsChecked() {
+    @Test fun withoutAVehicleOnlyTheMemoryAloneIsChecked() {
         val noHome = MemoryState(trail = flown.trail)
-        assertNull(sitl.validate(plan(goBack), vehicle(home = null), noHome))
+        // A connected vehicle must report home first (aConnectedVehicleMustReportHomeBeforeAMemoryFlight).
+        assertEquals(PlanValidator.MEMORY_NEEDS_HOME, sitl.validate(plan(goBack), vehicle(home = null), noHome))
         assertNull(sitl.validate(plan(goBack), null, noHome))
         assertEquals("Step 1 — ${MemoryRoutes.NOTHING_TO_RETRACE}", sitl.validate(plan(retrace), null, MemoryState()))
         assertEquals("Step 1 — ${MemoryRoutes.noPoint(1)}", sitl.validate(plan(numbered(FlightCommand.GOTO_POINT, 1)), null))

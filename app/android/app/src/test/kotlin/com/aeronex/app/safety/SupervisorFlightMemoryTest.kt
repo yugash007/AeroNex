@@ -9,6 +9,7 @@ import com.aeronex.app.memory.FlightJournal
 import com.aeronex.app.memory.MemoryRoutes
 import com.aeronex.app.vehicle.ModeOwner
 import com.aeronex.app.vehicle.Ned
+import com.aeronex.app.vehicle.VehicleState
 import com.aeronex.app.vehicle.executor.ArduPilotExecutor
 import com.aeronex.app.vehicle.executor.FAST_TIMING
 import com.aeronex.app.vehicle.executor.Rig
@@ -152,6 +153,38 @@ class SupervisorFlightMemoryTest {
         val marked = (submit(plan(numbered(FlightCommand.MARK_POINT, 9))) as SubmitResult.Immediate).outcome
         assertEquals(marked.message, StepStatus.COMPLETED, marked.status)
         assertEquals(Ned(0.0, 0.0, 0.0), journal.state.points.getValue(9).position)
+    }
+
+    @Test fun aSecondTakeoffFromElsewhereKeepsThePointsAndMovesHome() {
+        // Review R2: ArduCopter sets home where it arms. Taken for a new frame, that forgot every point mid-plan, and
+        // "go to point 1" after the takeoff failed with the vehicle in the air.
+        connect()
+        airborne()
+        flies(plan(move("forward", 4)))
+        val marked = (submit(plan(numbered(FlightCommand.MARK_POINT, 1))) as SubmitResult.Immediate).outcome
+        assertEquals(marked.message, StepStatus.COMPLETED, marked.status)
+        flies(plan(move("forward", 5), FlightCommand.of(FlightCommand.LAND)))
+        waitFor("landed and disarmed", 10_000) {
+            rig.store.snapshot().let { it.armed == false && it.landedState == VehicleState.LANDED_ON_GROUND }
+        }
+        flies(plan(takeoff, numbered(FlightCommand.GOTO_POINT, 1)))
+        assertAt(4.0, 0.0)
+        val home = journal.state.home!!
+        assertTrue("home moved to the second takeoff: $home", abs(home.x - 9.0) < 0.5 && abs(home.y) < 0.5)
+        assertEquals(setOf(1), journal.state.points.keys)
+    }
+
+    @Test fun aRebootElsewhereForgetsThePointsOfTheOldFrame() {
+        connect()
+        val marked = (submit(plan(numbered(FlightCommand.MARK_POINT, 9))) as SubmitResult.Immediate).outcome
+        assertEquals(marked.message, StepStatus.COMPLETED, marked.status)
+        val before = rig.store.snapshot().origin!!
+        // Home is (0, 0, 0) in both frames: only the origin shows the vehicle is somewhere else.
+        vehicle.rebootAt(40.0, 0.0)
+        waitFor("the new frame") { rig.store.snapshot().origin.let { it != null && it.distanceTo(before) > 30 } }
+        val rejected = submit(plan(takeoff, numbered(FlightCommand.GOTO_POINT, 9))) as SubmitResult.Rejected
+        assertEquals("Step 2 — ${MemoryRoutes.noPoint(9)}", rejected.message)
+        assertEquals(FlightJournal.FRAME_CHANGED, journal.state.notice)
     }
 
     @Test fun aDryRunMarksNothing() {

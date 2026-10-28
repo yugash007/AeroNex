@@ -1,5 +1,6 @@
 package com.aeronex.app.memory
 
+import com.aeronex.app.vehicle.FrameOrigin
 import com.aeronex.app.vehicle.Ned
 
 /**
@@ -9,6 +10,7 @@ import com.aeronex.app.vehicle.Ned
  *
  * ```
  * {"version":1,"nextId":7,"notice":null,"home":{"x":0.0,"y":0.0,"z":0.0},
+ *  "origin":{"lat":-353632621.0,"lon":1491652374.0,"alt":584.0},
  *  "trail":[{"x":..,"y":..,"z":..,"label":"Takeoff","at":1730000000000}],
  *  "points":{"1":{"x":..,"y":..,"z":..,"label":"Point 1","at":..}},
  *  "history":[{"id":1,"plan":1,"at":..,"name":"move_relative","arguments":{"direction":"left","distance_m":2},
@@ -23,6 +25,7 @@ object MemoryCodec {
         "nextId" to state.nextId,
         "notice" to state.notice,
         "home" to state.home?.let(::ned),
+        "origin" to state.origin?.let { linkedMapOf("lat" to it.latE7, "lon" to it.lonE7, "alt" to it.altM) },
         "trail" to state.trail.map(::waypoint),
         "points" to state.points.entries.sortedBy { it.key }.associateTo(LinkedHashMap()) { (n, p) -> n.toString() to waypoint(p) },
         "history" to state.history.map { r ->
@@ -37,6 +40,8 @@ object MemoryCodec {
         require(version in 1..VERSION.toLong()) { "Unsupported memory version $version" }
         return MemoryState(
             home = root["home"]?.let { readNed(it.obj("home")) },
+            // Added on 2026-10-28 with the frame check; a memory without it keeps only its history (FlightJournal).
+            origin = root["origin"]?.let { it.obj("origin").let { o -> FrameOrigin(o.double("lat"), o.double("lon"), o.double("alt")) } },
             trail = root.list("trail").map { readWaypoint(it.obj("trail")) },
             points = root.obj("points", "points").entries.associate { (key, value) ->
                 val n = key.toIntOrNull()

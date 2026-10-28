@@ -23,9 +23,14 @@ delayed. The AI never invents a position.
 - **Points** are positions saved by number (1–9) with "mark point n". Saving a number again replaces its point.
 - **History** is the steps of every finished plan: name, arguments, description, source, final status and mission
   stage. At most 60 steps are kept; the UI's "Run again" uses it.
-- **Home guard.** Positions are in the autopilot's local NED frame and only mean something while home stays put. When
-  HOME_POSITION moves more than 1 m, the trail and points are forgotten and the notice says so. A memory restored
-  without a home keeps its history only.
+- **Frame guard.** Positions are in the autopilot's local NED frame, and only mean something in that frame. Every
+  HOME_POSITION gives the frame's origin: its latitude, longitude and altitude less its x, y and z
+  (`vehicle/FrameOrigin.kt`).
+  - When the origin moves more than 1 m (a reboot, another vehicle, a new EKF origin), the trail and points are
+    forgotten and the notice says so. Home is (0, 0, 0) after a reboot in any field, so home alone cannot show this.
+  - Home moving is not a new frame. ArduCopter sets home where it arms, so a second takeoff from elsewhere keeps the
+    points, and "return home" then flies to the new home.
+  - A memory restored without its home and frame keeps its history only.
 - **Persistence.** The memory is saved in `filesDir/flight_memory.json` (`FileJournalStore`). Each write goes to a
   temporary file that then replaces the old one, on a background thread, coalesced. A damaged file starts empty: the
   app never flies to a misread position.
@@ -52,6 +57,12 @@ delayed. The AI never invents a position.
 - A plan is projected with the same route rules the supervisor flies with. A point marked in step 2 is there for
   step 4, and a takeoff starts a new trail.
 - Every leg must stay within 30 m of home. An up or down move after a memory flight must stay within 1–10 m.
+- A connected vehicle must report home before any memory flight, on every profile. Until it does, the frame of a
+  memory restored from disk is unchecked.
+- **Battery reserve.** While a fresh SYS_STATUS reports less than 30 %, no step may take the vehicle farther from home
+  than it is now, and every leg of a memory flight counts. Land, hold, status, return home and any flight straight
+  toward home stay allowed. A retrace whose path first leads away is refused, and the message says to return home or
+  land. The Flight screen then shows Return home and Land here.
 - The executor and the supervisor check every step again when it starts, against the memory as it is then.
 
 ### M4: the supervisor and the session
@@ -132,7 +143,8 @@ delayed. The AI never invents a position.
 ## Limits
 
 - HOME_POSITION's x/y/z are taken as home in the LOCAL_POSITION_NED frame, as the geofence already does. Some
-  ArduPilot versions report zeros there, which is the EKF origin; in SITL the two coincide.
+  ArduPilot versions report zeros there, which is the EKF origin; in SITL the two coincide. With zeros, the frame
+  origin follows home, so a takeoff from a new place forgets the points: the safe direction.
 - Memory flights are validated against the 30 m geofence and the 1–10 m height range only. There is no obstacle
   awareness. Retrace flies the path already flown, which was clear at the heights it was flown at.
 - The ta, kn and ml lexicons have no memory phrases yet. Their speakers use the flight memory and mission cards.

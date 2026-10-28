@@ -1,5 +1,6 @@
 package com.aeronex.app.memory
 
+import com.aeronex.app.vehicle.FrameOrigin
 import com.aeronex.app.vehicle.Ned
 import kotlin.math.sqrt
 
@@ -26,8 +27,10 @@ data class CommandRecord(
 
 /** An immutable view of the flight memory (spec 2026-10-28 M1). */
 data class MemoryState(
-    /** HOME_POSITION the trail and points belong to; null until home is known. */
+    /** HOME_POSITION as last seen; null until home is known. It moves where the vehicle arms. */
     val home: Ned? = null,
+    /** The local frame [home], [trail] and [points] are in; null until a HOME_POSITION gave it. */
+    val origin: FrameOrigin? = null,
     /** The current flight's confirmed positions, oldest first: the first is where the takeoff ended. */
     val trail: List<Waypoint> = emptyList(),
     /** Saved points by number (1–9). */
@@ -46,10 +49,12 @@ data class MemoryState(
  * anyone may read [state]. Every change goes to [store] (which saves off the caller's thread), so the memory
  * survives an app or service restart.
  *
- * Positions are the autopilot's local NED frame and only mean something while home stays put: when HOME_POSITION
- * moves more than [HOME_TOLERANCE_M] from the remembered home (another vehicle, a reboot, a new EKF origin), the
- * trail and the points are forgotten, with [HOME_MOVED] as the notice. A restored memory without a home keeps its
- * history only, since its positions cannot be checked.
+ * Positions are in the autopilot's local NED frame and only mean something in that frame. Its [FrameOrigin] comes
+ * with every HOME_POSITION: when it moves more than [FRAME_TOLERANCE_M] (another vehicle, a reboot, a new EKF
+ * origin), the trail and the points are forgotten, with [FRAME_CHANGED] as the notice. Home itself moving is not a
+ * new frame: ArduCopter sets home where it arms, so a second takeoff from elsewhere keeps the points and "return
+ * home" flies to the new home. A restored memory without its home and frame keeps its history only, since its
+ * positions cannot be checked.
  */
 class FlightJournal(
     private val store: JournalStore = JournalStore.NONE,
@@ -64,20 +69,25 @@ class FlightJournal(
     private var lastKey: Long? = null
     private var lastPlanId = 0L
 
-    /** Every vehicle snapshot's home (cheap when it has not moved). */
-    fun observeHome(home: Ned?) {
+    /** Every vehicle snapshot's home and [origin] ([com.aeronex.app.vehicle.VehicleState]); cheap when unchanged. */
+    fun observeHome(home: Ned?, origin: FrameOrigin?) {
         if (home == null) return
-        val known = state.home
-        if (known != null && known.distanceTo(home) <= HOME_TOLERANCE_M) return
+        if (state.let { it.home == home && it.origin == origin }) return
         update { s ->
-            val current = s.home
             when {
-                current == null -> s.copy(home = home)
-                current.distanceTo(home) <= HOME_TOLERANCE_M -> s
-                else -> MemoryState(home = home, history = s.history, nextId = s.nextId,
-                    notice = if (s.trail.isEmpty() && s.points.isEmpty()) null else HOME_MOVED)
+                s.home == null -> s.copy(home = home, origin = origin)
+                sameFrame(s, home, origin) -> s.copy(home = home, origin = origin ?: s.origin)
+                else -> MemoryState(home = home, origin = origin, history = s.history, nextId = s.nextId,
+                    notice = if (s.trail.isEmpty() && s.points.isEmpty()) null else FRAME_CHANGED)
             }
         }
+    }
+
+    /** Without both origins, only a home that stayed put shows the frame did. */
+    private fun sameFrame(s: MemoryState, home: Ned, origin: FrameOrigin?): Boolean {
+        val known = s.origin
+        return if (known != null && origin != null) known.distanceTo(origin) <= FRAME_TOLERANCE_M
+        else s.home!!.distanceTo(home) <= FRAME_TOLERANCE_M
     }
 
     // The trail and point rules are [MemoryRoutes]': the validator projects plans with the same ones.
@@ -121,8 +131,8 @@ class FlightJournal(
     /** The steps of the plan [planId] in the history, in order; empty when it is no longer there. */
     fun plan(planId: Long): List<CommandRecord> = state.history.filter { it.planId == planId }
 
-    /** The operator cleared the memory: trail, points, history and notice; home stays known. */
-    fun clear() = update { s -> MemoryState(home = s.home, nextId = s.nextId) }
+    /** The operator cleared the memory: trail, points, history and notice; home and its frame stay known. */
+    fun clear() = update { s -> MemoryState(home = s.home, origin = s.origin, nextId = s.nextId) }
 
     private inline fun update(change: (MemoryState) -> MemoryState) {
         synchronized(lock) {
@@ -147,12 +157,14 @@ class FlightJournal(
     )
 
     companion object {
-        const val HOME_TOLERANCE_M = 1.0
+        /** Origins (or, without them, homes) closer than this are the same frame. */
+        const val FRAME_TOLERANCE_M = 1.0
         const val MIN_SPACING_M = 0.5
         const val TRAIL_LIMIT = 64
         const val HISTORY_LIMIT = 60
         const val TAKEOFF_LABEL = "Takeoff"
-        const val HOME_MOVED = "Home moved, so the flown path and saved points were forgotten."
+        const val FRAME_CHANGED = "The drone's position frame changed (a reboot or another drone), so the flown " +
+            "path and saved points were forgotten."
 
         /**
          * The newest whole plans within [HISTORY_LIMIT] steps: a plan is kept whole or not at all, so "run again"
@@ -168,10 +180,10 @@ class FlightJournal(
             return if (start == 0) history else history.subList(start, history.size).toList()
         }
 
-        /** A restored memory keeps positions only with the home they belong to. */
+        /** A restored memory keeps positions only with the home and frame they belong to. */
         private fun restore(saved: MemoryState?): MemoryState = when {
             saved == null -> MemoryState()
-            saved.home == null -> MemoryState(history = bounded(saved.history), nextId = saved.nextId)
+            saved.home == null || saved.origin == null -> MemoryState(history = bounded(saved.history), nextId = saved.nextId)
             else -> saved.copy(history = bounded(saved.history))
         }
     }

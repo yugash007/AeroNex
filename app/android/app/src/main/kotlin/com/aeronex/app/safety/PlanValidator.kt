@@ -28,11 +28,13 @@ import kotlin.math.sin
  * 4. flight memory (spec 2026-10-28 M3): return home, go back, retrace and go to point are resolved with
  *    [MemoryRoutes] from the memory as the earlier steps of the plan leave it (a point marked in step 2 is there for
  *    step 4) and flown as [MemoryRoutes.flyable] flies them; every leg must stay within [maxHomeDistanceM] of home,
- *    and an up or down move after such a flight within 1–10 m while the altitude is known. Without home or a
- *    position (a dry run with no vehicle) only what the memory alone refuses is checked.
- * 5. battery reserve (2026-10-28): while a fresh SYS_STATUS reports less than [lowBatteryPercent], no step may end
- *    farther from home than the vehicle is now, so the battery left goes to coming back. Land, hold, status, return
- *    home and any flight toward home stay allowed.
+ *    and an up or down move after such a flight within 1–10 m while the altitude is known. A connected vehicle must
+ *    report home, on every profile: until it does, the memory's frame is unchecked (it may be restored from another
+ *    flight). Without a vehicle (a dry run) only what the memory alone refuses is checked.
+ * 5. battery reserve (2026-10-28): while a fresh SYS_STATUS reports less than [lowBatteryPercent], no step may take
+ *    the vehicle farther from home than it is now, every leg of a flight-memory flight included, so the battery left
+ *    goes to coming back. Land, hold, status, return home and any flight straight toward home stay allowed; a
+ *    retrace whose path first leads away is refused.
  *
  * Every message is operator-facing. The projection assumes the heading does not change between steps; ArduCopter
  * may yaw toward its target (WP_YAW_BEHAVIOR), so re-validate each step against a fresh state before sending it.
@@ -75,7 +77,11 @@ class PlanValidator(
 
     private fun homeDistance(plan: FlightPlan, vehicle: VehicleState?, memory: MemoryState): String? {
         if (plan.steps.none { it.command.isMotion }) return null
-        val home = vehicle?.home ?: return if (realHardwareProfile) HOME_UNKNOWN else memoryAlone(plan, memory)
+        val home = vehicle?.home ?: return when {
+            realHardwareProfile -> HOME_UNKNOWN
+            vehicle?.connected == true && plan.steps.any { it.command.isMemoryMotion } -> MEMORY_NEEDS_HOME
+            else -> memoryAlone(plan, memory)
+        }
         val position = vehicle.position?.takeIf { vehicle.fresh(LocalPositionNed.messageId) }
         val yaw = vehicle.yaw?.takeIf { vehicle.fresh(Attitude.messageId) }
         if (position == null || yaw == null) return POSITION_UNKNOWN
@@ -181,6 +187,7 @@ class PlanValidator(
 
     companion object {
         const val HOME_UNKNOWN = "Home position is unknown. Wait for GPS home before moving."
+        const val MEMORY_NEEDS_HOME = "Home position is unknown. Wait for GPS home before flying from the flight memory."
         const val POSITION_UNKNOWN = "Position or heading is unavailable. Wait for fresh telemetry before moving."
 
         /** The battery reserve: below it a plan may only head back toward home (2026-10-28). */

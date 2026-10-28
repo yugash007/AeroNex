@@ -23,6 +23,7 @@ import com.aeronex.app.link.mavlink.SetPositionTargetLocalNed
 import com.aeronex.app.link.mavlink.StatusText
 import com.aeronex.app.link.mavlink.SysStatus
 import com.aeronex.app.vehicle.CopterMode
+import com.aeronex.app.vehicle.FrameOrigin
 import com.aeronex.app.vehicle.VehicleState
 import com.aeronex.app.vehicle.VehicleStateStore
 import java.util.concurrent.ConcurrentHashMap
@@ -33,6 +34,7 @@ import java.util.concurrent.atomic.AtomicInteger
 import kotlin.concurrent.thread
 import kotlin.math.atan2
 import kotlin.math.cos
+import kotlin.math.roundToInt
 import kotlin.math.sin
 import kotlin.math.sqrt
 
@@ -46,7 +48,8 @@ internal class Sent(val atNanos: Long, val sysId: Int, val compId: Int, val mess
  * when armed in GUIDED on the ground, BODY_OFFSET_NED targets rotated by yaw and LOCAL_NED targets as given, the yaw
  * of a target (relative in BODY_OFFSET_NED, absolute in LOCAL_NED) or, when the frame ignores yaw, a turn to face the
  * direction of travel (WP_YAW_BEHAVIOR 2), POSITION_TARGET_LOCAL_NED only in GUIDED and only while requested, LAND
- * then auto-disarm. Fast kinematics keep tests short.
+ * then auto-disarm, home set where it arms and sent then (in a fixed frame whose origin is at [ORIGIN_LAT_E7] /
+ * [ORIGIN_LON_E7], until [rebootAt]). Fast kinematics keep tests short.
  *
  * Every COMMAND_LONG is ACKed to its sender unless a script ([lose], [loseAcks], [refuse]) says otherwise.
  */
@@ -80,6 +83,12 @@ internal class FakeArduCopter(private val tickMs: Long = 20) : AutoCloseable {
     private var positionTargetRequested = false
     private var landedAtNanos = 0L
     private var tick = 0L
+    // Home in the local frame, and the frame's origin; under lock.
+    private var homeN = 0.0
+    private var homeE = 0.0
+    private var homeD = 0.0
+    private var originLatE7 = ORIGIN_LAT_E7
+    private var originLonE7 = ORIGIN_LON_E7
 
     // Scripts.
     @Volatile var heartbeats = true
@@ -149,6 +158,25 @@ internal class FakeArduCopter(private val tickMs: Long = 20) : AutoCloseable {
         n += dn
         e += de
         target = target?.let { doubleArrayOf(it[0] + dn, it[1] + de, it[2]) }
+    }
+
+    /**
+     * A reboot [northM]/[eastM] from the old frame's origin: a new frame centred where the vehicle now is, landed,
+     * disarmed and at rest, with home there (sent at once, as ArduCopter sends a new home).
+     */
+    fun rebootAt(northM: Double, eastM: Double) {
+        val home = synchronized(lock) {
+            val lat = originLatE7 + northM / FrameOrigin.LATLON_TO_M
+            originLonE7 += eastM / (FrameOrigin.LATLON_TO_M * cos(Math.toRadians(lat * 1e-7)))
+            originLatE7 = lat
+            n = 0.0; e = 0.0; d = 0.0; vn = 0.0; ve = 0.0; vd = 0.0
+            disarm()
+            landed = VehicleState.LANDED_ON_GROUND
+            mode = CopterMode.STABILIZE
+            homeN = 0.0; homeE = 0.0; homeD = 0.0
+            homePosition()
+        }
+        emit(home)
     }
 
     /** Puts the vehicle armed and hovering at [altitude] in [hoverMode], as if flown there earlier. */
@@ -248,7 +276,13 @@ internal class FakeArduCopter(private val tickMs: Long = 20) : AutoCloseable {
         MAV_CMD_COMPONENT_ARM_DISARM -> when {
             command.param1 == 1f -> when {
                 armed -> ACCEPTED
-                landed == VehicleState.LANDED_ON_GROUND && !gpsDenied -> { armed = true; ACCEPTED }
+                landed == VehicleState.LANDED_ON_GROUND && !gpsDenied -> {
+                    armed = true
+                    // ArduCopter sets home where it arms (home not locked), and sends it.
+                    homeN = n; homeE = e; homeD = d
+                    emit(homePosition())
+                    ACCEPTED
+                }
                 else -> FAILED
             }
             !armed -> ACCEPTED
@@ -266,9 +300,7 @@ internal class FakeArduCopter(private val tickMs: Long = 20) : AutoCloseable {
             ACCEPTED
         }
         MAV_CMD_REQUEST_MESSAGE -> {
-            if (command.param1.toInt() == HomePosition.messageId) {
-                emit(HomePosition(0, 0, 0, 0f, 0f, 0f, listOf(1f, 0f, 0f, 0f), 0f, 0f, 0f))
-            }
+            if (command.param1.toInt() == HomePosition.messageId) emit(homePosition())
             ACCEPTED
         }
         else -> UNSUPPORTED
@@ -280,6 +312,14 @@ internal class FakeArduCopter(private val tickMs: Long = 20) : AutoCloseable {
         target = if (newMode == CopterMode.GUIDED) doubleArrayOf(n, e, d) else null
         // ArduCopter 4.6.3 says this (INFO) on every LAND entry; it is not a failsafe.
         if (newMode == CopterMode.LAND) emit(StatusText(6, "PrecLand: Failsafe Measures"))
+    }
+
+    /** Runs under lock: home in the local frame, and where it is on earth in this frame. */
+    private fun homePosition(): HomePosition {
+        val lat = originLatE7 + homeN / FrameOrigin.LATLON_TO_M
+        val lon = originLonE7 + homeE / (FrameOrigin.LATLON_TO_M * cos(Math.toRadians(lat * 1e-7)))
+        return HomePosition(lat.roundToInt(), lon.roundToInt(), (ORIGIN_ALT_MM - homeD * 1000).roundToInt(),
+            homeN.toFloat(), homeE.toFloat(), homeD.toFloat(), listOf(1f, 0f, 0f, 0f), 0f, 0f, 0f)
     }
 
     /** Runs under lock. */
@@ -422,6 +462,10 @@ internal class FakeArduCopter(private val tickMs: Long = 20) : AutoCloseable {
         const val TYPE_MASK_POSITION = 3576
         const val TYPE_MASK_POSITION_YAW = 2552
         const val FORCE_MAGIC = 21196f
+        /** ArduPilot SITL's default location (CMAC). */
+        const val ORIGIN_LAT_E7 = -353632621.0
+        const val ORIGIN_LON_E7 = 1491652374.0
+        const val ORIGIN_ALT_MM = 584_000.0
         val POSITION_MODES = setOf(CopterMode.GUIDED, CopterMode.BRAKE, CopterMode.LOITER, CopterMode.POSHOLD, CopterMode.RTL)
     }
 }
