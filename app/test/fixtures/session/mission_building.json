@@ -154,7 +154,8 @@
     "checkpoint": null,
     "resume": {
       "fromStep": 3,
-      "stepCount": 2
+      "stepCount": 2,
+      "atCheckpoint": false
     }
   }
 }

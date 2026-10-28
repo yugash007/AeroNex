@@ -372,6 +372,7 @@ object SessionSchema {
         "source" to pending.source.wire,
         "expiresInMs" to maxOf(0L, pending.expiresAtMs - atMs),
         "stageOfStep" to pending.mission?.stageOfStep,
+        "checkpoints" to (pending.mission?.checkpoints == true),
     )
 
     private fun run(state: SupervisorState): Map<String, Any?>? {
@@ -499,7 +500,9 @@ object SessionSchema {
         "checkpoint" to mission.checkpoint?.let {
             linkedMapOf("token" to it.token, "stage" to it.stage, "stageCount" to it.stageCount)
         },
-        "resume" to mission.resume?.let { linkedMapOf("fromStep" to it.fromStep, "stepCount" to it.stepCount) },
+        "resume" to mission.resume?.let {
+            linkedMapOf("fromStep" to it.fromStep, "stepCount" to it.stepCount, "atCheckpoint" to it.atCheckpoint)
+        },
     )
 
     private fun centimetres(value: Double): Double? = if (value.isFinite()) (value * 100).roundToLong() / 100.0 else null

@@ -41,6 +41,9 @@ import java.util.concurrent.ScheduledFuture
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicBoolean
 
+/** The last mission that ended early: where it ended, and whether at a checkpoint ([Resume]). */
+private data class Resumable(val mission: Mission, val endedAt: Int, val atCheckpoint: Boolean)
+
 /**
  * The single owner of plan, confirmation, execution and STOP state (spec 3.3, 3.4, 4.10, 4.12, 4.14, 8.2): an actor
  * on one thread. Every public method may be called from any thread and only posts to it, so a STOP handler on the
@@ -139,7 +142,7 @@ class SafetySupervisor(
     private var building = false
     private var draft: List<DraftStage> = emptyList()
     private var checkpoints = false
-    private var resumable: Pair<Mission, Int>? = null
+    private var resumable: Resumable? = null
     /** The mission of the shown [plan], when it is one. */
     private var shownMission: Mission? = null
 
@@ -226,7 +229,10 @@ class SafetySupervisor(
         resumable = null
     }
 
-    /** Whether the mission holds after each stage until [continueMission]. */
+    /**
+     * Whether a mission holds after each stage until [continueMission]: every mission shown from now on, whether
+     * built, run again or resumed.
+     */
     fun setCheckpoints(enabled: Boolean): Future<Unit> = call { checkpoints = enabled }
 
     /** The stages built so far as one mission, validated from the vehicle now and shown for one CONFIRM. */
@@ -254,7 +260,9 @@ class SafetySupervisor(
      * where the vehicle is now; the plan card shows it before the CONFIRM.
      */
     fun resumeMission(skipInterrupted: Boolean): Future<SubmitResult> = call {
-        val (mission, endedAt) = resumable ?: return@call SubmitResult.Rejected(NOTHING_TO_RESUME)
+        val (mission, endedAt, atCheckpoint) = resumable ?: return@call SubmitResult.Rejected(NOTHING_TO_RESUME)
+        // At a checkpoint the next stage never started: skipping its first step would drop a step never flown.
+        if (skipInterrupted && atCheckpoint) return@call SubmitResult.Rejected(NOTHING_INTERRUPTED)
         val from = if (skipInterrupted) endedAt + 1 else endedAt
         if (from >= mission.plan.steps.size) return@call SubmitResult.Rejected(NOTHING_LEFT)
         val rest = try {
@@ -399,7 +407,9 @@ class SafetySupervisor(
         return SubmitResult.AddedToMission(draft.size)
     }
 
-    private fun doSubmitMission(mission: Mission, fromDraft: Boolean): SubmitResult {
+    private fun doSubmitMission(submitted: Mission, fromDraft: Boolean): SubmitResult {
+        // The operator's checkpoint setting holds for every mission shown: built, run again or resumed.
+        val mission = submitted.withCheckpoints(checkpoints)
         val now = clock()
         val vehicle = store.snapshot()
         invalidate(null) // new input
@@ -653,8 +663,9 @@ class SafetySupervisor(
     private fun fail(current: PlanRun, outcome: StepOutcome) {
         current.executor.cancel()
         current.active = false
+        val atCheckpoint = current.checkpoint != null
         current.checkpoint = null
-        current.mission?.let { resumable = it to current.index }
+        current.mission?.let { resumable = Resumable(it, current.index, atCheckpoint) }
         record(current, current.index, outcome)
         for (i in current.index + 1 until current.outcomes.size) record(current, i, StepOutcome.skipped(current.plan.steps[i]))
         finish(current.id, PlanStage.FAILED, current.outcomes.toList())
@@ -917,7 +928,7 @@ class SafetySupervisor(
                 checkpoints = checkpoints,
                 stageOfStep = shownMission?.stageOfStep,
                 checkpoint = current?.checkpoint,
-                resume = resumable?.let { (mission, at) -> Resume(at, mission.plan.steps.size - at) },
+                resume = resumable?.let { (mission, at, atCheckpoint) -> Resume(at, mission.plan.steps.size - at, atCheckpoint) },
             ),
         )
         if (next == state) return
@@ -988,6 +999,8 @@ class SafetySupervisor(
         const val NO_CHECKPOINT = "The mission is not waiting to continue."
         const val NOTHING_TO_RESUME = "There is no mission to resume."
         const val NOTHING_LEFT = "Nothing of that mission is left to fly."
+        const val NOTHING_INTERRUPTED = "The mission stopped between stages, so no step was interrupted: resume it " +
+            "from its next stage."
 
         fun stageAdded(stage: Int) = "Added as stage $stage of the mission."
         const val READINESS_CHANGED = "The vehicle state changed. Say the command again."

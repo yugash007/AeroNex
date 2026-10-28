@@ -72,7 +72,8 @@
     ],
     "source": "typed",
     "expiresInMs": 12400,
-    "stageOfStep": null
+    "stageOfStep": null,
+    "checkpoints": false
   },
   "run": null,
   "stop": null,

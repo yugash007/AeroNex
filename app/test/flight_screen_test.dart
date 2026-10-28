@@ -1837,6 +1837,8 @@ void main() {
       await tapKey(tester, 'startMission');
       expect(session.methods, contains('startMission'));
       expect(inPlan(find.text('Confirm this mission')), findsOneWidget);
+      expect(inPlan(find.byKey(const Key('pendingCheckpoints'))), findsOneWidget,
+          reason: 'the mission shown says it holds after each stage');
       expect(inPlan(find.byKey(const Key('stageHeader0'))), findsOneWidget);
       expect(inPlan(find.byKey(const Key('addToMission'))), findsNothing, reason: 'a mission is no stage');
       await tester.tap(inPlan(find.textContaining('CONFIRM')));
@@ -1870,6 +1872,28 @@ void main() {
       ]);
       // STOP stays pinned above everything while the mission holds.
       expect(stopButton().hitTestable(), findsOneWidget);
+    });
+
+    testWidgets('Hold after each stage is there with nothing built: it is for every mission (R7)',
+        (tester) async {
+      final session = await launch(tester, initial: fixture('connected_landed'));
+      expect(find.byKey(const Key('startMission')), findsNothing);
+      await tapKey(tester, 'missionCheckpoints');
+      expect(session.argumentsOf('missionCheckpoints'), [
+        {'enabled': true}
+      ]);
+    });
+
+    testWidgets('a mission stopped at a checkpoint has no step to skip (R5)', (tester) async {
+      await launch(tester,
+          initial: fixture('mission_building', {
+            'mission': {
+              'resume': {'atCheckpoint': true}
+            }
+          }));
+      expect(find.byKey(const Key('resumeMission')), findsOneWidget);
+      expect(find.byKey(const Key('resumeMissionSkip')), findsNothing);
+      expect(find.textContaining('A move that was interrupted'), findsNothing);
     });
 
     testWidgets('a mission that ended early resumes from its step or the next', (tester) async {

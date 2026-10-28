@@ -36,6 +36,9 @@ class Mission(stages: List<List<PlanStep>>, val checkpoints: Boolean = false) {
         stageOfStep = Collections.unmodifiableList(this.stages.flatMapIndexed { i, stage -> List(stage.size) { i } })
     }
 
+    /** This mission with checkpoints [on] or off. */
+    fun withCheckpoints(on: Boolean): Mission = if (on == checkpoints) this else Mission(stages, on)
+
     /** The step is the first of a stage after the first: where a checkpoint holds. */
     fun startsStage(step: Int) = step in 1 until stageOfStep.size && stageOfStep[step] != stageOfStep[step - 1]
 

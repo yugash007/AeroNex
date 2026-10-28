@@ -69,7 +69,8 @@
     ],
     "source": "ai",
     "expiresInMs": 13100,
-    "stageOfStep": null
+    "stageOfStep": null,
+    "checkpoints": false
   },
   "run": null,
   "stop": null,

@@ -6,8 +6,9 @@ import '../../../session/session_api.dart';
 /// While "Build a mission" is on, every new command (said, typed or tapped)
 /// becomes the next stage here instead of waiting for CONFIRM; STOP, Hold and
 /// status still act at once. Start shows the whole mission, checked from the
-/// drone's state now, for one CONFIRM. With checkpoints it holds after each
-/// stage until Continue. A mission that ended early can be resumed.
+/// drone's state now, for one CONFIRM. With checkpoints every mission (built,
+/// run again from the flight memory, or resumed) holds after each stage until
+/// Continue. A mission that ended early can be resumed.
 class MissionCard extends StatelessWidget {
   const MissionCard({
     super.key,
@@ -87,15 +88,16 @@ class MissionCard extends StatelessWidget {
             ),
           if (full)
             Text('A mission holds at most ${mission.maxStages} stages.', key: const Key('missionFull')),
+          SwitchListTile(
+            key: const Key('missionCheckpoints'),
+            contentPadding: EdgeInsets.zero,
+            title: const Text('Hold after each stage'),
+            subtitle: const Text('The drone waits in place until you tap Continue. For every mission: '
+                'built here, run again or resumed.'),
+            value: mission.checkpoints,
+            onChanged: enabled ? onCheckpoints : null,
+          ),
           if (stages.isNotEmpty) ...[
-            SwitchListTile(
-              key: const Key('missionCheckpoints'),
-              contentPadding: EdgeInsets.zero,
-              title: const Text('Hold after each stage'),
-              subtitle: const Text('The drone waits in place until you tap Continue.'),
-              value: mission.checkpoints,
-              onChanged: enabled ? onCheckpoints : null,
-            ),
             Row(children: [
               Expanded(
                 child: FilledButton.icon(
@@ -117,14 +119,16 @@ class MissionCard extends StatelessWidget {
                   key: const Key('resumeMission'),
                   onPressed: enabled ? () => onResume(skip: false) : null,
                   child: Text('Resume from step ${resume.fromStep + 1}')),
-              if (resume.stepCount > 1)
+              // At a checkpoint nothing was interrupted: no step to skip.
+              if (resume.stepCount > 1 && !resume.atCheckpoint)
                 OutlinedButton(
                     key: const Key('resumeMissionSkip'),
                     onPressed: enabled ? () => onResume(skip: true) : null,
                     child: Text('Skip step ${resume.fromStep + 1} and resume')),
             ]),
-            Text('A move that was interrupted runs again in full from where the drone is now.',
-                style: theme.textTheme.bodySmall),
+            if (!resume.atCheckpoint)
+              Text('A move that was interrupted runs again in full from where the drone is now.',
+                  style: theme.textTheme.bodySmall),
           ],
         ]),
       ),

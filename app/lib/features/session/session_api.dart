@@ -355,14 +355,15 @@ class PendingStep {
 /// The snapshot's `pending` section: the plan waiting for CONFIRM.
 class PendingPlan {
   const PendingPlan(this.token, this.summary, this.steps, this.sourceWire,
-      this.expiresInMs, [this.stageOfStep]);
+      this.expiresInMs, [this.stageOfStep, this.checkpoints = false]);
   factory PendingPlan.fromMap(Map map) => PendingPlan(
       _req<String>(map, 'token'),
       _req<String>(map, 'summary'),
       [for (final step in _req<List>(map, 'steps')) PendingStep.fromMap(step as Map)],
       _req<String>(map, 'source'),
       _req<int>(map, 'expiresInMs'),
-      _stages(map));
+      _stages(map),
+      _opt<bool>(map, 'checkpoints') ?? false);
 
   /// Pass it to `confirm`; it works once.
   final String token;
@@ -376,6 +377,10 @@ class PendingPlan {
   /// A mission's stage (0-based) per step (2026-10-28); null for a plan.
   final List<int>? stageOfStep;
 
+  /// The mission holds after each stage until Continue (the operator's
+  /// setting when it was shown); false for a plan.
+  final bool checkpoints;
+
   PlanSource? get source => PlanSource.fromWire(sourceWire);
 
   bool get isMission => stageOfStep != null;
@@ -387,6 +392,7 @@ class PendingPlan {
         'source': sourceWire,
         'expiresInMs': expiresInMs,
         'stageOfStep': stageOfStep,
+        'checkpoints': checkpoints,
       };
 }
 
@@ -1018,13 +1024,18 @@ class MissionCheckpoint {
 /// The last mission ended early at step [fromStep] (0-based); [stepCount]
 /// steps are left from it.
 class MissionResume {
-  const MissionResume(this.fromStep, this.stepCount);
-  factory MissionResume.fromMap(Map map) =>
-      MissionResume(_req<int>(map, 'fromStep'), _req<int>(map, 'stepCount'));
+  const MissionResume(this.fromStep, this.stepCount, [this.atCheckpoint = false]);
+  factory MissionResume.fromMap(Map map) => MissionResume(_req<int>(map, 'fromStep'),
+      _req<int>(map, 'stepCount'), _opt<bool>(map, 'atCheckpoint') ?? false);
 
   final int fromStep, stepCount;
 
-  Map<String, Object?> toMap() => {'fromStep': fromStep, 'stepCount': stepCount};
+  /// It stopped at a checkpoint: step [fromStep] never started, so nothing
+  /// was interrupted and there is no step to skip.
+  final bool atCheckpoint;
+
+  Map<String, Object?> toMap() =>
+      {'fromStep': fromStep, 'stepCount': stepCount, 'atCheckpoint': atCheckpoint};
 }
 
 /// The snapshot's `mission` section (2026-10-28): the mission being built, the

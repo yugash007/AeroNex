@@ -64,8 +64,11 @@ data class DraftStage(val plan: FlightPlan, val source: PlanSource)
 /** A running mission holding between stages until [SafetySupervisor.continueMission] with [token]. */
 data class Checkpoint(val token: String, val stage: Int, val stageCount: Int)
 
-/** The last mission ended early at step [fromStep] (0-based): [SafetySupervisor.resumeMission] continues it. */
-data class Resume(val fromStep: Int, val stepCount: Int)
+/**
+ * The last mission ended early at step [fromStep] (0-based): [SafetySupervisor.resumeMission] continues it. When it
+ * ended [atCheckpoint], that step never started: nothing was interrupted, so there is nothing to skip.
+ */
+data class Resume(val fromStep: Int, val stepCount: Int, val atCheckpoint: Boolean = false)
 
 /** Missions (spec 2026-10-28 "Missions"): the one being built, the one holding at a checkpoint, the one to resume. */
 data class MissionStatus(

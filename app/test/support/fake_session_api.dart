@@ -461,6 +461,7 @@ class FakeSessionApi implements SessionApi {
         'source': 'mission',
         'expiresInMs': 30000,
         'stageOfStep': [for (final (i, stage) in stages.indexed) ...List.filled(stage.steps.length, i)],
+        'checkpoints': current.mission.checkpoints,
       },
       'mission': {...current.mission.toMap(), 'building': false},
       'speech': current.speech.toMap(),

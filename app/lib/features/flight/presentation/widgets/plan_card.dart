@@ -123,6 +123,9 @@ class PendingPlanCard extends StatelessWidget {
               padding: const EdgeInsets.symmetric(vertical: 4),
               child: AiUnderstanding(ai: ai!, showHeard: showAiHeard),
             ),
+          if (pending.isMission && pending.checkpoints)
+            Text('Holds after each stage until you tap Continue.',
+                key: const Key('pendingCheckpoints'), style: theme.textTheme.bodySmall),
           for (final (i, step) in pending.steps.indexed) ...[
             if (_stageHeader(pending.stageOfStep, i, theme) case final header?) header,
             Padding(

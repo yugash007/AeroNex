@@ -163,7 +163,9 @@ class SupervisorMissionTest {
         waitFor("ended") { supervisor.state.stage == PlanStage.FAILED }
         // Nothing of the next stage was sent: REJECTED, not UNKNOWN.
         assertEquals(listOf(StepStatus.COMPLETED, StepStatus.COMPLETED, StepStatus.REJECTED, StepStatus.SKIPPED), statuses())
-        assertEquals(Resume(2, 2), mission().resume)
+        assertEquals(Resume(2, 2, atCheckpoint = true), mission().resume)
+        // Review R5: nothing was interrupted, so there is no step to skip (it would drop one never flown).
+        assertEquals(SubmitResult.Rejected(SafetySupervisor.NOTHING_INTERRUPTED), await(supervisor.resumeMission(true)))
         // Resume shows the rest, in its stages, for one CONFIRM (once the STOP's heartbeat check has ended).
         val pending = resumeWhenSettled(skipInterrupted = false)
         assertEquals(listOf("Move right 2 m", "Return home"), pending.plan.steps.map { it.command.description })
@@ -197,6 +199,18 @@ class SupervisorMissionTest {
         // Or from it: the move runs again in full from where the vehicle is now.
         assertEquals(listOf("Move forward 8 m", "Move left 2 m"),
             resumeWhenSettled(skipInterrupted = false).plan.steps.map { it.command.description })
+    }
+
+    @Test fun theCheckpointSettingHoldsForEveryMissionShown() {
+        // Review R7: "run again" rebuilt a recorded mission without checkpoints, whatever the operator had chosen.
+        connect(execution = false)
+        val recorded = Mission(listOf(listOf(PlanStep(takeoff(), StepSource.RULES)), listOf(PlanStep(land, StepSource.RULES))))
+        await(supervisor.setCheckpoints(true))
+        val shown = (await(supervisor.submitMission(recorded)) as SubmitResult.AwaitingConfirmation).pending
+        assertTrue(shown.mission!!.checkpoints)
+        await(supervisor.setCheckpoints(false))
+        val again = (await(supervisor.submitMission(recorded.withCheckpoints(true))) as SubmitResult.AwaitingConfirmation).pending
+        assertTrue(!again.mission!!.checkpoints)
     }
 
     @Test fun aDryRunMissionReportsEveryStepNotSent() {
