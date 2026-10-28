@@ -122,7 +122,7 @@ Models are downloaded inside the app (Menu → Models) and verified with SHA-256
 
 | Area | Result |
 |---|---|
-| Automated tests | **914** Kotlin/JVM · **285** Flutter · **416** Python — all passing (2026-10-28) |
+| Automated tests | **915** Kotlin/JVM · **292** Flutter · **416** Python — all passing (2026-10-28) |
 | Parser correctness | **3,431 / 3,431** golden command vectors match |
 | Simulator (ArduPilot SITL + Gazebo) | **13 / 13** integration tests pass |
 | Move command → drone acknowledges | **p95 209 ms** (target ≤ 300 ms) |
@@ -171,7 +171,7 @@ Full reports: [2026-10-28 audit](docs/testing/2026-10-28-audit.md) · [flight me
 ```bash
 cd app
 flutter test && dart analyze lib test            # Flutter UI tests
-cd android && ./gradlew testDebugUnitTest        # 914 Kotlin tests (safety, link, parser, speech, AI, memory, missions)
+cd android && ./gradlew testDebugUnitTest        # 915 Kotlin tests (safety, link, parser, speech, AI, memory, missions)
 cd ../.. && python -m pytest edge/tests tools    # Python tooling tests
 python tools/grammar-gen/gen.py --check          # grammar tables are up to date
 ```
