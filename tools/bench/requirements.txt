@@ -1,0 +1,4 @@
+# tools/bench tests (benchlib and phrases are pure Python + numpy). The benchmark runs themselves also need
+# sherpa-onnx, Vosk and eSpeak NG (see the scripts' docstrings); the tests do not.
+numpy==2.5.3
+pytest==8.4.1
