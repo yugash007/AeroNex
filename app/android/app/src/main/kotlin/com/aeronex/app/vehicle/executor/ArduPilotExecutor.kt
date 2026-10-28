@@ -51,6 +51,9 @@ sealed interface StepUpdate {
  *   echo of the target within [ExecutorTiming.echoTimeoutMs], then arrival within
  *   min(0.5 m, d/2) of the target computed from the position at send time, at < 0.3 m/s, on position samples newer
  *   than the echo.
+ * - Flight memory (return home, go back, retrace, go to spot; spec 2026-10-28 M2): the supervisor resolves the step
+ *   to absolute legs; each is one SET_POSITION_TARGET_LOCAL_NED in LOCAL_NED (1), **sent exactly once**, with the
+ *   heading of the step's start held, and confirmed like a move (echo, then arrival) before the next leg is sent.
  * - Land: DO_SET_MODE LAND by ACK, then ON_GROUND. Hold (a plan step): DO_SET_MODE BRAKE by ACK, then < 0.3 m/s.
  * - get_status: the v0.2.0 vehicle status line; nothing is sent.
  *
@@ -94,14 +97,24 @@ class ArduPilotExecutor(
     /** This executor's DO_SET_MODE is queued without an ACK. */
     private var modeInFlight = false
 
-    fun start(command: FlightCommand, state: VehicleState, nowMs: Long, stepNumber: Int = 1): StepUpdate {
+    /**
+     * When the current step's second or later flight-memory leg was sent, else 0: the supervisor's step deadline
+     * then counts from it, so a retrace of many legs is not cut off while each leg still arrives in time.
+     */
+    var legStartedAtMs = 0L
+        private set
+
+    /** [legs]: a flight-memory step's absolute targets ([com.aeronex.app.memory.Route.legs]); unused by other steps. */
+    fun start(command: FlightCommand, state: VehicleState, nowMs: Long, stepNumber: Int = 1, legs: List<Ned>? = null): StepUpdate {
         cancel()
         if (owned == null) owned = watch.ownsMode(state)
         sentInStep = false
+        legStartedAtMs = 0L
         this.stepNumber = stepNumber
         val next = when (command.name) {
             FlightCommand.TAKEOFF -> Takeoff(command.altitudeM!!)
             FlightCommand.MOVE -> Move(command.direction!!, command.distanceM!!)
+            in FlightCommand.MEMORY_MOTION -> Goto(legs ?: return StepUpdate.Rejected(NO_ROUTE))
             FlightCommand.LAND -> ModeStep(CopterMode.LAND)
             FlightCommand.HOLD -> ModeStep(CopterMode.BRAKE)
             FlightCommand.STATUS -> return common(state, needsPosition = false)?.let { StepUpdate.Rejected(it) }
@@ -451,6 +464,106 @@ class ArduPilotExecutor(
             distance(Ned(x.toDouble(), y.toDouble(), z.toDouble()), goal) < echoTolerance(distance)
     }
 
+    /**
+     * A flight-memory flight: [legs] in order, each like a move with an absolute target. The heading of the step's
+     * start is sent with every leg (yaw is absolute in LOCAL_NED), so ArduCopter does not turn to face each leg and a
+     * later body-frame move keeps the heading the operator saw. A leg starts where the last one was aimed (the first at
+     * the position it was sent from), which sets its echo and arrival tolerances as a move of that length.
+     */
+    private inner class Goto(private val legs: List<Ned>) : Step() {
+        private var guided: CommandExchange? = null
+        private var streaming = false
+        private var leg = 0
+        private var from: Ned? = null
+        private var heading = 0f
+        private var sentAtMs = 0L
+        private var echoesAtSend = 0L
+        private var positionsAtEcho: Long? = null
+
+        override fun start(state: VehicleState, nowMs: Long): StepUpdate {
+            common(state, needsPosition = true)?.let { return StepUpdate.Rejected(it) }
+            if (state.armed != true || state.landedState != VehicleState.LANDED_IN_AIR) {
+                return StepUpdate.Rejected("Movement requires an airborne vehicle.")
+            }
+            if (!fresh(state, Attitude.messageId, LocalPositionNed.messageId, GlobalPositionInt.messageId)) {
+                return StepUpdate.Rejected(STALE)
+            }
+            if (legs.isEmpty()) return StepUpdate.Completed(ALREADY_THERE)
+            val position = state.position!!
+            for (target in legs) {
+                val altitude = state.altitudeRelM!! - (target.z - position.z)
+                if (altitude < 1 - HEIGHT_EPSILON_M || altitude > 10 + HEIGHT_EPSILON_M) {
+                    return StepUpdate.Rejected("Target exceeds simulator altitude limits.")
+                }
+            }
+            heading = state.yaw!!.toFloat()
+            streaming = !planStreamsPositionTarget() && link.setPositionTargetStreaming(true)
+            if (watch.ownsMode(state) && watch.mode(state) == CopterMode.GUIDED) return sendLeg(state, nowMs)
+            return exchange(setMode(CopterMode.GUIDED)).let {
+                guided = it
+                begin(it, nowMs)
+            }
+        }
+
+        override fun update(state: VehicleState, acks: List<CommandAck>, nowMs: Long): StepUpdate {
+            guided?.let { exchange ->
+                outcome(exchange, acks, nowMs)?.let { return it }
+                guided = null
+                modeAccepted(CopterMode.GUIDED, state)
+                takenOver()?.let { return it }
+                return sendLeg(state, nowMs)
+            }
+            if (!fresh(state, Attitude.messageId, LocalPositionNed.messageId)) return StepUpdate.Unknown(LOST)
+            val goal = legs[leg]
+            val length = distance(from!!, goal)
+            val echoedAt = positionsAtEcho
+            if (echoedAt == null) {
+                val echo = state.lastPositionTarget?.message
+                if (state.positionTargetCount > echoesAtSend && echo != null &&
+                    distance(Ned(echo.x.toDouble(), echo.y.toDouble(), echo.z.toDouble()), goal) < echoTolerance(length)
+                ) {
+                    positionsAtEcho = state.samples[LocalPositionNed.messageId] ?: 0
+                    trace.mark(TracePoint.ECHO, traceId, mapOf("step" to stepNumber, "leg" to leg + 1))
+                    return StepUpdate.Running
+                }
+                return if (nowMs - sentAtMs > timing.echoTimeoutMs) StepUpdate.Unknown(NO_ECHO) else StepUpdate.Running
+            }
+            val newer = (state.samples[LocalPositionNed.messageId] ?: 0) > echoedAt
+            val arrived = distance(state.position!!, goal) < arrivalTolerance(length) &&
+                (state.speed ?: Double.MAX_VALUE) < STILL_SPEED
+            if (!newer || !arrived) return StepUpdate.Running
+            trace.mark(TracePoint.ARRIVED, traceId, mapOf("step" to stepNumber, "leg" to leg + 1))
+            if (leg == legs.size - 1) return StepUpdate.Completed()
+            from = goal
+            leg++
+            legStartedAtMs = nowMs
+            return sendLeg(state, nowMs)
+        }
+
+        override fun end() {
+            if (streaming) link.setPositionTargetStreaming(false)
+            streaming = false
+        }
+
+        /** The leg's one and only frame (S9), as a move's. */
+        private fun sendLeg(state: VehicleState, nowMs: Long): StepUpdate {
+            if (!fresh(state, Attitude.messageId, LocalPositionNed.messageId)) {
+                return if (sentInStep) StepUpdate.Unknown(LOST) else StepUpdate.Rejected(STALE)
+            }
+            if (from == null) from = state.position!!
+            val target = legs[leg]
+            echoesAtSend = state.positionTargetCount
+            positionsAtEcho = null
+            sentAtMs = nowMs
+            val frame = SetPositionTargetLocalNed(0, link.targetSystem, link.targetComponent, MAV_FRAME_LOCAL_NED,
+                TYPE_MASK_POSITION_AND_YAW, target.x.toFloat(), target.y.toFloat(), target.z.toFloat(), yaw = heading)
+            if (!link.send(frame)) return if (sentInStep) StepUpdate.Unknown(NOT_QUEUED_AFTER_SEND) else StepUpdate.Rejected(NOT_QUEUED)
+            sentInStep = true
+            trace.mark(TracePoint.MOVE_TX, traceId, mapOf("leg" to leg + 1, "legs" to legs.size, "step" to stepNumber))
+            return StepUpdate.Running
+        }
+    }
+
     companion object {
         const val STALE = "Fresh Copter telemetry is required. Nothing sent."
         const val POSITION_NOT_READY = "Position estimator is not ready. Wait for a fresh EKF solution. Nothing sent."
@@ -461,6 +574,9 @@ class ArduPilotExecutor(
         const val INTERRUPTED = "interrupted; check the simulator before sending another command."
         const val NOT_QUEUED = "The link did not accept the command. Nothing sent."
         const val NOT_QUEUED_AFTER_SEND = "The link did not accept a command after others were sent; vehicle outcome unknown."
+        const val NO_ROUTE = "The flight memory gave no route for this step. Nothing sent."
+        /** A flight-memory step whose target is where the vehicle already is: confirmed with nothing sent. */
+        const val ALREADY_THERE = "already there; nothing sent"
 
         const val MAV_CMD_DO_SET_MODE = 176
         const val MAV_CMD_COMPONENT_ARM_DISARM = 400
@@ -478,6 +594,8 @@ class ArduPilotExecutor(
         private const val ARRIVAL_TOLERANCE_M = 0.5
         private const val ECHO_TOLERANCE_M = 1.0
         private const val STILL_SPEED = 0.3
+        /** A remembered leg is clamped to the 1–10 m range in floating point ([com.aeronex.app.memory.MemoryRoutes]). */
+        private const val HEIGHT_EPSILON_M = 1e-6
 
         /** Short moves keep a usable tolerance (audit L14), always below [d] so the previous target never matches. */
         private const val SHORT_MOVE_FLOOR_M = 0.15

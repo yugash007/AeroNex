@@ -37,10 +37,14 @@ class FlightPlan(steps: List<PlanStep>) {
         if (names.first() == FlightCommand.TAKEOFF) checkAltitude(this.steps.first().command.altitudeM!!)
     }
 
-    /** Validates the plan against the reported vehicle state, as v0.2.0 `checkVehicle`. */
+    /**
+     * Validates the plan against the reported vehicle state, as v0.2.0 `checkVehicle`. On the ground a plan starts with
+     * a takeoff, or is status alone, or (flight memory) marks a spot alone: the launch point can be saved.
+     */
     fun checkVehicle(landed: Boolean, altitude: Double? = null) {
         val first = steps.first().command.name
-        if (landed && first != FlightCommand.TAKEOFF && first != FlightCommand.STATUS) {
+        val markAlone = first == FlightCommand.MARK_POINT && steps.size == 1
+        if (landed && first != FlightCommand.TAKEOFF && first != FlightCommand.STATUS && !markAlone) {
             throw CommandFormatException(
                 "The drone is on the ground. Start with a takeoff height, " +
                     "for example: take off to 3 m and fly forward 3 m."
@@ -52,10 +56,15 @@ class FlightPlan(steps: List<PlanStep>) {
         if (!landed && altitude != null) checkAltitude(altitude)
     }
 
-    /** Simulates up/down moves from [start]; the executor still re-checks each. */
+    /**
+     * Simulates up/down moves from [start]; the executor still re-checks each. A flight-memory flight ends at a
+     * remembered height this plan cannot know, so the simulation stops there; the validator projects the rest with the
+     * flight memory ([com.aeronex.app.safety.PlanValidator]).
+     */
     private fun checkAltitude(start: Double) {
         var altitude = start
         steps.forEachIndexed { i, step ->
+            if (step.command.isMemoryMotion) return
             val direction = step.command.direction
             if (direction != "up" && direction != "down") return@forEachIndexed
             val distance = step.command.distanceM!!

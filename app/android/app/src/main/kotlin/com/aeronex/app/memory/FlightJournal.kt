@@ -58,6 +58,10 @@ class FlightJournal(
     @Volatile var state: MemoryState = restore(store.load())
         private set
 
+    /** [recordPlan]'s last key and the plan id it got; under [lock]. */
+    private var lastKey: Long? = null
+    private var lastPlanId = 0L
+
     /** Every vehicle snapshot's home (cheap when it has not moved). */
     fun observeHome(home: Ned?) {
         if (home == null) return
@@ -98,16 +102,23 @@ class FlightJournal(
         s.copy(points = s.points + (point to waypoint(position, "Spot $point")))
     }
 
-    /** A finished plan's steps go to the history, as one plan. */
-    fun recordPlan(steps: List<RecordedStep>) {
+    /**
+     * A finished plan's steps go to the history, as one plan. The same plan finishing again under the same [key] (a
+     * HOLD whose STOP check ends after its ACK) replaces its records while it is still the newest plan.
+     */
+    fun recordPlan(steps: List<RecordedStep>, key: Long? = null) {
         if (steps.isEmpty()) return
         update { s ->
-            val planId = s.nextId
+            val again = key != null && key == lastKey && s.history.lastOrNull()?.planId == lastPlanId
+            val planId = if (again) lastPlanId else s.nextId
             val at = wallClock()
             val records = steps.mapIndexed { i, step ->
                 CommandRecord(planId + i, planId, at, step.name, step.arguments, step.description, step.source, step.outcome)
             }
-            s.copy(history = (s.history + records).takeLast(HISTORY_LIMIT), nextId = planId + steps.size)
+            lastKey = key
+            lastPlanId = planId
+            val kept = if (again) s.history.filter { it.planId != planId } else s.history
+            s.copy(history = (kept + records).takeLast(HISTORY_LIMIT), nextId = maxOf(s.nextId, planId + steps.size))
         }
     }
 

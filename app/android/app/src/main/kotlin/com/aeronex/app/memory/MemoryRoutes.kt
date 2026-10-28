@@ -31,7 +31,32 @@ object MemoryRoutes {
     const val NOTHING_TO_GO_BACK = "There is no earlier position to go back to in this flight."
     const val NOTHING_TO_RETRACE = "There is no flown path to retrace in this flight."
 
+    /** The height range above home every flight keeps (the simulator envelope). */
+    const val FLOOR_M = 1.0
+    const val CEILING_M = 10.0
+
     fun noSpot(point: Int) = "Spot $point is not saved. Say \"mark spot $point\" there first."
+
+    /**
+     * [route] as it is flown from [position]: each leg at a height within [FLOOR_M]–[CEILING_M] above home, counted
+     * as the move check counts it (the current [altitudeM], GLOBAL_POSITION_INT relative_alt, plus the climb from
+     * [position]), and no leg shorter than [ARRIVED_M] (one is dropped: the vehicle stops within that of every target
+     * anyway, and a shorter leg could not be told from the last). A takeoff completes up to 0.4 m short of its height
+     * and a move arrives within 0.5 m of its target, so a remembered position can sit just outside the range; that leg
+     * flies at the nearest height inside it. A null [altitudeM] leaves the heights as remembered.
+     */
+    fun flyable(route: Route, position: Ned, altitudeM: Double?): Route {
+        val legs = ArrayList<Ned>(route.legs.size)
+        var from = position
+        for (leg in route.legs) {
+            val target = if (altitudeM == null) leg
+            else leg.copy(z = leg.z.coerceIn(position.z + altitudeM - CEILING_M, position.z + altitudeM - FLOOR_M))
+            if (target.distanceTo(from) < ARRIVED_M) continue
+            legs += target
+            from = target
+        }
+        return if (legs == route.legs) route else route.copy(legs = legs)
+    }
 
     /** Throws [CommandFormatException] with the operator message when the memory cannot answer. */
     fun resolve(command: FlightCommand, memory: MemoryState, position: Ned): Route = when (command.name) {
