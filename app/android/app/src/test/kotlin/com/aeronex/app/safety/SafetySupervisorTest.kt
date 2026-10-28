@@ -811,4 +811,22 @@ class SafetySupervisorTest {
         assertTrue("an escalation sounds again", supervisor.state.stop!!.alarm)
     }
 
+    /** Review D4: the STOP confirmed after its alarm was seen is good news, not a new alarm to acknowledge. */
+    @Test fun aConfirmationAfterAnAcknowledgedAlarmStaysSilent() {
+        connect(slowRetry)
+        vehicle.lose[22] = AtomicInteger(1_000) // armed on the ground: the takeoff never happens
+        confirm(token(submit(plan(takeoff()))))
+        waitFor("armed on the ground") { vehicle.armed }
+        vehicle.refuse[400] = 4 // the DISARM is refused: alarm, then BRAKE
+        // BRAKE's first 3 ACKs are lost (500 ms apart): it re-sends for about 1.5 s, inside the 2 s STOP window.
+        vehicle.loseAcks[176] = AtomicInteger(3)
+        supervisor.stop(StopTrigger.BUTTON)
+        waitFor("alarm while BRAKE re-sends") {
+            supervisor.state.stop?.let { it.alarm && it.phase == StopPhase.SENDING && it.action == StopAction.BRAKE } == true
+        }
+        supervisor.acknowledgeAlarm()
+        waitFor("BRAKE confirmed", 4_000) { supervisor.state.stop?.phase == StopPhase.CONFIRMED }
+        assertFalse("a confirmation is no new alarm", supervisor.state.stop!!.alarm)
+    }
+
 }

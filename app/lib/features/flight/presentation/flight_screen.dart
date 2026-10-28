@@ -73,6 +73,9 @@ class _FlightScreenState extends State<FlightScreen> with WidgetsBindingObserver
   /// The pending plan this screen confirmed: one CONFIRM per plan.
   String? _confirmedToken;
 
+  /// The checkpoint this screen continued from: one Continue per checkpoint.
+  String? _continuedToken;
+
   /// The pending plan an edit already cancelled: one cancel per plan.
   String? _editCancelledToken;
 
@@ -355,9 +358,10 @@ class _FlightScreenState extends State<FlightScreen> with WidgetsBindingObserver
 
   void _tap(FlightCommand command) {
     final plan = FlightPlan.single(command, source: StepSource.rules);
-    // HOLD acts at once (it is the STOP action): never held back by the lock.
+    // HOLD acts at once (it is the STOP action): never held back by the lock,
+    // and it leaves a CONFIRM or a command in flight as it is.
     if (command.name == 'hold') {
-      _send(plan, PlanSource.tap);
+      _sent(() => widget.session.submitPlan(plan, PlanSource.tap), fresh: false);
       return;
     }
     _locked(() => _send(plan, PlanSource.tap));
@@ -365,15 +369,17 @@ class _FlightScreenState extends State<FlightScreen> with WidgetsBindingObserver
 
   // --- missions (2026-10-28) ---
 
-  /// A failed mission call is shown like a failed command.
-  Future<void> _missionCall(Future<void> Function() call) async {
-    try {
-      await call();
-    } catch (error) {
-      _showError(userErrorMessage(error));
-    }
-    await _refresh();
-  }
+  /// A failed mission call is shown like a failed command. One at a time,
+  /// with the card locked until the service's answer is shown: a second tap on
+  /// "Remove stage 1" would otherwise remove what was stage 2.
+  Future<void> _missionCall(Future<void> Function() call) => _locked(() async {
+        try {
+          await call();
+        } catch (error) {
+          _showError(userErrorMessage(error));
+        }
+        await _refresh();
+      });
 
   void _setBuilding(bool on) => _missionCall(() => widget.session.setMissionBuilding(on));
   void _setCheckpoints(bool on) => _missionCall(() => widget.session.setMissionCheckpoints(on));
@@ -389,12 +395,20 @@ class _FlightScreenState extends State<FlightScreen> with WidgetsBindingObserver
       _locked(() => _sent(() => widget.session.resumeMission(skipInterrupted: skip)));
 
   /// At a checkpoint: the next stage, checked again from the drone's state.
+  /// Once per checkpoint: a second tap would only be refused, as if the
+  /// mission had not gone on. A refusal lets the operator try again.
   Future<void> _continueMission(String token) async {
+    if (_continuedToken == token) return;
+    setState(() => _continuedToken = token);
     try {
       final result = await widget.session.continueMission(token);
-      if (!result.accepted) _showError(result.error ?? 'The mission did not continue.');
+      if (!result.accepted) {
+        if (mounted) setState(() => _continuedToken = null);
+        _showError(result.error ?? 'The mission did not continue.');
+      }
       await _refresh();
     } catch (error) {
+      if (mounted) setState(() => _continuedToken = null);
       _showError(userErrorMessage(error));
     }
   }
@@ -434,9 +448,7 @@ class _FlightScreenState extends State<FlightScreen> with WidgetsBindingObserver
   }
 
   /// A one-step tool call from a button, like the tap pad's.
-  void _tapCall(String name) => _tap(FlightCommand.fromToolCalls([
-        {'name': name, 'arguments': <String, Object?>{}}
-      ]));
+  void _tapCall(String name) => _tap(FlightCommand.tool(name));
 
   /// Runs [work] with the inputs locked ([_busy]); one at a time.
   Future<void> _locked(Future<void> Function() work) async {
@@ -452,12 +464,15 @@ class _FlightScreenState extends State<FlightScreen> with WidgetsBindingObserver
   Future<void> _send(FlightPlan plan, PlanSource source) =>
       _sent(() => widget.session.submitPlan(plan, source));
 
-  /// Shows a plan the service refused with its reason, verbatim.
-  Future<void> _sent(Future<SubmitResult> Function() submit) async {
-    setState(() {
-      _error = null;
-      _confirmedToken = null;
-    });
+  /// Shows a plan the service refused with its reason, verbatim. [fresh]
+  /// input clears the last error and CONFIRM's once-only mark first.
+  Future<void> _sent(Future<SubmitResult> Function() submit, {bool fresh = true}) async {
+    if (fresh) {
+      setState(() {
+        _error = null;
+        _confirmedToken = null;
+      });
+    }
     try {
       final result = await submit();
       if (result is RejectedResult) _showError(result.error);
@@ -639,9 +654,11 @@ class _FlightScreenState extends State<FlightScreen> with WidgetsBindingObserver
                         onCancel: _cancelPlan,
                         cancelRowKey: _cancelRow,
                         checkpoint: snap.mission.checkpoint,
-                        onContinue: snap.mission.checkpoint == null
-                            ? null
-                            : () => _continueMission(snap.mission.checkpoint!.token)),
+                        onContinue: switch (snap.mission.checkpoint) {
+                          null => null,
+                          final checkpoint when checkpoint.token == _continuedToken => null,
+                          final checkpoint => () => _continueMission(checkpoint.token),
+                        }),
                   ),
                 if (ai.thinking)
                   Card(

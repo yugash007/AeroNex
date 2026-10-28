@@ -67,6 +67,10 @@ class FakeSessionApi implements SessionApi {
   /// Pending `submitPlan` until completed, to observe a submit in flight.
   Completer<void>? submitGate;
 
+  /// Pending `stop` and `removeStage` until completed, to act while one is in
+  /// flight.
+  Completer<void>? stopGate, removeStageGate;
+
   /// The POST_NOTIFICATIONS state `notificationPermission` answers. An
   /// `ask` while [NotificationPermission.askable] waits for
   /// [notificationDialog] (the operator's answer; denied when null).
@@ -270,6 +274,7 @@ class FakeSessionApi implements SessionApi {
   @override
   Future<void> stop({required bool heldOneSecond}) async {
     calls.add(('stop', {'heldOneSecond': heldOneSecond}));
+    if (stopGate case final gate?) await gate.future;
     if (stopError != null) throw stopError!;
   }
 
@@ -419,6 +424,7 @@ class FakeSessionApi implements SessionApi {
   @override
   Future<void> removeStage(int index) async {
     calls.add(('removeStage', {'index': index}));
+    if (removeStageGate case final gate?) await gate.future;
     final stages = [for (final (i, s) in current.mission.stages.indexed) if (i != index) s.toMap()];
     pushMission({'stages': stages});
   }

@@ -1,5 +1,6 @@
 import 'dart:math' as math;
 
+import 'package:flutter/foundation.dart' show listEquals;
 import 'package:flutter/material.dart';
 
 import '../../../session/session_api.dart';
@@ -8,10 +9,7 @@ import '../../domain/flight_command.dart';
 /// At most this many recorded plans are listed.
 const _plansShown = 5;
 
-FlightCommand _call(String name, [Map<String, Object> arguments = const {}]) =>
-    FlightCommand.fromToolCalls([
-      {'name': name, 'arguments': arguments}
-    ]);
+const _call = FlightCommand.tool;
 
 /// The flight memory (2026-10-28): the path flown in this flight on a small
 /// map, the saved points and the recent plans. Every button sends the tool
@@ -148,9 +146,7 @@ class _PlanRow extends StatelessWidget {
   Widget build(BuildContext context) {
     final at = DateTime.fromMillisecondsSinceEpoch(plan.atWallMs);
     String two(int n) => n.toString().padLeft(2, '0');
-    final outcome = plan.completed
-        ? 'Completed'
-        : plan.steps.map((s) => s.outcome).firstWhere((o) => o != 'COMPLETED', orElse: () => 'COMPLETED');
+    final outcome = plan.steps.map((s) => s.outcome).firstWhere((o) => o != 'COMPLETED', orElse: () => 'COMPLETED');
     final source = plan.source?.label ?? plan.sourceWire;
     return Padding(
       key: Key('memoryPlan${plan.planId}'),
@@ -205,16 +201,42 @@ class MemoryMapColors {
   }
 
   final Color path, home, point, vehicle, grid, label;
+
+  @override
+  bool operator ==(Object other) =>
+      other is MemoryMapColors &&
+      other.path == path &&
+      other.home == home &&
+      other.point == point &&
+      other.vehicle == vehicle &&
+      other.grid == grid &&
+      other.label == label;
+
+  @override
+  int get hashCode => Object.hash(path, home, point, vehicle, grid, label);
 }
 
 /// North up, east right, scaled to fit: home, the flown path (oldest to
 /// newest), the saved points and the vehicle. At least [minSpanM] across, so a
 /// short flight is not drawn as if it were large.
 class MemoryMapPainter extends CustomPainter {
-  MemoryMapPainter(this.memory, this.colors);
+  MemoryMapPainter(this.memory, this.colors) : _drawn = _drawnOf(memory);
 
   final FlightMemory memory;
   final MemoryMapColors colors;
+
+  /// What [paint] draws from [memory]. Snapshots arrive 5–10 times a second,
+  /// each with a new [FlightMemory]: the map repaints only when this changes.
+  final List<Object?> _drawn;
+
+  static List<Object?> _drawnOf(FlightMemory memory) => [
+        memory.homeKnown,
+        memory.vehicle?.northM,
+        memory.vehicle?.eastM,
+        for (final p in memory.trail) ...[p.place.northM, p.place.eastM],
+        '|', // the trail ends here
+        for (final s in memory.points) ...[s.point, s.place.northM, s.place.eastM],
+      ];
 
   static const minSpanM = 10.0;
 
@@ -302,6 +324,5 @@ class MemoryMapPainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(MemoryMapPainter old) =>
-      old.memory != memory || old.colors.path != colors.path || old.colors.vehicle != colors.vehicle;
+  bool shouldRepaint(MemoryMapPainter old) => old.colors != colors || !listEquals(old._drawn, _drawn);
 }

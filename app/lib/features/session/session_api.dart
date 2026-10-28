@@ -891,7 +891,6 @@ class MemoryPlan {
   bool get completed => steps.every((s) => s.outcome == 'COMPLETED');
 
   /// Its steps were stages of a mission (2026-10-28).
-  bool get isMission => steps.any((s) => s.stage > 0);
 
   Map<String, Object?> toMap() => {
         'planId': planId,

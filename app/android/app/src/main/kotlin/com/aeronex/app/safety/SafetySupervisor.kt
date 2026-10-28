@@ -293,7 +293,10 @@ class SafetySupervisor(
     /** E.g. the app went to the background: the confirmation no longer applies. */
     fun invalidatePending(reason: String) = post { invalidate(reason) }
 
-    /** The operator saw the STOP alarm: silent until the STOP changes phase or action (a new escalation). */
+    /**
+     * The operator saw the STOP alarm: silent until the STOP changes phase or action (a new escalation). Its
+     * confirmation is no escalation: a STOP confirmed after its alarm was seen stays silent.
+     */
     fun acknowledgeAlarm() = post {
         val stop = stopStatus ?: return@post
         acknowledged = Triple(stop.id, stop.phase, stop.action)
@@ -738,7 +741,7 @@ class SafetySupervisor(
             is StopProgress.Sending -> StopStatus(stopId, stopTrigger, StopPhase.SENDING, progress.action,
                 StopPolicy.sendingMessage(progress.action, previous), lane.alarm, stopOverride)
             is StopProgress.Confirmed -> StopStatus(stopId, stopTrigger, StopPhase.CONFIRMED, progress.action,
-                StopPolicy.confirmedMessage(progress.action), lane.alarm, stopOverride)
+                StopPolicy.confirmedMessage(progress.action), lane.alarm && acknowledged?.first != stopId, stopOverride)
             is StopProgress.TakenOver -> StopStatus(stopId, stopTrigger, StopPhase.NOT_CONFIRMED, progress.action,
                 StopPolicy.takenOverMessage(progress.mode), alarm = true, override = stopOverride)
             is StopProgress.NotConfirmed -> StopStatus(stopId, stopTrigger, StopPhase.NOT_CONFIRMED, progress.action,

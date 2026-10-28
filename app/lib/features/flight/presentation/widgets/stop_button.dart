@@ -227,8 +227,10 @@ class _StopLaneState extends State<StopLane> with WidgetsBindingObserver {
   int? _stopErrorAt;
   int? _stopId;
   /// The alarm the operator acknowledged: its STOP id, phase and action. An
-  /// escalation of the same STOP (another phase or action) alarms again (F4).
+  /// escalation of the same STOP (another phase or action) alarms again (F4);
+  /// its confirmation does not ([_seenAlarmStop]).
   String? _seenAlarm;
+  int? _seenAlarmStop;
   bool _stopRecent = false;
   Timer? _stopFade, _buzz;
 
@@ -279,7 +281,12 @@ class _StopLaneState extends State<StopLane> with WidgetsBindingObserver {
         });
       }
     });
-    _alarm(stop != null && stop.alarm && _alarmKey(stop) != _seenAlarm);
+    _alarm(stop != null &&
+        stop.alarm &&
+        _alarmKey(stop) != _seenAlarm &&
+        // A STOP confirmed after its alarm was seen is good news, not a new
+        // alarm (the service agrees once it has the acknowledgement).
+        !(stop.phase == 'CONFIRMED' && stop.id == _seenAlarmStop));
   }
 
   static String _alarmKey(StopStatus stop) => '${stop.id}/${stop.phase}/${stop.action}';
@@ -301,11 +308,14 @@ class _StopLaneState extends State<StopLane> with WidgetsBindingObserver {
 
   void _stop({required bool heldOneSecond}) {
     if (_stopError != null) setState(() => _stopError = null);
+    // The STOP shown when it was pressed: a newer one in a snapshot means the
+    // service got it, even if its reply failed, so the error then clears.
+    final shown = _snap.stop?.id;
     widget.session.stop(heldOneSecond: heldOneSecond).catchError((Object _) {
       if (mounted) {
         setState(() {
           _stopError = stopUnreachable;
-          _stopErrorAt = _snap.stop?.id;
+          _stopErrorAt = shown;
         });
       }
     });
@@ -314,12 +324,13 @@ class _StopLaneState extends State<StopLane> with WidgetsBindingObserver {
   void _acknowledge() {
     final stop = _snap.stop;
     _seenAlarm = stop == null ? null : _alarmKey(stop);
+    _seenAlarmStop = stop?.id;
     _alarm(false);
     widget.session.acknowledgeAlarm().catchError((Object _) {
       if (mounted) {
         setState(() {
           _stopError = acknowledgeUnreachable;
-          _stopErrorAt = _snap.stop?.id;
+          _stopErrorAt = stop?.id;
         });
       }
     });
