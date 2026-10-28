@@ -105,6 +105,22 @@ class FlightJournalTest {
         assertEquals(FlightJournal.HISTORY_LIMIT + 4L, journal.state.nextId)
     }
 
+    @Test fun aPlanFinishingAgainUnderItsKeyReplacesItsRecords() {
+        journal.recordPlan(listOf(step("hold", "COMPLETED")), key = 7)
+        journal.recordPlan(listOf(step("hold", "UNKNOWN")), key = 7) // its STOP check failed after the ACK
+        assertEquals(listOf("UNKNOWN"), journal.state.history.map { it.outcome })
+        assertEquals(listOf(1L), journal.state.history.map { it.planId })
+        assertEquals(2L, journal.state.nextId)
+        // Another plan in between: the old key no longer replaces anything.
+        journal.recordPlan(listOf(step()), key = 8)
+        journal.recordPlan(listOf(step("hold", "COMPLETED")), key = 7)
+        assertEquals(listOf(1L, 2L, 3L), journal.state.history.map { it.planId })
+        // No key: always a new plan.
+        journal.recordPlan(listOf(step()))
+        journal.recordPlan(listOf(step()))
+        assertEquals(5, journal.state.history.size)
+    }
+
     @Test fun clearForgetsEverythingButHome() {
         journal.observeHome(ned(0.0, 0.0, 0.0))
         journal.takeoffCompleted(ned(0.0, 0.0))

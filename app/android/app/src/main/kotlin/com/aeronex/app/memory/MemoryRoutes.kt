@@ -30,6 +30,8 @@ object MemoryRoutes {
     const val HOME_UNKNOWN = "Home position is unknown. Wait for GPS home before returning."
     const val NOTHING_TO_GO_BACK = "There is no earlier position to go back to in this flight."
     const val NOTHING_TO_RETRACE = "There is no flown path to retrace in this flight."
+    /** A trail position recorded as a flight left it ([departing]). */
+    const val START_LABEL = "Start"
 
     /** The height range above home every flight keeps (the simulator envelope). */
     const val FLOOR_M = 1.0
@@ -83,6 +85,17 @@ object MemoryRoutes {
             Route(if (spot.position.distanceTo(position) < ARRIVED_M) emptyList() else listOf(spot.position), spot.label)
         }
         else -> throw IllegalArgumentException("${command.name} is not a flight-memory flight")
+    }
+
+    /**
+     * The memory as a move or a flight-memory flight starts from [position]: a position away from the trail's newest
+     * one (where a STOP or a pilot left the vehicle, or the first move of a flight this app did not take off) joins
+     * the trail first, so go back can return there and the trail stays the path actually flown.
+     */
+    fun departing(memory: MemoryState, position: Ned, wallMs: Long = 0): MemoryState {
+        val last = memory.trail.lastOrNull()
+        return if (last != null && last.position.distanceTo(position) < FlightJournal.MIN_SPACING_M) memory
+        else memory.copy(trail = memory.trail + Waypoint(position, START_LABEL, wallMs))
     }
 
     /**

@@ -74,6 +74,7 @@ class PlanValidator(val maxHomeDistanceM: Double = 30.0, val realHardwareProfile
             val command = step.command
             when {
                 command.name == FlightCommand.MOVE -> {
+                    remembered = MemoryRoutes.departing(remembered, Ned(north, east, down))
                     val d = command.distanceM!!
                     when (command.direction) {
                         "forward" -> { north += cos(yaw) * d; east += sin(yaw) * d }
@@ -93,6 +94,7 @@ class PlanValidator(val maxHomeDistanceM: Double = 30.0, val realHardwareProfile
                 }
                 command.isMemoryMotion -> {
                     val from = Ned(north, east, down)
+                    remembered = MemoryRoutes.departing(remembered, from)
                     val route = try {
                         MemoryRoutes.flyable(MemoryRoutes.resolve(command, remembered, from), from, altitude)
                     } catch (e: CommandFormatException) {

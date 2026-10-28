@@ -94,6 +94,9 @@ class FlightJournal(
         }
     }
 
+    /** A move or a flight-memory flight starts from [position] ([MemoryRoutes.departing]). */
+    fun departing(position: Ned) = arrived(position, MemoryRoutes.START_LABEL)
+
     /** go_back or retrace ended: only the first [count] positions of the trail remain (undo). */
     fun keepTrail(count: Int) = update { s -> if (count >= s.trail.size) s else s.copy(trail = s.trail.take(maxOf(count, 0))) }
 

@@ -413,6 +413,9 @@ class SafetySupervisor(
             startStep(current, index + 1, vehicle, now)
             return
         }
+        if (step.command.isMotion) {
+            vehicle.position?.takeIf { vehicle.fresh(LocalPositionNed.messageId) }?.let(journal::departing)
+        }
         val legs = if (!step.command.isMemoryMotion) null else try {
             route(step.command, vehicle).also { current.route = it }.legs
         } catch (e: CommandFormatException) {
@@ -434,7 +437,8 @@ class SafetySupervisor(
 
     /**
      * A step telemetry confirmed: the trail follows the vehicle (spec 2026-10-28 M1). A takeoff starts a new flight;
-     * a move or a flight to a remembered position adds where it ended; go back and retrace forget what they undid.
+     * a move or a flight to a remembered position adds where it ended (and, as it started, where it started from when
+     * that was not the newest position: [FlightJournal.departing]); go back and retrace forget what they undid.
      */
     private fun remember(current: PlanRun, command: FlightCommand, vehicle: VehicleState) {
         val position = vehicle.position?.takeIf { vehicle.fresh(LocalPositionNed.messageId) }

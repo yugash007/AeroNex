@@ -68,6 +68,41 @@ class MemoryRoutesTest {
         refused(MemoryRoutes.noSpot(3), gotoSpot(3))
     }
 
+    @Test fun flyableKeepsEveryLegWithinTheHeightRange() {
+        // At 3 m (z -3): 1 m is z -1, 10 m is z -10.
+        val route = Route(listOf(ned(4.0, 0.0, -0.6), ned(4.0, 4.0, -10.4), ned(0.0, 4.0, -5.0)), "x")
+        val flown = MemoryRoutes.flyable(route, ned(0.0, 0.0), altitudeM = 3.0)
+        assertEquals(listOf(ned(4.0, 0.0, -1.0), ned(4.0, 4.0, -10.0), ned(0.0, 4.0, -5.0)), flown.legs)
+        assertEquals("x", flown.label)
+        // Unknown altitude: heights as remembered.
+        assertSame(route, MemoryRoutes.flyable(route, ned(0.0, 0.0), altitudeM = null))
+        // Heights count from the current altitude, not from z: at 5 m with z -3, 1 m is z 1.
+        assertEquals(listOf(ned(4.0, 0.0, 1.0)),
+            MemoryRoutes.flyable(Route(listOf(ned(4.0, 0.0, 1.5)), "x"), ned(0.0, 0.0), altitudeM = 5.0).legs)
+    }
+
+    @Test fun flyableDropsLegsTooShortToConfirm() {
+        // A low takeoff position under the vehicle: clamped to 1 m it is where the vehicle already is.
+        val under = Route(listOf(ned(0.0, 0.0, -0.6)), "Takeoff", keep = 1)
+        val flown = MemoryRoutes.flyable(under, ned(0.0, 0.0, -1.0), altitudeM = 1.0)
+        assertTrue(flown.legs.isEmpty())
+        assertEquals(1, flown.keep)
+        // A short hop between two legs is merged into the next leg's start.
+        val hop = Route(listOf(ned(4.0, 0.0), ned(4.3, 0.2), ned(8.0, 0.0)), "x")
+        assertEquals(listOf(ned(4.0, 0.0), ned(8.0, 0.0)), MemoryRoutes.flyable(hop, ned(0.0, 0.0), 3.0).legs)
+    }
+
+    @Test fun aFlightLeavingAPositionOffTheTrailRecordsItFirst() {
+        // Where a STOP left the vehicle, 2 m past b: go back then returns there before b.
+        val stopped = MemoryRoutes.departing(memory, ned(4.0, 5.0))
+        assertEquals(ned(4.0, 5.0), stopped.trail.last().position)
+        assertEquals(MemoryRoutes.START_LABEL, stopped.trail.last().label)
+        // At the newest position (within the spacing) nothing is added.
+        assertSame(memory, MemoryRoutes.departing(memory, ned(4.0, 3.3)))
+        // The first move of a flight this app did not take off starts the trail.
+        assertEquals(listOf(ned(1.0, 1.0)), MemoryRoutes.departing(MemoryState(), ned(1.0, 1.0)).trail.map { it.position })
+    }
+
     @Test fun onlyFlightMemoryFlightsAreResolved() {
         assertThrows(IllegalArgumentException::class.java) {
             MemoryRoutes.resolve(FlightCommand.of(FlightCommand.LAND), memory, ned(0.0, 0.0))
