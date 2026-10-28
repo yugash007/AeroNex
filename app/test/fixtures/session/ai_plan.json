@@ -67,7 +67,8 @@
       }
     ],
     "source": "ai",
-    "expiresInMs": 13100
+    "expiresInMs": 13100,
+    "stageOfStep": null
   },
   "run": null,
   "stop": null,
@@ -151,5 +152,13 @@
     "canRetrace": false,
     "plans": [],
     "notice": null
+  },
+  "mission": {
+    "building": false,
+    "checkpoints": false,
+    "maxStages": 5,
+    "stages": [],
+    "checkpoint": null,
+    "resume": null
   }
 }

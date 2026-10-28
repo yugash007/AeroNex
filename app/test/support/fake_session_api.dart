@@ -368,6 +368,113 @@ class FakeSessionApi implements SessionApi {
     }));
   }
 
+  // --- missions (2026-10-28) ---
+
+  /// Pushes the current snapshot with its `mission` section patched.
+  SessionSnapshot pushMission(Map<String, Object?> mission, [Map<String, Object?> rest = const {}]) {
+    final snapshot = SessionSnapshot.fromMap({
+      ...current.toMap(),
+      ...rest,
+      'seq': ++_seq,
+      'mission': {...current.mission.toMap(), ...mission},
+    });
+    push(snapshot);
+    return snapshot;
+  }
+
+  @override
+  Future<void> setMissionBuilding(bool enabled) async {
+    calls.add(('missionBuilding', {'enabled': enabled}));
+    pushMission({'building': enabled});
+  }
+
+  /// Like the service: the shown plan becomes the next stage and building goes on.
+  @override
+  Future<SubmitResult> addStage(String token) async {
+    calls.add(('addStage', {'token': token}));
+    final pending = current.pending;
+    if (pending == null || pending.token != token) return const RejectedResult('No plan is waiting for confirmation.');
+    final stage = {
+      'source': pending.sourceWire,
+      'summary': pending.summary,
+      'steps': [
+        for (final step in pending.steps)
+          {'name': step.name, 'arguments': {...step.arguments}, 'description': step.description}
+      ],
+    };
+    final stages = [for (final s in current.mission.stages) s.toMap(), stage];
+    pushMission({'building': true, 'stages': stages},
+        {'pending': null, 'notice': 'Added as stage ${stages.length} of the mission.'});
+    return AddedToMission(stages.length);
+  }
+
+  @override
+  Future<void> removeStage(int index) async {
+    calls.add(('removeStage', {'index': index}));
+    final stages = [for (final (i, s) in current.mission.stages.indexed) if (i != index) s.toMap()];
+    pushMission({'stages': stages});
+  }
+
+  @override
+  Future<void> clearMission() async {
+    calls.add(('clearMission', null));
+    pushMission({'building': false, 'stages': <Object?>[], 'resume': null});
+  }
+
+  @override
+  Future<void> setMissionCheckpoints(bool enabled) async {
+    calls.add(('missionCheckpoints', {'enabled': enabled}));
+    pushMission({'checkpoints': enabled});
+  }
+
+  /// What `startMission` answers; null shows the stages built as one pending mission, like the service.
+  SubmitResult? startMissionResult;
+
+  @override
+  Future<SubmitResult> startMission() async {
+    calls.add(('startMission', null));
+    final answer = startMissionResult;
+    if (answer != null) return answer;
+    final stages = current.mission.stages;
+    if (stages.isEmpty) return const RejectedResult('Add a plan to the mission first.');
+    final steps = [for (final stage in stages) ...stage.steps];
+    final token = 'mission-${++_tokens}';
+    final summary = [for (final (i, step) in steps.indexed) '${i + 1}. ${step.description}'].join('; ');
+    push(fixture('pending_plan', {
+      'seq': ++_seq,
+      'execution': {'enabled': current.executionEnabled},
+      'pending': {
+        'token': token,
+        'summary': summary,
+        'steps': [
+          for (final step in steps)
+            {'name': step.name, 'arguments': {...step.arguments}, 'source': 'rules', 'description': step.description}
+        ],
+        'source': 'mission',
+        'expiresInMs': 30000,
+        'stageOfStep': [for (final (i, stage) in stages.indexed) ...List.filled(stage.steps.length, i)],
+      },
+      'mission': {...current.mission.toMap(), 'building': false},
+      'speech': current.speech.toMap(),
+    }));
+    return AwaitingConfirmation(token, 30000, summary);
+  }
+
+  @override
+  Future<ConfirmResult> continueMission(String token) async {
+    calls.add(('continueMission', {'token': token}));
+    return confirmResult;
+  }
+
+  /// What `resumeMission` answers.
+  SubmitResult resumeResult = const RejectedResult('There is no mission to resume.');
+
+  @override
+  Future<SubmitResult> resumeMission({required bool skipInterrupted}) async {
+    calls.add(('resumeMission', {'skipInterrupted': skipInterrupted}));
+    return resumeResult;
+  }
+
   Future<void> close() => _controller.close();
 }
 

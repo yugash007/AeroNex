@@ -65,7 +65,8 @@
         "message": null
       }
     ],
-    "message": null
+    "message": null,
+    "stageOfStep": null
   },
   "stop": null,
   "notice": null,
@@ -153,5 +154,13 @@
     "canRetrace": false,
     "plans": [],
     "notice": null
+  },
+  "mission": {
+    "building": false,
+    "checkpoints": false,
+    "maxStages": 5,
+    "stages": [],
+    "checkpoint": null,
+    "resume": null
   }
 }

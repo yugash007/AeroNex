@@ -64,7 +64,8 @@
         "message": "UNKNOWN — interrupted by STOP; check the simulator before sending another command."
       }
     ],
-    "message": "UNKNOWN — interrupted by STOP; check the simulator before sending another command."
+    "message": "UNKNOWN — interrupted by STOP; check the simulator before sending another command.",
+    "stageOfStep": null
   },
   "stop": {
     "id": 57,
@@ -147,5 +148,13 @@
     "canRetrace": false,
     "plans": [],
     "notice": null
+  },
+  "mission": {
+    "building": false,
+    "checkpoints": false,
+    "maxStages": 5,
+    "stages": [],
+    "checkpoint": null,
+    "resume": null
   }
 }

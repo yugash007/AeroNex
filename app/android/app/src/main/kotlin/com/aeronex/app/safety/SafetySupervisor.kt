@@ -14,6 +14,7 @@ import com.aeronex.app.link.mavlink.StatusText
 import com.aeronex.app.memory.FlightJournal
 import com.aeronex.app.memory.MemoryRoutes
 import com.aeronex.app.memory.Route
+import com.aeronex.app.mission.Mission
 import com.aeronex.app.observability.Trace
 import com.aeronex.app.observability.TracePoint
 import com.aeronex.app.vehicle.CopterMode
@@ -69,6 +70,13 @@ import java.util.concurrent.atomic.AtomicBoolean
  *   flight-memory flight ended) and records every finished plan. A flight-memory flight is resolved from it when the
  *   step starts, after the remaining steps were validated against it. "Mark point n" alone is saved at once, like
  *   status; inside a plan it is saved when its turn comes. The AI path never uses the flight memory.
+ * - Missions (spec 2026-10-28 "Missions"): while building ([setMissionBuilding], or [addStage] from a shown plan),
+ *   every new plan becomes the next stage of a draft instead of waiting for CONFIRM (STOP, HOLD and status still run
+ *   at once), checked only for the mission rules across stages ([Mission]). [startMission] validates the whole
+ *   mission from the vehicle now and shows it for one CONFIRM; it runs as one plan, each step validated again with the
+ *   rest of the mission when it starts. With checkpoints the run holds position after each stage, sending nothing,
+ *   until [continueMission]; a STOP or a failsafe there ends it as anywhere. A mission that ended early can be resumed
+ *   from the step it ended at, or the one after ([resumeMission]), again after one CONFIRM.
  *
  * Wire it as: `store.accept` for link frames (the supervisor listens to the store itself), [onLinkState] for link
  * state, [attach] after each (re)connect and [detach] before closing the link. [clock] is monotonic ms (the store's).
@@ -127,6 +135,13 @@ class SafetySupervisor(
     private var lastOwned: Boolean? = null
     /** POSITION_TARGET_LOCAL_NED streaming requested on [link] for a plan with a move. */
     private var streaming = false
+    // Missions (spec 2026-10-28): the stages being built, and the last mission that ended early.
+    private var building = false
+    private var draft: List<DraftStage> = emptyList()
+    private var checkpoints = false
+    private var resumable: Pair<Mission, Int>? = null
+    /** The mission of the shown [plan], when it is one. */
+    private var shownMission: Mission? = null
 
     init {
         require(pendingTtlMs > 0 && tickMs > 0) { "Supervisor timings must be positive" }
@@ -165,8 +180,11 @@ class SafetySupervisor(
 
     /** A plan from the rules, the tap pad or a client. The AI source and AI steps are refused ([submitAi] only). */
     fun submit(plan: FlightPlan, source: PlanSource): Future<SubmitResult> = call {
-        if (source == PlanSource.AI || plan.steps.any { it.source == StepSource.AI }) SubmitResult.Rejected(AI_ONLY_IN_PROCESS)
-        else doSubmit(plan, source)
+        when {
+            source == PlanSource.AI || plan.steps.any { it.source == StepSource.AI } -> SubmitResult.Rejected(AI_ONLY_IN_PROCESS)
+            source == PlanSource.MISSION -> SubmitResult.Rejected(MISSION_ONLY_FROM_STAGES)
+            else -> doSubmit(plan, source)
+        }
     }
 
     /**
@@ -187,6 +205,64 @@ class SafetySupervisor(
     fun confirm(token: String): Future<ConfirmResult> {
         val at = trace.now()
         return call { doConfirm(token, at) }
+    }
+
+    // --- missions (spec 2026-10-28 "Missions") ---
+
+    /** While [enabled], every new plan becomes the mission's next stage instead of waiting for CONFIRM. */
+    fun setMissionBuilding(enabled: Boolean): Future<Unit> = call { building = enabled }
+
+    /** The plan shown for CONFIRM ([token]) becomes the mission's next stage, and building goes on. */
+    fun addStage(token: String): Future<SubmitResult> = call { doAddStage(token) }
+
+    fun removeStage(index: Int): Future<Unit> = call {
+        if (index in draft.indices) draft = draft.filterIndexed { i, _ -> i != index }
+    }
+
+    /** Forgets the stages built so far and the mission to resume; building ends. */
+    fun clearMission(): Future<Unit> = call {
+        draft = emptyList()
+        building = false
+        resumable = null
+    }
+
+    /** Whether the mission holds after each stage until [continueMission]. */
+    fun setCheckpoints(enabled: Boolean): Future<Unit> = call { checkpoints = enabled }
+
+    /** The stages built so far as one mission, validated from the vehicle now and shown for one CONFIRM. */
+    fun startMission(): Future<SubmitResult> = call {
+        val mission = try {
+            Mission(draft.map { it.plan.steps }, checkpoints)
+        } catch (e: CommandFormatException) {
+            return@call SubmitResult.Rejected(e.message ?: Mission.EMPTY)
+        }
+        doSubmitMission(mission, fromDraft = true).also { if (it is SubmitResult.AwaitingConfirmation) building = false }
+    }
+
+    /** A recorded mission (the history's "run again"), validated from the vehicle now and shown for one CONFIRM. */
+    fun submitMission(mission: Mission): Future<SubmitResult> = call { doSubmitMission(mission, fromDraft = false) }
+
+    /** At a checkpoint ([token]): the next stage starts, validated again with the rest of the mission. */
+    fun continueMission(token: String): Future<ConfirmResult> {
+        val at = trace.now()
+        return call { doContinue(token, at) }
+    }
+
+    /**
+     * The last mission that ended early, from the step it ended at (with [skipInterrupted], from the one after),
+     * validated from the vehicle now and shown for one CONFIRM. An interrupted relative move runs again in full from
+     * where the vehicle is now; the plan card shows it before the CONFIRM.
+     */
+    fun resumeMission(skipInterrupted: Boolean): Future<SubmitResult> = call {
+        val (mission, endedAt) = resumable ?: return@call SubmitResult.Rejected(NOTHING_TO_RESUME)
+        val from = if (skipInterrupted) endedAt + 1 else endedAt
+        if (from >= mission.plan.steps.size) return@call SubmitResult.Rejected(NOTHING_LEFT)
+        val rest = try {
+            mission.from(from)
+        } catch (e: CommandFormatException) {
+            return@call SubmitResult.Rejected(e.message ?: NOTHING_LEFT)
+        }
+        doSubmitMission(rest, fromDraft = false)
     }
 
     /** STOP while a plan runs (S5); otherwise drops the pending plan. Never disconnects. */
@@ -274,6 +350,8 @@ class SafetySupervisor(
         val only = submitted.steps.singleOrNull()
         if (only?.command?.name == FlightCommand.STATUS) return SubmitResult.Immediate(status(only, vehicle, from))
         if (only?.command?.name == FlightCommand.HOLD) return SubmitResult.Immediate(hold(only, from))
+        // A mission being built takes every other plan as its next stage, a lone "mark point n" included.
+        if (building) return addToDraft(submitted, from)
         if (only?.command?.name == FlightCommand.MARK_POINT) return SubmitResult.Immediate(markNow(only, vehicle, from))
         if (activeRun() != null) return SubmitResult.Rejected(BUSY)
         if (stopLane != null) return SubmitResult.Rejected(STOP_IN_PROGRESS)
@@ -290,8 +368,74 @@ class SafetySupervisor(
         return SubmitResult.AwaitingConfirmation(shown)
     }
 
+    /** [stage] after the stages built so far, if the mission rules allow it ([Mission]); no vehicle check yet. */
+    private fun addToDraft(stage: FlightPlan, from: PlanSource): SubmitResult {
+        try {
+            Mission(draft.map { it.plan.steps } + listOf(stage.steps), checkpoints)
+        } catch (e: CommandFormatException) {
+            return SubmitResult.Rejected(e.message ?: Mission.EMPTY)
+        }
+        draft = draft + DraftStage(stage, from)
+        trace.mark(TracePoint.PLAN_VALIDATED, ++nextId, mapOf("plan" to stage.toString(), "source" to from,
+            "missionStage" to draft.size))
+        notice = stageAdded(draft.size)
+        return SubmitResult.AddedToMission(draft.size)
+    }
+
+    private fun doAddStage(token: String): SubmitResult {
+        val waiting = pending?.plan ?: return SubmitResult.Rejected(NO_PLAN)
+        if (waiting.token != token) return SubmitResult.Rejected(TOKEN_MISMATCH)
+        if (waiting.mission != null) return SubmitResult.Rejected(ALREADY_A_MISSION)
+        try {
+            Mission(draft.map { it.plan.steps } + listOf(waiting.plan.steps), checkpoints)
+        } catch (e: CommandFormatException) {
+            return SubmitResult.Rejected(e.message ?: Mission.EMPTY) // the plan stays shown
+        }
+        clearPending()
+        dropShownPlan(null)
+        draft = draft + DraftStage(waiting.plan, waiting.source)
+        building = true
+        notice = stageAdded(draft.size)
+        return SubmitResult.AddedToMission(draft.size)
+    }
+
+    private fun doSubmitMission(mission: Mission, fromDraft: Boolean): SubmitResult {
+        val now = clock()
+        val vehicle = store.snapshot()
+        invalidate(null) // new input
+        if (activeRun() != null) return SubmitResult.Rejected(BUSY)
+        if (stopLane != null) return SubmitResult.Rejected(STOP_IN_PROGRESS)
+        if (execution) ownershipBlock(vehicle)?.let { return SubmitResult.Rejected(it) }
+        journal.observeHome(vehicle.home)
+        validator.validate(mission.plan, vehicle, journal.state)?.let { return SubmitResult.Rejected(it) }
+        val id = ++nextId
+        trace.mark(TracePoint.PLAN_VALIDATED, id, mapOf("plan" to mission.plan.toString(), "source" to PlanSource.MISSION,
+            "stages" to mission.stages.size))
+        // Twice a plan's time: up to 25 steps to read.
+        val ttl = 2 * pendingTtlMs
+        val shown = PendingPlan(UUID.randomUUID().toString(), mission.plan, PlanSource.MISSION, now + ttl, mission)
+        val expiry = actor.schedule({ expire(shown) }, ttl, TimeUnit.MILLISECONDS)
+        pending = Pending(shown, readiness(vehicle), expiry, fromDraft)
+        show(mission.plan, PlanSource.MISSION, PlanStage.AWAITING_CONFIRMATION,
+            mission.plan.steps.map { StepOutcome(it, StepStatus.PENDING) }, mission)
+        notice = null
+        return SubmitResult.AwaitingConfirmation(shown)
+    }
+
+    private fun doContinue(token: String, atNanos: Long): ConfirmResult {
+        val current = activeRun() ?: return ConfirmResult.Rejected(NO_CHECKPOINT)
+        val checkpoint = current.checkpoint ?: return ConfirmResult.Rejected(NO_CHECKPOINT)
+        if (checkpoint.token != token) return ConfirmResult.Rejected(TOKEN_MISMATCH)
+        current.checkpoint = null
+        current.continuedAt = current.index
+        trace.mark(TracePoint.CONFIRM, current.id, mapOf("execution" to execution, "stage" to checkpoint.stage + 1), atNanos)
+        startStep(current, current.index, store.snapshot(), clock())
+        return ConfirmResult.Started
+    }
+
     private fun doConfirm(token: String, atNanos: Long): ConfirmResult {
-        val waiting = pending?.plan ?: return ConfirmResult.Rejected(NO_PLAN)
+        val shownPending = pending
+        val waiting = shownPending?.plan ?: return ConfirmResult.Rejected(NO_PLAN)
         if (waiting.token != token) return ConfirmResult.Rejected(TOKEN_MISMATCH)
         clearPending()
         if (stopLane != null) {
@@ -305,6 +449,10 @@ class SafetySupervisor(
         val id = ++nextId
         trace.mark(TracePoint.CONFIRM, id, mapOf("execution" to execution), atNanos)
         val confirmed = waiting.plan
+        if (waiting.mission != null) {
+            resumable = null // a new mission replaces the one to resume
+            if (shownPending.fromDraft) draft = emptyList()
+        }
         val live = link
         if (!execution || live == null) {
             val dry = confirmed.steps.map { StepOutcome.dryRun(it) }
@@ -313,9 +461,10 @@ class SafetySupervisor(
             return ConfirmResult.Started
         }
         val started = PlanRun(id, confirmed,
-            ArduPilotExecutor(live, store, timing, trace, id, watch, { streaming }, events::heartbeatsAtArrival))
+            ArduPilotExecutor(live, store, timing, trace, id, watch, { streaming }, events::heartbeatsAtArrival),
+            waiting.mission)
         run = started
-        show(confirmed, waiting.source, PlanStage.EXECUTING, started.outcomes.toList())
+        show(confirmed, waiting.source, PlanStage.EXECUTING, started.outcomes.toList(), waiting.mission)
         updateStreaming() // on before the first frame, if submitting did not already turn it on
         ensureTicking()
         startStep(started, 0, store.snapshot(), clock())
@@ -399,9 +548,17 @@ class SafetySupervisor(
         current.stepStartedAt = now
         current.route = null
         val step = steps[index]
+        val mission = current.mission
+        if (mission != null && mission.checkpoints && mission.startsStage(index) && current.continuedAt != index) {
+            // Holds where the last stage left the vehicle, sending nothing, until the operator continues.
+            current.checkpoint = Checkpoint(UUID.randomUUID().toString(), mission.stageOfStep[index], mission.stages.size)
+            trace.mark(TracePoint.PLAN_VALIDATED, current.id, mapOf("checkpoint" to mission.stageOfStep[index] + 1))
+            outcomes = current.outcomes.toList()
+            return
+        }
         journal.observeHome(vehicle.home)
-        val reason = ownershipBlock(vehicle)
-            ?: validator.validate(steps.subList(index, steps.size), vehicle, journal.state)?.let { renumber(it, index) }
+        val reason = ownershipBlock(vehicle) ?: validator.validate(steps.subList(index, steps.size), vehicle, journal.state,
+            maxSteps = Mission.MAX_STEPS)?.let { renumber(it, index) }
         if (reason != null) {
             fail(current, StepOutcome.rejected(step, reason))
             return
@@ -470,22 +627,29 @@ class SafetySupervisor(
         when {
             text != null -> abort(current, "Autopilot reported \"${text.text}\"; vehicle outcome unknown.")
             current.executor.externalModeChange(vehicle) -> abort(current, EXTERNAL_CHANGE)
+            current.checkpoint != null -> {} // between stages: no step runs, the vehicle holds where it is
             now - maxOf(current.stepStartedAt, current.executor.legStartedAtMs) > timing.stepDeadlineMs ->
                 abort(current, ArduPilotExecutor.NO_CONFIRMATION)
             else -> apply(current, current.executor.update(vehicle, acks, now), vehicle, now)
         }
     }
 
-    /** Ends the plan at its current step: UNKNOWN if anything of it was sent, else REJECTED. */
+    /**
+     * Ends the plan at its current step: UNKNOWN if anything of it was sent, else REJECTED (at a checkpoint the next
+     * stage's first step: nothing of it was sent).
+     */
     private fun abort(current: PlanRun, reason: String) {
         val step = current.plan.steps[current.index]
         trace.mark(TracePoint.PLAN_ABORT, current.id, mapOf("step" to current.index + 1, "reason" to reason))
-        fail(current, if (current.executor.sentInStep) StepOutcome.unknown(step, reason) else StepOutcome.rejected(step, reason))
+        val sent = current.executor.sentInStep && current.checkpoint == null
+        fail(current, if (sent) StepOutcome.unknown(step, reason) else StepOutcome.rejected(step, reason))
     }
 
     private fun fail(current: PlanRun, outcome: StepOutcome) {
         current.executor.cancel()
         current.active = false
+        current.checkpoint = null
+        current.mission?.let { resumable = it to current.index }
         record(current, current.index, outcome)
         for (i in current.index + 1 until current.outcomes.size) record(current, i, StepOutcome.skipped(current.plan.steps[i]))
         finish(current.id, PlanStage.FAILED, current.outcomes.toList())
@@ -689,9 +853,16 @@ class SafetySupervisor(
 
     // --- view ---
 
-    /** Shows another plan: a HOLD row stops following its STOP. */
-    private fun show(shown: FlightPlan?, from: PlanSource?, newStage: PlanStage, newOutcomes: List<StepOutcome>) {
+    /** Shows another plan (a [mission]'s, or a plain one): a HOLD row stops following its STOP. */
+    private fun show(
+        shown: FlightPlan?,
+        from: PlanSource?,
+        newStage: PlanStage,
+        newOutcomes: List<StepOutcome>,
+        mission: Mission? = null,
+    ) {
         plan = shown
+        shownMission = mission
         source = from
         stage = newStage
         outcomes = newOutcomes
@@ -699,24 +870,26 @@ class SafetySupervisor(
         holdStep = null
     }
 
-    /** The shown plan (by default the current one) has ended; [id] is its trace id. */
+    /** The shown plan (by default the current one, with its mission) has ended; [id] is its trace id. */
     private fun finish(
         id: Long,
         newStage: PlanStage,
         final: List<StepOutcome>,
         shown: FlightPlan? = plan,
         from: PlanSource? = source,
+        mission: Mission? = if (shown === plan) shownMission else null,
     ) {
         plan = shown
+        shownMission = mission
         source = from
         stage = newStage
         outcomes = final
         result = summary(final)
         trace.mark(TracePoint.PLAN_END, id, mapOf("stage" to newStage, "result" to result))
         val wire = from?.name?.lowercase() ?: "unknown"
-        journal.recordPlan(final.map {
+        journal.recordPlan(final.mapIndexed { i, it ->
             FlightJournal.RecordedStep(it.step.command.name, it.step.command.arguments, it.step.command.description,
-                wire, it.status.name)
+                wire, it.status.name, mission?.stageOfStep?.getOrNull(i) ?: 0)
         }, key = id)
     }
 
@@ -733,6 +906,14 @@ class SafetySupervisor(
             result = result,
             stop = stopStatus,
             notice = notice,
+            mission = MissionStatus(
+                building = building,
+                stages = draft,
+                checkpoints = checkpoints,
+                stageOfStep = shownMission?.stageOfStep,
+                checkpoint = current?.checkpoint,
+                resume = resumable?.let { (mission, at) -> Resume(at, mission.plan.steps.size - at) },
+            ),
         )
         if (next == state) return
         state = next
@@ -745,7 +926,13 @@ class SafetySupervisor(
         }
     }
 
-    private class Pending(val plan: PendingPlan, val readiness: Readiness, val expiry: ScheduledFuture<*>)
+    /** [fromDraft]: a mission of the stages built, which its CONFIRM clears. */
+    private class Pending(
+        val plan: PendingPlan,
+        val readiness: Readiness,
+        val expiry: ScheduledFuture<*>,
+        val fromDraft: Boolean = false,
+    )
 
     private data class Readiness(
         val connected: Boolean,
@@ -755,13 +942,17 @@ class SafetySupervisor(
         val positionReady: Boolean,
     )
 
-    private class PlanRun(val id: Long, val plan: FlightPlan, val executor: ArduPilotExecutor) {
+    private class PlanRun(val id: Long, val plan: FlightPlan, val executor: ArduPilotExecutor, val mission: Mission? = null) {
         val outcomes = plan.steps.map { StepOutcome(it, StepStatus.PENDING) }.toMutableList()
         var index = 0
         var stepStartedAt = 0L
         var active = true
         /** The current step's flight-memory route, resolved when it started. */
         var route: Route? = null
+        /** Holding before [index], the first step of the mission's next stage, until the operator continues. */
+        var checkpoint: Checkpoint? = null
+        /** The step the operator continued at: its checkpoint is passed. */
+        var continuedAt = -1
 
         /** The current step or a later one is a move or a flight-memory flight. */
         fun movesLeft() = plan.steps.subList(index, plan.steps.size).any { it.command.isMotion }
@@ -787,6 +978,13 @@ class SafetySupervisor(
         const val AI_NO_MEMORY = "The AI never uses the flight memory: say \"return home\", \"go back\" or " +
             "\"retrace\" yourself, or use the flight memory card."
         const val MARK_NEEDS_HOME = "Home position is unknown. Wait for GPS home before saving a point."
+        const val MISSION_ONLY_FROM_STAGES = "A mission is built from its stages in the app."
+        const val ALREADY_A_MISSION = "This is a whole mission: confirm or cancel it."
+        const val NO_CHECKPOINT = "The mission is not waiting to continue."
+        const val NOTHING_TO_RESUME = "There is no mission to resume."
+        const val NOTHING_LEFT = "Nothing of that mission is left to fly."
+
+        fun stageAdded(stage: Int) = "Added as stage $stage of the mission."
         const val READINESS_CHANGED = "The vehicle state changed. Say the command again."
         const val EXECUTION_CHANGED = "Execution mode changed. Say the command again."
         const val LINK_LOST = "Link lost. Say the command again."

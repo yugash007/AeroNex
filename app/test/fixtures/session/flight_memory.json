@@ -148,7 +148,8 @@
               "distance_m": 3
             },
             "description": "Move right 3 m",
-            "outcome": "COMPLETED"
+            "outcome": "COMPLETED",
+            "stage": 0
           }
         ]
       },
@@ -163,7 +164,8 @@
               "point": 1
             },
             "description": "Mark point 1",
-            "outcome": "COMPLETED"
+            "outcome": "COMPLETED",
+            "stage": 0
           }
         ]
       },
@@ -179,7 +181,8 @@
               "distance_m": 4
             },
             "description": "Move forward 4 m",
-            "outcome": "COMPLETED"
+            "outcome": "COMPLETED",
+            "stage": 0
           }
         ]
       },
@@ -194,11 +197,20 @@
               "altitude_m": 3
             },
             "description": "Take off to 3 m",
-            "outcome": "COMPLETED"
+            "outcome": "COMPLETED",
+            "stage": 0
           }
         ]
       }
     ],
     "notice": null
+  },
+  "mission": {
+    "building": false,
+    "checkpoints": false,
+    "maxStages": 5,
+    "stages": [],
+    "checkpoint": null,
+    "resume": null
   }
 }

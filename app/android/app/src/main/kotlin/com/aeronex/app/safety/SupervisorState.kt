@@ -2,18 +2,20 @@ package com.aeronex.app.safety
 
 import com.aeronex.app.command.model.FlightPlan
 import com.aeronex.app.command.model.PlanStep
+import com.aeronex.app.mission.Mission
 import com.aeronex.app.vehicle.executor.StopAction
 
 /**
  * Where a plan came from: the plan card's source chip (spec 4.10). [AI] (0.4.0, spec A3) only through
- * [SafetySupervisor.submitAi], from the in-process AI pipeline; [fromChannel] are the sources a client may name.
+ * [SafetySupervisor.submitAi], from the in-process AI pipeline; [MISSION] (spec 2026-10-28) only for the mission the
+ * supervisor built from its stages; [fromChannel] are the sources a client may name.
  */
 enum class PlanSource(val label: String) {
-    PHONE("Phone"), TYPED("Typed"), TAP("Tap"), AI("AI");
+    PHONE("Phone"), TYPED("Typed"), TAP("Tap"), AI("AI"), MISSION("Mission");
 
     companion object {
-        /** The sources the `aeronex/session` channel accepts: never [AI]. */
-        val fromChannel: List<PlanSource> = entries - AI
+        /** The sources the `aeronex/session` channel accepts: never [AI] or [MISSION]. */
+        val fromChannel: List<PlanSource> = entries - AI - MISSION
     }
 }
 
@@ -44,8 +46,39 @@ data class StepOutcome(val step: PlanStep, val status: StepStatus, val message: 
     }
 }
 
-/** A validated plan shown for confirmation: [token] works once, until [expiresAtMs] (supervisor clock). */
-data class PendingPlan(val token: String, val plan: FlightPlan, val source: PlanSource, val expiresAtMs: Long)
+/**
+ * A validated plan shown for confirmation: [token] works once, until [expiresAtMs] (supervisor clock). A [mission]'s
+ * plan is all its steps ([Mission.plan]).
+ */
+data class PendingPlan(
+    val token: String,
+    val plan: FlightPlan,
+    val source: PlanSource,
+    val expiresAtMs: Long,
+    val mission: Mission? = null,
+)
+
+/** One stage of the mission being built: a plan as it was said or tapped, and where it came from. */
+data class DraftStage(val plan: FlightPlan, val source: PlanSource)
+
+/** A running mission holding between stages until [SafetySupervisor.continueMission] with [token]. */
+data class Checkpoint(val token: String, val stage: Int, val stageCount: Int)
+
+/** The last mission ended early at step [fromStep] (0-based): [SafetySupervisor.resumeMission] continues it. */
+data class Resume(val fromStep: Int, val stepCount: Int)
+
+/** Missions (spec 2026-10-28 "Missions"): the one being built, the one holding at a checkpoint, the one to resume. */
+data class MissionStatus(
+    /** New plans become stages of [stages] instead of waiting for CONFIRM (STOP, HOLD and status still run at once). */
+    val building: Boolean = false,
+    val stages: List<DraftStage> = emptyList(),
+    /** The mission holds after each stage until the operator continues. */
+    val checkpoints: Boolean = false,
+    /** The stage of each step of the shown or running mission ([SupervisorState.plan]); null for a plain plan. */
+    val stageOfStep: List<Int>? = null,
+    val checkpoint: Checkpoint? = null,
+    val resume: Resume? = null,
+)
 
 enum class PlanStage { IDLE, AWAITING_CONFIRMATION, EXECUTING, FINISHED, FAILED }
 
@@ -82,6 +115,7 @@ data class SupervisorState(
     val stop: StopStatus? = null,
     /** Why a pending plan went away, and similar one-line notices. */
     val notice: String? = null,
+    val mission: MissionStatus = MissionStatus(),
 )
 
 sealed interface SubmitResult {
@@ -90,6 +124,9 @@ sealed interface SubmitResult {
 
     /** STOP, HOLD and status run at once (S4); the outcome may still be running. */
     data class Immediate(val outcome: StepOutcome) : SubmitResult
+
+    /** While a mission is built, a plan becomes its next stage ([stages] of them now) instead of waiting for CONFIRM. */
+    data class AddedToMission(val stages: Int) : SubmitResult
 
     data class Rejected(val message: String) : SubmitResult
 }

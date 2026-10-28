@@ -12,7 +12,7 @@ import com.aeronex.app.vehicle.Ned
  *  "trail":[{"x":..,"y":..,"z":..,"label":"Takeoff","at":1730000000000}],
  *  "points":{"1":{"x":..,"y":..,"z":..,"label":"Point 1","at":..}},
  *  "history":[{"id":1,"plan":1,"at":..,"name":"move_relative","arguments":{"direction":"left","distance_m":2},
- *              "description":"Move left 2 m","source":"typed","outcome":"COMPLETED"}]}
+ *              "description":"Move left 2 m","source":"typed","outcome":"COMPLETED","stage":0}]}
  * ```
  */
 object MemoryCodec {
@@ -27,7 +27,7 @@ object MemoryCodec {
         "points" to state.points.entries.sortedBy { it.key }.associateTo(LinkedHashMap()) { (n, p) -> n.toString() to waypoint(p) },
         "history" to state.history.map { r ->
             linkedMapOf("id" to r.id, "plan" to r.planId, "at" to r.atWallMs, "name" to r.name, "arguments" to r.arguments,
-                "description" to r.description, "source" to r.source, "outcome" to r.outcome)
+                "description" to r.description, "source" to r.source, "outcome" to r.outcome, "stage" to r.stage)
         },
     ))
 
@@ -55,6 +55,8 @@ object MemoryCodec {
                         }
                     },
                     description = r.string("description"), source = r.string("source"), outcome = r.string("outcome"),
+                    // Missions (2026-10-28) added the stage; a record without one is a plain plan's step.
+                    stage = r["stage"]?.let { it as? Long ?: throw IllegalArgumentException("stage is not an integer") }?.toInt() ?: 0,
                 )
             },
             nextId = root.long("nextId"),

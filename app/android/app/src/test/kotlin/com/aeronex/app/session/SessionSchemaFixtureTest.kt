@@ -8,6 +8,11 @@ import com.aeronex.app.link.mavlink.StatusText
 import com.aeronex.app.memory.CommandRecord
 import com.aeronex.app.memory.MemoryState
 import com.aeronex.app.memory.Waypoint
+import com.aeronex.app.mission.Mission
+import com.aeronex.app.safety.Checkpoint
+import com.aeronex.app.safety.DraftStage
+import com.aeronex.app.safety.MissionStatus
+import com.aeronex.app.safety.Resume
 import com.aeronex.app.observability.LatencySummary
 import com.aeronex.app.safety.MiniJson
 import com.aeronex.app.safety.PendingPlan
@@ -45,7 +50,8 @@ class SessionSchemaFixtureTest {
         private val update = System.getenv("AERONEX_UPDATE_FIXTURES") == "1" || System.getProperty("aeronex.updateFixtures") == "1"
         private const val AT_MS = 120_000L
         val NAMES = listOf("idle_disconnected", "connected_landed", "pending_plan", "executing_move", "stop_not_confirmed",
-            "ptt_listening", "voice_unavailable", "ai_plan", "ai_thinking", "flight_memory")
+            "ptt_listening", "voice_unavailable", "ai_plan", "ai_thinking", "flight_memory", "mission_checkpoint",
+            "mission_building")
 
         /** app/test/fixtures/session, found from the Gradle test working directory (app/android/app) upwards. */
         fun fixtureDir(): File {
@@ -239,6 +245,44 @@ class SessionSchemaFixtureTest {
             seq = 512, atMs = AT_MS, link = wifiUp, supervisor = SupervisorState(linked = true, execution = true),
             vehicle = hovering.copy(position = Ned(4.0, 2.97, -3.01), altitudeRelM = 3.01),
             latency = latency(), speech = voiceReady.copy(spotterArmed = true, utterance = 9), memory = memory,
+        ))
+    }
+
+    private fun takeoff(m: Int, clause: String = "") =
+        PlanStep(FlightCommand.of(FlightCommand.TAKEOFF, mapOf(FlightCommand.ALTITUDE to m)), StepSource.RULES, clause)
+
+    /** 2026-10-28: a mission of two stages holding after the first until the operator continues. */
+    @Test fun missionCheckpoint() {
+        val mission = Mission(listOf(listOf(takeoff(3), move("forward", 3)), listOf(move("right", 2), land)), checkpoints = true)
+        val outcomes = mission.plan.steps.mapIndexed { i, step ->
+            if (i < 2) StepOutcome.completed(step) else StepOutcome(step, StepStatus.PENDING)
+        }
+        check("mission_checkpoint", SessionSchema.snapshot(
+            seq = 640, atMs = AT_MS, link = wifiUp,
+            supervisor = SupervisorState(linked = true, execution = true, stage = PlanStage.EXECUTING, plan = mission.plan,
+                source = PlanSource.MISSION, outcomes = outcomes,
+                mission = MissionStatus(checkpoints = true, stageOfStep = mission.stageOfStep,
+                    checkpoint = Checkpoint("5d3c9a1e-2b7f-4e6a-9c8d-1f2e3a4b5c6d", 1, 2))),
+            vehicle = hovering.copy(position = Ned(3.0, 0.0, -3.01), altitudeRelM = 3.01),
+            latency = latency(), speech = voiceReady.copy(spotterArmed = true, utterance = 10),
+        ))
+    }
+
+    /** 2026-10-28: building a mission (two stages so far) after an earlier one ended early. */
+    @Test fun missionBuilding() {
+        val stages = listOf(
+            DraftStage(FlightPlan(listOf(takeoff(3, "take off to 3 metres"), move("forward", 4, "forward 4"))), PlanSource.PHONE),
+            DraftStage(FlightPlan(listOf(PlanStep(FlightCommand.of(FlightCommand.MARK_POINT, mapOf(FlightCommand.POINT to 1)),
+                StepSource.RULES, "mark point one"))), PlanSource.TAP),
+        )
+        check("mission_building", SessionSchema.snapshot(
+            seq = 702, atMs = AT_MS, link = wifiUp,
+            supervisor = SupervisorState(linked = true, execution = true, notice = "Added as stage 2 of the mission.",
+                mission = MissionStatus(building = true, stages = stages, resume = Resume(3, 2))),
+            vehicle = VehicleState(atMs = AT_MS, mode = CopterMode.GUIDED, armed = false, landedState = VehicleState.LANDED_ON_GROUND,
+                modeOwner = ModeOwner.APP, altitudeRelM = 0.0, position = Ned(0.0, 0.0, 0.0), velocity = Ned(0.0, 0.0, 0.0),
+                yaw = 0.0, batteryPercent = 95, healthy = true, ekfFlags = 0x37F, home = Ned(0.0, 0.0, 0.0), ageMs = freshAges),
+            latency = latency(), speech = voiceReady.copy(utterance = 12, heard = "mark point one"),
         ))
     }
 

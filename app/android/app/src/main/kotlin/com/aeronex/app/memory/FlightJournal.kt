@@ -20,6 +20,8 @@ data class CommandRecord(
     val source: String,
     /** The step's final status name, e.g. COMPLETED, NOT_SENT, UNKNOWN. */
     val outcome: String,
+    /** The mission stage (0-based) of the step; 0 for a plain plan (spec 2026-10-28 "Missions"). */
+    val stage: Int = 0,
 )
 
 /** An immutable view of the flight memory (spec 2026-10-28 M1). */
@@ -116,7 +118,8 @@ class FlightJournal(
             val planId = if (again) lastPlanId else s.nextId
             val at = wallClock()
             val records = steps.mapIndexed { i, step ->
-                CommandRecord(planId + i, planId, at, step.name, step.arguments, step.description, step.source, step.outcome)
+                CommandRecord(planId + i, planId, at, step.name, step.arguments, step.description, step.source, step.outcome,
+                    step.stage)
             }
             lastKey = key
             lastPlanId = planId
@@ -147,13 +150,14 @@ class FlightJournal(
         store.save(saved)
     }
 
-    /** One finished step for [recordPlan]. */
+    /** One finished step for [recordPlan]; [stage] is its mission stage (0 for a plain plan). */
     data class RecordedStep(
         val name: String,
         val arguments: Map<String, Any>,
         val description: String,
         val source: String,
         val outcome: String,
+        val stage: Int = 0,
     )
 
     companion object {

@@ -16,6 +16,7 @@ import com.aeronex.app.link.mavlink.MavlinkEncoder
 import com.aeronex.app.link.mavlink.MavlinkFrame
 import com.aeronex.app.link.mavlink.MavlinkParser
 import com.aeronex.app.memory.FlightJournal
+import com.aeronex.app.mission.Mission
 import com.aeronex.app.observability.Trace
 import com.aeronex.app.safety.PlanSource
 import com.aeronex.app.safety.PlanStage
@@ -254,17 +255,71 @@ class SessionController(
         cancelAi(AI_NEW_INPUT)
         val records = journal.plan(planId)
         if (records.isEmpty()) return linkedMapOf("error" to PLAN_GONE)
-        val plan = try {
-            FlightPlan(records.map {
+        val steps = try {
+            records.map {
                 PlanStep(FlightCommand.fromToolCalls(listOf(mapOf("name" to it.name, "arguments" to it.arguments))),
                     StepSource.RULES, it.description)
-            })
+            }
+        } catch (e: CommandFormatException) {
+            return linkedMapOf("error" to e.message)
+        }
+        // A recorded mission (2026-10-28) runs again as a mission, in its stages.
+        val stages = records.map { it.stage }
+        if (stages.distinct().size > 1 || steps.size > FlightPlan.MAX_STEPS) {
+            val mission = try {
+                Mission(steps.indices.groupBy { stages[it] }.toSortedMap().values.map { indices -> indices.map(steps::get) })
+            } catch (e: CommandFormatException) {
+                return linkedMapOf("error" to e.message)
+            }
+            trace.mark(PLAN_SUBMITTED, fields = mapOf("utterance" to null, "source" to PlanSource.MISSION,
+                "plan" to mission.plan.toString(), "runAgain" to planId))
+            return SessionSchema.submitted(await(supervisor.submitMission(mission)), clock())
+        }
+        val plan = try {
+            FlightPlan(steps)
         } catch (e: CommandFormatException) {
             return linkedMapOf("error" to e.message)
         }
         trace.mark(PLAN_SUBMITTED, fields = mapOf("utterance" to null, "source" to PlanSource.TAP,
             "plan" to plan.toString(), "runAgain" to planId))
         return SessionSchema.submitted(await(supervisor.submit(plan, PlanSource.TAP)), clock())
+    }
+
+    // --- missions (spec 2026-10-28 "Missions") ---
+
+    /** While on, every new plan becomes the mission's next stage instead of waiting for CONFIRM. */
+    fun setMissionBuilding(enabled: Boolean) {
+        await(supervisor.setMissionBuilding(enabled))
+    }
+
+    /** The plan shown for CONFIRM becomes the mission's next stage; answered like [submitPlan]. */
+    fun addStage(token: String): Map<String, Any?> = SessionSchema.submitted(await(supervisor.addStage(token)), clock())
+
+    fun removeStage(index: Int) {
+        await(supervisor.removeStage(index))
+    }
+
+    fun clearMission() {
+        await(supervisor.clearMission())
+    }
+
+    fun setMissionCheckpoints(enabled: Boolean) {
+        await(supervisor.setCheckpoints(enabled))
+    }
+
+    /** The stages built as one mission, validated and shown for one CONFIRM; answered like [submitPlan]. */
+    fun startMission(): Map<String, Any?> {
+        cancelAi(AI_NEW_INPUT)
+        return SessionSchema.submitted(await(supervisor.startMission()), clock())
+    }
+
+    /** At a checkpoint: the next stage starts; answered like [confirm]. */
+    fun continueMission(token: String): Map<String, Any?> = SessionSchema.confirmed(await(supervisor.continueMission(token)))
+
+    /** The last mission that ended early, shown again from where it ended; answered like [submitPlan]. */
+    fun resumeMission(skipInterrupted: Boolean): Map<String, Any?> {
+        cancelAi(AI_NEW_INPUT)
+        return SessionSchema.submitted(await(supervisor.resumeMission(skipInterrupted)), clock())
     }
 
     /** Forgets the flown path, the points and the recorded plans; home stays known. */
