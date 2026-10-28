@@ -268,8 +268,8 @@ internal class AiRouter(
                 try {
                     if (!availability.available) refresh()
                     else if (runtime?.unloadIfIdle() == true) primed = false
-                } catch (_: RuntimeException) {
-                    // Next time.
+                } catch (_: Throwable) {
+                    // Next time. Not only RuntimeExceptions (audit S11): a periodic task that throws never runs again.
                 }
             }, config.idleCheckMs, config.idleCheckMs, TimeUnit.MILLISECONDS)
         } catch (_: RejectedExecutionException) {
@@ -399,23 +399,23 @@ internal class AiRouter(
     private fun warmQuietly() {
         try {
             runtime?.let(::warmUp)
-        } catch (_: RuntimeException) {
+        } catch (_: Throwable) {
             // The next request warms it again and says why it failed.
         }
     }
 
     private fun run(request: AiRequest) {
         if (request.cancelled) return
-        refresh(warm = false)
-        val runtime = runtime
-        val outcome = if (runtime == null) {
-            Outcome.Failed("${request.rulesMessage} ${unavailable(availability.reason ?: AiAvailability.NATIVE_FAILED)}")
-        } else {
-            try {
+        val outcome = try {
+            refresh(warm = false)
+            val runtime = runtime
+            if (runtime == null) {
+                Outcome.Failed("${request.rulesMessage} ${unavailable(availability.reason ?: AiAvailability.NATIVE_FAILED)}")
+            } else {
                 pipeline(runtime, request)
-            } catch (error: RuntimeException) {
-                Outcome.Failed(error.message ?: GENERIC)
             }
+        } catch (error: Throwable) {
+            failed(error)
         }
         val result = when (outcome) {
             is Outcome.Cancelled -> null
@@ -435,6 +435,19 @@ internal class AiRouter(
             else status.copy(state = AiState.IDLE, understoodAs = result.second, error = result.first)
         }
         changed()
+    }
+
+    /**
+     * A request that threw. Not only RuntimeExceptions (audit S11): an Error, e.g. no memory for the planner, used to
+     * leave the AI thinking until the next request. A RuntimeException's message is the engine's own.
+     */
+    private fun failed(error: Throwable): Outcome.Failed {
+        if (error is InterruptedException) Thread.currentThread().interrupt()
+        return Outcome.Failed(when (error) {
+            is OutOfMemoryError -> OUT_OF_MEMORY
+            is RuntimeException -> error.message ?: GENERIC
+            else -> GENERIC
+        })
     }
 
     private sealed interface Outcome {
@@ -518,6 +531,7 @@ internal class AiRouter(
         const val REFUSED = "The AI found no command it may send in that. Say it again with the supported words."
         const val TOO_SLOW = "The AI took too long. Say it again in fewer words, or with the supported words."
         const val GENERIC = "The AI could not plan that command."
+        const val OUT_OF_MEMORY = "The AI ran out of memory. Close other apps, then say the command again."
         const val LOADING = "The AI was loading. It is ready now: say the command again."
         private const val ONE_COMMAND = "say one command per step."
         private const val NOT_READ = "not understood by the AI."
