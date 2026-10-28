@@ -11,6 +11,7 @@ import com.aeronex.app.vehicle.ModeOwner
 import com.aeronex.app.vehicle.Ned
 import com.aeronex.app.vehicle.VehicleState
 import com.aeronex.app.vehicle.executor.ArduPilotExecutor
+import com.aeronex.app.vehicle.executor.ExecutorTiming
 import com.aeronex.app.vehicle.executor.FAST_TIMING
 import com.aeronex.app.vehicle.executor.Rig
 import com.aeronex.app.vehicle.executor.waitFor
@@ -33,10 +34,10 @@ class SupervisorFlightMemoryTest {
         rig.close()
     }
 
-    private fun connect(execution: Boolean = true) {
+    private fun connect(execution: Boolean = true, timing: ExecutorTiming = FAST_TIMING) {
         rig.linkListener = { supervisor.onLinkState(it) }
         rig.connect()
-        supervisor.attach(rig.link, FAST_TIMING).get(2, TimeUnit.SECONDS)
+        supervisor.attach(rig.link, timing).get(2, TimeUnit.SECONDS)
         if (execution) supervisor.setExecution(true).get(2, TimeUnit.SECONDS)
     }
 
@@ -185,6 +186,20 @@ class SupervisorFlightMemoryTest {
         val rejected = submit(plan(takeoff, numbered(FlightCommand.GOTO_POINT, 9))) as SubmitResult.Rejected
         assertEquals("Step 2 — ${MemoryRoutes.noPoint(9)}", rejected.message)
         assertEquals(FlightJournal.FRAME_CHANGED, journal.state.notice)
+    }
+
+    @Test fun aLongLegBetweenPointsIsNotCutOffByTheMoveDeadline() {
+        // Review R8: with a 2 s deadline here (30 s in the app), a 20 m leg at 5 m/s takes 4 s; it gets 10 s more.
+        connect(timing = FAST_TIMING.copy(stepDeadlineMs = 2_000))
+        vehicle.speed = 30.0
+        airborne()
+        flies(plan(move("forward", 10)))
+        submit(plan(numbered(FlightCommand.MARK_POINT, 1)))
+        flies(plan(move("backward", 10), move("backward", 10)))
+        assertAt(-10.0, 0.0)
+        vehicle.speed = 5.0
+        flies(plan(numbered(FlightCommand.GOTO_POINT, 1)))
+        assertAt(10.0, 0.0)
     }
 
     @Test fun aDryRunMarksNothing() {

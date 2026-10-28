@@ -632,7 +632,8 @@ class SafetySupervisor(
             text != null -> abort(current, "Autopilot reported \"${text.text}\"; vehicle outcome unknown.")
             current.executor.externalModeChange(vehicle) -> abort(current, EXTERNAL_CHANGE)
             current.checkpoint != null -> {} // between stages: no step runs, the vehicle holds where it is
-            now - maxOf(current.stepStartedAt, current.executor.legStartedAtMs) > timing.stepDeadlineMs ->
+            now - maxOf(current.stepStartedAt, current.executor.legStartedAtMs) >
+                timing.stepDeadlineMs + current.executor.legAllowanceMs ->
                 abort(current, ArduPilotExecutor.NO_CONFIRMATION)
             else -> apply(current, current.executor.update(vehicle, acks, now), vehicle, now)
         }
