@@ -80,32 +80,22 @@ class FlightJournal(
         }
     }
 
-    /** A takeoff ended at [position]: a new flight starts a new trail. */
-    fun takeoffCompleted(position: Ned) = update { it.copy(trail = listOf(waypoint(position, TAKEOFF_LABEL)), notice = null) }
+    // The trail and point rules are [MemoryRoutes]': the validator projects plans with the same ones.
 
-    /**
-     * A move or a flight-memory flight ended at [position]. A position closer than [MIN_SPACING_M] to the last one
-     * adds nothing. The takeoff position always stays first; past [TRAIL_LIMIT] the oldest after it are dropped.
-     */
-    fun arrived(position: Ned, label: String) = update { s ->
-        val last = s.trail.lastOrNull()
-        when {
-            last == null -> s.copy(trail = listOf(waypoint(position, label)))
-            last.position.distanceTo(position) < MIN_SPACING_M -> s
-            else -> s.copy(trail = bounded(s.trail + waypoint(position, label)))
-        }
-    }
+    /** A takeoff ended at [position]: a new flight starts a new trail ([MemoryRoutes.takeoff]). */
+    fun takeoffCompleted(position: Ned) = update { MemoryRoutes.takeoff(it, position, wallClock()).copy(notice = null) }
+
+    /** A move or a flight-memory flight ended at [position] ([MemoryRoutes.arrived]). */
+    fun arrived(position: Ned, label: String) = update { MemoryRoutes.arrived(it, position, label, wallClock()) }
 
     /** A move or a flight-memory flight starts from [position] ([MemoryRoutes.departing]). */
-    fun departing(position: Ned) = arrived(position, MemoryRoutes.START_LABEL)
+    fun departing(position: Ned) = update { MemoryRoutes.departing(it, position, wallClock()) }
 
-    /** go_back or retrace ended: only the first [count] positions of the trail remain (undo). */
-    fun keepTrail(count: Int) = update { s -> if (count >= s.trail.size) s else s.copy(trail = s.trail.take(maxOf(count, 0))) }
+    /** Go back or retrace ended: only the first [count] positions of the trail remain ([MemoryRoutes.keep]). */
+    fun keepTrail(count: Int) = update { MemoryRoutes.keep(it, count) }
 
-    /** Saves [position] as point [point]; an older point of that number is replaced. */
-    fun markPoint(point: Int, position: Ned) = update { s ->
-        s.copy(points = s.points + (point to waypoint(position, "Point $point")))
-    }
+    /** Saves [position] as point [point] ([MemoryRoutes.mark]). */
+    fun markPoint(point: Int, position: Ned) = update { MemoryRoutes.mark(it, point, position, wallClock()) }
 
     /**
      * A finished plan's steps go to the history, as one plan. The same plan finishing again under the same [key] (a
@@ -124,7 +114,7 @@ class FlightJournal(
             lastKey = key
             lastPlanId = planId
             val kept = if (again) s.history.filter { it.planId != planId } else s.history
-            s.copy(history = (kept + records).takeLast(HISTORY_LIMIT), nextId = maxOf(s.nextId, planId + steps.size))
+            s.copy(history = bounded(kept + records), nextId = maxOf(s.nextId, planId + steps.size))
         }
     }
 
@@ -134,20 +124,16 @@ class FlightJournal(
     /** The operator cleared the memory: trail, points, history and notice; home stays known. */
     fun clear() = update { s -> MemoryState(home = s.home, nextId = s.nextId) }
 
-    private fun waypoint(position: Ned, label: String) = Waypoint(position, label, wallClock())
-
-    private fun bounded(trail: List<Waypoint>) =
-        if (trail.size <= TRAIL_LIMIT) trail else listOf(trail.first()) + trail.drop(1).takeLast(TRAIL_LIMIT - 1)
-
     private inline fun update(change: (MemoryState) -> MemoryState) {
-        val saved = synchronized(lock) {
+        synchronized(lock) {
             val before = state
             val after = change(before)
             if (after == before) return
             state = after
-            after
+            // Under the lock, so the store gets the states in the order they were made: an older state saved from
+            // another thread never replaces a newer one (a cleared memory would come back after a restart).
+            store.save(after)
         }
-        store.save(saved)
     }
 
     /** One finished step for [recordPlan]; [stage] is its mission stage (0 for a plain plan). */
@@ -168,11 +154,25 @@ class FlightJournal(
         const val TAKEOFF_LABEL = "Takeoff"
         const val HOME_MOVED = "Home moved, so the flown path and saved points were forgotten."
 
+        /**
+         * The newest whole plans within [HISTORY_LIMIT] steps: a plan is kept whole or not at all, so "run again"
+         * never runs what is left of one. A plan's first record has the plan's id ([recordPlan]); a history saved
+         * with its oldest plan cut short loses that plan.
+         */
+        private fun bounded(history: List<CommandRecord>): List<CommandRecord> {
+            var start = 0
+            while (start < history.size && (history.size - start > HISTORY_LIMIT || history[start].id != history[start].planId)) {
+                val plan = history[start].planId
+                while (start < history.size && history[start].planId == plan) start++
+            }
+            return if (start == 0) history else history.subList(start, history.size).toList()
+        }
+
         /** A restored memory keeps positions only with the home they belong to. */
         private fun restore(saved: MemoryState?): MemoryState = when {
             saved == null -> MemoryState()
-            saved.home == null -> MemoryState(history = saved.history, nextId = saved.nextId)
-            else -> saved
+            saved.home == null -> MemoryState(history = bounded(saved.history), nextId = saved.nextId)
+            else -> saved.copy(history = bounded(saved.history))
         }
     }
 }

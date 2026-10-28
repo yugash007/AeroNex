@@ -109,6 +109,21 @@ class MemoryRoutesTest {
         }
     }
 
+    @Test fun theProjectionKeepsTheTrailByTheJournalsRules() {
+        // Review R9: the projection had its own copy of the trail rules, without the bound the journal keeps.
+        val journal = FlightJournal()
+        val takeoff = FlightCommand.of(FlightCommand.TAKEOFF, mapOf("altitude_m" to 3))
+        val move = FlightCommand.of(FlightCommand.MOVE, mapOf("direction" to "forward", "distance_m" to 1))
+        journal.takeoffCompleted(ned(0.0, 0.0))
+        var projected = MemoryRoutes.after(MemoryState(), takeoff, null, ned(0.0, 0.0))
+        for (i in 1..FlightJournal.TRAIL_LIMIT + 5) {
+            journal.arrived(ned(i.toDouble(), 0.0), move.description)
+            projected = MemoryRoutes.after(projected, move, null, ned(i.toDouble(), 0.0))
+        }
+        assertEquals(FlightJournal.TRAIL_LIMIT, projected.trail.size)
+        assertEquals(journal.state.trail.map { it.position to it.label }, projected.trail.map { it.position to it.label })
+    }
+
     @Test fun afterProjectsTheMemoryOfLaterSteps() {
         val back = MemoryRoutes.resolve(goBack, memory, ned(4.0, 3.0))
         assertEquals(2, MemoryRoutes.after(memory, goBack, back, ned(4.0, 0.0, -5.0)).trail.size)

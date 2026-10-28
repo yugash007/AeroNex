@@ -13,8 +13,8 @@ import com.aeronex.app.vehicle.Ned
 data class Route(val legs: List<Ned>, val label: String, val keep: Int? = null)
 
 /**
- * Resolves flight-memory steps. A pure function of the memory and a position, so the validator projects a plan
- * with the same rules the supervisor flies it with.
+ * Resolves flight-memory steps, and keeps the trail. Pure functions of the memory and a position: the validator
+ * projects a plan with the same rules the supervisor flies it with, and [FlightJournal] records with them too.
  *
  * - return home: home's north and east at the current height (a level flight; land is its own step).
  * - go back (undo): the newest trail position at least [ARRIVED_M] away; the positions after it are forgotten, so
@@ -92,28 +92,44 @@ object MemoryRoutes {
      * one (where a STOP or a pilot left the vehicle, or the first move of a flight this app did not take off) joins
      * the trail first, so go back can return there and the trail stays the path actually flown.
      */
-    fun departing(memory: MemoryState, position: Ned, wallMs: Long = 0): MemoryState {
+    fun departing(memory: MemoryState, position: Ned, wallMs: Long = 0): MemoryState =
+        arrived(memory, position, START_LABEL, wallMs)
+
+    /** A takeoff ended at [position]: a new flight starts a new trail there. */
+    fun takeoff(memory: MemoryState, position: Ned, wallMs: Long = 0): MemoryState =
+        memory.copy(trail = listOf(Waypoint(position, FlightJournal.TAKEOFF_LABEL, wallMs)))
+
+    /**
+     * A move or a flight-memory flight ended at [position]. A position closer than [FlightJournal.MIN_SPACING_M] to
+     * the newest one adds nothing. The takeoff position always stays first; past [FlightJournal.TRAIL_LIMIT] the
+     * oldest after it are dropped.
+     */
+    fun arrived(memory: MemoryState, position: Ned, label: String, wallMs: Long = 0): MemoryState {
         val last = memory.trail.lastOrNull()
-        return if (last != null && last.position.distanceTo(position) < FlightJournal.MIN_SPACING_M) memory
-        else memory.copy(trail = memory.trail + Waypoint(position, START_LABEL, wallMs))
+        if (last != null && last.position.distanceTo(position) < FlightJournal.MIN_SPACING_M) return memory
+        val trail = memory.trail + Waypoint(position, label, wallMs)
+        val limit = FlightJournal.TRAIL_LIMIT
+        return memory.copy(trail = if (trail.size <= limit) trail else listOf(trail.first()) + trail.drop(1).takeLast(limit - 1))
     }
+
+    /** Go back or retrace ended: only the first [count] positions of the trail remain (undo). */
+    fun keep(memory: MemoryState, count: Int): MemoryState =
+        if (count >= memory.trail.size) memory else memory.copy(trail = memory.trail.take(maxOf(count, 0)))
+
+    /** Saves [position] as point [point]; an older point of that number is replaced. */
+    fun mark(memory: MemoryState, point: Int, position: Ned, wallMs: Long = 0): MemoryState =
+        memory.copy(points = memory.points + (point to Waypoint(position, "Point $point", wallMs)))
 
     /**
      * The memory as it would be after [command] ended at [position] along [route]: the validator's projection of a
-     * plan's later steps (and the supervisor's journal update, through [FlightJournal]).
+     * plan's later steps, by the rules [FlightJournal] records the flown steps with.
      */
     fun after(memory: MemoryState, command: FlightCommand, route: Route?, position: Ned, wallMs: Long = 0): MemoryState =
         when {
-            command.name == FlightCommand.MARK_POINT ->
-                memory.copy(points = memory.points + (command.point!! to Waypoint(position, "Point ${command.point}", wallMs)))
-            command.name == FlightCommand.TAKEOFF ->
-                memory.copy(trail = listOf(Waypoint(position, FlightJournal.TAKEOFF_LABEL, wallMs)))
-            route?.keep != null -> memory.copy(trail = memory.trail.take(route.keep))
-            command.isMotion -> {
-                val last = memory.trail.lastOrNull()
-                if (last != null && last.position.distanceTo(position) < FlightJournal.MIN_SPACING_M) memory
-                else memory.copy(trail = memory.trail + Waypoint(position, route?.label ?: command.description, wallMs))
-            }
+            command.name == FlightCommand.MARK_POINT -> mark(memory, command.point!!, position, wallMs)
+            command.name == FlightCommand.TAKEOFF -> takeoff(memory, position, wallMs)
+            route?.keep != null -> keep(memory, route.keep)
+            command.isMotion -> arrived(memory, position, route?.label ?: command.description, wallMs)
             else -> memory
         }
 }

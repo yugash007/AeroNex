@@ -1,6 +1,10 @@
 package com.aeronex.app.memory
 
 import com.aeronex.app.vehicle.Ned
+import java.util.concurrent.CopyOnWriteArrayList
+import java.util.concurrent.CountDownLatch
+import java.util.concurrent.TimeUnit
+import kotlin.concurrent.thread
 import org.junit.Assert.*
 import org.junit.Test
 
@@ -103,6 +107,50 @@ class FlightJournalTest {
         assertTrue(journal.plan(1).isEmpty())
         journal.recordPlan(emptyList())
         assertEquals(FlightJournal.HISTORY_LIMIT + 4L, journal.state.nextId)
+    }
+
+    @Test fun theHistoryDropsWholePlansNeverTheFirstStepsOfOne() {
+        // Review R3: trimmed record by record, the oldest plan lost its takeoff, and "run again" ran the rest of it.
+        journal.recordPlan(listOf(step("takeoff"), step(), step("land")))
+        repeat(FlightJournal.HISTORY_LIMIT - 2) { journal.recordPlan(listOf(step())) }
+        assertTrue("the 3-step plan goes whole", journal.plan(1).isEmpty())
+        assertEquals(FlightJournal.HISTORY_LIMIT - 2, journal.state.history.size)
+        // A history saved with its oldest plan cut short (before this fix) loses that plan when restored.
+        val cut = MemoryState(history = listOf(
+            CommandRecord(2, 1, 0, "move_relative", emptyMap(), "Move", "typed", "COMPLETED"),
+            CommandRecord(3, 1, 0, "land", emptyMap(), "Land", "typed", "COMPLETED"),
+            CommandRecord(4, 4, 0, "land", emptyMap(), "Land", "typed", "COMPLETED")), nextId = 5)
+        assertEquals(listOf(4L), FlightJournal(RecordingStore(cut)).state.history.map { it.planId })
+    }
+
+    @Test fun savesReachTheStoreInTheOrderTheChangesWereMade() {
+        // Review R4: an arrival on the supervisor thread and a clear on the UI thread. Saved outside the lock, the
+        // older state could be saved last, and the cleared memory came back after a restart.
+        val firstSaving = CountDownLatch(1)
+        val otherSaved = CountDownLatch(1)
+        val saved = CopyOnWriteArrayList<MemoryState>()
+        val racing = FlightJournal(object : JournalStore {
+            @Volatile var first = true
+            override fun load(): MemoryState? = null
+            override fun save(state: MemoryState) {
+                if (first) {
+                    first = false
+                    firstSaving.countDown()
+                    otherSaved.await(500, TimeUnit.MILLISECONDS) // the other thread may save meanwhile
+                    saved += state
+                } else {
+                    saved += state
+                    otherSaved.countDown()
+                }
+            }
+        }) { now }
+        val arrival = thread { racing.takeoffCompleted(ned(0.0, 0.0)) }
+        assertTrue(firstSaving.await(5, TimeUnit.SECONDS))
+        val clear = thread { racing.clear() }
+        arrival.join(5_000)
+        clear.join(5_000)
+        assertTrue(racing.state.trail.isEmpty())
+        assertEquals(racing.state, saved.last())
     }
 
     @Test fun aPlanFinishingAgainUnderItsKeyReplacesItsRecords() {
