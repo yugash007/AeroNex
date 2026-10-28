@@ -50,7 +50,8 @@ delayed. The AI never invents a position.
 - The executor's `Goto` step flies each leg as one SET_POSITION_TARGET_LOCAL_NED in LOCAL_NED, sent exactly once.
   - The heading of the step's start is held, so the next body-frame move keeps the heading the operator saw.
   - Each leg is confirmed like a move: its echo, then arrival at under 0.3 m/s. Only then is the next leg sent.
-  - The step deadline counts from the latest leg.
+  - The step deadline counts from the latest leg. A leg longer than a move's 10 m gets 1 s more for each metre beyond
+    it, since a leg between two points can be 60 m.
 
 ### M3: validation (`safety/PlanValidator.kt`)
 
@@ -114,6 +115,8 @@ delayed. The AI never invents a position.
 - **Checkpoints.** With "Hold after each stage" on, the run stops before each later stage. The vehicle holds where the
   last stage left it, and nothing is sent until **Continue**. The next stage is then validated again from the
   vehicle's state.
+  - The switch applies to every mission shown for CONFIRM: built, run again from the history, or resumed. The plan
+    card says when a mission will hold.
 - A STOP, a failsafe text or a mode change at a checkpoint ends the mission. The next stage's first step is REJECTED
   (nothing of it was sent), not UNKNOWN.
 
@@ -124,6 +127,8 @@ delayed. The AI never invents a position.
     plan card shows this before the CONFIRM;
   - from the step after it.
 - Either way, the rest of the mission keeps its stages and is validated and confirmed again.
+- A mission stopped at a checkpoint can only resume from the next stage. Nothing was interrupted there, so there is
+  no step to skip.
 - The history records each step's stage, so "Run again" shows a recorded mission as a mission again.
 
 ## Tests
