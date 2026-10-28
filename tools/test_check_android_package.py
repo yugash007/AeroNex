@@ -237,3 +237,15 @@ def test_sherpa_contract_is_every_field_and_native_method_in_the_aar():
     assert recognizer and all('(' in method for method in recognizer)
     assert 'com/k2fsa/sherpa/onnx/KeywordSpotterConfig' in sherpa
     assert 'com/k2fsa/sherpa/onnx/OfflineNemoEncDecCtcModelConfig' in sherpa
+
+
+def test_the_certificate_must_be_the_whole_digest_of_the_only_signer():
+    digest = "ab" * 32
+    one = f"Verifies\nSigner #1 certificate DN: CN=AeroNex\nSigner #1 certificate SHA-256 digest: {digest}\n"
+    assert package.certificate_matches(one, digest)
+    assert package.certificate_matches(one, digest.upper())
+    assert not package.certificate_matches(one, "")
+    assert not package.certificate_matches(one, digest[:20])
+    assert not package.certificate_matches(one, "cd" * 32)
+    two = one + f"Signer #2 certificate SHA-256 digest: {'cd' * 32}\n"
+    assert not package.certificate_matches(two, digest)

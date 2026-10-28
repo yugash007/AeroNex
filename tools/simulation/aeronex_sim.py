@@ -41,7 +41,7 @@ def stop():
         if process_start(pid) != state["start"]:
             raise RuntimeError("Stale PID record; no process was stopped.")
         command = Path(f"/proc/{pid}/cmdline").read_bytes().split(b"\0")
-        if os.fsencode(str(Path(__file__).resolve())) not in command:
+        if not launched_this_script(pid, command):
             raise RuntimeError("PID does not belong to this launcher; no process was stopped.")
         os.kill(pid, signal.SIGINT)
     except FileNotFoundError:
@@ -53,6 +53,25 @@ def stop():
     if STATE.exists():
         raise RuntimeError("The launcher has not finished stopping. Check its terminal and logs.")
     print("AeroNex simulation stopped.")
+
+
+def launched_this_script(pid: int, command: list) -> bool:
+    """True when one argument of the process names this file, however it was spelled (relative to the process's own
+    working directory, as README's `python tools/simulation/aeronex_sim.py`, or absolute)."""
+    own = Path(__file__).resolve()
+    try:
+        cwd = Path(os.readlink(f"/proc/{pid}/cwd"))
+    except OSError:
+        cwd = Path.cwd()
+    for arg in command:
+        if not arg:
+            continue
+        try:
+            if (cwd / os.fsdecode(arg)).resolve() == own:
+                return True
+        except (OSError, ValueError):
+            continue
+    return False
 
 
 def require_free_ports():

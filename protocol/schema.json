@@ -1,7 +1,7 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "AeroNex v1 message envelope",
-  "description": "SRS sections 18-21. Hand-checked mirror of edge/app/protocol.py; no codegen.",
+  "description": "SRS sections 18-21. Hand-checked mirror of edge/app/protocol.py; no codegen. JSON Schema cannot tell 1 from 1.0: version and timestamp must also be JSON integers without a fraction, which edge/app/protocol.py and the Dart validator enforce. Payloads are checked per type by edge/app/commands.py.",
   "type": "object",
   "required": ["version", "message_id", "type", "timestamp", "payload"],
   "additionalProperties": false,

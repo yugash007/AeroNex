@@ -1,7 +1,8 @@
 """Command routing: validate a COMMAND payload, return lifecycle transition.
 
 route(payload) -> (status, status_payload). Unknown commands or invalid
-MOVE params yield ("REJECTED", {...reason...}). No MAVLink/hardware here.
+MOVE / TAKEOFF params yield ("REJECTED", {...reason...}). No MAVLink/hardware
+here. The limits are the app's safety envelope (README "Safety model").
 """
 
 from __future__ import annotations
@@ -10,7 +11,17 @@ VALID_COMMANDS = frozenset({"MOVE", "TAKEOFF", "LAND", "HOVER", "STOP"})
 
 DIRECTIONS = frozenset({"FORWARD", "BACKWARD", "LEFT", "RIGHT", "UP", "DOWN"})
 
-MAX_DISTANCE_M = 500
+MAX_DISTANCE_M = 10
+MIN_TAKEOFF_ALTITUDE_M = 1
+MAX_TAKEOFF_ALTITUDE_M = 10
+
+
+def _is_number(value) -> bool:
+    return isinstance(value, (int, float)) and not isinstance(value, bool)
+
+
+def _rejected(command, reason: str) -> tuple[str, dict]:
+    return "REJECTED", {"command": command, "status": "REJECTED", "reason": reason}
 
 
 def route(payload: dict) -> tuple[str, dict]:
@@ -50,5 +61,20 @@ def route(payload: dict) -> tuple[str, dict]:
                 "status": "REJECTED",
                 "reason": f"distance_m must be a number with 0 < d <= {MAX_DISTANCE_M}",
             }
+    if command == "TAKEOFF":
+        # The altitude is optional (the edge's default height); when given it
+        # must be a number within the envelope, never dropped or clamped.
+        params = payload.get("parameters", {})
+        if params is None:
+            params = {}
+        if not isinstance(params, dict):
+            return _rejected(command, "TAKEOFF parameters must be an object")
+        if "altitude_m" in params:
+            altitude = params["altitude_m"]
+            if not _is_number(altitude) or not MIN_TAKEOFF_ALTITUDE_M <= altitude <= MAX_TAKEOFF_ALTITUDE_M:
+                return _rejected(
+                    command,
+                    f"altitude_m must be a number with {MIN_TAKEOFF_ALTITUDE_M} <= h <= {MAX_TAKEOFF_ALTITUDE_M}",
+                )
     status = "EXECUTING"
     return status, {"command": command, "status": status}

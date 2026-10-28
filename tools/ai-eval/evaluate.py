@@ -200,6 +200,11 @@ def canonical(step):
     return None
 
 
+def _number(value):
+    """A JSON number (bool is an int subclass in Python, never a distance)."""
+    return isinstance(value, (int, float)) and not isinstance(value, bool)
+
+
 def needle_call(tool):
     """The tool call of one Needle step (after needle_result.h), or None; mirrors NeedleToolCaller's checks."""
     call = (tool.get('result') or {}).get('call')
@@ -207,10 +212,13 @@ def needle_call(tool):
         return None
     name = TOOL_NAMES.get(call.get('name'))
     arguments = call.get('arguments') or {}
-    if name == 'takeoff' and set(arguments) == {'altitude_m'} and isinstance(arguments['altitude_m'], (int, float)):
+    if not isinstance(arguments, dict):
+        return None
+    if name == 'takeoff' and set(arguments) == {'altitude_m'} and _number(arguments['altitude_m']):
         parsed = ('takeoff', None, float(arguments['altitude_m']))
     elif name == 'move' and set(arguments) == {'direction', 'distance_m'} and \
-            arguments['direction'] in DIRECTION_WORDS and isinstance(arguments['distance_m'], (int, float)):
+            isinstance(arguments['direction'], str) and arguments['direction'] in DIRECTION_WORDS and \
+            _number(arguments['distance_m']):
         parsed = ('move', arguments['direction'], float(arguments['distance_m']))
     elif name in ('hold', 'land', 'status') and not arguments:
         parsed = (name, None, None)

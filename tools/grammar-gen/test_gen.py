@@ -799,7 +799,7 @@ def _upper_keys(directions):
     return {k.upper(): v for k, v in directions.items()}
 
 
-@needs_dart
+@pytest.mark.skipif(not RULE_ENGINE.exists(), reason="v0.2.0 Dart rule engine removed")
 @pytest.mark.parametrize("lang", ["en", "hi", "te"])
 def test_rule_tables_match_dart(tables, lang):
     src = _src(RULE_ENGINE)

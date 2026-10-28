@@ -94,15 +94,21 @@ PACKS = [
 ]
 
 
-def download(url: str, dest: Path) -> None:
+def download(url: str, dest: Path, sha256: str) -> None:
+    """Downloads to a .part file and moves it into place only once its sha256 matches; a bad download is deleted."""
     dest.parent.mkdir(parents=True, exist_ok=True)
     part = dest.with_name(dest.name + ".part")
     request = urllib.request.Request(url, headers={"User-Agent": "aeronex-bench/1"})
-    with urllib.request.urlopen(request, timeout=120) as src:
-        if not src.url.startswith("https://"):
-            raise ValueError(f"refusing non-HTTPS redirect for {url}")
-        with open(part, "wb") as out:
-            shutil.copyfileobj(src, out, 1 << 20)
+    try:
+        with urllib.request.urlopen(request, timeout=120) as src:
+            if not src.url.startswith("https://"):
+                raise ValueError(f"refusing non-HTTPS redirect for {url}")
+            with open(part, "wb") as out:
+                shutil.copyfileobj(src, out, 1 << 20)
+        benchlib.verify_sha256(part, sha256)
+    except BaseException:
+        part.unlink(missing_ok=True)
+        raise
     part.replace(dest)
 
 
@@ -127,7 +133,7 @@ def main(argv=None) -> int:
             if args.offline:
                 raise SystemExit(f"missing {dest} (offline)")
             print(f"downloading {asset['url']}")
-            download(asset["url"], dest)
+            download(asset["url"], dest, asset["sha256"])
         benchlib.verify_sha256(dest, asset["sha256"])
         files.append(benchlib.file_record(dest, tooling, asset["url"], asset["licence"], source=asset["source"]))
         if asset.get("extract"):

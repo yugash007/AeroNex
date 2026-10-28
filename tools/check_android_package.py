@@ -142,6 +142,15 @@ def check_badging(badging, version, version_code, abis):
             f'APK advertises ABIs {sorted(advertised)}, expected {sorted(abis)}')
 
 
+def certificate_matches(signature: str, certificate: str) -> bool:
+    """`apksigner verify --print-certs` output names exactly one signer, whose SHA-256 is the whole 64-hex
+    [certificate]. A substring match would pass an empty or truncated digest (an unset CI variable)."""
+    if not re.fullmatch(r'[0-9a-fA-F]{64}', certificate or ''):
+        return False
+    signers = re.findall(r'^Signer #(\d+) certificate SHA-256 digest: ([0-9a-fA-F]+)\s*$', signature, re.MULTILINE)
+    return signers == [('1', certificate.lower())]
+
+
 def require(condition, message):
     if not condition:
         raise ValueError(message)
@@ -185,8 +194,7 @@ def main():
                   args.version, args.version_code, abis)
     signature = run([java, '-jar', str(args.build_tools / 'lib/apksigner.jar'),
                      'verify', '--verbose', '--print-certs', str(args.apk)])
-    require(f'Signer #1 certificate SHA-256 digest: {args.certificate.lower()}' in signature,
-            'APK certificate differs from the expected upgrade key')
+    require(certificate_matches(signature, args.certificate), 'APK certificate differs from the expected upgrade key')
     run([str(args.build_tools / ('zipalign' + executable_suffix)), '-c', '-P', '16', '-v', '4', str(args.apk)])
     with zipfile.ZipFile(args.apk) as archive:
         names = set(archive.namelist())
