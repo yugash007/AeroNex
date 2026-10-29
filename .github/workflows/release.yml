@@ -4,8 +4,9 @@
 # ANDROID_DEBUG_KEYSTORE_BASE64: the base64 of the debug.keystore that signed the earlier releases. Without it, or with
 # another key, the build stops before compiling anything.
 #
-# Run it from the Actions tab (the APKs are the run's artifact), or push a tag vX.Y.Z matching app/pubspec.yaml: a tag
-# also gets a draft GitHub release with the APKs.
+# Run it from the Actions tab on main, or push a tag vX.Y.Z matching app/pubspec.yaml. Either publishes the GitHub release
+# vX.Y.Z with the APKs and SHA256SUMS, which the README's Download section links to; running it again for the same
+# version replaces its APKs. A run on another branch only keeps the APKs as the run's artifact.
 name: Release APK
 
 on:
@@ -14,7 +15,7 @@ on:
     tags: ["v*"]
 
 permissions:
-  contents: write # the draft release for a tag
+  contents: write # the GitHub release
 
 concurrency:
   group: release-${{ github.ref }}
@@ -34,8 +35,8 @@ jobs:
       NEEDLE_URL: https://huggingface.co/Cactus-Compute/needle3/resolve/2ae11323dc000f5e70c49f7403efa6af12ba9e67/android-arm64/libneedle.a
       NEEDLE_SHA256: 4522a16eebaaf569ebacd0ac682712a8d91acc88a2a50a44fd65f332c8ebfdbb
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-java@v4
+      - uses: actions/checkout@v5
+      - uses: actions/setup-java@v5
         with:
           distribution: temurin
           java-version: "21"
@@ -128,11 +129,17 @@ jobs:
           path: dist/
           if-no-files-found: error
 
-      - name: Draft GitHub release (tags only)
-        if: github.ref_type == 'tag'
+      - name: GitHub release vX.Y.Z (main or a tag)
+        if: github.ref_type == 'tag' || github.ref_name == github.event.repository.default_branch
         env:
           GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
         run: |
-          gh release create "$GITHUB_REF_NAME" dist/*.apk dist/SHA256SUMS --draft \
-            --title "AeroNex ${{ steps.version.outputs.name }}" \
-            --notes "Release APKs, checked by tools/check_android_package.py and signed with the development key (certificate ${CERTIFICATE_SHA256:0:8}…), so they install over earlier releases. Most phones: aeronex-${{ steps.version.outputs.name }}-arm64-v8a-release.apk (the on-device AI needs it). SHA-256 sums are in SHA256SUMS."
+          name=${{ steps.version.outputs.name }}
+          tag="v$name"
+          if gh release view "$tag" > /dev/null 2>&1; then
+            gh release upload "$tag" dist/*.apk dist/SHA256SUMS --clobber
+          else
+            gh release create "$tag" dist/*.apk dist/SHA256SUMS --target "$GITHUB_SHA" --title "AeroNex $name" \
+              --notes "AeroNex $name for Android 8.0 and newer. Most phones: aeronex-$name-arm64-v8a-release.apk (needed for the on-device AI). Older 32-bit phones: aeronex-$name-armeabi-v7a-release.apk. Not sure: aeronex-$name-release.apk works on both. Every APK passed tools/check_android_package.py and is signed with the development key (certificate ${CERTIFICATE_SHA256:0:8}…), so it installs over earlier releases and keeps their models and data. SHA-256 sums: SHA256SUMS."
+          fi

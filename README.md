@@ -11,6 +11,25 @@ AeroNex turns natural speech in **English, Hindi, Telugu, Tamil, Kannada and Mal
 ![Offline](https://img.shields.io/badge/speech%20%26%20AI-100%25%20on--device-success)
 ![Languages](https://img.shields.io/badge/languages-6-orange)
 ![Tests](https://img.shields.io/badge/tests-1%2C500%2B%20passing-brightgreen)
+[![Download](https://img.shields.io/badge/download-APK%200.5.0-3DDC84?logo=android&logoColor=white)](https://github.com/yugash007/AeroNex/releases/latest)
+
+---
+
+## 📲 Download the app
+
+**AeroNex 0.5.0** for Android 8.0 (API 26) and newer:
+
+| Your phone | APK |
+|---|---|
+| Most phones (64-bit ARM), with the on-device AI | [aeronex-0.5.0-arm64-v8a-release.apk](https://github.com/yugash007/AeroNex/releases/download/v0.5.0/aeronex-0.5.0-arm64-v8a-release.apk) |
+| Older 32-bit ARM phones (no on-device AI) | [aeronex-0.5.0-armeabi-v7a-release.apk](https://github.com/yugash007/AeroNex/releases/download/v0.5.0/aeronex-0.5.0-armeabi-v7a-release.apk) |
+| Not sure: works on both, larger download | [aeronex-0.5.0-release.apk](https://github.com/yugash007/AeroNex/releases/download/v0.5.0/aeronex-0.5.0-release.apk) |
+
+- **Updating** from an earlier AeroNex keeps your downloaded models and settings: every release is signed with the same
+  key. SHA-256 sums and earlier versions are on the [Releases page](https://github.com/yugash007/AeroNex/releases).
+- **After installing**, open **Menu → Models** to download a voice pack (and, on 64-bit phones, the AI models). Then
+  open **Link setup** to connect to the drone or the simulator ([Quick start](#8-quick-start)).
+- The app starts in **dry run**: it shows and confirms plans but flies nothing until you turn on **Fly the drone**.
 
 ---
 
@@ -155,7 +174,7 @@ Full reports: [2026-10-28 audit](docs/testing/2026-10-28-audit.md) · [flight me
    .\tools\simulation\Start-Simulation.ps1
    ```
    or, from WSL, `python tools/simulation/aeronex_sim.py` (add `--headless` to hide the 3D window, `--stop` to stop).
-2. **Install the app** on an Android phone (USB debugging on):
+2. **Install the app** on an Android phone: the [download](#-download-the-app) above, or build it (USB debugging on):
    ```bash
    cd app && flutter build apk --release --split-per-abi --target-platform android-arm,android-arm64
    adb install -r build/app/outputs/flutter-apk/app-arm64-v8a-release.apk
@@ -183,7 +202,8 @@ Run the **Release APK** workflow from the Actions tab, or push a tag `vX.Y.Z` th
 - It signs them with the development key (certificate `6313b3f8…43c1`), so they install over earlier releases and keep
   their models and data. The key comes from the repository secret `ANDROID_DEBUG_KEYSTORE_BASE64`, the base64 of that
   `debug.keystore`; with no key or another key, it stops before building.
-- A tag also gets a draft GitHub release with the APKs.
+- A run on `main`, or a tag, publishes the GitHub release `vX.Y.Z` with the APKs and their SHA-256 sums. The
+  [Download](#-download-the-app) links point to it; running it again for the same version replaces its APKs.
 
 Requirements: Flutter 3.x, Android SDK 36 + NDK, JDK 17, Python 3.12. For the simulator: WSL2 with ArduPilot SITL and Gazebo Harmonic.
 
