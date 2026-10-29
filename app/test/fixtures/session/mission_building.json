@@ -1,0 +1,170 @@
+{
+  "schemaVersion": 1,
+  "seq": 702,
+  "atMs": 120000,
+  "link": {
+    "state": "up",
+    "transport": "udp",
+    "description": "UDP 192.168.0.5:14550 local *:14551",
+    "profile": "wifi",
+    "unsigned": true,
+    "heartbeatAgeMs": 310,
+    "txErrors": 0,
+    "droppedDatagrams": 0,
+    "foregroundService": true
+  },
+  "execution": {
+    "enabled": true
+  },
+  "vehicle": {
+    "connected": true,
+    "mode": 4,
+    "modeName": "GUIDED",
+    "armed": false,
+    "landedState": 1,
+    "landedStateName": "ON_GROUND",
+    "modeOwner": "APP",
+    "modeOwnerLabel": null,
+    "altitudeRelM": 0.0,
+    "speed": 0.0,
+    "batteryPercent": 95,
+    "healthy": true,
+    "positionReady": true,
+    "homeKnown": true,
+    "homeDistanceM": 0.0,
+    "lowBattery": false,
+    "lastStatusText": null,
+    "ages": {
+      "heartbeat": 310,
+      "sysStatus": 420,
+      "attitude": 60,
+      "localPosition": 60,
+      "globalPosition": 60,
+      "extendedSysState": 180,
+      "ekfStatus": 520,
+      "home": 9800,
+      "positionTarget": null,
+      "statusText": null
+    }
+  },
+  "pending": null,
+  "run": null,
+  "stop": null,
+  "notice": "Added as stage 2 of the mission.",
+  "latency": {
+    "pttUpToDrained": null,
+    "drainedToFinal": null,
+    "pttUpToFinal": null,
+    "finalToPlan": null,
+    "pttUpToPlan": null,
+    "confirmToFrame": null,
+    "confirmToTx": null,
+    "confirmToAck": null,
+    "confirmToMoveTx": null,
+    "moveTxToEcho": null,
+    "confirmToInAir": null,
+    "stopToTx": null,
+    "stopToAck": null,
+    "aiGloss": null,
+    "aiPlan": null,
+    "aiTools": null,
+    "aiTotal": null
+  },
+  "speech": {
+    "language": "en",
+    "state": "READY",
+    "level": "OK",
+    "reason": null,
+    "message": null,
+    "engine": "VOSK_GRAMMAR",
+    "spotter": "VOSK_STOP_GRAMMAR",
+    "nativeVoiceStop": true,
+    "partialStop": true,
+    "spotterArmed": false,
+    "pttHeld": false,
+    "utterance": 12,
+    "partial": null,
+    "heard": "mark point one",
+    "error": null
+  },
+  "ai": {
+    "available": false,
+    "reason": null,
+    "state": "IDLE",
+    "request": 0,
+    "heard": null,
+    "gloss": null,
+    "understoodAs": null,
+    "error": null
+  },
+  "memory": {
+    "homeKnown": false,
+    "vehicle": {
+      "northM": 0.0,
+      "eastM": 0.0,
+      "upM": 0.0
+    },
+    "trail": [],
+    "points": [],
+    "goBackTo": null,
+    "canRetrace": false,
+    "plans": [],
+    "notice": null
+  },
+  "mission": {
+    "building": true,
+    "checkpoints": false,
+    "maxStages": 5,
+    "stages": [
+      {
+        "source": "phone",
+        "summary": "1. Take off to 3 m; 2. Move forward 4 m",
+        "steps": [
+          {
+            "name": "takeoff",
+            "arguments": {
+              "altitude_m": 3
+            },
+            "description": "Take off to 3 m"
+          },
+          {
+            "name": "move_relative",
+            "arguments": {
+              "direction": "forward",
+              "distance_m": 4
+            },
+            "description": "Move forward 4 m"
+          }
+        ]
+      },
+      {
+        "source": "tap",
+        "summary": "1. Mark point 1",
+        "steps": [
+          {
+            "name": "mark_point",
+            "arguments": {
+              "point": 1
+            },
+            "description": "Mark point 1"
+          }
+        ]
+      }
+    ],
+    "checkpoint": null,
+    "resume": {
+      "fromStep": 3,
+      "stepCount": 2,
+      "atCheckpoint": false
+    },
+    "saved": [
+      {
+        "name": "Perimeter",
+        "stageCount": 2,
+        "stepCount": 3,
+        "summary": "Take off to 3 m, then Move forward 4 m, then Land",
+        "atWallMs": 1761600000000
+      }
+    ]
+  }
+}

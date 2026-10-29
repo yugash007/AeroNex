@@ -104,12 +104,21 @@ class ArduPilotExecutor(
     var legStartedAtMs = 0L
         private set
 
+    /**
+     * Extra time the step deadline allows for the current flight-memory leg: the deadline was sized for a move of at
+     * most [DEADLINE_LEG_M], and a leg between two points can be six times that, so each metre beyond it adds
+     * [LEG_ALLOWANCE_MS_PER_M] (at least 1 m/s on average, whatever WPNAV_SPEED is). 0 for every other step.
+     */
+    var legAllowanceMs = 0L
+        private set
+
     /** [legs]: a flight-memory step's absolute targets ([com.aeronex.app.memory.Route.legs]); unused by other steps. */
     fun start(command: FlightCommand, state: VehicleState, nowMs: Long, stepNumber: Int = 1, legs: List<Ned>? = null): StepUpdate {
         cancel()
         if (owned == null) owned = watch.ownsMode(state)
         sentInStep = false
         legStartedAtMs = 0L
+        legAllowanceMs = 0L
         this.stepNumber = stepNumber
         val next = when (command.name) {
             FlightCommand.TAKEOFF -> Takeoff(command.altitudeM!!)
@@ -552,6 +561,7 @@ class ArduPilotExecutor(
             }
             if (from == null) from = state.position!!
             val target = legs[leg]
+            legAllowanceMs = ((distance(from!!, target) - DEADLINE_LEG_M).coerceAtLeast(0.0) * LEG_ALLOWANCE_MS_PER_M).toLong()
             echoesAtSend = state.positionTargetCount
             positionsAtEcho = null
             sentAtMs = nowMs
@@ -575,6 +585,9 @@ class ArduPilotExecutor(
         const val NOT_QUEUED = "The link did not accept the command. Nothing sent."
         const val NOT_QUEUED_AFTER_SEND = "The link did not accept a command after others were sent; vehicle outcome unknown."
         const val NO_ROUTE = "The flight memory gave no route for this step. Nothing sent."
+        /** The longest move; a flight-memory leg longer than this gets [legAllowanceMs]. */
+        const val DEADLINE_LEG_M = 10.0
+        const val LEG_ALLOWANCE_MS_PER_M = 1_000L
         /** A flight-memory step whose target is where the vehicle already is: confirmed with nothing sent. */
         const val ALREADY_THERE = "already there; nothing sent"
 

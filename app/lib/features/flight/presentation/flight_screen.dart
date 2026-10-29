@@ -10,6 +10,7 @@ import '../domain/flight_command.dart';
 import '../domain/flight_plan.dart';
 import 'widgets/command_input.dart';
 import 'widgets/flight_memory_card.dart';
+import 'widgets/mission_card.dart';
 import 'widgets/plan_card.dart';
 import 'widgets/status_line.dart';
 import 'widgets/stop_button.dart';
@@ -42,6 +43,9 @@ class FlightScreen extends StatefulWidget {
   /// Opens another screen; completes when it closes.
   final Future<void> Function(FlightDestination destination) open;
 
+  /// Without a snapshot for this long the screen warns that it may be old.
+  static const staleAfter = Duration(seconds: 3);
+
   @override
   State<FlightScreen> createState() => _FlightScreenState();
 }
@@ -53,6 +57,11 @@ class _FlightScreenState extends State<FlightScreen> with WidgetsBindingObserver
   /// The service could not be read (no answer, or another schema version).
   Object? _serviceError;
 
+  /// No snapshot for [staleAfter] (audit F14): the service sends 5–10 a
+  /// second while this screen listens, so what it shows may be old.
+  bool _stale = false;
+  Timer? _staleTimer;
+
   /// Why the last command or connect did not go through, shown as is.
   String? _error;
 
@@ -63,6 +72,9 @@ class _FlightScreenState extends State<FlightScreen> with WidgetsBindingObserver
 
   /// The pending plan this screen confirmed: one CONFIRM per plan.
   String? _confirmedToken;
+
+  /// The checkpoint this screen continued from: one Continue per checkpoint.
+  String? _continuedToken;
 
   /// The pending plan an edit already cancelled: one cancel per plan.
   String? _editCancelledToken;
@@ -81,11 +93,25 @@ class _FlightScreenState extends State<FlightScreen> with WidgetsBindingObserver
         onError: (Object error) {
       if (mounted) setState(() => _serviceError = error);
     });
+    _watchForStale();
     _start();
+  }
+
+  /// Starts or restarts the [staleAfter] count to the stale warning.
+  void _watchForStale() {
+    _staleTimer?.cancel();
+    _staleTimer = Timer(FlightScreen.staleAfter, () {
+      if (mounted) setState(() => _stale = true);
+    });
   }
 
   /// Whether this screen is the route in front, as last told to the service.
   bool? _inFront;
+
+  /// Sends [_inFront] again after a failed `setFlightScreenVisible` (audit
+  /// F15): until the service knows, Volume-Up is push-to-talk in the wrong
+  /// place, or nowhere.
+  Timer? _inFrontRetry;
 
   @override
   void didChangeDependencies() {
@@ -98,7 +124,19 @@ class _FlightScreenState extends State<FlightScreen> with WidgetsBindingObserver
   void _setInFront(bool inFront) {
     if (_inFront == inFront) return;
     _inFront = inFront;
-    widget.session.setFlightScreenVisible(inFront).catchError((Object _) {});
+    _sendInFront();
+  }
+
+  void _sendInFront() {
+    final inFront = _inFront;
+    _inFrontRetry?.cancel();
+    if (inFront == null) return;
+    widget.session.setFlightScreenVisible(inFront).catchError((Object _) {
+      // Only the latest state is sent again, and only while this screen is up.
+      if (mounted && _inFront == inFront) {
+        _inFrontRetry = Timer(const Duration(seconds: 1), _sendInFront);
+      }
+    });
   }
 
   @override
@@ -106,6 +144,8 @@ class _FlightScreenState extends State<FlightScreen> with WidgetsBindingObserver
     WidgetsBinding.instance.removeObserver(this);
     _snapshots?.cancel();
     _countdown?.cancel();
+    _staleTimer?.cancel();
+    _inFrontRetry?.cancel();
     if (_inFront == true) {
       widget.session.setFlightScreenVisible(false).catchError((Object _) {});
     }
@@ -114,8 +154,14 @@ class _FlightScreenState extends State<FlightScreen> with WidgetsBindingObserver
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    // The service kept running; show where it is now.
-    if (state == AppLifecycleState.resumed) _refresh();
+    if (state == AppLifecycleState.resumed) {
+      // The service kept running; show where it is now.
+      _refresh();
+      _watchForStale();
+    } else if (state != AppLifecycleState.inactive) {
+      // Off screen: nobody to warn. Resuming starts the count again.
+      _staleTimer?.cancel();
+    }
   }
 
   /// The session may still be running in the service from before (S7):
@@ -158,9 +204,11 @@ class _FlightScreenState extends State<FlightScreen> with WidgetsBindingObserver
     if (!mounted || snapshot.seq < _snap.seq) return;
     final previous = _snap;
     final pending = snapshot.pending;
+    _watchForStale();
     setState(() {
       _snap = snapshot;
       _serviceError = null;
+      _stale = false;
       // An AI answer from before this screen (an app restart) or before the
       // latest press is not news: only newer requests show.
       if (previous.seq == 0 || snapshot.speech.utterance != previous.speech.utterance) {
@@ -310,12 +358,109 @@ class _FlightScreenState extends State<FlightScreen> with WidgetsBindingObserver
 
   void _tap(FlightCommand command) {
     final plan = FlightPlan.single(command, source: StepSource.rules);
-    // HOLD acts at once (it is the STOP action): never held back by the lock.
+    // HOLD acts at once (it is the STOP action): never held back by the lock,
+    // and it leaves a CONFIRM or a command in flight as it is.
     if (command.name == 'hold') {
-      _send(plan, PlanSource.tap);
+      _sent(() => widget.session.submitPlan(plan, PlanSource.tap), fresh: false);
       return;
     }
     _locked(() => _send(plan, PlanSource.tap));
+  }
+
+  // --- missions (2026-10-28) ---
+
+  /// A failed mission call is shown like a failed command. One at a time,
+  /// with the card locked until the service's answer is shown: a second tap on
+  /// "Remove stage 1" would otherwise remove what was stage 2.
+  Future<void> _missionCall(Future<void> Function() call) => _locked(() async {
+        try {
+          await call();
+        } catch (error) {
+          _showError(userErrorMessage(error));
+        }
+        await _refresh();
+      });
+
+  void _setBuilding(bool on) => _missionCall(() => widget.session.setMissionBuilding(on));
+  void _setCheckpoints(bool on) => _missionCall(() => widget.session.setMissionCheckpoints(on));
+  void _removeStage(int index) => _missionCall(() => widget.session.removeStage(index));
+  void _clearMission() => _missionCall(widget.session.clearMission);
+
+  /// The shown plan becomes the next stage instead of running.
+  void _addToMission(String token) => _locked(() => _sent(() => widget.session.addStage(token)));
+
+  void _startMission() => _locked(() => _sent(widget.session.startMission));
+
+  void _resumeMission({required bool skip}) =>
+      _locked(() => _sent(() => widget.session.resumeMission(skipInterrupted: skip)));
+
+  /// Saved missions (2026-10-28): the service keeps them across restarts.
+  void _saveMission(String name) => _missionCall(() async {
+        if (await widget.session.saveMission(name) case final refused?) _showError(refused);
+      });
+
+  /// Loading replaces the stages being built, so it asks first when there
+  /// are some.
+  Future<void> _loadMission(String name) async {
+    final built = _snap.mission.stages.length;
+    if (built > 0) {
+      final sure = await showDialog<bool>(
+          context: context,
+          builder: (context) => AlertDialog(
+                key: const Key('loadMissionConfirm'),
+                title: Text('Load "$name"?'),
+                content: Text('It replaces the ${built == 1 ? 'stage' : '$built stages'} built so far.'),
+                actions: [
+                  TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Keep')),
+                  TextButton(
+                      key: const Key('loadMissionReplace'),
+                      onPressed: () => Navigator.pop(context, true),
+                      child: const Text('Replace')),
+                ],
+              ));
+      if (sure != true || !mounted) return;
+    }
+    await _missionCall(() async {
+      if (await widget.session.loadMission(name) case final refused?) _showError(refused);
+    });
+  }
+
+  Future<void> _deleteMission(String name) async {
+    final sure = await showDialog<bool>(
+        context: context,
+        builder: (context) => AlertDialog(
+              key: const Key('deleteMissionConfirm'),
+              title: Text('Delete "$name"?'),
+              content: const Text('The saved mission is gone for good.'),
+              actions: [
+                TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Keep')),
+                TextButton(
+                    key: const Key('deleteMissionYes'),
+                    onPressed: () => Navigator.pop(context, true),
+                    child: const Text('Delete')),
+              ],
+            ));
+    if (sure != true || !mounted) return;
+    await _missionCall(() => widget.session.deleteMission(name));
+  }
+
+  /// At a checkpoint: the next stage, checked again from the drone's state.
+  /// Once per checkpoint: a second tap would only be refused, as if the
+  /// mission had not gone on. A refusal lets the operator try again.
+  Future<void> _continueMission(String token) async {
+    if (_continuedToken == token) return;
+    setState(() => _continuedToken = token);
+    try {
+      final result = await widget.session.continueMission(token);
+      if (!result.accepted) {
+        if (mounted) setState(() => _continuedToken = null);
+        _showError(result.error ?? 'The mission did not continue.');
+      }
+      await _refresh();
+    } catch (error) {
+      if (mounted) setState(() => _continuedToken = null);
+      _showError(userErrorMessage(error));
+    }
   }
 
   /// The flight memory's "Run again": the service shows the recorded plan
@@ -352,6 +497,9 @@ class _FlightScreenState extends State<FlightScreen> with WidgetsBindingObserver
     await _refresh();
   }
 
+  /// A one-step tool call from a button, like the tap pad's.
+  void _tapCall(String name) => _tap(FlightCommand.tool(name));
+
   /// Runs [work] with the inputs locked ([_busy]); one at a time.
   Future<void> _locked(Future<void> Function() work) async {
     if (_busy) return;
@@ -366,12 +514,15 @@ class _FlightScreenState extends State<FlightScreen> with WidgetsBindingObserver
   Future<void> _send(FlightPlan plan, PlanSource source) =>
       _sent(() => widget.session.submitPlan(plan, source));
 
-  /// Shows a plan the service refused with its reason, verbatim.
-  Future<void> _sent(Future<SubmitResult> Function() submit) async {
-    setState(() {
-      _error = null;
-      _confirmedToken = null;
-    });
+  /// Shows a plan the service refused with its reason, verbatim. [fresh]
+  /// input clears the last error and CONFIRM's once-only mark first.
+  Future<void> _sent(Future<SubmitResult> Function() submit, {bool fresh = true}) async {
+    if (fresh) {
+      setState(() {
+        _error = null;
+        _confirmedToken = null;
+      });
+    }
     try {
       final result = await submit();
       if (result is RejectedResult) _showError(result.error);
@@ -486,6 +637,49 @@ class _FlightScreenState extends State<FlightScreen> with WidgetsBindingObserver
                     child: Text(_serviceMessage(serviceError),
                         key: const Key('serviceError'),
                         style: TextStyle(color: theme.colorScheme.error)),
+                  )
+                else if (_stale)
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 8),
+                    child: Text(
+                        'No update from the flight service for '
+                        '${FlightScreen.staleAfter.inSeconds} s: what this screen '
+                        'shows may be old. Use RC if the drone is flying.',
+                        key: const Key('serviceStale'),
+                        style: TextStyle(color: theme.colorScheme.error)),
+                  ),
+                if (snap.vehicle.connected && snap.vehicle.lowBattery)
+                  Card(
+                    key: const Key('lowBattery'),
+                    color: theme.colorScheme.errorContainer,
+                    child: Padding(
+                      padding: const EdgeInsets.all(12),
+                      child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+                        Row(children: [
+                          Icon(Icons.battery_alert, color: theme.colorScheme.onErrorContainer),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: Text(
+                                'Battery ${snap.vehicle.batteryPercent ?? '?'} %: plans may only head back toward home.',
+                                style: TextStyle(color: theme.colorScheme.onErrorContainer)),
+                          ),
+                        ]),
+                        if (snap.vehicle.landedStateName == 'IN_AIR')
+                          Wrap(spacing: 8, children: [
+                            if (snap.memory.homeKnown)
+                              FilledButton.icon(
+                                  key: const Key('lowBatteryReturnHome'),
+                                  onPressed: _busy ? null : () => _tapCall('return_home'),
+                                  icon: const Icon(Icons.home_outlined),
+                                  label: const Text('Return home')),
+                            OutlinedButton.icon(
+                                key: const Key('lowBatteryLand'),
+                                onPressed: _busy ? null : () => _tapCall('land'),
+                                icon: const Icon(Icons.flight_land),
+                                label: const Text('Land here')),
+                          ]),
+                      ]),
+                    ),
                   ),
                 if (pending != null)
                   KeyedSubtree(
@@ -499,12 +693,22 @@ class _FlightScreenState extends State<FlightScreen> with WidgetsBindingObserver
                         onCancel: _cancelPlan,
                         confirmRowKey: _confirmRow,
                         ai: ai,
-                        showAiHeard: ai.heard != snap.speech.heard),
+                        showAiHeard: ai.heard != snap.speech.heard,
+                        onAddToMission: _busy ? null : () => _addToMission(pending.token)),
                   )
                 else if (run != null)
                   KeyedSubtree(
                     key: const Key('planCard'),
-                    child: RunCard(run: run, onCancel: _cancelPlan, cancelRowKey: _cancelRow),
+                    child: RunCard(
+                        run: run,
+                        onCancel: _cancelPlan,
+                        cancelRowKey: _cancelRow,
+                        checkpoint: snap.mission.checkpoint,
+                        onContinue: switch (snap.mission.checkpoint) {
+                          null => null,
+                          final checkpoint when checkpoint.token == _continuedToken => null,
+                          final checkpoint => () => _continueMission(checkpoint.token),
+                        }),
                   ),
                 if (ai.thinking)
                   Card(
@@ -574,6 +778,20 @@ class _FlightScreenState extends State<FlightScreen> with WidgetsBindingObserver
                     onOpenModels: () => widget.open(FlightDestination.models)),
                 const SizedBox(height: 8),
                 TapPad(onCommand: _tap, enabled: !_busy),
+                const SizedBox(height: 8),
+                MissionCard(
+                    mission: snap.mission,
+                    enabled: !_busy,
+                    running: run?.executing == true,
+                    onBuilding: _setBuilding,
+                    onCheckpoints: _setCheckpoints,
+                    onRemoveStage: _removeStage,
+                    onStart: _startMission,
+                    onClear: _clearMission,
+                    onResume: _resumeMission,
+                    onSave: _saveMission,
+                    onLoad: _loadMission,
+                    onDelete: _deleteMission),
                 const SizedBox(height: 8),
                 FlightMemoryCard(
                     memory: snap.memory,

@@ -1,6 +1,11 @@
 package com.aeronex.app.memory
 
+import com.aeronex.app.vehicle.FrameOrigin
 import com.aeronex.app.vehicle.Ned
+import java.util.concurrent.CopyOnWriteArrayList
+import java.util.concurrent.CountDownLatch
+import java.util.concurrent.TimeUnit
+import kotlin.concurrent.thread
 import org.junit.Assert.*
 import org.junit.Test
 
@@ -19,6 +24,9 @@ class FlightJournalTest {
     private val journal = FlightJournal(store) { now }
 
     private fun ned(x: Double, y: Double, z: Double = -3.0) = Ned(x, y, z)
+
+    /** A frame origin [north] metres north of the first. */
+    private fun origin(north: Double = 0.0) = FrameOrigin(-353632621.0 + north / FrameOrigin.LATLON_TO_M, 1491652374.0, 584.0)
 
     private fun step(name: String = "move_relative", outcome: String = "COMPLETED") =
         FlightJournal.RecordedStep(name, mapOf("direction" to "left", "distance_m" to 2), "Move left 2 m", "typed", outcome)
@@ -69,26 +77,52 @@ class FlightJournalTest {
         assertEquals(setOf(1, 2), journal.state.points.keys)
     }
 
-    @Test fun aMovedHomeForgetsTheTrailAndPointsButKeepsTheHistory() {
-        journal.observeHome(ned(0.0, 0.0, 0.0))
+    @Test fun homeMovingInTheSameFrameKeepsTheTrailAndPoints() {
+        // Review R2: ArduCopter sets home where it arms. A second takeoff 9 m away is the same frame, so the points
+        // stay and "return home" flies to the new home.
+        journal.observeHome(ned(0.0, 0.0, 0.0), origin())
+        journal.takeoffCompleted(ned(0.0, 0.0))
+        journal.markPoint(1, ned(4.0, 0.0))
+        journal.observeHome(ned(9.0, 0.0, 0.0), origin())
+        val state = journal.state
+        assertEquals(ned(9.0, 0.0, 0.0), state.home)
+        assertEquals(setOf(1), state.points.keys)
+        assertEquals(1, state.trail.size)
+        assertNull(state.notice)
+    }
+
+    @Test fun aNewFrameForgetsTheTrailAndPointsButKeepsTheHistory() {
+        journal.observeHome(ned(0.0, 0.0, 0.0), origin())
         journal.takeoffCompleted(ned(0.0, 0.0))
         journal.markPoint(1, ned(2.0, 2.0))
         journal.recordPlan(listOf(step()))
-        journal.observeHome(ned(0.5, 0.0, 0.0)) // within the tolerance: same home
+        journal.observeHome(ned(0.0, 0.0, 0.0), origin(north = 0.5)) // within the tolerance: the same frame
         assertEquals(1, journal.state.trail.size)
-        journal.observeHome(ned(40.0, 0.0, 0.0))
+        // A reboot 40 m away: home is (0, 0, 0) again, in a frame 40 m from the old one.
+        journal.observeHome(ned(0.0, 0.0, 0.0), origin(north = 40.0))
         val state = journal.state
-        assertEquals(ned(40.0, 0.0, 0.0), state.home)
+        assertEquals(origin(north = 40.0), state.origin)
         assertTrue(state.trail.isEmpty())
         assertTrue(state.points.isEmpty())
         assertEquals(1, state.history.size)
-        assertEquals(FlightJournal.HOME_MOVED, state.notice)
+        assertEquals(FlightJournal.FRAME_CHANGED, state.notice)
+    }
+
+    @Test fun withoutAnOriginOnlyAHomeThatStayedPutIsTheSameFrame() {
+        journal.observeHome(ned(0.0, 0.0, 0.0), null)
+        journal.markPoint(1, ned(2.0, 2.0))
+        journal.observeHome(ned(0.5, 0.0, 0.0), null)
+        assertEquals(setOf(1), journal.state.points.keys)
+        journal.observeHome(ned(40.0, 0.0, 0.0), null)
+        assertTrue(journal.state.points.isEmpty())
+        assertEquals(FlightJournal.FRAME_CHANGED, journal.state.notice)
     }
 
     @Test fun theFirstHomeIsAdoptedWithoutForgettingAnything() {
         journal.takeoffCompleted(ned(0.0, 0.0))
-        journal.observeHome(ned(0.0, 0.0, 0.0))
+        journal.observeHome(ned(0.0, 0.0, 0.0), origin())
         assertEquals(1, journal.state.trail.size)
+        assertEquals(origin(), journal.state.origin)
         assertNull(journal.state.notice)
     }
 
@@ -103,6 +137,83 @@ class FlightJournalTest {
         assertTrue(journal.plan(1).isEmpty())
         journal.recordPlan(emptyList())
         assertEquals(FlightJournal.HISTORY_LIMIT + 4L, journal.state.nextId)
+    }
+
+    @Test fun theHistoryDropsWholePlansNeverTheFirstStepsOfOne() {
+        // Review R3: trimmed record by record, the oldest plan lost its takeoff, and "run again" ran the rest of it.
+        journal.recordPlan(listOf(step("takeoff"), step(), step("land")))
+        repeat(FlightJournal.HISTORY_LIMIT - 2) { journal.recordPlan(listOf(step())) }
+        assertTrue("the 3-step plan goes whole", journal.plan(1).isEmpty())
+        assertEquals(FlightJournal.HISTORY_LIMIT - 2, journal.state.history.size)
+        // A history saved with its oldest plan cut short (before this fix) loses that plan when restored.
+        val cut = MemoryState(history = listOf(
+            CommandRecord(2, 1, 0, "move_relative", emptyMap(), "Move", "typed", "COMPLETED"),
+            CommandRecord(3, 1, 0, "land", emptyMap(), "Land", "typed", "COMPLETED"),
+            CommandRecord(4, 4, 0, "land", emptyMap(), "Land", "typed", "COMPLETED")), nextId = 5)
+        assertEquals(listOf(4L), FlightJournal(RecordingStore(cut)).state.history.map { it.planId })
+    }
+
+    @Test fun savesReachTheStoreInTheOrderTheChangesWereMade() {
+        // Review R4: an arrival on the supervisor thread and a clear on the UI thread. Saved outside the lock, the
+        // older state could be saved last, and the cleared memory came back after a restart.
+        val firstSaving = CountDownLatch(1)
+        val otherSaved = CountDownLatch(1)
+        val saved = CopyOnWriteArrayList<MemoryState>()
+        val racing = FlightJournal(object : JournalStore {
+            @Volatile var first = true
+            override fun load(): MemoryState? = null
+            override fun save(state: MemoryState) {
+                if (first) {
+                    first = false
+                    firstSaving.countDown()
+                    otherSaved.await(500, TimeUnit.MILLISECONDS) // the other thread may save meanwhile
+                    saved += state
+                } else {
+                    saved += state
+                    otherSaved.countDown()
+                }
+            }
+        }) { now }
+        val arrival = thread { racing.takeoffCompleted(ned(0.0, 0.0)) }
+        assertTrue(firstSaving.await(5, TimeUnit.SECONDS))
+        val clear = thread { racing.clear() }
+        arrival.join(5_000)
+        clear.join(5_000)
+        assertTrue(racing.state.trail.isEmpty())
+        assertEquals(racing.state, saved.last())
+    }
+
+    @Test fun missionsAreSavedByNameNewestFirstAndOnlyDeletedWhenAsked() {
+        val perimeter = SavedMission("Perimeter", listOf(SavedStage("typed", listOf(SavedStep("land", emptyMap(), "Land")))))
+        assertTrue(journal.saveMission(perimeter))
+        assertTrue(journal.saveMission(perimeter.copy(name = "Survey")))
+        assertEquals(listOf("Survey", "Perimeter"), journal.state.missions.map { it.name })
+        // The same name in another case replaces it, as the newest.
+        assertTrue(journal.saveMission(perimeter.copy(name = "PERIMETER")))
+        assertEquals(listOf("PERIMETER", "Survey"), journal.state.missions.map { it.name })
+        assertEquals(1_000L, journal.state.missions.first().atWallMs)
+        assertEquals("Survey", journal.mission(" survey ")!!.name)
+        // Full: a new name is refused; an old mission is never dropped unasked. Replacing still works.
+        repeat(FlightJournal.MISSIONS_LIMIT - 2) { journal.saveMission(perimeter.copy(name = "m$it")) }
+        assertFalse(journal.saveMission(perimeter.copy(name = "one more")))
+        assertEquals(FlightJournal.MISSIONS_LIMIT, journal.state.missions.size)
+        assertTrue(journal.saveMission(perimeter.copy(name = "survey")))
+        // Commands, not positions: clearing the memory and a new frame keep them.
+        journal.clear()
+        journal.observeHome(ned(0.0, 0.0, 0.0), origin())
+        journal.markPoint(1, ned(1.0, 1.0))
+        journal.observeHome(ned(0.0, 0.0, 0.0), origin(north = 50.0))
+        assertEquals(FlightJournal.MISSIONS_LIMIT, journal.state.missions.size)
+        journal.deleteMission("SURVEY")
+        assertNull(journal.mission("survey"))
+        assertEquals(FlightJournal.MISSIONS_LIMIT - 1, journal.state.missions.size)
+    }
+
+    @Test fun missionNamesAreTrimmedAndBounded() {
+        assertEquals("North field", FlightJournal.missionName("  North   field "))
+        assertNull(FlightJournal.missionName("   "))
+        assertNull(FlightJournal.missionName("x".repeat(FlightJournal.MISSION_NAME_MAX + 1)))
+        assertNull(FlightJournal.missionName("a\u0000b"))
     }
 
     @Test fun aPlanFinishingAgainUnderItsKeyReplacesItsRecords() {
@@ -122,18 +233,19 @@ class FlightJournalTest {
     }
 
     @Test fun clearForgetsEverythingButHome() {
-        journal.observeHome(ned(0.0, 0.0, 0.0))
+        journal.observeHome(ned(0.0, 0.0, 0.0), origin())
         journal.takeoffCompleted(ned(0.0, 0.0))
         journal.markPoint(1, ned(1.0, 0.0))
         journal.recordPlan(listOf(step()))
         journal.clear()
         val state = journal.state
         assertEquals(ned(0.0, 0.0, 0.0), state.home)
+        assertEquals(origin(), state.origin)
         assertTrue(state.trail.isEmpty() && state.points.isEmpty() && state.history.isEmpty())
         assertEquals(2L, state.nextId)
     }
 
-    @Test fun aRestoredMemoryWithoutAHomeKeepsOnlyItsHistory() {
+    @Test fun aRestoredMemoryWithoutAHomeAndFrameKeepsOnlyItsHistory() {
         val saved = MemoryState(trail = listOf(Waypoint(ned(1.0, 1.0), "a", 0)),
             points = mapOf(1 to Waypoint(ned(2.0, 2.0), "Point 1", 0)),
             history = listOf(CommandRecord(4, 4, 0, "land", emptyMap(), "Land", "typed", "COMPLETED")), nextId = 5)
@@ -141,8 +253,11 @@ class FlightJournalTest {
         assertTrue(restored.trail.isEmpty() && restored.points.isEmpty())
         assertEquals(saved.history, restored.history)
         assertEquals(5L, restored.nextId)
+        // A home without its frame (a memory saved before the frame check) cannot be checked either.
         val withHome = saved.copy(home = ned(0.0, 0.0, 0.0))
-        assertEquals(withHome, FlightJournal(RecordingStore(withHome)).state)
+        assertTrue(FlightJournal(RecordingStore(withHome)).state.points.isEmpty())
+        val withFrame = withHome.copy(origin = origin())
+        assertEquals(withFrame, FlightJournal(RecordingStore(withFrame)).state)
     }
 
     @Test fun everyChangeIsSavedOnce() {

@@ -67,6 +67,8 @@ data class VehicleState(
     val ekfFlags: Int? = null,
     /** HOME_POSITION x/y/z in the LOCAL_POSITION_NED frame; null until home is known. */
     val home: Ned? = null,
+    /** The frame [home] (and [position]) are in, from the same HOME_POSITION ([FrameOrigin.of]). */
+    val origin: FrameOrigin? = null,
     val lastStatusText: Received<StatusText>? = null,
     /** The last POSITION_TARGET_LOCAL_NED echo; [positionTargetCount] counts them. */
     val lastPositionTarget: Received<PositionTargetLocalNed>? = null,

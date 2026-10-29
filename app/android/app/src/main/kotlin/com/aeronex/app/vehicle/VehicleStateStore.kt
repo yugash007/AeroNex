@@ -118,7 +118,7 @@ class VehicleStateStore(
             is EkfStatusReport -> fields.copy(ekfFlags = message.flags)
             is HomePosition -> with(message) {
                 if (!finite(x, y, z)) return false
-                fields.copy(home = ned(x, y, z))
+                fields.copy(home = ned(x, y, z), origin = FrameOrigin.of(message))
             }
             is StatusText -> {
                 ownership.statusText(message.severity, message.text, now)

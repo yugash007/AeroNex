@@ -20,10 +20,7 @@ const _minMetres = 1, _maxMetres = 10;
 
 int _clamp(int metres) => metres.clamp(_minMetres, _maxMetres);
 
-FlightCommand _call(String name, [Map<String, Object> arguments = const {}]) =>
-    FlightCommand.fromToolCalls([
-      {'name': name, 'arguments': arguments}
-    ]);
+const _call = FlightCommand.tool;
 
 class _TapPadState extends State<TapPad> {
   int _distance = 2;

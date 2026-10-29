@@ -75,7 +75,7 @@ class TcpTransportTest {
         assertNotNull("reconnected", second)
         second!!.getOutputStream().write(byteArrayOf(3))
         assertEquals(1, readSome(buffer))
-        assertEquals(2L, transport.connects)
+        assertEquals(2L, transport.connections)
         transport.close()
         assertEquals(-1, transport.read(buffer, 50))
         assertFalse(transport.write(byteArrayOf(1)))

@@ -49,6 +49,8 @@ void main() {
         'executing_move.json',
         'flight_memory.json',
         'idle_disconnected.json',
+        'mission_building.json',
+        'mission_checkpoint.json',
         'pending_plan.json',
         'ptt_listening.json',
         'stop_not_confirmed.json',
@@ -100,6 +102,36 @@ void main() {
       expect(idle.vehicle, isNull);
       expect(idle.goBackTo, isNull);
       expect(idle.nextFreePoint, 1);
+    });
+
+    test('reads missions (2026-10-28)', () {
+      final held = SessionSnapshot.fromMap(_fixture('mission_checkpoint'));
+      expect(held.run!.isMission, isTrue);
+      expect(held.run!.stageOfStep, [0, 0, 1, 1]);
+      expect(held.run!.source, PlanSource.mission);
+      expect(held.mission.checkpoints, isTrue);
+      expect(held.mission.checkpoint!.stage, 1);
+      expect(held.mission.checkpoint!.stageCount, 2);
+      expect(held.mission.checkpoint!.token, '5d3c9a1e-2b7f-4e6a-9c8d-1f2e3a4b5c6d');
+      final building = SessionSnapshot.fromMap(_fixture('mission_building')).mission;
+      expect(building.building, isTrue);
+      expect(building.maxStages, 5);
+      expect([for (final s in building.stages) s.source], [PlanSource.voice, PlanSource.tap]);
+      expect(building.stages.first.summary, '1. Take off to 3 m; 2. Move forward 4 m');
+      expect(building.stages.last.steps.single.arguments, {'point': 1});
+      expect(building.resume!.fromStep, 3);
+      expect(building.resume!.stepCount, 2);
+      final saved = building.saved.single;
+      expect([saved.name, saved.stageCount, saved.stepCount], ['Perimeter', 2, 3]);
+      expect(saved.summary, 'Take off to 3 m, then Move forward 4 m, then Land');
+      // A plan, an older service, and the submit answer of a plan that became a stage.
+      final plain = SessionSnapshot.fromMap(_fixture('pending_plan'));
+      expect(plain.pending!.isMission, isFalse);
+      expect(plain.mission.building, isFalse);
+      final old = SessionSnapshot.fromMap({..._fixture('connected_landed')}..remove('mission'));
+      expect(old.mission.stages, isEmpty);
+      final added = SubmitResult.fromMap({'addedToMission': true, 'stages': 2});
+      expect((added as AddedToMission).stages, 2);
     });
 
     test('reads the speech section (T12)', () {
@@ -429,6 +461,37 @@ void main() {
         expect(kotlinMethods, contains(call.method), reason: call.method);
       }
       expect(apiSource, contains('argument(arguments, "planId")'));
+    });
+
+    test('the mission calls are methods SessionApi.kt answers, with its arguments', () async {
+      final api = ChannelSessionApi();
+      reply = (call) => switch (call.method) {
+            'addStage' || 'startMission' || 'resumeMission' => {'addedToMission': true, 'stages': 1},
+            'continueMission' => {'accepted': true},
+            _ => null,
+          };
+      await api.setMissionBuilding(true);
+      expect(await api.addStage('t-1'), isA<AddedToMission>());
+      await api.removeStage(0);
+      await api.clearMission();
+      await api.setMissionCheckpoints(true);
+      expect(await api.startMission(), isA<AddedToMission>());
+      expect((await api.continueMission('c-1')).accepted, isTrue);
+      expect(await api.resumeMission(skipInterrupted: true), isA<AddedToMission>());
+      expect([for (final c in calls) c.method], [
+        'missionBuilding', 'addStage', 'removeStage', 'clearMission', 'missionCheckpoints', //
+        'startMission', 'continueMission', 'resumeMission',
+      ]);
+      expect([for (final c in calls) c.arguments], [
+        {'enabled': true}, {'token': 't-1'}, {'index': 0}, null, {'enabled': true}, null, {'token': 'c-1'},
+        {'skipInterrupted': true},
+      ]);
+      for (final call in calls) {
+        expect(kotlinMethods, contains(call.method), reason: call.method);
+      }
+      for (final key in ['"enabled"', '"token"', '"index"', '"skipInterrupted"']) {
+        expect(apiSource, contains('argument(arguments, $key)'));
+      }
     });
 
     test('a step without a clause or a plan without an utterance omits them',

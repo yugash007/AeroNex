@@ -1,5 +1,6 @@
 package com.aeronex.app.session
 
+import com.aeronex.app.safety.SafetySupervisor
 import com.aeronex.app.memory.FileJournalStore
 import com.aeronex.app.memory.FlightJournal
 import com.aeronex.app.vehicle.executor.FAST_TIMING
@@ -133,5 +134,50 @@ class SessionFlightMemoryTest {
         controller = newController(journal())
         assertEquals(before, controller.journal.state)
         assertEquals(listOf("Takeoff", "Move forward 3 m"), labels())
+    }
+
+    @Test fun missionsAreSavedLoadedAndDeletedThroughTheChannel() {
+        connect()
+        api.call("missionBuilding", mapOf("enabled" to true))
+        controller.submitPlan(mapOf("steps" to listOf(step("move_relative", mapOf("direction" to "left", "distance_m" to 2))),
+            "source" to "typed"))
+        assertEquals(SessionApi.Reply.Ok(mapOf("saved" to "Left loop")), api.call("saveMission", mapOf("name" to " Left  loop")))
+        val saved = (controller.snapshot().obj("mission")["saved"] as List<Map<String, Any?>>).single()
+        assertEquals("Left loop", saved["name"])
+        assertEquals(1, saved["stageCount"])
+        assertEquals(1, saved["stepCount"])
+        assertEquals("Move left 2 m", saved["summary"])
+        api.call("clearMission", null)
+        assertEquals(SessionApi.Reply.Ok(mapOf("loaded" to "Left loop")), api.call("loadMission", mapOf("name" to "left loop")))
+        assertEquals(1, (controller.snapshot().obj("mission")["stages"] as List<*>).size)
+        assertEquals(mapOf("error" to SafetySupervisor.noSavedMission("Nope")),
+            (api.call("loadMission", mapOf("name" to "Nope")) as SessionApi.Reply.Ok).value)
+        assertEquals(SessionApi.Reply.Ok(null), api.call("deleteMission", mapOf("name" to "LEFT LOOP")))
+        assertTrue((controller.snapshot().obj("mission")["saved"] as List<*>).isEmpty())
+        assertEquals(SessionException.BAD_ARGS, (api.call("saveMission", null) as SessionApi.Reply.Failed).code)
+    }
+
+    @Test fun aMissionIsBuiltThroughTheChannelAndARecordedOneRunsAgainAsAMission() {
+        connect()
+        assertEquals(SessionApi.Reply.Ok(null), api.call("missionBuilding", mapOf("enabled" to true)))
+        val stage1 = controller.submitPlan(mapOf("steps" to listOf(step("takeoff", mapOf("altitude_m" to 3)),
+            step("move_relative", mapOf("direction" to "forward", "distance_m" to 2))), "source" to "typed"))
+        assertEquals(mapOf("addedToMission" to true, "stages" to 1), stage1)
+        val stage2 = controller.submitPlan(mapOf("steps" to listOf(step("return_home")), "source" to "tap"))
+        assertEquals(mapOf("addedToMission" to true, "stages" to 2), stage2)
+        val mission = controller.snapshot().obj("mission")
+        assertEquals(true, mission["building"])
+        assertEquals(listOf("typed", "tap"), (mission["stages"] as List<Map<String, Any?>>).map { it["source"] })
+        val shown = (api.call("startMission", null) as SessionApi.Reply.Ok).value as Map<String, Any?>
+        val pending = controller.snapshot()["pending"] as Map<String, Any?>
+        assertEquals("mission", pending["source"])
+        assertEquals(listOf(0L, 0L, 1L), (pending["stageOfStep"] as List<*>).map { (it as Number).toLong() })
+        confirmAndWait(shown)
+        // The history keeps the stages: run again shows it as a mission (on the ground again it would need its
+        // takeoff; in the air the validator refuses the takeoff, as for any plan).
+        val recorded = plans().first()
+        assertEquals(listOf(0L, 0L, 1L), (recorded["steps"] as List<Map<String, Any?>>).map { (it["stage"] as Number).toLong() })
+        assertEquals(mapOf("error" to "The drone is already flying. Remove the takeoff step."),
+            controller.runAgain(recorded["planId"] as Long))
     }
 }

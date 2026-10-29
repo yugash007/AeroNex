@@ -42,6 +42,26 @@ class ArduPilotExecutorMemoryTest {
 
     private fun framesAfter(count: Int) = vehicle.positionTargets().drop(count)
 
+    @Test fun aLegLongerThanAMoveGetsMoreTimeBeforeTheDeadline() {
+        // Review R8: the 30 s deadline was sized for 10 m moves; a leg between two points can be 60 m.
+        airborne()
+        val allowances = mutableListOf<Long>()
+        rig.events.drainAcks()
+        var update = executor.start(retrace, rig.store.snapshot(), now(), legs = listOf(Ned(25.0, 0.0, -3.0), Ned(25.0, 5.0, -3.0)))
+        val deadline = now() + 10_000
+        while (true) {
+            if (allowances.lastOrNull() != executor.legAllowanceMs) allowances += executor.legAllowanceMs
+            if (update != StepUpdate.Running) break
+            if (now() > deadline) throw AssertionError("retrace still running")
+            Thread.sleep(5)
+            update = executor.update(rig.store.snapshot(), rig.events.drainAcks(), now())
+        }
+        assertEquals(StepUpdate.Completed(), update)
+        assertEquals("15 s for the 25 m leg, none for the 5 m one", listOf(15_000L, 0L), allowances.filter { it > 0 } + 0L)
+        executor.start(FlightCommand.of(FlightCommand.STATUS), rig.store.snapshot(), now())
+        assertEquals(0L, executor.legAllowanceMs)
+    }
+
     @Test fun eachLegIsSentOnceInLocalNedWithTheHeadingHeld() {
         airborne()
         vehicle.yaw = PI / 2 // facing east

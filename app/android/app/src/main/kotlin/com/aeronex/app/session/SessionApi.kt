@@ -23,6 +23,9 @@ import com.aeronex.app.session.SessionSchema.wire
  * - `flightScreen({visible} | bool)` → null: whether the Flight screen is in front (Volume-Up is PTT only then).
  * - `microphonePermission({ask})` and `notificationPermission({ask})`: answered by the activity ([SessionChannel]).
  * - Flight memory (2026-10-28): `runAgain({planId} | planId)` → as `submitPlan`; `clearMemory` → null.
+ * - Missions (2026-10-28): `missionBuilding({enabled} | bool)`, `removeStage({index} | index)`, `clearMission`,
+ *   `missionCheckpoints({enabled} | bool)` → null; `addStage({token} | token)`, `startMission`,
+ *   `resumeMission({skipInterrupted})` → as `submitPlan`; `continueMission({token} | token)` → as `confirm`.
  * - 0.4.0 AI: `cancelAi` → null (the "Thinking…" Cancel). `aiModels` → `{available, reason, models: [{id, file, bytes,
  *   state, importPath}], transfer?, error?}`; `downloadAiModel({id})`, `importAiModel({id})` → `{started: true}` (the
  *   progress and outcome show in `aiModels`); `cancelAiModel` → null; `removeAiModel({id})` → `{removed}`.
@@ -60,6 +63,27 @@ class SessionApi(private val controller: SessionController) {
             "runAgain" -> Reply.Ok(controller.runAgain((argument(arguments, "planId") as? Number)?.toLong()
                 ?: throw bad("runAgain needs the plan id.")))
             "clearMemory" -> done { controller.clearMemory() }
+            "missionBuilding" -> done {
+                controller.setMissionBuilding(argument(arguments, "enabled") as? Boolean
+                    ?: throw bad("missionBuilding needs true or false."))
+            }
+            "addStage" -> Reply.Ok(controller.addStage(argument(arguments, "token") as? String
+                ?: throw bad("addStage needs the plan token.")))
+            "removeStage" -> done {
+                controller.removeStage((argument(arguments, "index") as? Number)?.toInt() ?: throw bad("removeStage needs the stage index."))
+            }
+            "clearMission" -> done { controller.clearMission() }
+            "missionCheckpoints" -> done {
+                controller.setMissionCheckpoints(argument(arguments, "enabled") as? Boolean
+                    ?: throw bad("missionCheckpoints needs true or false."))
+            }
+            "startMission" -> Reply.Ok(controller.startMission())
+            "saveMission" -> Reply.Ok(controller.saveMission(missionName(arguments)))
+            "loadMission" -> Reply.Ok(controller.loadMission(missionName(arguments)))
+            "deleteMission" -> done { controller.deleteMission(missionName(arguments)) }
+            "continueMission" -> Reply.Ok(controller.continueMission(argument(arguments, "token") as? String
+                ?: throw bad("continueMission needs the checkpoint token.")))
+            "resumeMission" -> Reply.Ok(controller.resumeMission(argument(arguments, "skipInterrupted") == true))
             "cancelAi" -> done { controller.cancelAi() }
             "aiModels" -> Reply.Ok(controller.aiModels())
             "downloadAiModel" -> started { controller.downloadAiModel(modelId(arguments)) }
@@ -73,6 +97,9 @@ class SessionApi(private val controller: SessionController) {
     } catch (e: IllegalArgumentException) {
         Reply.Failed(SessionException.BAD_ARGS, e.message ?: "Bad arguments.")
     }
+
+    private fun missionName(arguments: Any?): String =
+        argument(arguments, "name") as? String ?: throw bad("Saved missions are named: {name}.")
 
     private fun submitText(arguments: Any?): Map<String, Any?> {
         val map = arguments as? Map<*, *> ?: throw bad("submitText needs {text, language}.")

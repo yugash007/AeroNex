@@ -11,6 +11,12 @@ class FlightCommand {
   FlightCommand._(this.name, Map<String, dynamic> arguments)
       : arguments = Map.unmodifiable(arguments);
 
+  /// One tool call by [name], as a button or the tap pad sends it.
+  factory FlightCommand.tool(String name, [Map<String, Object?> arguments = const {}]) =>
+      FlightCommand.fromToolCalls([
+        {'name': name, 'arguments': arguments}
+      ]);
+
   factory FlightCommand.fromToolCalls(Object? calls) {
     if (calls is! List || calls.length != 1) {
       throw const FormatException('Exactly one tool call is required.');

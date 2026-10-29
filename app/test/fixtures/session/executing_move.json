@@ -32,6 +32,7 @@
     "positionReady": true,
     "homeKnown": true,
     "homeDistanceM": 2.63,
+    "lowBattery": false,
     "lastStatusText": null,
     "ages": {
       "heartbeat": 310,
@@ -65,7 +66,8 @@
         "message": null
       }
     ],
-    "message": null
+    "message": null,
+    "stageOfStep": null
   },
   "stop": null,
   "notice": null,
@@ -153,5 +155,14 @@
     "canRetrace": false,
     "plans": [],
     "notice": null
+  },
+  "mission": {
+    "building": false,
+    "checkpoints": false,
+    "maxStages": 5,
+    "stages": [],
+    "checkpoint": null,
+    "resume": null,
+    "saved": []
   }
 }

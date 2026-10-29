@@ -32,6 +32,7 @@
     "positionReady": true,
     "homeKnown": true,
     "homeDistanceM": 1.55,
+    "lowBattery": false,
     "lastStatusText": null,
     "ages": {
       "heartbeat": 310,
@@ -67,7 +68,9 @@
       }
     ],
     "source": "ai",
-    "expiresInMs": 13100
+    "expiresInMs": 13100,
+    "stageOfStep": null,
+    "checkpoints": false
   },
   "run": null,
   "stop": null,
@@ -151,5 +154,14 @@
     "canRetrace": false,
     "plans": [],
     "notice": null
+  },
+  "mission": {
+    "building": false,
+    "checkpoints": false,
+    "maxStages": 5,
+    "stages": [],
+    "checkpoint": null,
+    "resume": null,
+    "saved": []
   }
 }

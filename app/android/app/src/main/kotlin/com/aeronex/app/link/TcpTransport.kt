@@ -34,8 +34,8 @@ class TcpTransport(
     private var socketTimeoutMs = -1
     private var retryAt = 0L
 
-    /** Successful connections so far (diagnostics). */
-    @Volatile var connects = 0L
+    /** Successful connections so far; changes only on the RX thread, in [read]. */
+    @Volatile override var connections = 0L
         private set
 
     init {
@@ -113,7 +113,7 @@ class TcpTransport(
                 connection = c
             }
             socketTimeoutMs = -1
-            connects++
+            connections++
         } catch (_: IOException) {
             synchronized(lock) { dialing = null }
             socket.close()

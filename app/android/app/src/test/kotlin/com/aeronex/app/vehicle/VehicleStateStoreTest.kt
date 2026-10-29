@@ -153,6 +153,7 @@ class VehicleStateStoreTest {
         now += 100
         val state = store.snapshot()
         assertEquals(Ned(1.0, -2.0, 0.5), state.home)
+        assertEquals(FrameOrigin.of(home(1f, -2f, 0.5f)), state.origin)
         assertEquals(StatusText(4, "Battery 1 is low"), state.lastStatusText!!.message)
         assertEquals(1_000_000L, state.lastStatusText!!.atMs)
         assertEquals(2L, state.positionTargetCount)

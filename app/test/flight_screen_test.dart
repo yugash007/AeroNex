@@ -11,6 +11,7 @@ import 'package:aeronex/features/flight/domain/flight_command.dart';
 import 'package:aeronex/features/flight/domain/flight_plan.dart';
 import 'package:aeronex/features/flight/presentation/flight_screen.dart';
 import 'package:aeronex/features/flight/presentation/widgets/command_input.dart';
+import 'package:aeronex/features/flight/presentation/widgets/flight_memory_card.dart';
 import 'package:aeronex/features/flight/presentation/widgets/status_line.dart';
 import 'package:aeronex/features/flight/presentation/widgets/stop_button.dart';
 import 'package:aeronex/features/link/data/link_settings.dart';
@@ -428,6 +429,59 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.text('STOP did not reach the flight service. Use RC.'),
           findsOneWidget);
+    });
+
+    testWidgets('a STOP the service took, whose reply then failed, does not '
+        'keep saying it did not arrive (review D5)', (tester) async {
+      final session = await launch(tester, initial: fixture('executing_move'));
+      final reply = Completer<void>();
+      session
+        ..stopGate = reply
+        ..stopError = MissingPluginException('reply lost');
+      await tester.tap(stopButton());
+      await tester.pump();
+      // The service got it: a snapshot shows the new STOP before the reply fails.
+      Map<String, Object?> stop() => {
+            'stop': {
+              'id': 3,
+              'phase': 'CONFIRMED',
+              'trigger': 'BUTTON',
+              'action': 'BRAKE',
+              'message': 'STOP confirmed: BRAKE',
+              'alarm': false,
+              'override': false,
+              'needsHoldForExternal': false,
+              'modeOwnerLabel': null,
+            }
+          };
+      session.pushFixture('executing_move', stop());
+      await tester.pump();
+      reply.complete();
+      await tester.pump();
+      session.pushFixture('executing_move', stop()); // the next of 5–10 a second
+      await tester.pumpAndSettle();
+      expect(find.text('STOP did not reach the flight service. Use RC.'), findsNothing);
+    });
+
+    testWidgets('a STOP confirmed after its alarm was seen does not alarm again '
+        '(review D4)', (tester) async {
+      var buzzes = 0;
+      messenger.setMockMethodCallHandler(SystemChannels.platform, (call) async {
+        if (call.method == 'HapticFeedback.vibrate') buzzes++;
+        return null;
+      });
+      addTearDown(() => messenger.setMockMethodCallHandler(SystemChannels.platform, null));
+      final session = await launch(tester, initial: fixture('stop_not_confirmed'));
+      await tester.tap(find.text('Got it'));
+      await tester.pump();
+      final seen = buzzes;
+      // Confirmed before the service had the acknowledgement: still flagged.
+      session.pushFixture('stop_not_confirmed', {
+        'stop': {'phase': 'CONFIRMED', 'alarm': true}
+      });
+      await tester.pump();
+      await tester.pump(const Duration(seconds: 3));
+      expect(buzzes, seen);
     });
   });
 
@@ -1393,6 +1447,24 @@ void main() {
       await tester.pumpAndSettle();
       expect(session.argumentsOf('flightScreen').last, {'visible': true});
     });
+
+    testWidgets('a failed "in front" call is sent again until the service has '
+        'it (F15)', (tester) async {
+      final session = FakeSessionApi(fixture('connected_landed'))
+        ..flightScreenFailures = 2;
+      await launch(tester, session: session);
+      expect(session.argumentsOf('flightScreen'), [
+        {'visible': true}
+      ]);
+      await tester.pump(const Duration(seconds: 1));
+      await tester.pump(const Duration(seconds: 1));
+      expect(session.argumentsOf('flightScreen'), [
+        for (var i = 0; i < 3; i++) {'visible': true}
+      ]);
+      await tester.pump(const Duration(seconds: 5));
+      expect(session.argumentsOf('flightScreen'), hasLength(3),
+          reason: 'the third call went through: nothing more to send');
+    });
   });
 
   group('app shell', () {
@@ -1649,6 +1721,37 @@ void main() {
       expect(calls, [true]);
       handle.dispose();
     });
+
+    testWidgets('snapshots that stop coming are shown as such until the next '
+        'one, and only while the app is on screen (F14)', (tester) async {
+      final session = await launch(tester, initial: fixture('executing_move'));
+      final stale = find.byKey(const Key('serviceStale'));
+      await tester.pump(const Duration(seconds: 2));
+      session.pushFixture('executing_move');
+      await tester.pump(const Duration(seconds: 2));
+      expect(stale, findsNothing, reason: 'a snapshot 2 s ago is fresh');
+      await tester.pump(const Duration(milliseconds: 1100));
+      expect(stale, findsOneWidget);
+      expect(find.text('No update from the flight service for 3 s: what this '
+          'screen shows may be old. Use RC if the drone is flying.'), findsOneWidget);
+      session.pushFixture('executing_move');
+      await tester.pump();
+      expect(stale, findsNothing);
+
+      // In the background nobody is warned; back on screen the count restarts.
+      tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.inactive);
+      tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.hidden);
+      tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.paused);
+      await tester.pump(const Duration(seconds: 10));
+      expect(stale, findsNothing);
+      tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.hidden);
+      tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.inactive);
+      tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.resumed);
+      await tester.pump(const Duration(seconds: 2));
+      expect(stale, findsNothing);
+      await tester.pump(const Duration(milliseconds: 1100));
+      expect(stale, findsOneWidget);
+    });
   });
 
 
@@ -1749,6 +1852,261 @@ void main() {
       await tester.pumpAndSettle();
       expect(tester.takeException(), isNull);
       expect(stopButton().hitTestable(), findsOneWidget);
+    });
+  });
+
+  group('missions (2026-10-28)', () {
+    testWidgets('Hold while a CONFIRM is on its way leaves CONFIRM used (review D3)', (tester) async {
+      final session = await launch(tester, initial: fixture('pending_plan'));
+      final token = session.current.pending!.token;
+      await tester.tap(inPlan(find.byKey(const Key('confirmButton'))));
+      await tester.pump();
+      session.submitResult = const ImmediateResult('COMPLETED', 'COMPLETED — holding');
+      await tester.ensureVisible(find.text('Hold'));
+      await tester.tap(find.text('Hold'));
+      await tester.pumpAndSettle();
+      await tester.tap(inPlan(find.byKey(const Key('confirmButton'))), warnIfMissed: false);
+      await tester.pumpAndSettle();
+      expect(session.argumentsOf('confirm'), [
+        {'token': token}
+      ]);
+    });
+
+    Future<void> tapKey(WidgetTester tester, String key) async {
+      await tester.ensureVisible(find.byKey(Key(key)));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byKey(Key(key)));
+      await tester.pumpAndSettle();
+    }
+
+    testWidgets('Build a mission is the service\'s switch', (tester) async {
+      final session = await launch(tester, initial: fixture('connected_landed'));
+      expect(find.byKey(const Key('missionCard')), findsOneWidget);
+      expect(find.byKey(const Key('startMission')), findsNothing, reason: 'nothing built yet');
+      await tapKey(tester, 'missionBuilding');
+      expect(session.argumentsOf('missionBuilding'), [
+        {'enabled': true}
+      ]);
+      expect(find.textContaining('it is added here instead of running'), findsOneWidget);
+    });
+
+    testWidgets('the stages are listed, one can go, and Start shows the whole mission with its stages',
+        (tester) async {
+      final session = await launch(tester, initial: fixture('mission_building'));
+      expect(find.text('Take off to 3 m, then Move forward 4 m'), findsOneWidget);
+      expect(find.byKey(const Key('missionStage1')), findsOneWidget);
+      await tapKey(tester, 'removeStage1');
+      expect(session.argumentsOf('removeStage'), [
+        {'index': 1}
+      ]);
+      expect(find.byKey(const Key('missionStage1')), findsNothing);
+      await tapKey(tester, 'missionCheckpoints');
+      expect(session.argumentsOf('missionCheckpoints'), [
+        {'enabled': true}
+      ]);
+      await tapKey(tester, 'startMission');
+      expect(session.methods, contains('startMission'));
+      expect(inPlan(find.text('Confirm this mission')), findsOneWidget);
+      expect(inPlan(find.byKey(const Key('pendingCheckpoints'))), findsOneWidget,
+          reason: 'the mission shown says it holds after each stage');
+      expect(inPlan(find.byKey(const Key('stageHeader0'))), findsOneWidget);
+      expect(inPlan(find.byKey(const Key('addToMission'))), findsNothing, reason: 'a mission is no stage');
+      await tester.tap(inPlan(find.textContaining('CONFIRM')));
+      await tester.pumpAndSettle();
+      expect(session.argumentsOf('confirm').single, {'token': session.current.pending!.token});
+    });
+
+    testWidgets('a shown plan can become a stage instead of running', (tester) async {
+      final session = await launch(tester, initial: fixture('connected_landed'));
+      await type(tester, 'land');
+      expect(planCard(), findsOneWidget);
+      final token = session.current.pending!.token;
+      await tapKey(tester, 'addToMission');
+      expect(session.argumentsOf('addStage'), [
+        {'token': token}
+      ]);
+      expect(planCard(), findsNothing);
+      expect(find.byKey(const Key('missionStage0')), findsOneWidget);
+      expect(find.text('Added as stage 1 of the mission.'), findsOneWidget);
+    });
+
+    testWidgets('at a checkpoint Continue starts the next stage', (tester) async {
+      final session = await launch(tester, initial: fixture('mission_checkpoint'));
+      expect(inPlan(find.byKey(const Key('checkpointText'))), findsOneWidget);
+      expect(inPlan(find.byKey(const Key('stageHeader1'))), findsOneWidget);
+      expect(inPlan(find.text('Continue to stage 2')), findsOneWidget);
+      await tester.tap(inPlan(find.byKey(const Key('continueMission'))));
+      await tester.pumpAndSettle();
+      expect(session.argumentsOf('continueMission'), [
+        {'token': '5d3c9a1e-2b7f-4e6a-9c8d-1f2e3a4b5c6d'}
+      ]);
+      // STOP stays pinned above everything while the mission holds.
+      expect(stopButton().hitTestable(), findsOneWidget);
+    });
+
+    testWidgets('Hold after each stage is there with nothing built: it is for every mission (R7)',
+        (tester) async {
+      final session = await launch(tester, initial: fixture('connected_landed'));
+      expect(find.byKey(const Key('startMission')), findsNothing);
+      await tapKey(tester, 'missionCheckpoints');
+      expect(session.argumentsOf('missionCheckpoints'), [
+        {'enabled': true}
+      ]);
+    });
+
+    testWidgets('a mission stopped at a checkpoint has no step to skip (R5)', (tester) async {
+      await launch(tester,
+          initial: fixture('mission_building', {
+            'mission': {
+              'resume': {'atCheckpoint': true}
+            }
+          }));
+      expect(find.byKey(const Key('resumeMission')), findsOneWidget);
+      expect(find.byKey(const Key('resumeMissionSkip')), findsNothing);
+      expect(find.textContaining('A move that was interrupted'), findsNothing);
+    });
+
+    testWidgets('Continue goes once per checkpoint (review D2)',
+        (tester) async {
+      final session = await launch(tester, initial: fixture('mission_checkpoint'));
+      final button = inPlan(find.byKey(const Key('continueMission')));
+      await tester.tap(button);
+      await tester.pump();
+      await tester.tap(button, warnIfMissed: false);
+      await tester.pumpAndSettle();
+      expect(session.argumentsOf('continueMission'), hasLength(1));
+    });
+
+    testWidgets('a refused Continue can be tried again at the same checkpoint (review D2)', (tester) async {
+      final refusing = await launch(tester,
+          session: FakeSessionApi(fixture('mission_checkpoint'))
+            ..confirmResult = const ConfirmResult(false, 'A STOP is still being sent.'));
+      await tester.tap(inPlan(find.byKey(const Key('continueMission'))));
+      await tester.pumpAndSettle();
+      expect(find.text('A STOP is still being sent.'), findsOneWidget);
+      await tester.tap(inPlan(find.byKey(const Key('continueMission'))));
+      await tester.pumpAndSettle();
+      expect(refusing.argumentsOf('continueMission'), hasLength(2));
+    });
+
+    testWidgets('a second tap on Remove before the answer removes nothing more (review D10)',
+        (tester) async {
+      final session = await launch(tester, initial: fixture('mission_building'));
+      final answer = Completer<void>();
+      session.removeStageGate = answer;
+      await tester.ensureVisible(find.byKey(const Key('removeStage0')));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byKey(const Key('removeStage0')));
+      await tester.pump();
+      await tester.tap(find.byKey(const Key('removeStage0')), warnIfMissed: false);
+      await tester.pump();
+      answer.complete();
+      await tester.pumpAndSettle();
+      expect(session.argumentsOf('removeStage'), [
+        {'index': 0}
+      ]);
+    });
+
+    testWidgets('a mission that ended early resumes from its step or the next', (tester) async {
+      final session = await launch(tester, initial: fixture('mission_building'));
+      expect(find.text('The last mission ended at step 4; 2 steps are left.'), findsOneWidget);
+      await tapKey(tester, 'resumeMission');
+      await tapKey(tester, 'resumeMissionSkip');
+      expect(session.argumentsOf('resumeMission'), [
+        {'skipInterrupted': false},
+        {'skipInterrupted': true},
+      ]);
+      // The service's refusal is shown as is.
+      expect(find.text('There is no mission to resume.'), findsOneWidget);
+    });
+
+    testWidgets('a built mission is saved by name; a saved one loads (asking before it replaces) or goes',
+        (tester) async {
+      final session = await launch(tester, initial: fixture('mission_building'));
+      expect(find.byKey(const Key('savedMissionPerimeter')), findsOneWidget);
+      expect(find.text('2 stages · 3 steps: Take off to 3 m, then Move forward 4 m, then Land'), findsOneWidget);
+      await tapKey(tester, 'saveMission');
+      await tester.enterText(find.byKey(const Key('saveMissionName')), '  North loop ');
+      await tester.tap(find.byKey(const Key('saveMissionConfirm')));
+      await tester.pumpAndSettle();
+      expect(session.argumentsOf('saveMission'), [
+        {'name': 'North loop'}
+      ]);
+      expect(find.byKey(const Key('savedMissionNorth loop')), findsOneWidget);
+      await tapKey(tester, 'loadMissionPerimeter');
+      expect(find.byKey(const Key('loadMissionConfirm')), findsOneWidget, reason: 'stages are built: it asks first');
+      await tester.tap(find.byKey(const Key('loadMissionReplace')));
+      await tester.pumpAndSettle();
+      expect(session.argumentsOf('loadMission'), [
+        {'name': 'Perimeter'}
+      ]);
+      await tapKey(tester, 'deleteMissionPerimeter');
+      await tester.tap(find.byKey(const Key('deleteMissionYes')));
+      await tester.pumpAndSettle();
+      expect(session.argumentsOf('deleteMission'), [
+        {'name': 'Perimeter'}
+      ]);
+      expect(find.byKey(const Key('savedMissionPerimeter')), findsNothing);
+    });
+
+    testWidgets('a refused save says why; Cancel saves nothing', (tester) async {
+      final session = await launch(tester, initial: fixture('mission_building'));
+      await tapKey(tester, 'saveMission');
+      await tester.tap(find.text('Cancel'));
+      await tester.pumpAndSettle();
+      expect(session.methods, isNot(contains('saveMission')));
+      session.saveError = '10 missions are saved already: delete one first.';
+      await tapKey(tester, 'saveMission');
+      await tester.enterText(find.byKey(const Key('saveMissionName')), 'One more');
+      await tester.tap(find.byKey(const Key('saveMissionConfirm')));
+      await tester.pumpAndSettle();
+      expect(find.text('10 missions are saved already: delete one first.'), findsOneWidget);
+    });
+
+    testWidgets('fits a 5-inch phone with large text', (tester) async {
+      await launch(tester, initial: fixture('mission_building'), size: const Size(360, 640), textScale: 1.3);
+      await tester.ensureVisible(find.byKey(const Key('startMission')));
+      await tester.pumpAndSettle();
+      expect(tester.takeException(), isNull);
+      expect(stopButton().hitTestable(), findsOneWidget);
+    });
+  });
+
+  test('the memory map repaints only when what it draws changes (review D7)', () {
+    final colors = MemoryMapColors.of(ThemeData());
+    final shown = MemoryMapPainter(fixture('flight_memory').memory, colors);
+    expect(MemoryMapPainter(fixture('flight_memory', {'seq': 99999}).memory, colors).shouldRepaint(shown), isFalse,
+        reason: 'a new snapshot with the same map');
+    final moved = fixture('flight_memory', {
+      'memory': {
+        'vehicle': {'northM': 9.5, 'eastM': 1.0, 'upM': 3.0}
+      }
+    });
+    expect(MemoryMapPainter(moved.memory, colors).shouldRepaint(shown), isTrue);
+    expect(MemoryMapPainter(fixture('flight_memory').memory, MemoryMapColors.of(ThemeData.dark())).shouldRepaint(shown),
+        isTrue);
+  });
+
+  group('battery reserve (2026-10-28)', () {
+    testWidgets('below the reserve the screen says so and offers Return home and Land', (tester) async {
+      final session = await launch(tester,
+          initial: fixture('flight_memory', {
+            'vehicle': {'batteryPercent': 22, 'lowBattery': true}
+          }));
+      expect(find.text('Battery 22 %: plans may only head back toward home.'), findsOneWidget);
+      await tester.tap(find.byKey(const Key('lowBatteryReturnHome')));
+      await tester.pumpAndSettle();
+      final request = session.argumentsOf('submitPlan').single as Map;
+      expect(request['source'], 'tap');
+      expect(request['steps'], [
+        {'name': 'return_home', 'arguments': <String, Object?>{}, 'source': 'rules'}
+      ]);
+      expect(planCard(), findsOneWidget);
+    });
+
+    testWidgets('on the ground, or with a healthy battery, nothing is shown', (tester) async {
+      await launch(tester, initial: fixture('flight_memory'));
+      expect(find.byKey(const Key('lowBattery')), findsNothing);
     });
   });
 }

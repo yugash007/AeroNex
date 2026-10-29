@@ -6,6 +6,7 @@ import com.aeronex.app.command.ParseResult
 import com.aeronex.app.command.PlanParser
 import com.aeronex.app.observability.Trace
 import com.aeronex.app.vehicle.executor.waitFor
+import java.util.concurrent.atomic.AtomicInteger
 import java.util.concurrent.atomic.AtomicReference
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
@@ -69,6 +70,37 @@ class AiRouterTest {
             waitFor("found") { router.status().available }
             waitFor("warmed up") { runtime.warmUps.get() == 1 }
             assertEquals(1, ai.runtimesBuilt.get())
+        }
+    }
+
+    @Test fun anErrorOnTheAiThreadEndsTheRequestInsteadOfLeavingItThinking() {
+        // Audit S11: only RuntimeExceptions were caught, so an Error left the AI "thinking" until the next request.
+        router().use { router ->
+            waitFor("warmed up once AI is available") { runtime.warmUps.get() == 1 }
+            runtime.plans = { throw OutOfMemoryError("Failed to allocate a 943718400 byte allocation") }
+            assertEquals(AiRouter.OUT_OF_MEMORY, answer(router).error)
+            runtime.plans = { throw LinkageError("a class failed to load") }
+            assertEquals(AiRouter.GENERIC, answer(router).error)
+            runtime.plans = { throw IllegalStateException("decode failed") }
+            assertEquals("decode failed", answer(router).error)
+            // The AI thread is still there for the next command.
+            runtime.plans = { FakeAiRuntime.steps() }
+            assertEquals(AiRouter.REFUSED, answer(router).error)
+        }
+    }
+
+    @Test fun anErrorInTheIdleCheckDoesNotEndTheChecks() {
+        // A periodic task that throws never runs again: an Error there ended the A6 re-checks and the idle unload.
+        val checks = AtomicInteger()
+        val availability = AtomicReference(AiAvailability(false, AiAvailability.DOWNLOAD_MODELS))
+        val config = AiConfig({
+            if (checks.incrementAndGet() == 2) throw LinkageError("a class failed to load")
+            availability.get()
+        }, { runtime }, idleCheckMs = 20)
+        router(config).use { router ->
+            waitFor("checks go on after the Error") { checks.get() >= 4 }
+            availability.set(AiAvailability(true, null))
+            waitFor("found") { router.status().available }
         }
     }
 

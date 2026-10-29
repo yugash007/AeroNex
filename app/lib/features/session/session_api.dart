@@ -101,7 +101,11 @@ enum PlanSource {
 
   /// 0.4.0: a plan of the service's own AI path (shown as "AI"). The service
   /// refuses it from this client; it only ever arrives in a snapshot.
-  ai('ai', 'AI');
+  ai('ai', 'AI'),
+
+  /// 2026-10-28: a mission the service built from its stages; like [ai], it
+  /// only ever arrives in a snapshot.
+  mission('mission', 'Mission');
 
   const PlanSource(this.wire, this.label);
   final String wire, label;
@@ -236,6 +240,7 @@ class VehicleSnapshot {
     this.positionReady = false,
     this.homeKnown = false,
     this.homeDistanceM,
+    this.lowBattery = false,
     this.lastStatusText,
     this.ages = const {},
   });
@@ -259,6 +264,7 @@ class VehicleSnapshot {
       positionReady: _req<bool>(map, 'positionReady'),
       homeKnown: _req<bool>(map, 'homeKnown'),
       homeDistanceM: _optDouble(map, 'homeDistanceM'),
+      lowBattery: _opt<bool>(map, 'lowBattery') ?? false,
       lastStatusText: text == null ? null : StatusText.fromMap(text),
       ages: {for (final key in ages.keys) '$key': _opt<int>(ages, '$key')},
     );
@@ -286,6 +292,10 @@ class VehicleSnapshot {
   final bool? healthy;
   final bool positionReady, homeKnown;
   final double? homeDistanceM;
+
+  /// A fresh battery level below the service's reserve (2026-10-28): plans may
+  /// only head back toward home.
+  final bool lowBattery;
   final StatusText? lastStatusText;
 
   /// Per message, ms since it was last received; null if never.
@@ -310,6 +320,7 @@ class VehicleSnapshot {
         'positionReady': positionReady,
         'homeKnown': homeKnown,
         'homeDistanceM': homeDistanceM,
+        'lowBattery': lowBattery,
         'lastStatusText': lastStatusText?.toMap(),
         'ages': {...ages},
       };
@@ -344,13 +355,15 @@ class PendingStep {
 /// The snapshot's `pending` section: the plan waiting for CONFIRM.
 class PendingPlan {
   const PendingPlan(this.token, this.summary, this.steps, this.sourceWire,
-      this.expiresInMs);
+      this.expiresInMs, [this.stageOfStep, this.checkpoints = false]);
   factory PendingPlan.fromMap(Map map) => PendingPlan(
       _req<String>(map, 'token'),
       _req<String>(map, 'summary'),
       [for (final step in _req<List>(map, 'steps')) PendingStep.fromMap(step as Map)],
       _req<String>(map, 'source'),
-      _req<int>(map, 'expiresInMs'));
+      _req<int>(map, 'expiresInMs'),
+      _stages(map),
+      _opt<bool>(map, 'checkpoints') ?? false);
 
   /// Pass it to `confirm`; it works once.
   final String token;
@@ -361,7 +374,16 @@ class PendingPlan {
   /// Until the token expires, at the snapshot's `atMs`; 0 when due.
   final int expiresInMs;
 
+  /// A mission's stage (0-based) per step (2026-10-28); null for a plan.
+  final List<int>? stageOfStep;
+
+  /// The mission holds after each stage until Continue (the operator's
+  /// setting when it was shown); false for a plan.
+  final bool checkpoints;
+
   PlanSource? get source => PlanSource.fromWire(sourceWire);
+
+  bool get isMission => stageOfStep != null;
 
   Map<String, Object?> toMap() => {
         'token': token,
@@ -369,7 +391,18 @@ class PendingPlan {
         'steps': [for (final step in steps) step.toMap()],
         'source': sourceWire,
         'expiresInMs': expiresInMs,
+        'stageOfStep': stageOfStep,
+        'checkpoints': checkpoints,
       };
+}
+
+/// `stageOfStep`, a mission's stage per step (2026-10-28); null for a plan or
+/// an older service.
+List<int>? _stages(Map map) {
+  final stages = _opt<List>(map, 'stageOfStep');
+  if (stages == null) return null;
+  if (stages.any((s) => s is! int)) throw _bad('stageOfStep');
+  return stages.cast<int>();
 }
 
 /// A step of the running or last run plan. [outcome] is PENDING | RUNNING |
@@ -390,7 +423,7 @@ class StepResult {
 /// The snapshot's `run` section: the plan running or last run.
 class PlanRun {
   const PlanRun(this.phase, this.sourceWire, this.summary, this.stepIndex,
-      this.stepCount, this.outcomes, this.message);
+      this.stepCount, this.outcomes, this.message, [this.stageOfStep]);
   factory PlanRun.fromMap(Map map) => PlanRun(
       _req<String>(map, 'phase'),
       _opt<String>(map, 'source'),
@@ -398,7 +431,8 @@ class PlanRun {
       _req<int>(map, 'stepIndex'),
       _req<int>(map, 'stepCount'),
       [for (final o in _req<List>(map, 'outcomes')) StepResult.fromMap(o as Map)],
-      _opt<String>(map, 'message'));
+      _opt<String>(map, 'message'),
+      _stages(map));
 
   /// EXECUTING | FINISHED | FAILED.
   final String phase;
@@ -410,8 +444,12 @@ class PlanRun {
   /// The v0.2.0 result summary once the plan ended.
   final String? message;
 
+  /// A mission's stage (0-based) per step (2026-10-28); null for a plan.
+  final List<int>? stageOfStep;
+
   bool get executing => phase == 'EXECUTING';
   bool get failed => phase == 'FAILED';
+  bool get isMission => stageOfStep != null;
   PlanSource? get source => PlanSource.fromWire(sourceWire);
 
   Map<String, Object?> toMap() => {
@@ -422,6 +460,7 @@ class PlanRun {
         'stepCount': stepCount,
         'outcomes': [for (final o in outcomes) o.toMap()],
         'message': message,
+        'stageOfStep': stageOfStep,
       };
 }
 
@@ -805,22 +844,27 @@ class MemoryPoint {
 
 /// One step of a recorded plan; [outcome] is its final step status name.
 class MemoryPlanStep {
-  const MemoryPlanStep(this.name, this.arguments, this.description, this.outcome);
+  const MemoryPlanStep(this.name, this.arguments, this.description, this.outcome, [this.stage = 0]);
   factory MemoryPlanStep.fromMap(Map map) => MemoryPlanStep(
       _req<String>(map, 'name'),
       _copy(_req<Map>(map, 'arguments')),
       _req<String>(map, 'description'),
-      _req<String>(map, 'outcome'));
+      _req<String>(map, 'outcome'),
+      _opt<int>(map, 'stage') ?? 0);
 
   final String name;
   final Map<String, Object?> arguments;
   final String description, outcome;
+
+  /// Its mission stage (0-based); 0 for a plan's step.
+  final int stage;
 
   Map<String, Object?> toMap() => {
         'name': name,
         'arguments': {...arguments},
         'description': description,
         'outcome': outcome,
+        'stage': stage,
       };
 }
 
@@ -845,6 +889,8 @@ class MemoryPlan {
 
   /// Every step was confirmed by telemetry.
   bool get completed => steps.every((s) => s.outcome == 'COMPLETED');
+
+  /// Its steps were stages of a mission (2026-10-28).
 
   Map<String, Object?> toMap() => {
         'planId': planId,
@@ -927,6 +973,143 @@ class FlightMemory {
       };
 }
 
+/// One step of a mission stage being built.
+class DraftStep {
+  const DraftStep(this.name, this.arguments, this.description);
+  factory DraftStep.fromMap(Map map) => DraftStep(_req<String>(map, 'name'),
+      _copy(_req<Map>(map, 'arguments')), _req<String>(map, 'description'));
+
+  final String name;
+  final Map<String, Object?> arguments;
+  final String description;
+
+  Map<String, Object?> toMap() =>
+      {'name': name, 'arguments': {...arguments}, 'description': description};
+}
+
+/// A stage of the mission being built: a plan as it was said or tapped.
+class DraftStage {
+  const DraftStage(this.sourceWire, this.summary, this.steps);
+  factory DraftStage.fromMap(Map map) => DraftStage(_req<String>(map, 'source'),
+      _req<String>(map, 'summary'),
+      [for (final step in _req<List>(map, 'steps')) DraftStep.fromMap(step as Map)]);
+
+  final String sourceWire, summary;
+  final List<DraftStep> steps;
+
+  PlanSource? get source => PlanSource.fromWire(sourceWire);
+
+  Map<String, Object?> toMap() => {
+        'source': sourceWire,
+        'summary': summary,
+        'steps': [for (final step in steps) step.toMap()],
+      };
+}
+
+/// A running mission holding between stages until `continueMission(token)`.
+class MissionCheckpoint {
+  const MissionCheckpoint(this.token, this.stage, this.stageCount);
+  factory MissionCheckpoint.fromMap(Map map) => MissionCheckpoint(
+      _req<String>(map, 'token'), _req<int>(map, 'stage'), _req<int>(map, 'stageCount'));
+
+  final String token;
+
+  /// The next stage (0-based), and how many the mission has.
+  final int stage, stageCount;
+
+  Map<String, Object?> toMap() => {'token': token, 'stage': stage, 'stageCount': stageCount};
+}
+
+/// The last mission ended early at step [fromStep] (0-based); [stepCount]
+/// steps are left from it.
+class MissionResume {
+  const MissionResume(this.fromStep, this.stepCount, [this.atCheckpoint = false]);
+  factory MissionResume.fromMap(Map map) => MissionResume(_req<int>(map, 'fromStep'),
+      _req<int>(map, 'stepCount'), _opt<bool>(map, 'atCheckpoint') ?? false);
+
+  final int fromStep, stepCount;
+
+  /// It stopped at a checkpoint: step [fromStep] never started, so nothing
+  /// was interrupted and there is no step to skip.
+  final bool atCheckpoint;
+
+  Map<String, Object?> toMap() =>
+      {'fromStep': fromStep, 'stepCount': stepCount, 'atCheckpoint': atCheckpoint};
+}
+
+/// The snapshot's `mission` section (2026-10-28): the mission being built, the
+/// one holding at a checkpoint and the one to resume. While [building], every
+/// new plan becomes the next stage instead of waiting for CONFIRM; STOP, HOLD
+/// and status still run at once.
+/// A mission the operator saved by name (2026-10-28): its commands only,
+/// kept by the service across restarts. Loading it fills the stages being
+/// built; Start still checks it and shows it for CONFIRM.
+class SavedMission {
+  const SavedMission(this.name, this.stageCount, this.stepCount, this.summary, this.atWallMs);
+  factory SavedMission.fromMap(Map map) => SavedMission(_req<String>(map, 'name'), _req<int>(map, 'stageCount'),
+      _req<int>(map, 'stepCount'), _req<String>(map, 'summary'), _req<int>(map, 'atWallMs'));
+
+  final String name;
+  final int stageCount, stepCount;
+
+  /// Every step, ", then " between them.
+  final String summary;
+  final int atWallMs;
+
+  Map<String, Object?> toMap() => {
+        'name': name,
+        'stageCount': stageCount,
+        'stepCount': stepCount,
+        'summary': summary,
+        'atWallMs': atWallMs,
+      };
+}
+
+class MissionStatus {
+  const MissionStatus({
+    this.building = false,
+    this.checkpoints = false,
+    this.maxStages = 5,
+    this.stages = const [],
+    this.checkpoint,
+    this.resume,
+    this.saved = const [],
+  });
+
+  factory MissionStatus.fromMap(Map map) {
+    final checkpoint = _opt<Map>(map, 'checkpoint');
+    final resume = _opt<Map>(map, 'resume');
+    return MissionStatus(
+      building: _req<bool>(map, 'building'),
+      checkpoints: _req<bool>(map, 'checkpoints'),
+      maxStages: _req<int>(map, 'maxStages'),
+      stages: [for (final stage in _req<List>(map, 'stages')) DraftStage.fromMap(stage as Map)],
+      checkpoint: checkpoint == null ? null : MissionCheckpoint.fromMap(checkpoint),
+      resume: resume == null ? null : MissionResume.fromMap(resume),
+      saved: [for (final m in _opt<List>(map, 'saved') ?? const []) SavedMission.fromMap(m as Map)],
+    );
+  }
+
+  final bool building, checkpoints;
+  final int maxStages;
+  final List<DraftStage> stages;
+  final MissionCheckpoint? checkpoint;
+  final MissionResume? resume;
+
+  /// Saved missions, newest first.
+  final List<SavedMission> saved;
+
+  Map<String, Object?> toMap() => {
+        'building': building,
+        'checkpoints': checkpoints,
+        'maxStages': maxStages,
+        'stages': [for (final stage in stages) stage.toMap()],
+        'checkpoint': checkpoint?.toMap(),
+        'resume': resume?.toMap(),
+        'saved': [for (final m in saved) m.toMap()],
+      };
+}
+
 /// One `aeronex/session/state` snapshot (also the `connect` and `getSnapshot`
 /// answer).
 class SessionSnapshot {
@@ -945,6 +1128,7 @@ class SessionSnapshot {
     this.speech = const SpeechStatus(),
     this.ai = const AiStatus(),
     this.memory = const FlightMemory(),
+    this.mission = const MissionStatus(),
     this.raw = const {},
   });
 
@@ -967,6 +1151,7 @@ class SessionSnapshot {
     final speech = _opt<Map>(map, 'speech');
     final ai = _opt<Map>(map, 'ai');
     final memory = _opt<Map>(map, 'memory');
+    final mission = _opt<Map>(map, 'mission');
     try {
       return SessionSnapshot(
         seq: _req<int>(map, 'seq'),
@@ -987,6 +1172,7 @@ class SessionSnapshot {
         speech: speech == null ? const SpeechStatus() : SpeechStatus.fromMap(speech),
         ai: ai == null ? const AiStatus() : AiStatus.fromMap(ai),
         memory: memory == null ? const FlightMemory() : FlightMemory.fromMap(memory),
+        mission: mission == null ? const MissionStatus() : MissionStatus.fromMap(mission),
         raw: _copy(map),
       );
     } on TypeError {
@@ -1025,6 +1211,9 @@ class SessionSnapshot {
   /// The flight memory (2026-10-28; absent from older services: empty).
   final FlightMemory memory;
 
+  /// Missions (2026-10-28; absent from older services: none).
+  final MissionStatus mission;
+
   /// The map as received, for diagnostics.
   final Map<String, Object?> raw;
 
@@ -1045,6 +1234,7 @@ class SessionSnapshot {
         'speech': speech.toMap(),
         'ai': ai.toMap(),
         'memory': memory.toMap(),
+        'mission': mission.toMap(),
       };
 }
 
@@ -1064,8 +1254,16 @@ sealed class SubmitResult {
           _req<int>(map, 'expiresInMs'), _req<String>(map, 'summary'));
     }
     if (map['thinking'] == true) return ThinkingResult(_req<int>(map, 'request'));
+    if (map['addedToMission'] == true) return AddedToMission(_req<int>(map, 'stages'));
     throw _bad('submitPlan');
   }
+}
+
+/// While a mission is built (2026-10-28): the plan became its next stage
+/// ([stages] of them now) instead of waiting for CONFIRM.
+class AddedToMission extends SubmitResult {
+  const AddedToMission(this.stages);
+  final int stages;
 }
 
 /// `submitText` only (0.4.0): the rules did not understand the text and the
@@ -1202,6 +1400,42 @@ abstract class SessionApi {
 
   /// Forgets the flown path, the points and the recorded plans.
   Future<void> clearMemory();
+
+  // Missions (2026-10-28).
+
+  /// While on, every new plan becomes the mission's next stage.
+  Future<void> setMissionBuilding(bool enabled);
+
+  /// The plan shown for CONFIRM ([token]) becomes the next stage.
+  Future<SubmitResult> addStage(String token);
+
+  Future<void> removeStage(int index);
+
+  /// Forgets the stages built and the mission to resume.
+  Future<void> clearMission();
+
+  /// Whether the mission holds after each stage until [continueMission].
+  Future<void> setMissionCheckpoints(bool enabled);
+
+  /// The stages built as one mission, validated and shown for one CONFIRM.
+  Future<SubmitResult> startMission();
+
+  /// Saves the stages built as [name], replacing a mission of that name;
+  /// null when saved, else the service's reason.
+  Future<String?> saveMission(String name);
+
+  /// The saved mission [name] becomes the stages being built; null when
+  /// loaded, else the service's reason.
+  Future<String?> loadMission(String name);
+
+  Future<void> deleteMission(String name);
+
+  /// At a checkpoint: the next stage starts.
+  Future<ConfirmResult> continueMission(String token);
+
+  /// The last mission that ended early, from the step it ended at (or the
+  /// next, with [skipInterrupted]), shown for one CONFIRM.
+  Future<SubmitResult> resumeMission({required bool skipInterrupted});
 }
 
 /// [SessionApi] over the `aeronex/session` channels (`SessionChannel.kt`).
@@ -1397,4 +1631,59 @@ class ChannelSessionApi implements SessionApi {
 
   @override
   Future<void> clearMemory() => _methods.invokeMethod<void>('clearMemory');
+
+  @override
+  Future<void> setMissionBuilding(bool enabled) =>
+      _methods.invokeMethod<void>('missionBuilding', {'enabled': enabled});
+
+  @override
+  Future<SubmitResult> addStage(String token) async {
+    final reply = await _methods.invokeMethod<Object?>('addStage', {'token': token});
+    return SubmitResult.fromMap(reply is Map ? reply : null);
+  }
+
+  @override
+  Future<void> removeStage(int index) => _methods.invokeMethod<void>('removeStage', {'index': index});
+
+  @override
+  Future<void> clearMission() => _methods.invokeMethod<void>('clearMission');
+
+  @override
+  Future<void> setMissionCheckpoints(bool enabled) =>
+      _methods.invokeMethod<void>('missionCheckpoints', {'enabled': enabled});
+
+  @override
+  Future<SubmitResult> startMission() async {
+    final reply = await _methods.invokeMethod<Object?>('startMission');
+    return SubmitResult.fromMap(reply is Map ? reply : null);
+  }
+
+  @override
+  Future<String?> saveMission(String name) => _named('saveMission', name);
+
+  @override
+  Future<String?> loadMission(String name) => _named('loadMission', name);
+
+  /// `{saved|loaded: name}`, or `{error}` with the reason.
+  Future<String?> _named(String method, String name) async {
+    final reply = await _methods.invokeMethod<Object?>(method, {'name': name});
+    if (reply is! Map) throw _bad(method);
+    return _opt<String>(reply, 'error');
+  }
+
+  @override
+  Future<void> deleteMission(String name) => _methods.invokeMethod<void>('deleteMission', {'name': name});
+
+  @override
+  Future<ConfirmResult> continueMission(String token) async {
+    final reply = await _methods.invokeMethod<Object?>('continueMission', {'token': token});
+    return ConfirmResult.fromMap(reply is Map ? reply : null);
+  }
+
+  @override
+  Future<SubmitResult> resumeMission({required bool skipInterrupted}) async {
+    final reply = await _methods
+        .invokeMethod<Object?>('resumeMission', {'skipInterrupted': skipInterrupted});
+    return SubmitResult.fromMap(reply is Map ? reply : null);
+  }
 }

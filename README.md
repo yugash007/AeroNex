@@ -10,7 +10,7 @@ AeroNex turns natural speech in **English, Hindi, Telugu, Tamil, Kannada and Mal
 ![ArduPilot](https://img.shields.io/badge/autopilot-ArduPilot%20%2B%20MAVLink%202-0B5394)
 ![Offline](https://img.shields.io/badge/speech%20%26%20AI-100%25%20on--device-success)
 ![Languages](https://img.shields.io/badge/languages-6-orange)
-![Tests](https://img.shields.io/badge/tests-1%2C400%2B%20passing-brightgreen)
+![Tests](https://img.shields.io/badge/tests-1%2C500%2B%20passing-brightgreen)
 
 ---
 
@@ -50,6 +50,8 @@ AeroNex is an Android app that lets anyone command an ArduPilot drone by **speak
 | 🧠 | **Rules first, AI second** | A strict grammar parser handles known phrasings in < 10 ms. Only phrasings it can't read go to the on-device AI: an **LFM2.5** planner splits the request into steps, and **Cactus Needle** turns each step into one tool call. |
 | 🔢 | **Natural numbers & phrasing** | "two point five", "two and a half", "half a metre", "climb", "descend", "back up", "to the left", filler words like "um" or "basically". |
 | 🧩 | **Multi-step plans** | Up to 5 steps per command ("take off to 3 m then go forward 5 m and right 3 m"), shown as a plan card with **one CONFIRM**. |
+| 🗺️ | **Missions** | Build up to 5 stages (each a plan you said, typed or tapped), check the whole mission from the drone's state, fly it after **one CONFIRM**. Optional hold after each stage until you tap Continue, and **resume** after a STOP. **Save** a mission by name and load it again later, even after a restart. |
+| 🏠 | **Flight memory** | The app remembers where it flew the drone and what you asked: **"return home"**, **"go back"** (undo), **"retrace the path"**, **"mark point 2"** / **"go to point 2"**, a live mini-map, and recent commands with **Run again**. Saved across restarts; never offered to the AI. |
 | 🛑 | **Always-on emergency STOP** | Giant on-screen button, **Volume-Down**, notification action and spoken "stop". BRAKE in the air (LAND if BRAKE is refused), never a forced disarm, and re-sent until the autopilot confirms. |
 | 🛡️ | **Safety supervisor** | Negations ("don't take off") are refused, as are out-of-range or negative distances, unit mix-ups, plans more than 30 m from home and stale telemetry. AI output can't invent numbers or directions you didn't say. |
 | 👆 | **Tap pad & typed input** | Works in all six languages on every phone, even without voice models. |
@@ -120,7 +122,7 @@ Models are downloaded inside the app (Menu → Models) and verified with SHA-256
 
 | Area | Result |
 |---|---|
-| Automated tests | **778** Kotlin/JVM · **252** Flutter · **394** Python — all passing |
+| Automated tests | **920** Kotlin/JVM · **294** Flutter · **416** Python — all passing (2026-10-28) |
 | Parser correctness | **3,431 / 3,431** golden command vectors match |
 | Simulator (ArduPilot SITL + Gazebo) | **13 / 13** integration tests pass |
 | Move command → drone acknowledges | **p95 209 ms** (target ≤ 300 ms) |
@@ -130,7 +132,7 @@ Models are downloaded inside the app (Menu → Models) and verified with SHA-256
 | Unsafe-request handling | **0 false accepts** for negations, out-of-range values and unsafe asks |
 | APK size | 64-bit **61 MB** (with AI) · 32-bit **44 MB** |
 
-Full reports: [0.4.0 test report](docs/testing/2026-10-15-v0.4.0.md) · [AI planner evaluation](docs/testing/2026-10-15-ai-planner-eval.md) · [0.3.0 latency report](docs/testing/2026-10-14-v0.3.0.md) · [speech benchmark](docs/testing/2026-10-14-bench-emulator.md).
+Full reports: [2026-10-28 audit](docs/testing/2026-10-28-audit.md) · [flight memory and missions](docs/superpowers/specs/2026-10-28-flight-memory-and-missions.md) · [0.4.0 test report](docs/testing/2026-10-15-v0.4.0.md) · [AI planner evaluation](docs/testing/2026-10-15-ai-planner-eval.md) · [0.3.0 latency report](docs/testing/2026-10-14-v0.3.0.md) · [speech benchmark](docs/testing/2026-10-14-bench-emulator.md).
 
 ## 7. Tech stack
 
@@ -169,7 +171,7 @@ Full reports: [0.4.0 test report](docs/testing/2026-10-15-v0.4.0.md) · [AI plan
 ```bash
 cd app
 flutter test && dart analyze lib test            # Flutter UI tests
-cd android && ./gradlew testDebugUnitTest        # 778 Kotlin tests (safety, link, parser, speech, AI routing)
+cd android && ./gradlew testDebugUnitTest        # 920 Kotlin tests (safety, link, parser, speech, AI, memory, missions)
 cd ../.. && python -m pytest edge/tests tools    # Python tooling tests
 python tools/grammar-gen/gen.py --check          # grammar tables are up to date
 ```

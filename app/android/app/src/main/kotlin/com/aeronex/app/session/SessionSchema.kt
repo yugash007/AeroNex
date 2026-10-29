@@ -17,9 +17,13 @@ import com.aeronex.app.link.mavlink.StatusText
 import com.aeronex.app.link.mavlink.SysStatus
 import com.aeronex.app.memory.MemoryRoutes
 import com.aeronex.app.memory.MemoryState
+import com.aeronex.app.memory.SavedMission
 import com.aeronex.app.observability.LatencySummary
+import com.aeronex.app.mission.Mission
 import com.aeronex.app.safety.ConfirmResult
+import com.aeronex.app.safety.MissionStatus
 import com.aeronex.app.safety.PendingPlan
+import com.aeronex.app.safety.PlanValidator
 import com.aeronex.app.safety.PlanSource
 import com.aeronex.app.safety.PlanStage
 import com.aeronex.app.safety.StepStatus
@@ -107,6 +111,8 @@ data class PlanRequest(val plan: FlightPlan, val source: PlanSource, val utteran
  *   - `positionReady` (bool): fresh EKF solution with absolute position (the takeoff/move precondition).
  *   - `homeKnown` (bool): HOME_POSITION received. `homeDistanceM` (double?): horizontal metres from home, rounded to
  *     0.01; null without home or position (the plan limit is 30 m, S13).
+ *   - `lowBattery` (bool, 2026-10-28): a fresh battery level below the reserve (30 %): plans may only head back toward
+ *     home.
  *   - `lastStatusText` (map?): `{severity (int, MAV_SEVERITY, 0 = emergency), text (string), ageMs (int)}`.
  *   - `ages` (map): per message, ms since it was last received, null if never: `heartbeat`, `sysStatus`,
  *     `attitude`, `localPosition`, `globalPosition`, `extendedSysState`, `ekfStatus`, `home`, `positionTarget`,
@@ -116,8 +122,10 @@ data class PlanRequest(val plan: FlightPlan, val source: PlanSource, val utteran
  *   - `summary` (string): e.g. "1. Take off to 3 m; 2. Land".
  *   - `steps` (list): `{name (string), arguments (map, numbers as given), source (`rules` | `fixture` | `ai`),
  *     description (string, e.g. "Move forward 2 m")}`.
- *   - `source` (string): the source chip, `phone` | `typed` | `tap` | `ai` (0.4.0: a plan of the AI path).
- *   - `expiresInMs` (int): until the token expires (15 s after submit), at `atMs`; 0 when due.
+ *   - `source` (string): the source chip, `phone` | `typed` | `tap` | `ai` (0.4.0: a plan of the AI path) | `mission`
+ *     (2026-10-28: a mission built from stages).
+ *   - `expiresInMs` (int): until the token expires (15 s after submit, 30 s for a mission), at `atMs`; 0 when due.
+ *   - `stageOfStep` (list<int>?, 2026-10-28): a mission's stage (0-based) per step; null for a plan.
  * - `run` (map?): the plan running or last run (including an immediate HOLD or status); null when none or while
  *   one only waits for confirmation.
  *   - `phase` (string): EXECUTING | FINISHED | FAILED.
@@ -127,6 +135,7 @@ data class PlanRequest(val plan: FlightPlan, val source: PlanSource, val utteran
  *   - `outcomes` (list): per step `{step (string, its description), outcome (string: PENDING | RUNNING | COMPLETED |
  *     NOT_SENT | REJECTED | UNKNOWN | SKIPPED), message (string?, the v0.2.0 text, e.g. "COMPLETED — …")}`.
  *   - `message` (string?): the v0.2.0 result summary once the plan ended; null while it runs.
+ *   - `stageOfStep` (list<int>?, 2026-10-28): as in `pending`.
  * - `stop` (map?): the last STOP decision; null before the first.
  *   - `id` (int): new for every STOP, so a repeated identical STOP still shows as new.
  *   - `phase` (string): NOTHING_SENT | SENDING | CONFIRMED | NOT_CONFIRMED.
@@ -180,6 +189,16 @@ data class PlanRequest(val plan: FlightPlan, val source: PlanSource, val utteran
  *     source (string), steps: [{name, arguments, description, outcome (StepStatus name)}]}`; `runAgain(planId)`
  *     shows one again.
  *   - `notice` (string?): why the trail and points were last forgotten (home moved).
+ *   - each `plans` step also has `stage` (int, 2026-10-28 missions): its mission stage, 0 for a plan.
+ * - `mission` (map, 2026-10-28; added to version 1, older clients ignore it): missions ([MissionStatus]).
+ *   - `building` (bool): new plans become the next stage instead of waiting for CONFIRM (STOP, HOLD and status still
+ *     run at once). `checkpoints` (bool): the mission holds after each stage until `continueMission`.
+ *   - `maxStages` (int): 5. `stages` (list): the stages built, `{source (string), summary (string), steps: [{name,
+ *     arguments, description}]}`.
+ *   - `checkpoint` (map?): the running mission holds between stages: `{token, stage (int, 0-based, the next one),
+ *     stageCount (int)}`.
+ *   - `resume` (map?): the last mission ended early: `{fromStep (int, 0-based, the step it ended at), stepCount (int,
+ *     the steps from it)}`.
  *
  * ## Requests and answers (MethodChannel `aeronex/session`)
  * - `connect({transport, host, remotePort, localPort, radioLink})` → snapshot; errors as PlatformException
@@ -191,13 +210,19 @@ data class PlanRequest(val plan: FlightPlan, val source: PlanSource, val utteran
  *   plans come only from the service's own AI path (spec A3).
  * - `submitText({text, language, source?})` → as `submitPlan`, or `{thinking: true, request}` when the AI took it.
  * - `confirm(token)` → `{accepted: true}` or `{accepted: false, error}`.
- * - `runAgain({planId} | planId)` → as `submitPlan`: a plan from `memory.plans`, validated again (Tap source).
+ * - `runAgain({planId} | planId)` → as `submitPlan`: a plan from `memory.plans`, validated again (Tap source; a
+ *   recorded mission is shown again as a mission).
+ * - Missions (2026-10-28): while `mission.building`, `submitPlan` and `submitText` answer `{addedToMission: true,
+ *   stages}` for a plan that became a stage. `missionBuilding({enabled} | bool)`, `addStage({token} | token)` (the plan
+ *   shown for CONFIRM becomes the next stage; answered like `submitPlan`), `removeStage({index} | index)`,
+ *   `clearMission`, `missionCheckpoints({enabled} | bool)` → null or the answer; `startMission` → as `submitPlan`;
+ *   `continueMission({token} | token)` → as `confirm`; `resumeMission({skipInterrupted})` → as `submitPlan`.
  * - `clearMemory` → null: forgets the trail, the points and the plans (home stays known).
  */
 object SessionSchema {
     const val VERSION = 1
     val TOP_LEVEL_KEYS = listOf("schemaVersion", "seq", "atMs", "link", "execution", "vehicle", "pending", "run", "stop",
-        "notice", "latency", "speech", "ai", "memory")
+        "notice", "latency", "speech", "ai", "memory", "mission")
 
     /** At most this many finished plans in `memory.plans`. */
     const val PLANS = 20
@@ -228,13 +253,14 @@ object SessionSchema {
         speech: VoiceStatus,
         ai: AiStatus = AiStatus.OFF,
         memory: MemoryState = MemoryState(),
+        lowBatteryPercent: Int = PlanValidator.LOW_BATTERY_PERCENT,
     ): Map<String, Any?> = linkedMapOf(
         "schemaVersion" to VERSION,
         "seq" to seq,
         "atMs" to atMs,
         "link" to link(link),
         "execution" to linkedMapOf("enabled" to supervisor.execution),
-        "vehicle" to vehicle(vehicle),
+        "vehicle" to vehicle(vehicle, lowBatteryPercent),
         "pending" to supervisor.pending?.let { pending(it, atMs) },
         "run" to run(supervisor),
         "stop" to supervisor.stop?.let { stop(it, vehicle) },
@@ -245,6 +271,7 @@ object SessionSchema {
         "speech" to speech(speech),
         "ai" to ai(ai),
         "memory" to memory(memory, vehicle),
+        "mission" to mission(supervisor.mission, memory.missions),
     )
 
     /**
@@ -280,6 +307,7 @@ object SessionSchema {
         )
         is SubmitResult.Immediate -> linkedMapOf("immediate" to true, "outcome" to result.outcome.status.name,
             "message" to result.outcome.message)
+        is SubmitResult.AddedToMission -> linkedMapOf("addedToMission" to true, "stages" to result.stages)
         is SubmitResult.Rejected -> linkedMapOf("error" to result.message)
     }
 
@@ -307,7 +335,7 @@ object SessionSchema {
 
     private fun owner(vehicle: VehicleState): ModeOwner? = vehicle.modeOwner.takeIf { vehicle.connected && vehicle.mode != null }
 
-    private fun vehicle(vehicle: VehicleState): Map<String, Any?> {
+    private fun vehicle(vehicle: VehicleState, lowBatteryPercent: Int): Map<String, Any?> {
         val owner = owner(vehicle)
         val home = vehicle.home
         val position = vehicle.position
@@ -327,6 +355,7 @@ object SessionSchema {
             "positionReady" to vehicle.positionReady,
             "homeKnown" to (home != null),
             "homeDistanceM" to if (home != null && position != null) centimetres(position.horizontalDistanceTo(home)) else null,
+            "lowBattery" to (vehicle.batteryPercent.let { it != null && it < lowBatteryPercent } && vehicle.fresh(SysStatus.messageId)),
             "lastStatusText" to vehicle.lastStatusText?.let {
                 linkedMapOf("severity" to it.message.severity, "text" to it.message.text, "ageMs" to vehicle.atMs - it.atMs)
             },
@@ -343,6 +372,8 @@ object SessionSchema {
         },
         "source" to pending.source.wire,
         "expiresInMs" to maxOf(0L, pending.expiresAtMs - atMs),
+        "stageOfStep" to pending.mission?.stageOfStep,
+        "checkpoints" to (pending.mission?.checkpoints == true),
     )
 
     private fun run(state: SupervisorState): Map<String, Any?>? {
@@ -359,6 +390,7 @@ object SessionSchema {
                 linkedMapOf("step" to it.step.command.description, "outcome" to it.status.name, "message" to it.message)
             },
             "message" to state.result,
+            "stageOfStep" to state.mission.stageOfStep,
         )
     }
 
@@ -444,13 +476,41 @@ object SessionSchema {
                     "source" to first.source,
                     "steps" to records.map {
                         linkedMapOf("name" to it.name, "arguments" to LinkedHashMap(it.arguments),
-                            "description" to it.description, "outcome" to it.outcome)
+                            "description" to it.description, "outcome" to it.outcome, "stage" to it.stage)
                     },
                 )
             },
             "notice" to memory.notice,
         )
     }
+
+    private fun mission(mission: MissionStatus, saved: List<SavedMission>) = linkedMapOf(
+        "building" to mission.building,
+        "checkpoints" to mission.checkpoints,
+        "maxStages" to Mission.MAX_STAGES,
+        "stages" to mission.stages.map { stage ->
+            linkedMapOf(
+                "source" to stage.source.wire,
+                "summary" to stage.plan.toString(),
+                "steps" to stage.plan.steps.map { step ->
+                    linkedMapOf("name" to step.command.name, "arguments" to LinkedHashMap(step.command.arguments),
+                        "description" to step.command.description)
+                },
+            )
+        },
+        "checkpoint" to mission.checkpoint?.let {
+            linkedMapOf("token" to it.token, "stage" to it.stage, "stageCount" to it.stageCount)
+        },
+        "resume" to mission.resume?.let {
+            linkedMapOf("fromStep" to it.fromStep, "stepCount" to it.stepCount, "atCheckpoint" to it.atCheckpoint)
+        },
+        // Saved missions (2026-10-28), newest first: what the mission card lists to load or delete.
+        "saved" to saved.map { m ->
+            val steps = m.stages.flatMap { it.steps }
+            linkedMapOf("name" to m.name, "stageCount" to m.stages.size, "stepCount" to steps.size,
+                "summary" to steps.joinToString(", then ") { it.description }, "atWallMs" to m.atWallMs)
+        },
+    )
 
     private fun centimetres(value: Double): Double? = if (value.isFinite()) (value * 100).roundToLong() / 100.0 else null
 

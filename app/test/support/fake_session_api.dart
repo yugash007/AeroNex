@@ -58,11 +58,18 @@ class FakeSessionApi implements SessionApi {
   SessionSnapshot? connectResult;
   Object? connectError, stopError, submitError, snapshotError, acknowledgeError;
 
+  /// How many `setFlightScreenVisible` calls fail (recorded all the same).
+  int flightScreenFailures = 0;
+
   /// Pending `connect` until completed, to observe the connecting state.
   Completer<void>? connectGate;
 
   /// Pending `submitPlan` until completed, to observe a submit in flight.
   Completer<void>? submitGate;
+
+  /// Pending `stop` and `removeStage` until completed, to act while one is in
+  /// flight.
+  Completer<void>? stopGate, removeStageGate;
 
   /// The POST_NOTIFICATIONS state `notificationPermission` answers. An
   /// `ask` while [NotificationPermission.askable] waits for
@@ -216,8 +223,13 @@ class FakeSessionApi implements SessionApi {
   }
 
   @override
-  Future<void> setFlightScreenVisible(bool visible) async =>
-      calls.add(('flightScreen', {'visible': visible}));
+  Future<void> setFlightScreenVisible(bool visible) async {
+    calls.add(('flightScreen', {'visible': visible}));
+    if (flightScreenFailures > 0) {
+      flightScreenFailures--;
+      throw StateError('flight service not answering');
+    }
+  }
 
   @override
   Future<NotificationPermission> microphonePermission({bool ask = false}) async {
@@ -262,6 +274,7 @@ class FakeSessionApi implements SessionApi {
   @override
   Future<void> stop({required bool heldOneSecond}) async {
     calls.add(('stop', {'heldOneSecond': heldOneSecond}));
+    if (stopGate case final gate?) await gate.future;
     if (stopError != null) throw stopError!;
   }
 
@@ -366,6 +379,160 @@ class FakeSessionApi implements SessionApi {
       'seq': ++_seq,
       'memory': FlightMemory(homeKnown: current.memory.homeKnown).toMap(),
     }));
+  }
+
+  // --- missions (2026-10-28) ---
+
+  /// Pushes the current snapshot with its `mission` section patched.
+  SessionSnapshot pushMission(Map<String, Object?> mission, [Map<String, Object?> rest = const {}]) {
+    final snapshot = SessionSnapshot.fromMap({
+      ...current.toMap(),
+      ...rest,
+      'seq': ++_seq,
+      'mission': {...current.mission.toMap(), ...mission},
+    });
+    push(snapshot);
+    return snapshot;
+  }
+
+  @override
+  Future<void> setMissionBuilding(bool enabled) async {
+    calls.add(('missionBuilding', {'enabled': enabled}));
+    pushMission({'building': enabled});
+  }
+
+  /// Like the service: the shown plan becomes the next stage and building goes on.
+  @override
+  Future<SubmitResult> addStage(String token) async {
+    calls.add(('addStage', {'token': token}));
+    final pending = current.pending;
+    if (pending == null || pending.token != token) return const RejectedResult('No plan is waiting for confirmation.');
+    final stage = {
+      'source': pending.sourceWire,
+      'summary': pending.summary,
+      'steps': [
+        for (final step in pending.steps)
+          {'name': step.name, 'arguments': {...step.arguments}, 'description': step.description}
+      ],
+    };
+    final stages = [for (final s in current.mission.stages) s.toMap(), stage];
+    pushMission({'building': true, 'stages': stages},
+        {'pending': null, 'notice': 'Added as stage ${stages.length} of the mission.'});
+    return AddedToMission(stages.length);
+  }
+
+  @override
+  Future<void> removeStage(int index) async {
+    calls.add(('removeStage', {'index': index}));
+    if (removeStageGate case final gate?) await gate.future;
+    final stages = [for (final (i, s) in current.mission.stages.indexed) if (i != index) s.toMap()];
+    pushMission({'stages': stages});
+  }
+
+  @override
+  Future<void> clearMission() async {
+    calls.add(('clearMission', null));
+    pushMission({'building': false, 'stages': <Object?>[], 'resume': null});
+  }
+
+  @override
+  Future<void> setMissionCheckpoints(bool enabled) async {
+    calls.add(('missionCheckpoints', {'enabled': enabled}));
+    pushMission({'checkpoints': enabled});
+  }
+
+  /// What `startMission` answers; null shows the stages built as one pending mission, like the service.
+  SubmitResult? startMissionResult;
+
+  @override
+  Future<SubmitResult> startMission() async {
+    calls.add(('startMission', null));
+    final answer = startMissionResult;
+    if (answer != null) return answer;
+    final stages = current.mission.stages;
+    if (stages.isEmpty) return const RejectedResult('Add a plan to the mission first.');
+    final steps = [for (final stage in stages) ...stage.steps];
+    final token = 'mission-${++_tokens}';
+    final summary = [for (final (i, step) in steps.indexed) '${i + 1}. ${step.description}'].join('; ');
+    push(fixture('pending_plan', {
+      'seq': ++_seq,
+      'execution': {'enabled': current.executionEnabled},
+      'pending': {
+        'token': token,
+        'summary': summary,
+        'steps': [
+          for (final step in steps)
+            {'name': step.name, 'arguments': {...step.arguments}, 'source': 'rules', 'description': step.description}
+        ],
+        'source': 'mission',
+        'expiresInMs': 30000,
+        'stageOfStep': [for (final (i, stage) in stages.indexed) ...List.filled(stage.steps.length, i)],
+        'checkpoints': current.mission.checkpoints,
+      },
+      'mission': {...current.mission.toMap(), 'building': false},
+      'speech': current.speech.toMap(),
+    }));
+    return AwaitingConfirmation(token, 30000, summary);
+  }
+
+  /// What `saveMission` and `loadMission` answer: null does it, like the
+  /// service; a string is the refusal.
+  String? saveError, loadError;
+
+  /// The stages of each saved mission, as `DraftStage.toMap` gives them.
+  final savedStages = <String, List<Object?>>{};
+
+  @override
+  Future<String?> saveMission(String name) async {
+    calls.add(('saveMission', {'name': name}));
+    if (saveError != null) return saveError;
+    final stages = current.mission.stages;
+    savedStages[name] = [for (final s in stages) s.toMap()];
+    final steps = [for (final s in stages) ...s.steps];
+    pushMission({
+      'saved': [
+        SavedMission(name, stages.length, steps.length, [for (final s in steps) s.description].join(', then '), 0)
+            .toMap(),
+        for (final m in current.mission.saved)
+          if (m.name.toLowerCase() != name.toLowerCase()) m.toMap()
+      ]
+    });
+    return null;
+  }
+
+  @override
+  Future<String?> loadMission(String name) async {
+    calls.add(('loadMission', {'name': name}));
+    if (loadError != null) return loadError;
+    final stages = savedStages[name];
+    if (stages != null) pushMission({'stages': stages});
+    return null;
+  }
+
+  @override
+  Future<void> deleteMission(String name) async {
+    calls.add(('deleteMission', {'name': name}));
+    pushMission({
+      'saved': [
+        for (final m in current.mission.saved)
+          if (m.name != name) m.toMap()
+      ]
+    });
+  }
+
+  @override
+  Future<ConfirmResult> continueMission(String token) async {
+    calls.add(('continueMission', {'token': token}));
+    return confirmResult;
+  }
+
+  /// What `resumeMission` answers.
+  SubmitResult resumeResult = const RejectedResult('There is no mission to resume.');
+
+  @override
+  Future<SubmitResult> resumeMission({required bool skipInterrupted}) async {
+    calls.add(('resumeMission', {'skipInterrupted': skipInterrupted}));
+    return resumeResult;
   }
 
   Future<void> close() => _controller.close();

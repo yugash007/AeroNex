@@ -9,7 +9,9 @@ import com.aeronex.app.memory.FlightJournal
 import com.aeronex.app.memory.MemoryRoutes
 import com.aeronex.app.vehicle.ModeOwner
 import com.aeronex.app.vehicle.Ned
+import com.aeronex.app.vehicle.VehicleState
 import com.aeronex.app.vehicle.executor.ArduPilotExecutor
+import com.aeronex.app.vehicle.executor.ExecutorTiming
 import com.aeronex.app.vehicle.executor.FAST_TIMING
 import com.aeronex.app.vehicle.executor.Rig
 import com.aeronex.app.vehicle.executor.waitFor
@@ -32,10 +34,10 @@ class SupervisorFlightMemoryTest {
         rig.close()
     }
 
-    private fun connect(execution: Boolean = true) {
+    private fun connect(execution: Boolean = true, timing: ExecutorTiming = FAST_TIMING) {
         rig.linkListener = { supervisor.onLinkState(it) }
         rig.connect()
-        supervisor.attach(rig.link, FAST_TIMING).get(2, TimeUnit.SECONDS)
+        supervisor.attach(rig.link, timing).get(2, TimeUnit.SECONDS)
         if (execution) supervisor.setExecution(true).get(2, TimeUnit.SECONDS)
     }
 
@@ -152,6 +154,52 @@ class SupervisorFlightMemoryTest {
         val marked = (submit(plan(numbered(FlightCommand.MARK_POINT, 9))) as SubmitResult.Immediate).outcome
         assertEquals(marked.message, StepStatus.COMPLETED, marked.status)
         assertEquals(Ned(0.0, 0.0, 0.0), journal.state.points.getValue(9).position)
+    }
+
+    @Test fun aSecondTakeoffFromElsewhereKeepsThePointsAndMovesHome() {
+        // Review R2: ArduCopter sets home where it arms. Taken for a new frame, that forgot every point mid-plan, and
+        // "go to point 1" after the takeoff failed with the vehicle in the air.
+        connect()
+        airborne()
+        flies(plan(move("forward", 4)))
+        val marked = (submit(plan(numbered(FlightCommand.MARK_POINT, 1))) as SubmitResult.Immediate).outcome
+        assertEquals(marked.message, StepStatus.COMPLETED, marked.status)
+        flies(plan(move("forward", 5), FlightCommand.of(FlightCommand.LAND)))
+        waitFor("landed and disarmed", 10_000) {
+            rig.store.snapshot().let { it.armed == false && it.landedState == VehicleState.LANDED_ON_GROUND }
+        }
+        flies(plan(takeoff, numbered(FlightCommand.GOTO_POINT, 1)))
+        assertAt(4.0, 0.0)
+        val home = journal.state.home!!
+        assertTrue("home moved to the second takeoff: $home", abs(home.x - 9.0) < 0.5 && abs(home.y) < 0.5)
+        assertEquals(setOf(1), journal.state.points.keys)
+    }
+
+    @Test fun aRebootElsewhereForgetsThePointsOfTheOldFrame() {
+        connect()
+        val marked = (submit(plan(numbered(FlightCommand.MARK_POINT, 9))) as SubmitResult.Immediate).outcome
+        assertEquals(marked.message, StepStatus.COMPLETED, marked.status)
+        val before = rig.store.snapshot().origin!!
+        // Home is (0, 0, 0) in both frames: only the origin shows the vehicle is somewhere else.
+        vehicle.rebootAt(40.0, 0.0)
+        waitFor("the new frame") { rig.store.snapshot().origin.let { it != null && it.distanceTo(before) > 30 } }
+        val rejected = submit(plan(takeoff, numbered(FlightCommand.GOTO_POINT, 9))) as SubmitResult.Rejected
+        assertEquals("Step 2 — ${MemoryRoutes.noPoint(9)}", rejected.message)
+        assertEquals(FlightJournal.FRAME_CHANGED, journal.state.notice)
+    }
+
+    @Test fun aLongLegBetweenPointsIsNotCutOffByTheMoveDeadline() {
+        // Review R8: with a 2 s deadline here (30 s in the app), a 20 m leg at 5 m/s takes 4 s; it gets 10 s more.
+        connect(timing = FAST_TIMING.copy(stepDeadlineMs = 2_000))
+        vehicle.speed = 30.0
+        airborne()
+        flies(plan(move("forward", 10)))
+        submit(plan(numbered(FlightCommand.MARK_POINT, 1)))
+        flies(plan(move("backward", 10), move("backward", 10)))
+        assertAt(-10.0, 0.0)
+        vehicle.speed = 5.0
+        flies(plan(numbered(FlightCommand.GOTO_POINT, 1)))
+        assertAt(10.0, 0.0)
     }
 
     @Test fun aDryRunMarksNothing() {

@@ -1,0 +1,85 @@
+# Every push and pull request: the Flutter UI, the Kotlin flight core (JVM unit tests, Robolectric included), the
+# Python tooling and edge prototype, and the grammar drift gate. Simulator (SITL) tests stay skipped here; run them
+# with -Psitl=1 against a running ArduCopter SITL (docs/simulation).
+name: CI
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  python:
+    name: Python tooling, edge and grammar
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install -r edge/requirements.txt -r tools/grammar-gen/requirements.txt -r tools/bench/requirements.txt
+      # The generated Kotlin tables, Vosk grammars, CTC lexicons and fixtures match grammar/ (README "Running the
+      # generator").
+      - run: python tools/grammar-gen/gen.py --check
+      - run: python -m pytest -q
+
+  flutter:
+    name: Flutter analyze and tests
+    runs-on: ubuntu-24.04
+    defaults:
+      run:
+        working-directory: app
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          flutter-version: "3.47.6"
+          cache: true
+      - run: flutter pub get
+      - run: flutter analyze
+      - run: flutter test
+
+  kotlin:
+    name: Kotlin unit tests
+    runs-on: ubuntu-24.04
+    env:
+      SHERPA_AAR_URL: https://github.com/k2-fsa/sherpa-onnx/releases/download/v1.13.8/sherpa-onnx-1.13.8.aar
+      # The release digest pinned in tools/bench/fetch_sherpa_assets.py.
+      SHERPA_AAR_SHA256: 633c24321e06b1fe79feafa03ea16cbc0f8a286641e2da3559bac91bdb13bd96
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          flutter-version: "3.47.6"
+          cache: true
+      - uses: gradle/actions/setup-gradle@v4
+      - name: Fetch the sherpa-onnx AAR (not on Maven) and check its digest
+        run: |
+          curl -fsSL --retry 3 -o "$RUNNER_TEMP/sherpa-onnx-1.13.8.aar" "$SHERPA_AAR_URL"
+          echo "$SHERPA_AAR_SHA256  $RUNNER_TEMP/sherpa-onnx-1.13.8.aar" | sha256sum -c -
+      - name: Generate local.properties and the Gradle wrapper
+        working-directory: app
+        run: |
+          flutter pub get
+          flutter build apk --config-only
+      - name: JVM unit tests
+        working-directory: app/android
+        run: ./gradlew testDebugUnitTest -PsherpaOnnxAar="$RUNNER_TEMP/sherpa-onnx-1.13.8.aar"
+      - name: Test reports
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: kotlin-test-reports
+          path: app/android/app/build/reports/tests/
