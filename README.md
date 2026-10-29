@@ -176,6 +176,15 @@ cd ../.. && python -m pytest edge/tests tools    # Python tooling tests
 python tools/grammar-gen/gen.py --check          # grammar tables are up to date
 ```
 
+### Release APKs
+
+Run the **Release APK** workflow from the Actions tab, or push a tag `vX.Y.Z` that matches `app/pubspec.yaml`.
+- It builds one APK for both ARM ABIs and one per ABI, and checks each with `tools/check_android_package.py`.
+- It signs them with the development key (certificate `6313b3f8…43c1`), so they install over earlier releases and keep
+  their models and data. The key comes from the repository secret `ANDROID_DEBUG_KEYSTORE_BASE64`, the base64 of that
+  `debug.keystore`; with no key or another key, it stops before building.
+- A tag also gets a draft GitHub release with the APKs.
+
 Requirements: Flutter 3.x, Android SDK 36 + NDK, JDK 17, Python 3.12. For the simulator: WSL2 with ArduPilot SITL and Gazebo Harmonic.
 
 ## 9. Repository structure
