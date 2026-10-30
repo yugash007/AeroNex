@@ -130,10 +130,26 @@ jobs:
       - name: Check the APKs (identity, key, ABIs, 16 KiB alignment, JNI contract, licence notices)
         id: check
         run: |
-          # The checker reads badging with aapt, which newer build-tools may not ship: pin a set that has it.
-          yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --install "build-tools;34.0.0" > /dev/null
-          tools="$ANDROID_HOME/build-tools/34.0.0"
-          for tool in aapt zipalign lib/apksigner.jar; do test -e "$tools/$tool" || { echo "::error::$tools/$tool is missing"; exit 1; }; done
+          # The checker needs aapt (badging), apksigner, and a zipalign with -P (16 KiB pages, build-tools 35+): the newest
+          # installed build-tools that has all three, else 35.0.0.
+          pick() {
+            for dir in $(ls -d "$ANDROID_HOME"/build-tools/* 2>/dev/null | sort -rV); do
+              if [ -x "$dir/aapt" ] && [ -f "$dir/lib/apksigner.jar" ] && "$dir/zipalign" 2>&1 | grep -q -- '-P'; then
+                echo "$dir"
+                return
+              fi
+            done
+          }
+          tools=$(pick)
+          if [ -z "$tools" ]; then
+            yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --install "build-tools;35.0.0" > /dev/null
+            tools=$(pick)
+          fi
+          if [ -z "$tools" ]; then
+            echo "::error::No build-tools with aapt, apksigner and a 16 KiB zipalign (-P)."
+            exit 1
+          fi
+          echo "Checking with $tools"
           out=app/build/app/outputs/flutter-apk
           name=${{ steps.version.outputs.name }}
           code=${{ steps.version.outputs.code }}
