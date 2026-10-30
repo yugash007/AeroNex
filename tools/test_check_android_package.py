@@ -249,3 +249,18 @@ def test_the_certificate_must_be_the_whole_digest_of_the_only_signer():
     assert not package.certificate_matches(one, "cd" * 32)
     two = one + f"Signer #2 certificate SHA-256 digest: {'cd' * 32}\n"
     assert not package.certificate_matches(two, digest)
+
+
+def test_newer_apksigner_names_the_signer_per_scheme():
+    # build-tools 35+ print one block per signing scheme instead of "Signer #1".
+    digest = "ab" * 32
+    v2 = (f"Verifies\nNumber of signers: 1\nV2 Signer: certificate DN: CN=AeroNex\n"
+          f"V2 Signer: certificate SHA-256 digest: {digest}\nV2 Signer: certificate MD5 digest: {'12' * 16}\n")
+    assert package.certificate_matches(v2, digest)
+    assert not package.certificate_matches(v2, "cd" * 32)
+    assert not package.certificate_matches(v2, digest[:20])
+    both = v2 + f"V3 Signer: certificate SHA-256 digest: {digest}\n"
+    assert package.certificate_matches(both, digest)
+    assert not package.certificate_matches(v2 + f"V3 Signer: certificate SHA-256 digest: {'cd' * 32}\n", digest)
+    assert not package.certificate_matches(v2.replace("Number of signers: 1", "Number of signers: 2"), digest)
+    assert not package.certificate_matches("Verifies\nNumber of signers: 1\n", digest), "no signer line: no match"

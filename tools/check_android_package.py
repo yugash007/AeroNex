@@ -143,12 +143,23 @@ def check_badging(badging, version, version_code, abis):
 
 
 def certificate_matches(signature: str, certificate: str) -> bool:
-    """`apksigner verify --print-certs` output names exactly one signer, whose SHA-256 is the whole 64-hex
-    [certificate]. A substring match would pass an empty or truncated digest (an unset CI variable)."""
+    """`apksigner verify --verbose --print-certs` output names exactly one signer, whose SHA-256 is the whole 64-hex
+    [certificate]. A substring match would pass an empty or truncated digest (an unset CI variable).
+
+    apksigner up to build-tools 34 prints `Signer #1 certificate SHA-256 digest: ...`; newer ones print it per signing
+    scheme, `V2 Signer: certificate SHA-256 digest: ...` (and V3 ...). Every signer line must name the certificate, and
+    a "Number of signers" line, when present, must say 1."""
     if not re.fullmatch(r'[0-9a-fA-F]{64}', certificate or ''):
         return False
-    signers = re.findall(r'^Signer #(\d+) certificate SHA-256 digest: ([0-9a-fA-F]+)\s*$', signature, re.MULTILINE)
-    return signers == [('1', certificate.lower())]
+    numbered = re.findall(r'^Signer #(\d+) certificate SHA-256 digest: ([0-9a-fA-F]+)\s*$', signature, re.MULTILINE)
+    if numbered:
+        return numbered == [('1', certificate.lower())]
+    count = re.search(r'^Number of signers: (\d+)\s*$', signature, re.MULTILINE)
+    if count and count.group(1) != '1':
+        return False
+    per_scheme = re.findall(r'^V[0-9.]+ Signer[^:]*: certificate SHA-256 digest: ([0-9a-fA-F]+)\s*$', signature,
+                            re.MULTILINE)
+    return bool(per_scheme) and all(digest.lower() == certificate.lower() for digest in per_scheme)
 
 
 def require(condition, message):
