@@ -73,15 +73,15 @@ jobs:
         env:
           KEYSTORE: ${{ secrets.ANDROID_DEBUG_KEYSTORE_BASE64 }}
         run: |
-          # Where the Android Gradle plugin looks for the debug key, which the release build type signs with.
-          home="${ANDROID_USER_HOME:-$HOME/.android}"
-          mkdir -p "$home"
+          # The release build type signs with the keystore named by AERONEX_KEYSTORE (app/android/app/build.gradle.kts).
+          keystore="$RUNNER_TEMP/aeronex-signing.keystore"
+          echo "AERONEX_KEYSTORE=$keystore" >> "$GITHUB_ENV"
           certificate() {
-            keytool -list -v -keystore "$home/debug.keystore" -storepass android -alias androiddebugkey 2>&1 \
+            keytool -list -v -keystore "$keystore" -storepass android -alias androiddebugkey 2>&1 \
               | sed -n 's/^[[:space:]]*SHA256: //p' | tr -d ':' | tr 'A-F' 'a-f'
           }
           if [ "$KIND" = test ]; then
-            keytool -genkeypair -keystore "$home/debug.keystore" -storepass android -keypass android \
+            keytool -genkeypair -keystore "$keystore" -storepass android -keypass android \
               -alias androiddebugkey -dname "CN=AeroNex test build" -keyalg RSA -keysize 2048 -validity 365
             digest=$(certificate)
             echo "CERTIFICATE_SHA256=$digest" >> "$GITHUB_ENV" # what the checker expects in this run
@@ -92,7 +92,7 @@ jobs:
             echo "::error::Add the repository secret ANDROID_DEBUG_KEYSTORE_BASE64: the base64 of the debug.keystore that signed the earlier releases."
             exit 1
           fi
-          printf '%s' "$KEYSTORE" | base64 -d > "$home/debug.keystore"
+          printf '%s' "$KEYSTORE" | base64 -d > "$keystore"
           digest=$(certificate)
           if [ "$digest" != "$CERTIFICATE_SHA256" ]; then
             echo "::error::The keystore's certificate is '${digest:-unreadable}', not the earlier releases' $CERTIFICATE_SHA256."

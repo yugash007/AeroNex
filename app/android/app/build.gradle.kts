@@ -91,6 +91,19 @@ android {
         }
     }
 
+    signingConfigs {
+        // The Release APK workflow names its keystore explicitly: the build machine's default debug keystore is
+        // wherever its Android Gradle plugin looks, and a release must be signed with the key the workflow checked.
+        System.getenv("AERONEX_KEYSTORE")?.let { keystore ->
+            create("aeronex") {
+                storeFile = file(keystore)
+                storePassword = System.getenv("AERONEX_KEYSTORE_PASSWORD") ?: "android"
+                keyAlias = System.getenv("AERONEX_KEY_ALIAS") ?: "androiddebugkey"
+                keyPassword = System.getenv("AERONEX_KEY_PASSWORD") ?: "android"
+            }
+        }
+    }
+
     buildTypes {
         debug {
             // x86_64 only in debug, for the emulator smoke tests and CI (spec 4.19).
@@ -98,9 +111,9 @@ android {
         }
         release {
             proguardFiles("proguard-rules.pro")
-            // TODO: Add your own signing config for the release build.
-            // Signing with the debug keys for now, so `flutter run --release` works.
-            signingConfig = signingConfigs.getByName("debug")
+            // AERONEX_KEYSTORE when set (the Release APK workflow); otherwise this machine's debug key, the development
+            // key every earlier release was signed with, so `flutter build apk --release` on that PC still updates them.
+            signingConfig = signingConfigs.findByName("aeronex") ?: signingConfigs.getByName("debug")
         }
     }
 
